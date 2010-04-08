@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; hideshow-cfg.el ---
-;; Time-stamp: <2010-03-12 15:17:24 Friday by jqian>
+;; Time-stamp: <2010-04-08 10:35:45 Thursday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: hideshow-cfg.el,v 0.0 2010/01/29 09:34:19 julian Exp $
 
@@ -12,8 +12,8 @@
 
 ;;{{{ Hide selected region by yourself
 (require 'hide-region)
-(setq hide-region-before-string "[======================Region")
-(setq hide-region-after-string "Hidden======================]\n")
+(setq hide-region-before-string "@[Hide ")
+(setq hide-region-after-string "Region]@\n")
 ;;}}}
 
 ;;{{{ Hide function block during programming

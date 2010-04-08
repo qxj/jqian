@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; theme-cfg.el ---
-;; Time-stamp: <2010-03-12 17:40:45 Friday by jqian>
+;; Time-stamp: <2010-04-08 10:35:43 Thursday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: theme-cfg.el,v 0.0 2010/01/28 10:39:26 julian Exp $
 
@@ -49,7 +49,7 @@
       ;; else
   (custom-set-variables
    '(font-lock-comment-face 'gray-face)
-   '(font-lock-string-face 'blue-face)))
+   '(font-lock-string-face 'light-blue-face)))
 
 (when (facep 'semantic-tag-highlight-face)
   (set-face-foreground 'semantic-tag-highlight-face "red")
@@ -95,18 +95,18 @@
                     ((((type tty)) :background "yellow" :foreground "blue")
                      (t :background "Pink" :foreground "DarkOrchid1"))))
 (setq diredp-ignored-file-name 'green-face)
-(setq diredp-file-name 'darkred-face)
+(setq diredp-file-name 'dark-red-face)
 (setq diredp-file-suffix 'magenta-face)
-(setq diredp-exec-priv 'darkred-face)
+(setq diredp-exec-priv 'dark-red-face)
 (setq diredp-other-priv 'white-face)
-(setq diredp-no-priv 'darkmagenta-face)
-(setq diredp-write-priv 'darkcyan-face)
-(setq diredp-read-priv 'darkyellow-face)
-(setq diredp-link-priv 'lightblue-face)
-(setq diredp-symlink 'darkcyan-face)
+(setq diredp-no-priv 'dark-magenta-face)
+(setq diredp-write-priv 'dark-cyan-face)
+(setq diredp-read-priv 'dark-yellow-face)
+(setq diredp-link-priv 'light-blue-face)
+(setq diredp-symlink 'dark-cyan-face)
 (setq diredp-rare-priv 'white-red-face)
 (setq diredp-dir-priv 'beautiful-blue-face)
-(setq diredp-compressed-file-suffix 'darkyellow-face)
+(setq diredp-compressed-file-suffix 'dark-yellow-face)
 
 (custom-set-faces '(match
                     ((((class color) (min-colors 88) (background light))
