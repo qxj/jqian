@@ -2,7 +2,7 @@
 
 ;;; To distinguish running environment
 (defconst mswin  (eq window-system 'w32)  "Non-nil means windows system.")
-(defconst xwin   (eq window-system 'X)    "Non-nil means X window")
+(defconst xwin   (eq window-system 'x)    "Non-nil means X window")
 (defconst macos  (eq window-system 'mac)  "Non-nil means mac os x system")
 (defconst nowin  (eq window-system nil)   "Non-nil means no window manager")
 (defconst cygwin (eq system-type 'cygwin) "Non-nil means cygwin system.")
@@ -76,9 +76,9 @@
 
 (when xwin
   ;;else, linux or freebsd etc.
-  (set-default-font "Consolas-16")
+  (set-frame-font "Consolas-12")        ;; set-default-font has been obsoleted
   (set-fontset-font (frame-parameter nil 'font)
-                    'han '("Vera Sans YuanTi" . "unicode-bmp")))
+                    'han '("Microsoft YaHei" . "unicode-bmp")))
 
 (if nowin
     ;;; fix emacs comment color bug.
@@ -423,6 +423,10 @@
 (setq c-includes-path ffap-c-path)
 ;;}}}
 
+;;{{{ multi term
+(require 'multi-term)
+;;}}}
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Customization ;;;;;;;;;;;;;;;;
 
@@ -534,6 +538,10 @@
 ;; (load "mew-cfg")
 
 (load "theme-cfg")
+
+(let ((nxhtml-init-file "~/.emacs.d/site-lisp/nxhtml/autostart.el"))
+  (if (file-exists-p nxhtml-init-file)
+      (load-file nxhtml-init-file)))
 
 ;;; imenu-tree
 (require 'imenu-tree)

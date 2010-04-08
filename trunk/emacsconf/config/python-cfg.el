@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; python-cfg.el ---
-;; Time-stamp: <2010-03-11 17:47:34 Thursday by julian>
+;; Time-stamp: <2010-04-08 10:35:44 Thursday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: python-cfg.el,v 0.0 2010/03/10 12:03:12 julian Exp $
 
@@ -22,7 +22,7 @@
   (local-set-key [return] 'newline-and-indent)
   (setq indent-tabs-mode t)
   (auto-fill-mode 1)
-  (turn-on-eldoc-mode)
+  ;; (turn-on-eldoc-mode) ;; disable `run-python'
 
   (define-key python-mode-map "\"" 'electric-pair)
   (define-key python-mode-map "\'" 'electric-pair)

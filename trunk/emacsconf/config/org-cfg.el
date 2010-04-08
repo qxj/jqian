@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; org-cfg.el --- ilisp settings
-;; Time-stamp: <2010-03-10 19:54:46 Wednesday by julian>
+;; Time-stamp: <2010-04-08 10:35:44 Thursday by jqian>
 
 (require 'org)
 (require 'org-mouse)
@@ -27,7 +27,7 @@
 (setq org-hide-leading-stars t)
 (setq org-startup-folded nil)           ; don't fold org items
 
-(setq org-agenda-files my-org-dir)
+;; (setq org-agenda-files my-org-dir) ;; cause Shift-Right issue
 
 (defcustom org-export-html-style
   "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">" ""

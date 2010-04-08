@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ccmode-cfg.el --- enhancement for c/c++ development
-;; Time-stamp: <2010-03-12 17:50:12 Friday by jqian>
+;; Time-stamp: <2010-04-08 10:35:45 Thursday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: dev-cfg.el,v 0.0 2010/01/28 10:17:11 julian Exp $
 
@@ -38,10 +38,6 @@
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 ;; (add-hook 'c-mode-common-hook 'my-common-hook)
 ;; (add-hook 'c-mode-common-hook 'my-show-prog-keywords)
-
-(defun fp-c-mode-routine ()
-  (local-set-key "\M-q" 'rebox-comment))
-(add-hook 'c-mode-hook 'fp-c-mode-routine)
 
 (setq-default c-default-style (quote ((java-mode . "java") (other . "gnu"))))
 
