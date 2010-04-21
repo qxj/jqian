@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; gtags-cfg.el ---
-;; Time-stamp: <2010-03-11 16:34:27 Thursday by julian>
+;; Time-stamp: <2010-04-21 19:30:25 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: gtags-cfg.el,v 0.0 2010/03/09 09:12:27 julian Exp $
 
@@ -21,25 +21,17 @@
 (gtags-mode 1)
 (define-prefix-command 'my-gtags-map)
 (global-set-key (kbd "C-c g") 'my-gtags-map)
-(dolist (map (list
-              c-mode-base-map
-              php-mode-map
-              python-mode-map))
-  (apply-define-key
-   map
-   `(
-     ("C-c g v" gtags-visit-rootdir)  ;; search directory
-     ("C-c g t" gtags-find-tag)  ;; function define
-     ("C-c g o" gtags-find-tag-other-window)
-     ("C-c g r" gtags-find-rtag)  ;; function references
-     ("C-c g s" gtags-find-symbol)  ;; symbol define
-     ("C-c g p" gtags-find-pattern)
-     ("C-c g g" gtags-find-with-grep)
-     ("C-c g i" gtags-find-with-idutils)
-     ("C-c g f" gtags-find-file)  ;; find file in project
-     ("C-c g a" gtags-parse-file)  ;; list defines
-     ("C-c g b" yp-gtags-append)  ;; update TAGS file
-     )))
+(define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
+(define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
+(define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
+(define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
+(define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
+(define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
+(define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
+(define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
+(define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
+(define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
+(define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
 ;;}}}
 
 (defun yp-gtags-append ()

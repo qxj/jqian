@@ -61,7 +61,6 @@
 
 ;; customization
 (custom-set-variables
- '(semantic-idle-scheduler-idle-time 3)
  '(semantic-self-insert-show-completion-function
    (lambda nil (semantic-ia-complete-symbol-menu (point)))))
 
@@ -69,13 +68,14 @@
   (global-semantic-folding-mode 1)
   (global-semantic-tag-folding-mode 1))
 
-(global-semantic-idle-tag-highlight-mode 1)
+;; (global-semantic-idle-tag-highlight-mode 1)
 
 ;; enable support for gnu global
 (unless mswin
   (require 'semanticdb-global)
-  (semanticdb-enable-gnu-global-databases 'c-mode)
-  (semanticdb-enable-gnu-global-databases 'c++-mode))
+  ;; (semanticdb-enable-gnu-global-databases 'c-mode)
+  ;; (semanticdb-enable-gnu-global-databases 'c++-mode)
+  )
 
 ;; enable support for exuberent ctags
 (when (and (fboundp 'semantic-ectag-version)

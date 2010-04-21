@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; common-cfg.el ---
-;; Time-stamp: <2010-03-11 17:44:00 Thursday by julian>
+;; Time-stamp: <2010-04-21 20:00:03 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: common-cfg.el,v 0.0 2010/03/10 10:47:21 julian Exp $
 
@@ -21,28 +21,43 @@
                             ("<\\|>" . cyan-face)
                             ("{\\|}" . green-face))))
 
-;; clean trailing whitespaces automatically
-(setq my-trailing-whitespace-modes '(c++-mode
-                                     c-mode
-                                     haskell-mode
-                                     emacs-lisp-mode
-                                     lisp-mode
-                                     scheme-mode
-                                     erlang-mode))
+(set-default 'auto-mode-alist
+             (append '(("\\.\\(php\\|inc\\)\\'" . php-mode)
+                       ("\\(Makefile\\|\\.mak\\)" . makefile-mode)
+                       ("\\.p[lm]\\'" . cperl-mode)
+                       ("\\.\\(cl\\|li?sp\\)\\'" . lisp-mode)
+                       ("\\.css\\'" . css-mode)
+                       ("\\.html\\'" . html-mode)
+                       ("\\.js\\'" . js2-mode)
+                       ("\\.\\(jpg\\|png\\|gif\\)\\'" . image-mode))
+                     auto-mode-alist))
 
+(add-hook 'Info-mode-hook
+          (lambda ()
+            (define-key Info-mode-map '[down] 'pager-row-down)
+            (define-key Info-mode-map (kbd "M-n") 'pager-row-down)
+            (define-key Info-mode-map '[up] 'pager-row-up)))
+
+(add-hook 'Man-mode-hook
+          (lambda ()
+            (define-key Man-mode-map '[down] 'pager-row-down)
+            (define-key Man-mode-map (kbd "M-n") 'pager-row-down)
+            (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
+            (define-key Man-mode-map '[up] 'pager-row-up)))
+
+;; clean trailing whitespaces automatically
 (defun my-trailing-whitespace-hook ()
-  (when (member major-mode my-trailing-whitespace-modes)
+  (when (member major-mode (list 'c++-mode
+                                 'c-mode
+                                 'emacs-lisp-mode))
     (delete-trailing-whitespace)))
 (add-hook 'before-save-hook 'my-trailing-whitespace-hook)
 
 ;; untabify some modes
-(setq my-untabify-modes '(haskell-mode
-                          emacs-lisp-mode
-                          lisp-mode
-                          scheme-mode
-                          erlang-mode))
 (defun my-untabify-hook ()
-  (when (member major-mode my-untabify-modes)
+  (when (member major-mode (list 'c++-mode
+                                 'c-mode
+                                 'emacs-lisp-mode))
     (untabify (point-min) (point-max))))
 (add-hook 'before-save-hook 'my-untabify-hook)
 

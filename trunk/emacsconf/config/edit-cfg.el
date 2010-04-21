@@ -1,17 +1,24 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; edit-cfg.el --- editor settings
-;; Time-stamp: <2010-03-11 18:07:13 Thursday by julian>
+;; Time-stamp: <2010-04-21 19:22:37 Wednesday by jqian>
 
+
+;;{{{ unicad to distinguish charset
+(require 'unicad)
+;;}}}
+
+;;{{{ more highlight colors
+(require 'generic-x)
+;;}}}
+
+;;{{{ make cursor become a line
+(require 'bar-cursor)
+;;}}}
 
 ;; kill a whole line
 (setq-default kill-whole-line t)
 (setq kill-ring-max 50)
 
-;;{{{ browser kill ring
-(require 'browse-kill-ring)
-(global-set-key (kbd "C-x C-y") 'browse-kill-ring)
-(browse-kill-ring-default-keybindings)
-;;}}}
 
 ;;{{{ similar to dd & yy in VIM
 (defadvice kill-ring-save (before slickcopy activate compile)

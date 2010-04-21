@@ -1,6 +1,20 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; my-tools.el ---
-;; Time-stamp: <2010-03-10 20:17:41 Wednesday by julian>
+;; Time-stamp: <2010-04-21 19:34:21 Wednesday by jqian>
+
+;;{{{ etags setting
+;; (setq tags-file-name "~/projects/TAGS")
+(defun my-generate-tag-table ()
+  "Generate tag tables under current directory(Linux)."
+  (interactive)
+  (let ((exp "") (dir ""))
+    (setq dir (read-from-minibuffer "generate tags in: " default-directory)
+          exp (read-from-minibuffer "suffix: "))
+    (with-temp-buffer
+      (shell-command
+       (concat "find " dir " -name \"" exp "\" | xargs etags ")
+       (buffer-name)))))
+;;}}}
 
 ;;{{{ select a word
 (defun my-isearch-word ()

@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ccmode-cfg.el --- enhancement for c/c++ development
-;; Time-stamp: <2010-04-08 10:35:45 Thursday by jqian>
+;; Time-stamp: <2010-04-21 19:31:12 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: dev-cfg.el,v 0.0 2010/01/28 10:17:11 julian Exp $
 
@@ -8,6 +8,34 @@
 
 ;;; Code:
 ;; (eval-when-compile (require 'cl))
+
+;;{{{ help to switch between source and header files
+(require 'sourcepair)
+;; (define-key c-mode-map (kbd "C-c s") 'sourcepair-load)
+;; (define-key c++-mode-map (kbd "C-c s") 'sourcepair-load)
+(setq sourcepair-source-path '( "." "../src"))
+(setq sourcepair-header-path user-head-file-dir)
+(setq sourcepair-recurse-ignore '("CVS" "bin" "lib" "Obj" "Debug" "Release" ".svn"))
+;;}}}
+
+;;{{{ find out all header files that .cpp includes
+(require 'c-includes)
+(setq c-includes-binding t)
+(setq c-includes-path ffap-c-path)
+;;}}}
+
+;;{{{ ebrowse
+(require 'ebrowse)
+(add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
+;;}}}
+
+;;{{{ show function name where cursor stay
+(require 'which-func)
+(which-func-mode 1)
+(setq which-func-unknown "unknown")
+;;}}}
+
+
 
 (require 'cc-mode)
 (require 'c-eldoc)
