@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; desktop-cfg.el ---
-;; Time-stamp: <2010-03-11 10:07:00 Thursday by julian>
+;; Time-stamp: <2010-04-21 19:41:13 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: desktop-cfg.el,v 0.0 2010/01/28 10:27:56 julian Exp $
 
@@ -10,7 +10,7 @@
 ;; (eval-when-compile (require 'cl))
 
 
-;;;  Saving the buffer list : M-x desktop-save
+;;{{{ Saving the buffer list : M-x desktop-save
 (desktop-save-mode 1)
 (setq desktop-base-file-name "emacs.desktop")
 (setq desktop-path (list my-temp-dir))
@@ -27,7 +27,14 @@
 ;; (condition-case nil
 ;;     (desktop-read)
 ;;   (error nil))
+;;}}}
 
+;;{{{ session
+(require 'session)
+(setq session-save-file (concat my-temp-dir "emacs.session"))
+(add-hook 'after-init-hook 'session-initialize)
+(setq session-save-file-coding-system 'utf-8-unix)
+;;}}}
 
 (provide 'desktop-cfg)
 
