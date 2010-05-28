@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; edit-cfg.el --- editor settings
-;; Time-stamp: <2010-04-21 19:22:37 Wednesday by jqian>
+;; Time-stamp: <2010-05-12 14:49:44 Wednesday by jqian>
 
 
 ;;{{{ unicad to distinguish charset
@@ -211,7 +211,7 @@ ad."
    ("C-M-w" copy-sentence)
    ("M-U" del-to-begin)
    ("C-1" mark-whole-sexp)
-   ("C-2" mark-function)
+   ;; ("C-2" mark-function)
    ;; ("C-M-d" kill-sexp)
    ("M-D" my-kill-word)
    ;; ,(if window-system '("C-z" undo))

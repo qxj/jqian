@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; org-cfg.el --- ilisp settings
-;; Time-stamp: <2010-04-08 10:35:44 Thursday by jqian>
+;; Time-stamp: <2010-05-12 14:57:19 Wednesday by jqian>
 
 (require 'org)
 (require 'org-mouse)
@@ -18,6 +18,9 @@
      ("C-c o b" org-iswitchb)
      ("C-c o r" org-remember))))
 
+(add-hook 'org-mode-hook
+          (lambda ()
+            (toggle-truncate-lines nil)))
 
 ;;(setq org-agenda-include-diary t) ; contain calendar
 ;;(setq org-log-done t)

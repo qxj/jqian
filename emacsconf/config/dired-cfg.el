@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; dired-cfg.el --- dired mode
-;; Time-stamp: <2010-01-29 17:00:25 julian>
+;; Time-stamp: <2010-05-12 14:57:58 Wednesday by jqian>
 
 ;; Setting for dired
 (setq dired-recursive-copies 'always)
@@ -36,7 +36,7 @@
   (define-key dired-mode-map (kbd "<M-up>") '(lambda () (interactive) (joc-dired-single-buffer "..")))
   ;;
 
-  
+
   (define-key dired-mode-map (kbd "[" ) 'backward-page)
   (define-key dired-mode-map (kbd "]" ) 'forward-page)
 ;;   (define-key dired-mode-map (kbd "<M-up>" ) 'dired-up-directory)
@@ -72,7 +72,7 @@
   ;; hide mode user group information colummn
   nil)
 ;;; make the execuatable file with different color
-(defun wcy-dired-load-hook ()  
+(defun wcy-dired-load-hook ()
   (load "dired-x")
   (setq dired-font-lock-keywords
         (append dired-font-lock-keywords
@@ -86,7 +86,7 @@
   "Dired sort hook to list directories first."
   (save-excursion
     (let (buffer-read-only)
-      (forward-line 2) ;; beyond dir. header  
+      (forward-line 2) ;; beyond dir. header
       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
   (and (featurep 'xemacs)
        (fboundp 'dired-insert-set-properties)
@@ -94,7 +94,7 @@
   (set-buffer-modified-p nil))
 (add-hook 'dired-after-readin-hook 'sof/dired-sort)
 
- 
+
 ;; don't like that dired-next/previous-line moves to "not useful" lines, like the empty ones between inserted subdirectores, so
 ;; I came up with this simple defun that suit my needs better.
 
@@ -229,13 +229,11 @@ emacs 打开。而是用外部程序打开。
 ;;   [menu-bar immediate wdired-change-to-wdired-mode]
 ;;   '("Edit File Names" . wdired-change-to-wdired-mode))
 
-(defun my-dired-long-lines ()
-  (toggle-truncate-lines t))
-(add-hook 'dired-after-readin-hook 'my-dired-long-lines)
-
+(add-hook 'dired-after-readin-hook
+          (lambda () (toggle-truncate-lines t)))
 
 ;;;;;; Dired Association
-;;This allows "X" in dired to open the file using the explorer settings.      
+;;This allows "X" in dired to open the file using the explorer settings.
 ;;From TBABIN(at)nortelnetworks.com
 ;;ToDo: adapt mswindows-shell-execute() for XEmacs or use tinyurl shell exec
 ;; (when (and (string-match "GNU" (emacs-version))

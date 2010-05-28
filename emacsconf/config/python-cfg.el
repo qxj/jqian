@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; python-cfg.el ---
-;; Time-stamp: <2010-04-08 10:35:44 Thursday by jqian>
+;; Time-stamp: <2010-05-28 11:34:09 Friday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: python-cfg.el,v 0.0 2010/03/10 12:03:12 julian Exp $
 
@@ -8,6 +8,8 @@
 
 ;;; Code:
 ;; (eval-when-compile (require 'cl))
+
+(autoload 'python-mode "python-mode" "Python editing mode." t)
 
 (define-prefix-command 'python-mode-map)
 
@@ -28,10 +30,16 @@
   (define-key python-mode-map "\'" 'electric-pair)
   (define-key python-mode-map "(" 'electric-pair)
   (define-key python-mode-map "[" 'electric-pair)
-  (define-key python-mode-map "{" 'electric-pair)
-  )
+  (define-key python-mode-map "{" 'electric-pair))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
+;;; How to install pymacs:
+;; download http://pymacs.progiciels-bpi.ca/
+;; >> python setup.py install
+;; Then put pymacs.py into load-path
+;;; How to install pycomplete
+;; download http://www.rwdev.eu/python/pycomplete/pycomplete.el
+;; Then put pycomplete.py into load-path
 
 (provide 'python-cfg)
 
