@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; config-cfg.el ---
-;; Time-stamp: <2010-04-21 19:44:58 Wednesday by jqian>
+;; Time-stamp: <2010-05-11 11:10:31 Tuesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: config-cfg.el,v 0.0 2010/04/21 11:44:48 jqian Exp $
 
@@ -43,7 +43,7 @@
 (setq transient-mark-mode t)
 
 ;; Wrap too long lines
-(toggle-truncate-lines t)
+(toggle-truncate-lines nil)
 (setq hscroll-margin 1)
 (setq hscroll-step 1)
 (put 'scroll-left 'disabled nil)

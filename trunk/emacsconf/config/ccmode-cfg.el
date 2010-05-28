@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ccmode-cfg.el --- enhancement for c/c++ development
-;; Time-stamp: <2010-04-21 19:31:12 Wednesday by jqian>
+;; Time-stamp: <2010-05-28 11:28:41 Friday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: dev-cfg.el,v 0.0 2010/01/28 10:17:11 julian Exp $
 
@@ -43,24 +43,67 @@
 ;; highlight possible warnings in .c files
 (global-cwarn-mode t)
 
-(setq-default comment-column 72)
+(setq-default comment-column 40)
 (setq compilation-scroll-output t)
+
+(defun my-quick-compile ()
+  "A quick compile funciton for C++"
+  (interactive)
+  (compile (concat "g++ -g -pg " (buffer-name (current-buffer)))))
+
+(defconst my-c-style
+  ;; Always indent c/c++ sources, never insert tabs
+  '((c-tab-always-indent        . t)
+    ;; Offset for line only comments
+    (c-comment-only-line-offset . 4)
+    ;; Controls the insertion of newlines before and after braces.
+    (c-hanging-braces-alist     . ((substatement-open after)
+                                   (brace-list-open)))
+    ;; Controls the insertion of newlines before and after certain colons.
+    (c-hanging-colons-alist     . ((member-init-intro before)
+                                   (inher-intro)
+                                   (case-label after)
+                                   (label after)
+                                   (access-label after)))
+    ;; List of various C/C++/ObjC constructs to "clean up".
+    (c-cleanup-list             . (scope-operator
+                                   empty-defun-braces
+                                   defun-close-semi))
+    ;; Association list of syntactic element symbols and indentation offsets.
+    (c-offsets-alist            . ((arglist-close . c-lineup-arglist)
+                                   (substatement-open . 0)
+                                   (case-label        . 4)
+                                   (block-open        . 0)
+                                   (access-label      . -)
+                                   (label             . -)
+                                   ;; (c-echo-syntactic-information-p . t)
+                                   (knr-argdecl-intro . -)))
+    (c-echo-syntactic-information-p . t)
+    )
+  "My C/C++/ObjC Programming Style")
 
 ;; customisation of cc-mode
 (defun my-c-mode-common-hook ()
-  ;; style customization
+  ;; offset customizations not in my-c-style
   (c-set-offset 'member-init-intro '++)
-  (setq tab-width 4)
-  (setq indent-tabs-mode t)
+  (setq c-basic-offset 4
+        tab-width 4
+        ;; this will make sure spaces are used instead of tabs
+        indent-tabs-mode nil)
+  ;; we like auto-newline and hungry-delete
+  (c-toggle-auto-hungry-state 1)
+
   (c-set-offset 'substatement-open 0)
-  (c-set-style "bsd")
-  (setq c-basic-offset 4)
+  ;; (c-set-style "bsd")
+  (c-add-style "Personal" my-c-style t)
+
   ;; (c-toggle-auto-hungry-state 0) ;; auto return after semicolon
   ;; minor modes
   (auto-fill-mode 1)
   (c-turn-on-eldoc-mode)
   ;; local keys
-  (local-set-key [return] 'newline-and-indent)
+  (define-key c-mode-base-map (kbd "<return>") 'newline-and-indent)
+  (define-key c-mode-base-map (kbd "C-m") 'c-context-line-break)
   ;; (local-set-key [delete] 'delete-char)
   )
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)

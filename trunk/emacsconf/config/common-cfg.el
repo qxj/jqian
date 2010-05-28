@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; common-cfg.el ---
-;; Time-stamp: <2010-04-21 20:00:03 Wednesday by jqian>
+;; Time-stamp: <2010-04-27 17:05:34 Tuesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: common-cfg.el,v 0.0 2010/03/10 10:47:21 julian Exp $
 
@@ -13,7 +13,7 @@
 (dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode lisp-interaction-mode sh-mode sgml-mode))
   (font-lock-add-keywords mode
                           '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\):" 1 font-lock-warning-face prepend)
-                            ("\\<\\(DONE\\):" 1 font-lock-doc-face t)
+                            ("\\<\\(DONE\\|NOTE\\):" 1 font-lock-doc-face t)
                             ;; highlight too long lines
                             ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
                             ("(\\|)" . beautiful-blue-face)

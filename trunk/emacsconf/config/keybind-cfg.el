@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; keybind-cfg.el --- keybind settings
-;; Time-stamp: <2010-03-10 18:17:25 Wednesday by julian>
+;; Time-stamp: <2010-05-12 14:54:42 Wednesday by jqian>
 
 ;;; region action
 (global-set-key [f4] 'indent-region)
@@ -14,25 +14,27 @@
 (global-set-key [(shift f10)] 'winner-redo)
 ;;; go to previous or next buffer
 (global-set-key [(f11)] 'bury-buffer)
-(global-set-key [(shift f11)] 
+(global-set-key [(shift f11)]
                 (lambda()
                   (interactive)
                   (switch-to-buffer (car (reverse (buffer-list))))))
-(global-set-key [f12] 
-				(lambda ()
-				  (interactive)
-				  (switch-to-buffer (other-buffer))))
+(global-set-key [f12]
+                (lambda ()
+                  (interactive)
+                  (switch-to-buffer (other-buffer))))
 
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "M-n") 'pager-row-down)
 (global-set-key (kbd "M-p") 'pager-row-up)
 
-(global-set-key [(delete)] 'delete-char)
+(global-set-key (kbd "<delete>") 'delete-char)
 (global-set-key (kbd "C-c j") 'ffap)
 (global-set-key (kbd "C-c i") 'imenu)
 
-(global-set-key [(meta g)] 'goto-line)
-(global-set-key [(meta ?/)] 'hippie-expand)
+(global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "M-/") 'hippie-expand)
+
+(global-set-key (kbd "C-2") 'set-mark-command)
 
 ;; shell
 ;;; (define-key shell-mode-map '[up] 'comint-previous-input)
@@ -55,12 +57,12 @@
       (setq list (buffer-list)))
   (while list
     (let* ((buffer (car list))
-		   (name (buffer-name buffer)))
+           (name (buffer-name buffer)))
       (if (not (string-equal name (buffer-name (current-buffer))))
-		  (and name	; Can be nil for an indirect buffer, if we killed the base buffer.
-			   (not (string-equal name ""))
-			   (/= (aref name 0) ?\s)
-			   (kill-buffer buffer))))
+          (and name ; Can be nil for an indirect buffer, if we killed the base buffer.
+               (not (string-equal name ""))
+               (/= (aref name 0) ?\s)
+               (kill-buffer buffer))))
     (setq list (cdr list))))
 (defun my-kill-current-buffer ()
   "Kill current buffer."
@@ -72,9 +74,9 @@
 (global-set-key (kbd "M-3") 'delete-other-frames)
 (global-set-key (kbd "M-4") 'my-kill-current-buffer)
 (global-set-key (kbd "M-5") 'display-buffer-name)
-(global-set-key (kbd "M-6") 'other-window)
-(global-set-key [(meta left)] 'backward-sexp)
-(global-set-key [(meta right)] 'forward-sexp)
+(global-set-key (kbd "M-0") 'other-window)
+(global-set-key (kbd "<M-left>") 'backward-sexp)
+(global-set-key (kbd "<M-right>") 'forward-sexp)
 
 ;; C-x C-j open the directory of current buffer
 (global-set-key (kbd "C-x C-j")
@@ -198,10 +200,10 @@
 
 
 (require 'pager)
-(global-set-key "\C-v"	   'pager-page-down)
-(global-set-key [next] 	   'pager-page-down)
-(global-set-key "\M-v"	   'pager-page-up)
-(global-set-key [prior]	   'pager-page-up)
+(global-set-key "\C-v"     'pager-page-down)
+(global-set-key [next]     'pager-page-down)
+(global-set-key "\M-v"     'pager-page-up)
+(global-set-key [prior]    'pager-page-up)
 (global-set-key '[up]    'pager-row-up)
 (global-set-key '[M-kp-8]  'pager-row-up)
 (global-set-key '[down]  'pager-row-down)
