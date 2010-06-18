@@ -1,6 +1,9 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; keybind-cfg.el --- keybind settings
-;; Time-stamp: <2010-05-12 14:54:42 Wednesday by jqian>
+;; Time-stamp: <2010-05-31 13:32:16 Monday by jqian>
+
+;;; C-SPC assign for switching input methods
+(global-set-key (kbd "C-SPC") 'nil)
 
 ;;; region action
 (global-set-key [f4] 'indent-region)

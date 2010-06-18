@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ccmode-cfg.el --- enhancement for c/c++ development
-;; Time-stamp: <2010-05-28 11:28:41 Friday by jqian>
+;; Time-stamp: <2010-06-07 18:31:31 Monday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: dev-cfg.el,v 0.0 2010/01/28 10:17:11 julian Exp $
 
@@ -53,9 +53,10 @@
 
 (defconst my-c-style
   ;; Always indent c/c++ sources, never insert tabs
-  '((c-tab-always-indent        . t)
+  '((c-basic-offset             . 4)
+    (c-tab-always-indent        . t)
     ;; Offset for line only comments
-    (c-comment-only-line-offset . 4)
+    (c-comment-only-line-offset . 0)
     ;; Controls the insertion of newlines before and after braces.
     (c-hanging-braces-alist     . ((substatement-open after)
                                    (brace-list-open)))
@@ -70,12 +71,16 @@
                                    empty-defun-braces
                                    defun-close-semi))
     ;; Association list of syntactic element symbols and indentation offsets.
-    (c-offsets-alist            . ((arglist-close . c-lineup-arglist)
+    (c-offsets-alist            . ((topmost-intro . 0)
+                                   (arglist-close . c-lineup-arglist)
+                                   (substatement  . +)
                                    (substatement-open . 0)
-                                   (case-label        . 4)
+                                   (case-label        . +)
                                    (block-open        . 0)
                                    (access-label      . -)
                                    (label             . -)
+                                   (inclass           . +)
+                                   (inline-open       . 0)
                                    ;; (c-echo-syntactic-information-p . t)
                                    (knr-argdecl-intro . -)))
     (c-echo-syntactic-information-p . t)
@@ -86,8 +91,7 @@
 (defun my-c-mode-common-hook ()
   ;; offset customizations not in my-c-style
   (c-set-offset 'member-init-intro '++)
-  (setq c-basic-offset 4
-        tab-width 4
+  (setq tab-width 4
         ;; this will make sure spaces are used instead of tabs
         indent-tabs-mode nil)
   ;; we like auto-newline and hungry-delete

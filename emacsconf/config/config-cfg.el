@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; config-cfg.el ---
-;; Time-stamp: <2010-05-11 11:10:31 Tuesday by jqian>
+;; Time-stamp: <2010-06-02 15:42:44 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: config-cfg.el,v 0.0 2010/04/21 11:44:48 jqian Exp $
 
@@ -42,6 +42,8 @@
 ;; Highlight selected regions in Gnu Emacs
 (setq transient-mark-mode t)
 
+(setq truncate-partial-width-windows nil)
+
 ;; Wrap too long lines
 (toggle-truncate-lines nil)
 (setq hscroll-margin 1)
@@ -81,6 +83,9 @@
 ;; minor mode
 (setq resize-minibuffer-mode nil)
 ;; (icomplete-mode t)
+;; auto complete file name ignoring case
+(setq read-file-name-completion-ignore-case t)
+(setq completion-ignore-case t)
 
 ;; ### some notes about search M-p, M-n, backward or forward
 ;; the search words typed ever.  the keybinding for pasting
@@ -104,8 +109,9 @@
 (setq next-line-add-newlines nil)
 
 ;; auto fill : M-q
-(setq adaptive-fill-mode t)
-(setq default-fill-column 80)
+(setq default-justification 'full)
+(setq adaptive-fill-mode nil)
+(setq default-fill-column 78)
 
 (setq visible-bell t)
 (setq inhibit-startup-message t)
@@ -162,6 +168,8 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(put 'scroll-left 'disabled nil)
+(put 'erase-buffer 'disabled nil)
 (put 'LaTeX-hide-environment 'disabled nil)
 
 ;; Store all backup files into a separated directories
@@ -190,6 +198,12 @@
 ;; hide inputed password when using telnet/shell/w3m etc.
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 
+(setq diff-switches "-ubB")
+(setq outline-minor-mode-prefix "")
+
+(setq view-read-only t)
+
+(setq woman-cache-filename "~/.wmncache.el")
 
 (provide 'config-cfg)
 

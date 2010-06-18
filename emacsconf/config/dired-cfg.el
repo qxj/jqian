@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; dired-cfg.el --- dired mode
-;; Time-stamp: <2010-05-12 14:57:58 Wednesday by jqian>
+;; Time-stamp: <2010-06-02 16:03:51 Wednesday by jqian>
 
 ;; Setting for dired
 (setq dired-recursive-copies 'always)
@@ -26,21 +26,17 @@
   ;; Set buffer-local variables here.  For example:
   (dired-omit-mode 1)
   (setq dired-omit-files-p t)
-  ;; jun
   (setq dired-backup-overwrite 'always)
-  (setq dired-listing-switches "-Aol")
+  (setq dired-listing-switches "-alvh")
   (setq dired-no-confirm
       '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
   (define-key dired-mode-map (kbd "RET") 'joc-dired-single-buffer)
   (define-key dired-mode-map (kbd "^") '(lambda () (interactive) (joc-dired-single-buffer "..")))
   (define-key dired-mode-map (kbd "<M-up>") '(lambda () (interactive) (joc-dired-single-buffer "..")))
-  ;;
-
-
   (define-key dired-mode-map (kbd "[" ) 'backward-page)
   (define-key dired-mode-map (kbd "]" ) 'forward-page)
 ;;   (define-key dired-mode-map (kbd "<M-up>" ) 'dired-up-directory)
-;;   (define-key dired-mode-map (kbd "ESC <up>" ) 'dired-up-directory)
+  (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
   (define-key dired-mode-map (kbd "<down-mouse-1>" ) 'ignore)
   (define-key dired-mode-map (kbd "<double-mouse-1>" ) 'wcy-dired-mouse-find-file)
   (substitute-key-definition 'dired-find-file 'wcy-dired-find-file dired-mode-map)
@@ -66,9 +62,7 @@
   (define-key dired-sort-map "s" '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
   (define-key dired-sort-map "x" '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
   (define-key dired-sort-map "t" '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
-  (define-key dired-sort-map "n" '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches
-                                                                                                    ""))))
-
+  (define-key dired-sort-map "n" '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches ""))))
   ;; hide mode user group information colummn
   nil)
 ;;; make the execuatable file with different color

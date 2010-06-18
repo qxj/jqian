@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; python-cfg.el ---
-;; Time-stamp: <2010-05-28 11:34:09 Friday by jqian>
+;; Time-stamp: <2010-06-17 13:31:33 Thursday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: python-cfg.el,v 0.0 2010/03/10 12:03:12 julian Exp $
 
@@ -9,7 +9,8 @@
 ;;; Code:
 ;; (eval-when-compile (require 'cl))
 
-(autoload 'python-mode "python-mode" "Python editing mode." t)
+;; (autoload 'python-mode "python-mode" "Python editing mode." t)
+(require 'python)
 
 (define-prefix-command 'python-mode-map)
 
