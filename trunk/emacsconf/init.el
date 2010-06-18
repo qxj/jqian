@@ -26,7 +26,7 @@
   (if mswin "d:/My Dropbox/Notes/" "~/Dropbox/Notes/")
   "Put my temporary notes here, eg: in dropbox directory")
 (defconst my-temp-dir
-  (if mswin "c:/windows/temp/emacs/" "/var/tmp/emacs/")
+  (if mswin "c:/windows/temp/emacs/" "~/.tmp-emacs/")
   "Temporary directory to store autosave, desktop, session, backup files.")
 
 (defconst system-head-file-dir (list "/usr/include/" "/usr/local/include/" "/usr/include/sys/") "System header file directories")
@@ -135,12 +135,12 @@
 (load "skeleton-cfg")
 
 ;; assistance
+(load "ido-cfg")
 (load "gtags-cfg")
 (load "auto-complete-cfg")
 ;; (load "company-cfg")
 (load "cedet-cfg")
 (load "yasnippet-cfg")
-(load "ido-cfg")
 (load "desktop-cfg")
 (load "common-cfg")
 

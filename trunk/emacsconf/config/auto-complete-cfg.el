@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; auto-complete-cfg.el --- auto complete settings
-;; Time-stamp: <2010-04-21 18:49:43 Wednesday by jqian>
+;; Time-stamp: <2010-06-17 13:25:22 Thursday by jqian>
 
 
 (require 'auto-complete-config)
@@ -20,6 +20,8 @@
 (add-to-list 'ac-user-dictionary-files (concat my-emacs-dir "ac.dict"))
 
 (ac-config-default)
+(setq ac-sources (append '(ac-source-yasnippet) ac-sources))
+
 (defun ac-cc-mode-setup ()
   (setq ac-sources (append '(ac-source-yasnippet
                              ac-source-gtags

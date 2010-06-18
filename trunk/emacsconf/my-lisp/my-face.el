@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; my-face.el ---
-;; Time-stamp: <2010-03-12 17:44:59 Friday by jqian>
+;; Time-stamp: <2010-06-02 10:09:38 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: my-face.el,v 0.0 2010/01/28 10:41:37 julian Exp $
 
@@ -141,11 +141,11 @@
     (t (:weight bold)))
   "background is beautiful blue, foreground is read.")
 
-(defface org-level-2
-  '(
-    (((class color) (background dark)) (:inherit outline-2 :foreground "green" :weight bold))
-    (t (:inherit outline-2 :foreground "green" :weight bold)))
-  "my customized org 2nd level face")
+;; (defface org-level-2
+;;   '(
+;;     (((class color) (background dark)) (:inherit outline-2 :foreground "green" :weight bold))
+;;     (t (:inherit outline-2 :foreground "green" :weight bold)))
+;;   "my customized org 2nd level face")
 
 (defface region-face
   '((((class color) (min-colors 88) (background dark))

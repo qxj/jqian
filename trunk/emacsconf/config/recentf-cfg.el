@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; recentf-cfg.el ---
-;; Time-stamp: <2010-04-21 19:18:44 Wednesday by jqian>
+;; Time-stamp: <2010-06-02 16:11:42 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: recentf-cfg.el,v 0.0 2010/04/21 11:17:52 jqian Exp $
 
@@ -10,9 +10,10 @@
 ;; (eval-when-compile (require 'cl))
 
 ;;; recent finded buffers
-(recentf-mode t)
 (setq recentf-max-saved-items nil)
 (setq recentf-save-file (concat my-temp-dir "emacs.recentf"))
+
+(recentf-mode t)
 
 (defun recentf-open-files-compl ()
   (interactive)

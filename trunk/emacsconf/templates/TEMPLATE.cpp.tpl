@@ -1,11 +1,9 @@
 // @(#)TEMPLATE.cpp.tpl
-// Time-stamp: <2008-05-26 21:38:33 qianxjun>
+// Time-stamp: <2010-06-11 13:56:14 Friday by jqian>
 // Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
-// Author: (>>>AUTHOR<<<)
 // Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
-// Keywords: (>>>1<<<)
 
-#include "(>>>FILE_SANS<<<).hpp"
+#include "(>>>FILE_SANS<<<).h"
 
 using namespace std;
 
