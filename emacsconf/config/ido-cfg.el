@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ido-cfg.el --- fast switch buffers
-;; Time-stamp: <2010-06-18 14:19:46 Friday by jqian>
+;; Time-stamp: <2010-07-07 16:16:44 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: ido-cfg.el,v 0.0 2010/03/10 11:33:48 julian Exp $
 
@@ -11,7 +11,8 @@
 
 
 (require 'ido)
-(ido-mode 1)
+;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
+(add-hook 'term-setup-hook 'ido-mode)
 
 (setq ido-enable-regexp t
       ido-everywhere t)

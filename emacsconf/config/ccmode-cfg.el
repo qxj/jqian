@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ccmode-cfg.el --- enhancement for c/c++ development
-;; Time-stamp: <2010-06-07 18:31:31 Monday by jqian>
+;; Time-stamp: <2010-06-30 13:37:58 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: dev-cfg.el,v 0.0 2010/01/28 10:17:11 julian Exp $
 
@@ -95,7 +95,7 @@
         ;; this will make sure spaces are used instead of tabs
         indent-tabs-mode nil)
   ;; we like auto-newline and hungry-delete
-  (c-toggle-auto-hungry-state 1)
+  ;; (c-toggle-auto-hungry-state 1)
 
   (c-set-offset 'substatement-open 0)
   ;; (c-set-style "bsd")
