@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; auto-complete-cfg.el --- auto complete settings
-;; Time-stamp: <2010-06-17 13:25:22 Thursday by jqian>
+;; Time-stamp: <2010-06-23 20:12:57 Wednesday by jqian>
 
 
 (require 'auto-complete-config)
@@ -20,13 +20,18 @@
 (add-to-list 'ac-user-dictionary-files (concat my-emacs-dir "ac.dict"))
 
 (ac-config-default)
-(setq ac-sources (append '(ac-source-yasnippet) ac-sources))
 
 (defun ac-cc-mode-setup ()
   (setq ac-sources (append '(ac-source-yasnippet
                              ac-source-gtags
                              ac-source-semantic
                              ac-source-imenu) ac-sources)))
+
+(defun ac-python-mode-setup ()
+  (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+
+(add-hook 'python-mode-hook 'ac-python-mode-setup)
+
 ;; After do this, isearch any string, M-: (match-data) always
 ;; return the list whose elements is integer
 ;; (global-auto-complete-mode 1)
