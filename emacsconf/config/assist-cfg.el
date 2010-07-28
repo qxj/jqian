@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; assist-cfg.el --- some assistant functions
-;; Time-stamp: <2010-04-21 19:35:46 Wednesday by jqian>
+;; Time-stamp: <2010-07-13 17:05:54 Tuesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: assit-cfg.el,v 0.0 2010/04/21 11:20:42 jqian Exp $
 
@@ -73,7 +73,7 @@
 ;;}}}
 
 ;;{{{ kill buffers every 24 hr
-(require 'midnight)
+;; (require 'midnight)
 ;;}}}
 
 ;;{{{ find file at point

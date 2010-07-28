@@ -153,6 +153,8 @@
   (if (file-exists-p nxhtml-init-file)
       (load-file nxhtml-init-file)))
 
+(require 'google-maps)
+
 ;;; imenu-tree
 (require 'imenu-tree)
 ;;; (autoload 'imenu-tree "imenu-tree" "Imenu tree" t)
@@ -176,7 +178,6 @@
   ;; If there is more than one, they won't work right.
  '(font-lock-comment-face (quote gray-face) t)
  '(font-lock-string-face (quote light-blue-face) t)
- '(midnight-mode t nil (midnight))
  '(safe-local-variable-values (quote ((code . utf-8) (c-hanging-comment-ender-p))))
  '(semantic-self-insert-show-completion-function (lambda nil (semantic-ia-complete-symbol-menu (point)))))
 (custom-set-faces

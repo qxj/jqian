@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; config-cfg.el ---
-;; Time-stamp: <2010-06-02 15:42:44 Wednesday by jqian>
+;; Time-stamp: <2010-07-15 12:29:06 Thursday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: config-cfg.el,v 0.0 2010/04/21 11:44:48 jqian Exp $
 
@@ -41,6 +41,9 @@
 
 ;; Highlight selected regions in Gnu Emacs
 (setq transient-mark-mode t)
+
+;; Make typing overwrite text selection
+(setq delete-selection-mode t)
 
 (setq truncate-partial-width-windows nil)
 

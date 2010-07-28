@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; ido-cfg.el --- fast switch buffers
-;; Time-stamp: <2010-07-07 16:16:44 Wednesday by jqian>
+;; Time-stamp: <2010-07-14 14:54:33 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: ido-cfg.el,v 0.0 2010/03/10 11:33:48 julian Exp $
 
@@ -28,6 +28,7 @@
         "^\\*Shell*" "^\\*CEDET" "^\\*Customize" "^\\*Ibuffer" "^\\*.*Log\\*$"
         "^\\*.*Completions\\*$" "^\\*Ediff" "^\\*tramp" "^\\*cvs-" "^\\*Kill"
         "^\\*Backtrace" "^\\*grep" "^\\*Bookmark" "\\-preprocessed\\*"
+        "^\\*XML"
         "_region_" " output\\*$" "^TAGS$" "^\\*Ido" "^\\*GTAGS" "^\\*Minibuf")
       ido-ignore-directories
       '("\\`auto/" "\\.prv/" "\\`CVS/" "\\`\\.\\./" "\\`\\./" "^\\.")
