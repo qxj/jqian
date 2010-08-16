@@ -1,24 +1,10 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; edit-cfg.el --- editor settings
-;; Time-stamp: <2010-05-12 14:49:44 Wednesday by jqian>
-
-
-;;{{{ unicad to distinguish charset
-(require 'unicad)
-;;}}}
-
-;;{{{ more highlight colors
-(require 'generic-x)
-;;}}}
-
-;;{{{ make cursor become a line
-(require 'bar-cursor)
-;;}}}
+;; Time-stamp: <2010-08-12 14:19:25 Thursday by jqian>
 
 ;; kill a whole line
 (setq-default kill-whole-line t)
 (setq kill-ring-max 50)
-
 
 ;;{{{ similar to dd & yy in VIM
 (defadvice kill-ring-save (before slickcopy activate compile)
@@ -36,24 +22,17 @@ ad."
                    (line-beginning-position 2)))))
 ;;}}}
 
-;;{{{ mark something smartly
-(defun wcy-mark-some-thing-at-point()
-  (interactive)
-  (let* ((from (point))
-         (a (mouse-start-end from from 1))
-         (start (car a))
-         (end (cadr a))
-         (goto-point (if (= from start) end start)))
-    (if (eq last-command 'wcy-mark-some-thing-at-point)
-        (progn
-          ;; exchange mark and point
-          (goto-char (mark-marker))
-          (set-marker (mark-marker) from))
-      (push-mark (if (= goto-point start) end start) nil t)
-      (when (and (interactive-p) (null transient-mark-mode))
-        (goto-char (mark-marker))
-        (sit-for 0 500 nil))
-      (goto-char goto-point))))
+
+;;{{{ rebind `C-o', auto open next line and indent as in VIM
+(defun vi-open-next-line (arg)
+ "Move to the next line (like vi) and then opens a line."
+ (interactive "p")
+ (end-of-line)
+ (open-line arg)
+ (next-line 1)
+ (indent-according-to-mode))
+
+(global-set-key (kbd "C-o") 'vi-open-next-line)
 ;;}}}
 
 ;;{{{
@@ -81,9 +60,67 @@ ad."
     (previous-line 1)
     (move-to-column c)))
 
-(global-set-key [C-M-up]   'my-move-line-up)
-(global-set-key [C-M-down] 'my-move-line-down)
+(global-set-key (kbd "<C-M-up>")   'my-move-line-up)
+(global-set-key (kbd "<C-M-down>") 'my-move-line-down)
 ;;}}}
+
+
+;;{{{ redo
+(defmacro def-redo-command (fun-name redo undo)
+  "Make redo command."
+  `(defun ,fun-name ()
+     (interactive)
+     (if (equal last-command ,redo)
+         (setq last-command 'undo)
+       (setq last-command nil))
+     (call-interactively ,undo)
+     (setq this-command ,redo)))
+(def-redo-command redo 'redo 'undo)
+
+(global-set-key (kbd "C-'") 'redo)
+;;}}}
+
+
+;;{{{ jump out from a pair(like quote, parenthesis, etc.)
+(defun kid-c-escape-pair ()
+  (interactive)
+  (let ((pair-regexp "[^])}\"'>]*[])}\"'>]"))
+    (if (looking-at pair-regexp)
+        (progn
+          ;; be sure we can use C-u C-@ to jump back
+          ;; if we goto the wrong place
+          (push-mark)
+          (goto-char (match-end 0)))
+      (c-indent-command))))
+;; note TAB can be different to <tab> in X mode(not -nw mode).
+;; the formal is C-i while the latter is the real "Tab" key
+;; in your keyboard.
+(define-key c++-mode-map (kbd "TAB") 'kid-c-escape-pair)
+(define-key c++-mode-map (kbd "<tab>") 'c-indent-command)
+;; snippet.el use TAB, now we need to use <tab>
+(define-key snippet-map  (kbd "<tab>") 'snippet-next-field)
+;;}}}
+
+;;{{{ mark something smartly
+(defun wcy-mark-some-thing-at-point()
+  (interactive)
+  (let* ((from (point))
+         (a (mouse-start-end from from 1))
+         (start (car a))
+         (end (cadr a))
+         (goto-point (if (= from start) end start)))
+    (if (eq last-command 'wcy-mark-some-thing-at-point)
+        (progn
+          ;; exchange mark and point
+          (goto-char (mark-marker))
+          (set-marker (mark-marker) from))
+      (push-mark (if (= goto-point start) end start) nil t)
+      (when (and (interactive-p) (null transient-mark-mode))
+        (goto-char (mark-marker))
+        (sit-for 0 500 nil))
+      (goto-char goto-point))))
+;;}}}
+
 
 ;;{{{ sexp related
 (defun mark-whole-sexp ()
@@ -187,21 +224,6 @@ ad."
     (call-interactively 'copy-region)))
 ;;}}}
 
-;;{{{ redo
-(defmacro def-redo-command (fun-name redo undo)
-  "Make redo command."
-  `(defun ,fun-name ()
-     (interactive)
-     (if (equal last-command ,redo)
-         (setq last-command 'undo)
-       (setq last-command nil))
-     (call-interactively ,undo)
-     (setq this-command ,redo)))
-(def-redo-command redo 'redo 'undo)
-
-(global-set-key (kbd "C-'") 'redo)
-;;}}}
-
 ;;{{{ keybinds
 (apply-define-key
  global-map
@@ -215,7 +237,7 @@ ad."
    ;; ("C-M-d" kill-sexp)
    ("M-D" my-kill-word)
    ;; ,(if window-system '("C-z" undo))
-   ("C-'" redo)))
+   ))
 ;;}}}
 
 ;;; edit-cfg.el ends here
