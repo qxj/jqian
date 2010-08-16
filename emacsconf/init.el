@@ -149,10 +149,6 @@
 
 (load "theme-cfg")
 
-(let ((nxhtml-init-file (concat my-site-lisp-dir "nxhtml/autostart.el")))
-  (if (file-exists-p nxhtml-init-file)
-      (load-file nxhtml-init-file)))
-
 (require 'google-maps)
 
 ;;; imenu-tree

@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; assist-cfg.el --- some assistant functions
-;; Time-stamp: <2010-07-13 17:05:54 Tuesday by jqian>
+;; Time-stamp: <2010-08-04 11:24:41 Wednesday by jqian>
 ;; Created: 2010 Julian Qian
 ;; Version: $Id: assit-cfg.el,v 0.0 2010/04/21 11:20:42 jqian Exp $
 
@@ -79,6 +79,18 @@
 ;;{{{ find file at point
 (require 'ffap)
 (setq ffap-c-path (append ffap-c-path system-head-file-dir user-head-file-dir))
+;;}}}
+
+;;{{{ unicad to distinguish charset
+(require 'unicad)
+;;}}}
+
+;;{{{ more highlight colors
+(require 'generic-x)
+;;}}}
+
+;;{{{ make cursor become a line
+(require 'bar-cursor)
 ;;}}}
 
 
