@@ -115,6 +115,21 @@
 (put 'define-abbrev-table 'lisp-indent-function 1)
 ;;}}}
 
+;;{{{ Customized keywords
+(dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode
+                       php-mode lisp-interaction-mode sh-mode sgml-mode))
+  (font-lock-add-keywords mode
+                          '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\):" 1 font-lock-warning-face prepend)
+                            ("\\<\\(DONE\\|NOTE\\):" 1 font-lock-doc-face t)
+                            ;; highlight too long lines
+                            ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
+                            ("(\\|)" . font-lock-builtin-face)
+                            ("\\[\\|]" . font-lock-builtin-face)
+                            ("<\\|>" . font-lock-builtin-face)
+                            ("{\\|}" . font-lock-builtin-face))))
+
+;;}}}
+
 ;; Turn on the features disabled default
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
