@@ -206,7 +206,7 @@
   (add-to-list 'auto-mode-alist '("\\.cls$" . LaTeX-mode))
   (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
   (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(hla\\|hhf\\)$" . hla-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
@@ -224,6 +224,7 @@
   (add-to-list 'auto-mode-alist '("\\.twiki$" . oddmuse-mode)))
 
 (deh-section "php"
+  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
   (add-to-list 'interpreter-mode-alist '("php" . php-mode))
   (autoload 'geben "geben" "" t)
   (defun my-geben-open-file (file)
@@ -253,8 +254,6 @@
           (nil
            "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
           ))
-  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
-  (add-to-list 'interpreter-mode-alist '("php" . php-mode))
   (defun my-php-mode-hook ()
     (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
