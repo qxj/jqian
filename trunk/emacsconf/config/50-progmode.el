@@ -81,8 +81,9 @@
   (deh-require 'browse-el
     (define-key lisp-mode-shared-map (kbd "M-.") 'browse-el-find-funtion)
     (define-key lisp-mode-shared-map (kbd "M-*") 'browse-el-go-back)
-    (define-key lisp-mode-shared-map (kbd "<f6>") 'find-tag)
-    (define-key lisp-mode-shared-map (kbd "<f5>") 'pop-tag-mark))
+    ;; (define-key lisp-mode-shared-map (kbd "<f6>") 'find-tag)
+    ;; (define-key lisp-mode-shared-map (kbd "<f5>") 'pop-tag-mark)
+    )
 
   (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode))
   (defun my-emacs-lisp-mode-hook ()
@@ -128,6 +129,12 @@
                                   ("code")
                                   ,@sgml-tag-alist))))))
 
+(deh-section "nxhtml"
+  ;;; nxhtml mode
+  (let ((nxhtml-init-file "~/src/nxhtml/autostart.el"))
+    (if (file-exists-p nxhtml-init-file)
+        (load-file nxhtml-init-file)))
+  )
 ;; sh-mode
 (deh-section "sh-mode"
   (add-hook 'sh-mode-hook
