@@ -1,9 +1,9 @@
 ;; (load "cedet")
 
-(let ((cedet-path "/home/jqian/src/cedet/common/cedet.el"))
+(let ((cedet-path "~/src/cedet/common/cedet.el"))
   (if (file-exists-p cedet-path)
       (progn
-        (load "/home/jqian/src/cedet/common/cedet.el")
+        (load-file cedet-path)
         (setq semantic-load-turn-useful-things-on t)
 
         (semantic-load-enable-code-helpers)
@@ -32,7 +32,8 @@
 
         (dolist (map (list
                       c-mode-base-map
-                      ;;              python-mode-map
+                      ;; python-mode-map
+                      ;; php-mode-map
                       emacs-lisp-mode-map))
           (apply-define-key
            map
