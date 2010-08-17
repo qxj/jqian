@@ -473,7 +473,7 @@
 (deh-require 'auto-complete-config
 
   ;; specify a file stores data of candidate suggestion
-  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-startup-dir))
+  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
 
   (add-to-list 'ac-dictionary-directories (expand-file-name "ac-dict" my-startup-dir))
   (add-to-list 'ac-user-dictionary-files (expand-file-name "ac.dict" my-startup-dir))
