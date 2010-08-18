@@ -78,7 +78,7 @@
   (set (make-local-variable 'tab-stop-list) (number-sequence tab-width 80 tab-width))
   (abbrev-mode t)
   (set (make-local-variable 'comment-style) 'indent)
-  (local-set-key "\t" 'hippie-expand)
+  ;; (local-set-key "\t" 'hippie-expand)
   (setq c-basic-offset tab-width))
 
 ;;{{{ elisp
@@ -134,12 +134,14 @@
                                   ("code")
                                   ,@sgml-tag-alist))))))
 
+;; nxhtml: javascript + php + html + css
 (deh-section "nxhtml"
   ;;; nxhtml mode
   (let ((nxhtml-init-file "~/src/nxhtml/autostart.el"))
     (if (file-exists-p nxhtml-init-file)
         (load-file nxhtml-init-file)))
   )
+
 ;; sh-mode
 (deh-section "sh-mode"
   (add-hook 'sh-mode-hook
@@ -203,14 +205,14 @@
 (deh-section "auto-mode"
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
-  (add-to-list 'auto-mode-alist '("\\.tt2?$" . html-mode))
   (add-to-list 'auto-mode-alist '("\\.acd$" . acd-mode))
   (add-to-list 'auto-mode-alist '("\\.po\\'\\|\\.po\\." . po-mode))
   (add-to-list 'auto-mode-alist '("\\.i\\'" . swig-mode))
   (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
   (add-to-list 'auto-mode-alist '("\\.cls$" . LaTeX-mode))
-  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.tt2?$" . html-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
   ;; (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
   (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(hla\\|hhf\\)$" . hla-mode))
@@ -229,8 +231,8 @@
   (add-to-list 'auto-mode-alist '("\\.twiki$" . oddmuse-mode)))
 
 (deh-section "php"
-  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
-  (add-to-list 'interpreter-mode-alist '("php" . php-mode))
+  ;; (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
+  ;; (add-to-list 'interpreter-mode-alist '("php" . php-mode))
   (autoload 'geben "geben" "" t)
   (defun my-geben-open-file (file)
     (interactive
@@ -288,3 +290,5 @@
         (ffap-locate-file (replace-regexp-in-string "_" "/" name) '(".class.php" ".php") ffap-php-path)
       (ffap-locate-file name t ffap-php-path)))
   (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate)))
+
+
