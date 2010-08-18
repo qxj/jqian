@@ -19,7 +19,7 @@
             ".fn" ".fns" ".ky" ".kys" ".pgs" ".tp" ".tps" ".vr" ".vrs"
             ".pdb" ".ilk"))
     (setq dired-omit-files
-          (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs") t) "$")))
+          (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
   
   ;; Setting for dired
   (setq dired-listing-switches "-alvh")
@@ -114,7 +114,7 @@
           "^\\*Shell*" "^\\*CEDET" "^\\*Customize" "^\\*Ibuffer" "^\\*.*Log\\*$"
           "^\\*.*Completions\\*$" "^\\*Ediff" "^\\*tramp" "^\\*cvs-" "^\\*Kill"
           "^\\*Backtrace" "^\\*grep" "^\\*Bookmark" "\\-preprocessed\\*"
-          "^\\*XML" "^\\*sdcv"
+          "^\\*XML" "^\\*sdcv" "^\\*imenu" "^\\*smart" "^\\*anything"
           "_region_" " output\\*$" "^TAGS$" "^\\*Ido" "^\\*GTAGS" "^\\*Minibuf")
         ido-ignore-directories
         '("\\`auto/" "\\.prv/" "\\`CVS/" "\\`\\.\\./" "\\`\\./" "^\\.")
@@ -569,6 +569,8 @@
   (deh-section "sdcv"
     (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t))
 
+  (deh-require 'smart-mark)
+
   ;; (deh-section "linum"
   ;;   (setq linum-format (concat (propertize "%6d " 'face 'default)
   ;;                              (propertize " " 'face 'fringe)))
@@ -814,6 +816,40 @@ mouse-3: Toggle minor modes"
             (:eval (or (buffer-file-name) (buffer-name)))))
     )
 
+  ;; speedbar
+  (deh-require 'speedbar
+    (setq speedbar-update-speed 3)
+    (setq speedbar-use-images t)
+
+    (defvar my-speedbar-buffer-name 
+      (if (buffer-live-p speedbar-buffer)
+          (buffer-name speedbar-buffer)
+        "*SpeedBar*"))
+
+    ;; Speedbar within frame
+    (defun my-speedbar-no-separate-frame ()
+      (interactive)
+      (when (not (buffer-live-p speedbar-buffer))
+        (setq speedbar-buffer (get-buffer-create my-speedbar-buffer-name)
+              speedbar-frame (selected-frame)
+              dframe-attached-frame (selected-frame)
+              speedbar-select-frame-method 'attached
+              speedbar-verbosity-level 0
+              speedbar-last-selected-file nil)
+        (set-buffer speedbar-buffer)
+        (speedbar-mode)
+        (speedbar-reconfigure-keymaps)
+        (speedbar-update-contents)
+        (speedbar-set-timer 1)
+        (make-local-hook 'kill-buffer-hook)
+        (add-hook 'kill-buffer-hook
+                  (lambda () (when (eq (current-buffer) speedbar-buffer)
+                               (setq speedbar-frame nil
+                                     dframe-attached-frame nil
+                                     speedbar-buffer nil)
+                               (speedbar-set-timer nil)))))
+      (set-window-buffer (selected-window)
+                         (get-buffer my-speedbar-buffer-name))))
   ;; shell-completion
   (deh-require 'shell-completion
     (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")

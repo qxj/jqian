@@ -40,24 +40,29 @@
 ;;{{{ Etags, Gtags
 (deh-section "gtags"
   (autoload 'gtags-mode "gtags" "" t)
-  (dolist (map (list c-mode-hook c++-mode-hook))
-    (add-hook 'map '(lambda () (gtags-mode 1))))
-
-  ;; key bind for gtags-mode
-  (gtags-mode 1)
-  (define-prefix-command 'my-gtags-map)
-  (global-set-key (kbd "C-c g") 'my-gtags-map)
-  (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
-  (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
-  (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
-  (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
-  (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
-  (define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
-  (define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
-  (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
-  (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
-  (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
-  (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
+  (dolist (map (list c-mode-hook c++-mode-hook java-mode-hook))
+    (add-hook
+     'map 
+     '(lambda () 
+        (gtags-mode 1)
+        ;; Instead of `find-tag' & `pop-tag-mark'
+        (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag-from-here)
+        (define-key gtags-mode-map (kbd "M-*") 'gtags-pop-stack)
+        ;; Key bind for gtags-mode
+        (define-prefix-command 'my-gtags-map)
+        (global-set-key (kbd "C-c g") 'my-gtags-map)
+        (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
+        (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
+        (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
+        (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
+        (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
+        (define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
+        (define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
+        (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
+        (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
+        (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
+        (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
+        )))
 
   (defun yp-gtags-append ()
     (interactive)
@@ -178,13 +183,14 @@
   (add-hook 'js2-mode-hook 'my-js2-mode-hook))
 
 (deh-section "autoloads"
+  ;; (autoload 'gtags-mode "gtags" "Global Tags Mode from GNU." t)
   (autoload 'svn-status "psvn" nil t)
   (autoload 'js2-mode "js2-mode" "" t)
   (autoload 'git-status "git" "" t)
   (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
-  (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
-  (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
   (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
+  (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
+  (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
   (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
   (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
   (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
@@ -192,8 +198,7 @@
   (autoload 'php-mode "php-mode" "php mode" t)
   (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
   (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
-  (autoload 'sourcepair-load "sourcepair" nil t)
-  (autoload 'js2-mode "js2" nil t))
+  (autoload 'sourcepair-load "sourcepair" nil t))
 
 (deh-section "auto-mode"
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
