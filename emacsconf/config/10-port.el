@@ -2,6 +2,16 @@
 ;; This config is for portable. The platform relate configuration
 ;; should appear here.
 
+;;; To distinguish running environment
+(defconst mswin  (eq window-system 'w32)  "Non-nil means windows system.")
+(defconst xwin   (eq window-system 'x)    "Non-nil means X window")
+(defconst macos  (eq window-system 'mac)  "Non-nil means mac os x system")
+(defconst nowin  (eq window-system nil)   "Non-nil means no window manager")
+(defconst cygwin (eq system-type 'cygwin) "Non-nil means cygwin system.")
+;;; To distinguish different emacs version
+(defconst is-before-emacs-21 (>= 21 emacs-major-version) "emacs version before 21")
+(defconst is-after-emacs-23  (<= 23 emacs-major-version) "emacs version after 23")
+
 (deh-section "env"
   (setenv "GIT_PAGER" "cat")
   (setenv "PAGER" "cat")
@@ -14,7 +24,11 @@
         ;; no scroll bar
         (set-scroll-bar-mode nil)
         ;; no tool bar
-        (if (fboundp 'tool-bar-mode) (tool-bar-mode -1)))))
+        (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+        ;; transparent frame
+        (set-frame-parameter (selected-frame) 'alpha '(95 85))
+        (add-to-list 'default-frame-alist '(alpha 95 85))
+        )))
     
 (deh-section "coding-system"
   (unless (coding-system-p 'gbk)

@@ -79,3 +79,7 @@
     (set-fontset-font fontset charset zh-font))
   (add-to-list 'default-frame-alist `(font . ,fontset)))
  
+;; for linux  ;;else, linux or freebsd etc.
+;; (set-frame-font "Consolas-12")  ; set-default-font has been obsoleted
+;; (set-fontset-font (frame-parameter nil 'font)
+;;                   'han '("Microsoft YaHei" . "unicode-bmp"))
