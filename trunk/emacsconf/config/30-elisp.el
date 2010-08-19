@@ -1,9 +1,32 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;; standard library ;;;;;;;;;;;;;;;;;;
 ;;{{{ Dired
 (deh-require 'dired-x
+  (deh-require 'dired-single)
+  ;; Make the execuatable file with different color
   (add-to-list 'dired-font-lock-keywords
                (list dired-re-exe
                      '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t)
+
+  ;; Setting for dired
+  (setq dired-listing-switches "-alvh")
+  (setq dired-recursive-copies 'top)
+  (setq dired-recursive-deletes 'top)
+  (setq dired-dwim-target t)
+  ;; No confirm operations
+  (setq dired-no-confirm
+        '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
+  
+  ;; Keybind for dired
+  (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
+  ;; Sort something, prefix key `s'
+  (make-local-variable  'dired-sort-map)
+  (setq dired-sort-map (make-sparse-keymap))
+  (define-key dired-mode-map "s" dired-sort-map)
+  (define-key dired-sort-map "s" '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
+  (define-key dired-sort-map "x" '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
+  (define-key dired-sort-map "t" '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
+  (define-key dired-sort-map "n" '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches ""))))
+  
   (deh-section "dired-omit"
     (add-hook 'dired-mode-hook
               (lambda ()
@@ -20,15 +43,7 @@
             ".pdb" ".ilk"))
     (setq dired-omit-files
           (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
-  
-  ;; Setting for dired
-  (setq dired-listing-switches "-alvh")
-  (setq dired-recursive-copies 'top)
-  (setq dired-recursive-deletes 'top)
-  (setq dired-dwim-target t)
-  ;; Keybind for dired
-  (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
-  
+
   (deh-section "dired-assoc"
     (dolist (file `(("acroread" "pdf")
                     ("evince" "pdf")
@@ -61,7 +76,7 @@
       ;;     (if prg
       ;;         (setcdr prg (delete-dups (cons (car file) (cdr prg))))
       ;;       (add-to-list 'dired-guess-shell-alist-default (list suf (car file))))))))
-  ;; sort:directories first (emacswiki 上某君之作)
+  ;; sort directories first 
   (defun his-dired-sort ()
     "Dired sort hook to list directories first."
     (save-excursion
@@ -119,7 +134,8 @@
         ido-ignore-directories
         '("\\`auto/" "\\.prv/" "\\`CVS/" "\\`\\.\\./" "\\`\\./" "^\\.")
         ido-ignore-files
-        '("\\`auto/" "\\.prv/" "_region_" "\\`CVS/" "\\`#" "\\`.#" "\\`\\.\\./" "\\`\\./" "^\\."))
+        '("_region_" "^\\(CVS\\|TAGS\\)" "^[.#]"
+          "^\\(GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"))
   ;; visit with dired also push the diretory to `ido-work-directory-list'
   (defadvice ido-file-internal (after ido-dired-add-work-directory)
     (when (eq ido-exit 'dired)
@@ -181,13 +197,17 @@
            ("dired" (mode . dired-mode))
            ("prog" (or (mode . c++-mode)
                        (mode . c-mode)
+                       (mode . java-mode)
                        (mode . python-mode)
+                       (mode . makefile-mode)))i
+           ("web" (or  (mode . html-mode)
+                       (mode . css-mode)
                        (mode . php-mode)
                        (mode . javascript-mode)
                        (mode . js2-mode)))
            ("elisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-interaction-mode)))
-           ("tags" (name . "^TAGS"))
+           ("tags" (name . "^G?TAGS"))
            ("erc" (mode . erc-mode)))))
   (set 'ibuffer-mode-hook
        (lambda ()
@@ -676,7 +696,7 @@
             ;; System:
             anything-c-source-emacs-process))
 
-    (unless mswin
+    (unless (eq window-system 'w32)
       (add-to-list 'anything-sources 'anything-c-source-surfraw t))
 
     )

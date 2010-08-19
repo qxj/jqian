@@ -63,7 +63,7 @@
         ;; (global-semantic-idle-tag-highlight-mode 1)
 
         ;; enable support for gnu global
-        (unless mswin
+        (unless (eq window-system 'w32)
           (require 'semanticdb-global)
           ;; (semanticdb-enable-gnu-global-databases 'c-mode)
           ;; (semanticdb-enable-gnu-global-databases 'c++-mode)
@@ -97,11 +97,11 @@
 
         (global-srecode-minor-mode 1)
 
-        (if is-after-emacs-23
+        (if (<= 23 emacs-major-version)
             (cogre-uml-enable-unicode))
 
         ;; if windows system, add header file as far as possible
-        (if (or mswin cygwin)
+        (if (eq window-system 'w32)
             (dolist (mode '(c-mode c++-mode))
               (semantic-add-system-include (concat my-cygwin-dir "usr/include/") mode)))
 

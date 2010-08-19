@@ -1,15 +1,6 @@
 (if (not load-file-name)
     (error "Load me by M-x load-file RET"))
 
-;;; To distinguish running environment
-(defconst mswin  (eq window-system 'w32)  "Non-nil means windows system.")
-(defconst xwin   (eq window-system 'x)    "Non-nil means X window")
-(defconst macos  (eq window-system 'mac)  "Non-nil means mac os x system")
-(defconst nowin  (eq window-system nil)   "Non-nil means no window manager")
-(defconst cygwin (eq system-type 'cygwin) "Non-nil means cygwin system.")
-;;; To distinguish different emacs version
-(defconst is-before-emacs-21 (>= 21 emacs-major-version) "emacs version before 21")
-(defconst is-after-emacs-23  (<= 23 emacs-major-version) "emacs version after 23")
 ;;; predefine directories
 (defconst my-startup-dir (file-name-directory load-file-name)
   "Emacs configuration path, default is `~/.emacs.d/'")
@@ -22,10 +13,10 @@
 (defconst my-snippet-dir (expand-file-name "snippets" my-startup-dir)
   "snippets from YASnippets")
 (defconst my-org-dir
-  (if mswin "d:/My Dropbox/Notes/" "~/Dropbox/Notes/")
+  (if (eq window-system 'w32) "d:/My Dropbox/Notes/" "~/Dropbox/Notes/")
   "Put my temporary notes here, eg: in dropbox directory")
 (defconst my-temp-dir
-  (if mswin "c:/windows/temp/emacs/" "~/.tmp-emacs/")
+  (if (eq window-system 'w32) "c:/windows/temp/emacs/" "~/.tmp-emacs/")
   "Temporary directory to store autosave, desktop, session, backup files.")
 
 ;;; Load-path

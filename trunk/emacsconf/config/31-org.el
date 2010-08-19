@@ -9,6 +9,9 @@
               ;;   (define-key org-mode-map (org-key 'S-left)     nil)
               ;;   (define-key org-mode-map (org-key 'S-right)    nil))
               (add-to-list 'org-link-frame-setup '(file . my-find-file-function))))
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (toggle-truncate-lines nil)))
 
   (define-prefix-command 'org-mode-map-prefix)
   (global-set-key (kbd "C-c o") 'org-mode-map-prefix)
@@ -25,6 +28,25 @@
        ("C-c o S" show-all)
        ("C-c o h" hide-entry)
        ("C-c o H" hide-body))))
+
+  ;;(setq org-agenda-include-diary t) ; contain calendar
+  ;;(setq org-log-done t)
+  (setq org-log-done 'note) ; completed task notes
+  (setq org-log-done 'time) ; time stamp
+
+  (setq org-hide-leading-stars t)
+  (setq org-startup-folded nil)           ; don't fold org items after load
+
+  ;; (setq org-agenda-files my-org-dir) ; cause Shift-Right issue
+
+  (defcustom org-export-html-style
+    "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">" ""
+    :group 'org-export-html
+    :type 'string)
+
+  (setq org-todo-keywords
+        '((sequence  "TODO(t)"  "WAIT(w@/!)" "START(s!)" "|" "CANCEL(c@/!)" "DONE(d!)")))
+  
   
   (setq org-export-with-sub-superscripts nil)
   (defun my-find-file-function (file)
