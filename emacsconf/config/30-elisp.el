@@ -130,9 +130,10 @@
           "^\\*.*Completions\\*$" "^\\*Ediff" "^\\*tramp" "^\\*cvs-" "^\\*Kill"
           "^\\*Backtrace" "^\\*grep" "^\\*Bookmark" "\\-preprocessed\\*"
           "^\\*XML" "^\\*sdcv" "^\\*imenu" "^\\*smart" "^\\*anything"
+          "^\\*dirtree"
           "_region_" " output\\*$" "^TAGS$" "^\\*Ido" "^\\*GTAGS" "^\\*Minibuf")
         ido-ignore-directories
-        '("\\`auto/" "\\.prv/" "\\`CVS/" "\\`\\.\\./" "\\`\\./" "^\\.")
+        '("^auto/" "\\.prv/" "^CVS/" "^\\.")
         ido-ignore-files
         '("_region_" "^\\(CVS\\|TAGS\\)" "^[.#]"
           "^\\(GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"))
@@ -199,7 +200,7 @@
                        (mode . c-mode)
                        (mode . java-mode)
                        (mode . python-mode)
-                       (mode . makefile-mode)))i
+                       (mode . makefile-mode)))
            ("web" (or  (mode . html-mode)
                        (mode . css-mode)
                        (mode . php-mode)
@@ -240,7 +241,8 @@
           ("m" ((mode . muse-mode)))
           ("w" ((or (mode . emacs-wiki-mode)
                     (mode . muse-mode))))
-          ("*" ((name . "*"))))))
+          ("*" ((name . "*")))))
+  )
 ;;}}}
 
 ;;{{{ shell
@@ -566,7 +568,7 @@
                              (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
              (prompt (append '("File name: ") tocpl))
              (fname (completing-read (car prompt) (cdr prompt) nil nil)))
-        (find-file (cdr (assoc-ignore-representation fname tocpl)))))
+        (find-file (cdr (assoc-string fname tocpl)))))
     (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
 
     ;; Also store recent opened directories besides files
@@ -864,7 +866,7 @@ mouse-3: Toggle minor modes"
         (speedbar-reconfigure-keymaps)
         (speedbar-update-contents)
         (speedbar-set-timer 1)
-        (make-local-hook 'kill-buffer-hook)
+        ;; (make-local-hook 'kill-buffer-hook)
         (add-hook 'kill-buffer-hook
                   (lambda () (when (eq (current-buffer) speedbar-buffer)
                                (setq speedbar-frame nil

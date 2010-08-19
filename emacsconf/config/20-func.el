@@ -423,15 +423,7 @@ ad."
 ;;;}}}
 
 
-;;{{{ sdcv
-(defun sdcv-ywb (&optional word)
-  (interactive)
-  (or word (setq word (current-word)))
-  (shell-command (format "sdcv -n %s" word)))
-(defun sdcv-lookup (word)
-  (interactive "sword: ")
-  (sdcv-ywb word))
-
+;;{{{ sdcv - tooltip
 (defun sdcv-tooltip ()
   (interactive)
   (let ((begin (point-min))
@@ -448,9 +440,9 @@ ad."
     (tooltip-show (shell-command-to-string
                    (concat "sdcv -n --utf8-output --utf8-input "
                            (buffer-substring begin end))) (not window-system))))
-(if (fboundp 'tooltip-show)
-    (global-set-key (kbd "M-1") 'sdcv-tooltip)
-  (global-set-key (kbd "M-1") 'sdcv-ywb))
+;; (if (fboundp 'tooltip-show)
+;;     (global-set-key (kbd "M-1") 'sdcv-tooltip)
+;;   (global-set-key (kbd "M-1") 'sdcv-search))
 ;;}}}
 
 ;;{{{ Copy current buffer's full file name
