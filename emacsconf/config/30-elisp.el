@@ -873,6 +873,24 @@ mouse-3: Toggle minor modes"
                                (speedbar-set-timer nil)))))
       (set-window-buffer (selected-window)
                          (get-buffer my-speedbar-buffer-name))))
+
+  ;; highlight mode
+  (deh-require 'highlight-symbol
+    (setq highlight-symbol-idle-delay 0.5)
+
+    (define-prefix-command 'highlight-symbol-map)
+    (global-set-key (kbd "C-c l") 'highlight-symbol-map)
+    (dolist (map (list global-map))
+      (apply-define-key
+       map
+       `(("C-c l l" highlight-symbol-at-point)
+         ("C-c l u" highlight-symbol-remove-all)
+         ("C-c l n" highlight-symbol-next)
+         ("C-c l p" highlight-symbol-prev)
+         ("C-c l q" highlight-symbol-query-replace)
+         ("C-c l N" highlight-symbol-next-in-defun)
+         ("C-c l P" highlight-symbol-prev-in-defun))))
+    )
   ;; shell-completion
   (deh-require 'shell-completion
     (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
