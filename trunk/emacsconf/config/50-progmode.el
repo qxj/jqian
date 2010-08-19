@@ -22,6 +22,8 @@
             (lambda ()
               (toggle-truncate-lines t))))
 
+(deh-require 'dirtree)
+
 ;; Rebinding keys for hideshow
 (deh-require 'hideshow
   (define-key hs-minor-mode-map "\C-ch"
