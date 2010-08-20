@@ -1,23 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
-;; 41-skeleton.el --- skeleton mode
-;; Time-stamp: <Julian Qian 2010-08-16 12:52:45>
-
-;;; perl
-(defun my-perl-mode-auto-pair ()
-  (interactive)
-  (make-local-variable 'skeleton-pair-alist)
-  (setq skeleton-pair-alist  '(
-                               (?` ?` _ "''")
-                               (?\(  _ ")")
-                               (?\[  _ "]")
-                               (?\"  _ "\"")))
-  (setq skeleton-pair t)
-  (local-set-key (kbd "(") 'skeleton-pair-insert-maybe)
-  (local-set-key (kbd "`") 'skeleton-pair-insert-maybe)
-  (local-set-key (kbd "\"") 'skeleton-pair-insert-maybe)
-  (local-set-key (kbd "[") 'skeleton-pair-insert-maybe))
-(add-hook 'cperl-mode-hook 'my-perl-mode-auto-pair)
-(add-hook 'python-mode-hook 'my-perl-mode-auto-pair)
+;; func-skeleton.el --- skeleton mode
+;; Time-stamp: <Julian Qian 2010-08-20 16:18:24>
 
 ;;; c, c++, objc, javascript
 (defun my-c-mode-auto-pair ()

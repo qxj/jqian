@@ -2,13 +2,12 @@
 (define-prefix-command 'ctl-cc-map)
 (define-prefix-command 'ctl-co-map)     ; org-mode-map-prefix
 (define-prefix-command 'ctl-z-map)
-(define-prefix-command 'f9-map)
 
 ;; global key binding
 (deh-section "global-kbd"
   (deh-define-key global-map
+    ((kbd "<f5> <f5>") . (lambda () (interactive) (revert-buffer nil t nil)))
     ((kbd "C-z")   . 'ctl-z-map)
-    ((kbd "<f9>")  . 'f9-map)
     ((kbd "C-d")   . 'delete-char-or-region)
     ((kbd "C-1")   . 'smart-mark-whole-sexp)
     ((kbd "C-2")   . 'set-mark-command)

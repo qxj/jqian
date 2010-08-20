@@ -906,7 +906,7 @@ mouse-3: Toggle minor modes"
                    ("bookmark" "add"))))
 
     ;; (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
-  
+
     )
 ;;}}}
 
