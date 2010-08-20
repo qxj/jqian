@@ -74,20 +74,32 @@
   )
 ;;}}}
 
-;;{{{ flymake
-(deh-require 'flymake
+;;{{{ flymake & flyspell
+(deh-section "flyspell"
+  ;; flyspell-goto-next-error: `C-,'
+  ;; (ispell-change-dictionary)
+  (dolist (hook '(text-mode-hook org-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode 1))))
+  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+    (add-hook hook (lambda () (flyspell-mode -1))))
   (dolist (hook '(c-mode-hook c++-mode-hook python-mode-hook))
+    (add-hook hook (lambda () (flyspell-prog-mode)))))
+
+(deh-require 'flymake
+  (dolist (hook '(c-mode-hook c++-mode-hook makefile-mode-hook))
     (add-hook
      hook
      (lambda () 
-       (flymake-mode t)
+       ;; (flymake-mode t)
+       ;; (setq flymake-log-level 1)
        (local-set-key (kbd "C-c C-v") 'flymake-goto-next-error))))
 
   (defun my-flymake-find-file-hook ()
     (condition-case nil
         (flymake-find-file-hook)
       (error nil)))
-  (add-hook 'find-file-hooks 'my-flymake-find-file-hook t))
+  ;; (add-hook 'find-file-hooks 'my-flymake-find-file-hook t)
+  )
 ;;}}}
 
 ;; Setting for common hook
@@ -231,7 +243,7 @@
   ;; (add-to-list 'auto-mode-alist '("\\.tt2?$" . html-mode))
   ;; (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
   ;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
   (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(hla\\|hhf\\)$" . hla-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))

@@ -124,10 +124,8 @@
                             ;; highlight too long lines
                             ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
                             ;; highlight parentheses
-                            ("(\\|)" . font-lock-builtin-face)
-                            ("\\[\\|]" . font-lock-builtin-face)
-                            ("<\\|>" . font-lock-builtin-face)
-                            ("{\\|}" . font-lock-builtin-face))))
+                            ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
+)))
 
 ;;}}}
 
