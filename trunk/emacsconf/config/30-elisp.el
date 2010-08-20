@@ -605,7 +605,7 @@
   ;; anything, require bm.el
   (deh-require 'bm
     (setq bm-repository-file (expand-file-name "bm-repository" my-temp-dir)
-          bm-buffer-persistence t))  
+          bm-buffer-persistence t))
   (deh-section "anything"
     (autoload 'anything "anything" "" t)
     (eval-after-load "anything"
@@ -913,15 +913,10 @@ mouse-3: Toggle minor modes"
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Extra library ;;;;;;;;;;;;;;;;;;
 ;; Tricks to load feature when needed
 
+  
 (setq
  deh-enable-list
- '(("flymake"
-    (require 'flymake)
-    (defun my-flymake-find-file-hook ()
-      (condition-case nil
-          (flymake-find-file-hook)
-        (error nil)))
-    (add-hook 'find-file-hooks 'my-flymake-find-file-hook t))
+ '(
    ("latex"
     (load "preview-latex.el" t t t)
     (load "auctex.el" t t t)

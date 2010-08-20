@@ -42,29 +42,28 @@
 ;;{{{ Etags, Gtags
 (deh-section "gtags"
   (autoload 'gtags-mode "gtags" "" t)
-  (dolist (map (list c-mode-hook c++-mode-hook java-mode-hook))
+  (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
     (add-hook
-     'map 
-     '(lambda () 
-        (gtags-mode 1)
-        ;; Instead of `find-tag' & `pop-tag-mark'
-        (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag-from-here)
-        (define-key gtags-mode-map (kbd "M-*") 'gtags-pop-stack)
-        ;; Key bind for gtags-mode
-        (define-prefix-command 'my-gtags-map)
-        (global-set-key (kbd "C-c g") 'my-gtags-map)
-        (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
-        (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
-        (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
-        (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
-        (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
-        (define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
-        (define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
-        (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
-        (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
-        (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
-        (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
-        )))
+     hook
+     (lambda () 
+       (gtags-mode 1)
+       ;; Instead of `find-tag' & `pop-tag-mark'
+       (local-set-key (kbd "M-.") 'gtags-find-tag-from-here)
+       (local-set-key (kbd "M-*") 'gtags-pop-stack)
+       (local-set-key )
+       ;; Key bind for gtags-mode
+       (local-set-key (kbd "C-c g v") 'gtags-visit-rootdir)
+       (local-set-key (kbd "C-c g t") 'gtags-find-tag)
+       (local-set-key (kbd "C-c g o") 'gtags-find-tag-other-window)
+       (local-set-key (kbd "C-c g r") 'gtags-find-rtag)
+       (local-set-key (kbd "C-c g s") 'gtags-find-symbol)
+       (local-set-key (kbd "C-c g p") 'gtags-find-pattern)
+       (local-set-key (kbd "C-c g g") 'gtags-find-with-grep)
+       (local-set-key (kbd "C-c g i") 'gtags-find-with-idutils)
+       (local-set-key (kbd "C-c g f") 'gtags-find-file)
+       (local-set-key (kbd "C-c g a") 'gtags-parse-file)
+       (local-set-key (kbd "C-c g b") 'yp-gtags-append)
+       )))
 
   (defun yp-gtags-append ()
     (interactive)
@@ -74,6 +73,23 @@
           (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
   )
 ;;}}}
+
+;;{{{ flymake
+(deh-require 'flymake
+  (dolist (hook '(c-mode-hook c++-mode-hook python-mode-hook))
+    (add-hook
+     hook
+     (lambda () 
+       (flymake-mode t)
+       (local-set-key (kbd "C-c C-v") 'flymake-goto-next-error))))
+
+  (defun my-flymake-find-file-hook ()
+    (condition-case nil
+        (flymake-find-file-hook)
+      (error nil)))
+  (add-hook 'find-file-hooks 'my-flymake-find-file-hook t))
+;;}}}
+
 ;; Setting for common hook
 (defun my-mode-common-hook ()
   (setq tab-width 4)

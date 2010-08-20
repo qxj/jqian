@@ -1,5 +1,5 @@
-###  README.tpl --- (>>>DIR<<<)
-## Time-stamp: <2008-09-08 16:33:08 lancer>
+###  TEMPLATE.README.tpl --- (>>>DIR<<<)
+## Time-stamp: <Julian Qian 2010-08-20 11:09:31>
 ## Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
 ## Author: (>>>AUTHOR<<<)
 
@@ -7,6 +7,6 @@
 
 (>>>POINT<<<)
 
-
+
 
 
