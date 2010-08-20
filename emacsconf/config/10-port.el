@@ -176,5 +176,6 @@
   (when (= emacs-major-version 23)
     (require 'fenc nil t)
     (when (eq window-system 'x)
-      (load (expand-file-name "my-fontset.el" my-config-dir)))
+      (load (expand-file-name "my-fontset.el" my-config-dir))
+      (load (expand-file-name "my-theme.el" my-config-dir)))
     ))

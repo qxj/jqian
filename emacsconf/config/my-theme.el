@@ -1,0 +1,2 @@
+
+(set-cursor-color "red")
