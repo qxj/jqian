@@ -36,16 +36,8 @@ class TableOfContent {
 		$this->matches = array(); 
 		$this->args    = array_merge( array(
 			'list_type'			=> 'ol',
-			'prefix'			=> '',
-			'suffix'			=> '<a href="#pni-top%suffix%" class="toplink">^</a>',
 			'clear_iterator'	=> true,
-			'top_suffix'		=> '',
-			'top_prefix'		=> '',
 		), $args );
-		
-		// replace the suffix in the top-links
-		$this->args[ 'prefix' ] = preg_replace( '/%prefix%/', $this->args[ 'top_prefix' ], $this->args[ 'prefix' ] );
-		$this->args[ 'suffix' ] = preg_replace( '/%suffix%/', $this->args[ 'top_suffix' ], $this->args[ 'suffix' ] );
 		
 		// generate some random number for the being unique
 		#$rand = $this->args[ 'rand' ] = (int)( rand() * 99999999 ); 
@@ -94,7 +86,7 @@ class TableOfContent {
 				
 				// insert current level
 				#$navigation .= '<li><a href="#'. $rand. 'pagenav'. $i. '">'. $title. '</a>';
-				$navigation .= '<li><a href="#'. $this->anchor_map[ $i ]. '">'. $title. '</a>';
+				$navigation .= '<li><a name="top-' .$this->anchor_map[ $i ]. '"></a><a href="#'. $this->anchor_map[ $i ]. '">'. $title. '</a>';
 				$i++;
 			}
 			
@@ -132,7 +124,7 @@ class TableOfContent {
 			$anchor = $anchor_prefix. '-'. ++$anchor_suffix;
 		}
 		$this->seen_anchor[ $anchor ] = true;
-		$this->anchor_map[ $this->counter++ ] = $anchor;
+		$this->anchor_map[ $this->counter ] = $anchor;
 		
 		// remove leading "123." ..
 		if ( $this->args[ 'clear_iterator' ] )
@@ -144,55 +136,38 @@ class TableOfContent {
 		// rebuild and return the h*-tag
 		return join( '', array(
 			'<h'. $level. '>',
-			$this->args[ 'prefix' ],
-			#'<a name="'. $this->args[ 'rand' ]. 'pagenav'. $this->counter++. '"></a>',
 			'<a name="'. $anchor. '"></a>',
 			$title,
-			$this->args[ 'suffix' ],
+            '<a href="#top-'. $this->anchor_map[ $this->counter++]. '" title="Top" class="toplink">^</a>',
 			'</h'. $level. '>'
 		) );
 	}
 }
 
 
-$TableOfContent = new TableOfContent();
-$toc_top_counter = 0;
 function toc_wrapper( $content ) {
-	global $TableOfContent, $toc_top_counter;
-	
 	// return nada if no content provided
 	//	Monday, May 17 2010
 	if ( empty( $content ) ) return "";
-	
+
 	// generate the parsed content
-	$res = $TableOfContent->parse_contents( $content, array(
-		'top_suffix' => $toc_top_counter,
-		'top_prefix' => $toc_top_counter,
-	) );
+    $TableOfContent = new TableOfContent();    
+	$res = $TableOfContent->parse_contents( $content );
 	
 	// finalize the "new" content
-	$parsed = '<div class="pni-navigtion"><a name="pni-top'. $toc_top_counter. '"></a>'. $res->navigation. '</div><div class="pni-content">'. $res->content. '</div>';
-	
-	// increment the top suffix for next usage
-	$toc_top_counter++;
-	
-	// return parsed ..
-	return $parsed;
+	return '<div class="pni-navigtion"><a name="pni-top"></a>'. $res->navigation. '</div><div class="pni-content">'. $res->content. '</div>';
 }
 
 function content_outline($content)
 {
-    global $TableOfContent, $toc_top_counter;
-
     /* return preg_replace_callback('|<!--\s*outline\s*-->(.*)<!--\s*\/outline\s*-->|', create_function('$matches', 'global $TableOfContent, $toc_top_counter;return toc_wrapper($matches[1]);'), $content); */
     $start_tag = "<!-- outline -->";
     $end_tag = "<!-- /outline -->";
     $start_pos = strpos($content, $start_tag);
     $end_pos = strpos($content, $end_tag);
-    
     if($start_pos){
-        if(FALSE === $end_pos){
-            $end_pos == strlen($content);
+        if(!$end_pos){
+            $end_pos = strlen($content);
         }
         $pre_content = substr($content, $start_pos, $end_pos);
         $content = substr_replace($content, toc_wrapper($pre_content), $start_pos, $end_pos);
