@@ -2,6 +2,8 @@
 ;;; customization
 (setq custom-file (expand-file-name "01-my-custom.el" my-config-dir))
 
+(setq debug-on-error t)
+
 ;;{{{ Generic Settings
 ;; syntax highlight
 (cond ((fboundp 'global-font-lock-mode)
