@@ -145,14 +145,14 @@ class TableOfContent {
 }
 
 
-function toc_wrapper( $content ) {
+function toc_wrapper( $content, $args ) {
 	// return nada if no content provided
 	//	Monday, May 17 2010
 	if ( empty( $content ) ) return "";
 
 	// generate the parsed content
     $TableOfContent = new TableOfContent();    
-	$res = $TableOfContent->parse_contents( $content );
+	$res = $TableOfContent->parse_contents( $content, $args );
 	
 	// finalize the "new" content
 	return '<div class="pni-navigtion"><a name="pni-top"></a>'. $res->navigation. '</div><div class="pni-content">'. $res->content. '</div>';
@@ -170,7 +170,9 @@ function content_outline($content)
             $end_pos = strlen($content);
         }
         $pre_content = substr($content, $start_pos, $end_pos);
-        $content = substr_replace($content, toc_wrapper($pre_content), $start_pos, $end_pos);
+        $content = substr_replace($content,
+                                  toc_wrapper($pre_content, array("list_type" => "ul")),
+                                  $start_pos, $end_pos);
     }
     return $content;
 }
