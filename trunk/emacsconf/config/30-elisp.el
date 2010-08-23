@@ -879,20 +879,24 @@ mouse-3: Toggle minor modes"
   ;; highlight mode
   (deh-require 'highlight-symbol
     (setq highlight-symbol-idle-delay 0.5)
-
-    (define-prefix-command 'highlight-symbol-map)
-    (global-set-key (kbd "C-c l") 'highlight-symbol-map)
-    (dolist (map (list global-map))
-      (apply-define-key
-       map
-       `(("C-c l l" highlight-symbol-at-point)
-         ("C-c l u" highlight-symbol-remove-all)
-         ("C-c l n" highlight-symbol-next)
-         ("C-c l p" highlight-symbol-prev)
-         ("C-c l q" highlight-symbol-query-replace)
-         ("C-c l N" highlight-symbol-next-in-defun)
-         ("C-c l P" highlight-symbol-prev-in-defun))))
-    )
+    (dolist (hook '(emacs-lisp-mode-hook
+                    lisp-interaction-mode-hook
+                    java-mode-hook
+                    c-mode-common-hook
+                    text-mode-hook
+                    html-mode-hook))
+      (add-hook
+       hook (lambda ()
+              (highlight-symbol-mode 1)
+              (local-set-key (kbd "C-c l l") 'highlight-symbol-at-point)
+              (local-set-key (kbd "C-c l u") 'highlight-symbol-remove-all)
+              (local-set-key (kbd "C-c l n") 'highlight-symbol-next)
+              (local-set-key (kbd "C-c l p") 'highlight-symbol-prev)
+              (local-set-key (kbd "C-c l q") 'highlight-symbol-query-replace)
+              (local-set-key (kbd "C-c l N") 'highlight-symbol-next-in-defun)
+              (local-set-key (kbd "C-c l P") 'highlight-symbol-prev-in-defun)
+              ))))
+  
   ;; shell-completion
   (deh-require 'shell-completion
     (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
@@ -959,6 +963,6 @@ If the flag is set, only complete with local files."
       (define-key LaTeX-mode-map " " 'CJK-insert-space)
       (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde))
     (add-hook 'TeX-mode-hook 'my-tex-mode-hook)
-    )   
+    )
    ))
 
