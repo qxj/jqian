@@ -50,5 +50,5 @@ Example:
                   keypairs))))
 
 ;;; ready to load my configurations
-(mapc 'load (directory-files my-config-dir t "^[0-9]+-.*.el"))
+(mapc 'load (directory-files my-config-dir t "^[0-9]+-.*.elc?$"))
 (server-start)

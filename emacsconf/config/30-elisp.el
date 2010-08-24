@@ -1,31 +1,43 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;; standard library ;;;;;;;;;;;;;;;;;;
 ;;{{{ Dired
-(deh-require 'dired-x
-  (deh-require 'dired-single)
-  ;; Make the execuatable file with different color
-  (add-to-list 'dired-font-lock-keywords
-               (list dired-re-exe
-                     '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t)
+(deh-section "dired"
+  (require 'dired-x)
+  (require 'dired-single)
+  (add-hook
+   'dired-load-hook
+   (lambda ()
+     ;; Make the execuatable file with different color
+     (add-to-list 'dired-font-lock-keywords
+                  (list dired-re-exe
+                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t)))
+  (add-hook
+   'dired-mode-hook
+   (lambda ()
+     ;; No confirm operations
+     (setq dired-no-confirm
+           '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
+     ;; Keybind for dired
+     (define-key dired-mode-map [return] 'joc-dired-single-buffer)
+     (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
+     (define-key dired-mode-map "^"
+        (lambda () (interactive) (joc-dired-single-buffer "..")))
+     (define-key dired-mode-map (kbd "M-u")
+        (lambda () (interactive) (joc-dired-single-buffer "..")))
+     ;; (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
+     ;; Sort something, prefix key `s'
+     (make-local-variable  'dired-sort-map)
+     (setq dired-sort-map (make-sparse-keymap))
+     (define-key dired-mode-map "s" dired-sort-map)
+     (define-key dired-sort-map "s" '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
+     (define-key dired-sort-map "x" '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
+     (define-key dired-sort-map "t" '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
+     (define-key dired-sort-map "n" '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches ""))))))
 
   ;; Setting for dired
   (setq dired-listing-switches "-alvh")
   (setq dired-recursive-copies 'top)
   (setq dired-recursive-deletes 'top)
   (setq dired-dwim-target t)
-  ;; No confirm operations
-  (setq dired-no-confirm
-        '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
-  
-  ;; Keybind for dired
-  (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
-  ;; Sort something, prefix key `s'
-  (make-local-variable  'dired-sort-map)
-  (setq dired-sort-map (make-sparse-keymap))
-  (define-key dired-mode-map "s" dired-sort-map)
-  (define-key dired-sort-map "s" '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
-  (define-key dired-sort-map "x" '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
-  (define-key dired-sort-map "t" '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
-  (define-key dired-sort-map "n" '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches ""))))
   
   (deh-section "dired-omit"
     (add-hook 'dired-mode-hook
@@ -71,13 +83,13 @@
       (add-to-list 'dired-guess-shell-alist-default
                    (list (concat "\\." (regexp-opt (cdr file) t) "$")
                          (car file)))))
-      ;; (dolist (suf (cdr file))
-      ;;   (let ((prg (assoc suf dired-guess-shell-alist-default)))
-      ;;     (if prg
-      ;;         (setcdr prg (delete-dups (cons (car file) (cdr prg))))
-      ;;       (add-to-list 'dired-guess-shell-alist-default (list suf (car file))))))))
+  ;; (dolist (suf (cdr file))
+  ;;   (let ((prg (assoc suf dired-guess-shell-alist-default)))
+  ;;     (if prg
+  ;;         (setcdr prg (delete-dups (cons (car file) (cdr prg))))
+  ;;       (add-to-list 'dired-guess-shell-alist-default (list suf (car file))))))))
   ;; sort directories first 
-  (defun his-dired-sort ()
+  (defun my-dired-sort ()
     "Dired sort hook to list directories first."
     (save-excursion
       (let (buffer-read-only)
@@ -85,7 +97,7 @@
         (sort-regexp-fields t "^.*$" "[ ]*." (point)
                             (point-max))))
     (set-buffer-modified-p nil))
-  (add-hook 'dired-after-readin-hook 'his-dired-sort)
+  (add-hook 'dired-after-readin-hook 'my-dired-sort)
   (defun my-dired-long-lines ()
     (setq truncate-lines t))
   (add-hook 'dired-after-readin-hook 'my-dired-long-lines)
@@ -315,40 +327,10 @@
   (setq time-stamp-active t)
   (setq time-stamp-warn-inactive t)
 
-  (deh-section "formats"
-    (setq display-time-format "%m月%d日 星期%a %R")
-    (setq frame-title-format
-          (list (format "emacs%d@%%b %%f" emacs-major-version)
-                " -- "
-                'display-time-string))
-    ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
-    (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
-
-  ;; desktop
-  (deh-require 'desktop
-    (setq desktop-globals-to-save
-          (delq 'tags-table-list desktop-globals-to-save))
-
-    (setq desktop-base-file-name "emacs.desktop")
-    (setq desktop-path (list my-temp-dir))
-    (setq history-length 250)
-    (add-to-list 'desktop-globals-to-save 'file-name-history)
-    ;; Do not save to desktop
-    (setq desktop-buffers-not-to-save
-          (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
-    (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-    (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-    (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-    (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
-    ;; if error occurred, no matter it!
-    ;; (condition-case nil
-    ;;     (desktop-read)
-    ;;   (error nil))
-    (desktop-save-mode 1))
-
   (add-hook 'occur-mode-hook (lambda () (setq truncate-lines t)))
 
   ;; ffap
+  (require 'ffap)
   ;; for windows path recognize
   (setq ffap-string-at-point-mode-alist
         '((file "--:\\\\$+<>@-Z_a-z~*?" "<@" "@>;.,!:")
@@ -359,13 +341,6 @@
 
   ;; tetris game
   ;; (setq tetris-update-speed-function (lambda (shapes rows) (/ 10.0 (+ 80.0 rows))))
-
-  ;; uniquify
-  (deh-require 'uniquify
-    (setq uniquify-buffer-name-style 'forward)
-    ;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-    )
-
   ;; woman
   (setq woman-use-own-frame nil)
   (setq woman-fontify t)                ; dump emacs need this
@@ -411,54 +386,90 @@
               (define-key Info-mode-map "k" 'previous-line)))
   ;; (filesets-init)
   (defalias 'default-generic-mode 'conf-mode)
-  (require 'ffap)
-  (deh-section "hippie-expand"
-    (setq hippie-expand-try-functions-list
-          '(try-expand-line
-            try-expand-dabbrev
-            try-expand-line-all-buffers
-            try-expand-list
-            try-expand-list-all-buffers
-            try-expand-dabbrev-visible
-            try-expand-dabbrev-all-buffers
-            try-expand-dabbrev-from-kill
-            try-complete-file-name
-            try-complete-file-name-partially
-            try-complete-lisp-symbol
-            try-complete-lisp-symbol-partially
-            try-expand-whole-kill)))
-  (deh-section "doc-view"
-    (add-hook 'doc-view-mode-hook
-              (lambda ()
-                (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
-                (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol))))
-  (deh-section "image"
-    (defun image-display-info ()
-      (interactive)
-      (let ((image (image-get-display-property))
-            info)
-        (setq info
-              (list
-               (cons "File Size"
-                     (let ((size (length (plist-get (cdr image) :data))))
-                       (if (> size (* 10 1024))
-                           (format "%.2f kb" (/ size 1024))
-                         size)))
-               (cons "Image Type" (plist-get (cdr image) :type))
-               (cons "Image Size"
-                     (let ((size (image-size image t)))
-                       (format "%d x %d pixels" (car size) (cdr size))))))
-        (with-current-buffer (get-buffer-create "*image-info*")
-          (erase-buffer)
-          (dolist (item info)
-            (insert (format "%12s: %s\n"
-                            (propertize (car item) 'face 'bold)
-                            (cdr item))))
-          (display-buffer (current-buffer)))))
-    (add-hook 'image-mode-hook
-              (lambda ()
-                (define-key image-mode-map "I" 'image-display-info))))
   )
+(deh-section "formats"
+  (setq display-time-format "%m月%d日 星期%a %R")
+  (setq frame-title-format
+        (list (format "emacs%d@%%b %%f" emacs-major-version)
+              " -- "
+              'display-time-string))
+  ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
+  (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
+
+;; desktop
+(deh-require 'desktop
+  (setq desktop-globals-to-save
+        (delq 'tags-table-list desktop-globals-to-save))
+
+  (setq desktop-base-file-name "emacs.desktop")
+  (setq desktop-path (list my-temp-dir))
+  (setq history-length 250)
+  (add-to-list 'desktop-globals-to-save 'file-name-history)
+  ;; Do not save to desktop
+  (setq desktop-buffers-not-to-save
+        (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
+  (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+  (add-to-list 'desktop-modes-not-to-save 'Info-mode)
+  (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+  (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+  ;; if error occurred, no matter it!
+  ;; (condition-case nil
+  ;;     (desktop-read)
+  ;;   (error nil))
+  (desktop-save-mode 1))
+
+;; uniquify
+(deh-require 'uniquify
+  (setq uniquify-buffer-name-style 'forward)
+  ;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+  )
+
+(deh-section "hippie-expand"
+  (setq hippie-expand-try-functions-list
+        '(try-expand-line
+          try-expand-dabbrev
+          try-expand-line-all-buffers
+          try-expand-list
+          try-expand-list-all-buffers
+          try-expand-dabbrev-visible
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name
+          try-complete-file-name-partially
+          try-complete-lisp-symbol
+          try-complete-lisp-symbol-partially
+          try-expand-whole-kill)))
+(deh-section "doc-view"
+  (add-hook 'doc-view-mode-hook
+            (lambda ()
+              (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
+              (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol))))
+(deh-section "image"
+  (defun image-display-info ()
+    (interactive)
+    (let ((image (image-get-display-property))
+          info)
+      (setq info
+            (list
+             (cons "File Size"
+                   (let ((size (length (plist-get (cdr image) :data))))
+                     (if (> size (* 10 1024))
+                         (format "%.2f kb" (/ size 1024))
+                       size)))
+             (cons "Image Type" (plist-get (cdr image) :type))
+             (cons "Image Size"
+                   (let ((size (image-size image t)))
+                     (format "%d x %d pixels" (car size) (cdr size))))))
+      (with-current-buffer (get-buffer-create "*image-info*")
+        (erase-buffer)
+        (dolist (item info)
+          (insert (format "%12s: %s\n"
+                          (propertize (car item) 'face 'bold)
+                          (cdr item))))
+        (display-buffer (current-buffer)))))
+  (add-hook 'image-mode-hook
+            (lambda ()
+              (define-key image-mode-map "I" 'image-display-info))))
 ;;}}}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; site-lisp library ;;;;;;;;;;;;;;;;;;
@@ -495,8 +506,8 @@
 ;;}}}
 
 ;;{{{ auto-complete
-(deh-require 'auto-complete-config
-
+(deh-section "auto-complete" 
+  (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
 
@@ -537,11 +548,8 @@
         (define-key yas/keymap (kbd "M-k") 'yas/prev-field))))
 ;;}}}
 
-;;{{{ template, browse-kill-ring, wb-line, htmlize, moccur, recent-jump,  and so on
+;;{{{ template,browse-kill-ring,wb-line,htmlize,moccur,recent-jump,and so on
 (deh-section "non-std-lib"
-  ;; browse-kill-ring
-  (deh-require 'browse-kill-ring
-    (browse-kill-ring-default-keybindings))
   ;; wb-line
   (autoload 'wb-line-number-toggle "wb-line-number" nil t)
   ;; htmlize
@@ -549,177 +557,33 @@
   ;; moccur
   (autoload 'moccur-grep "moccur-edit" "Glob search file" t)
   (autoload 'moccur "moccur-edit" "moccur" t)
-  ;; recent-jump
-  (deh-require 'recent-jump
-    (global-set-key (kbd "M-o") 'recent-jump-jump-backward)
-    (global-set-key (kbd "M-i") 'recent-jump-jump-forward))
-  ;; recent opened files
-  (deh-require 'recentf
-    ;;; recent finded buffers
-    (setq recentf-max-saved-items nil)
-    (setq recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir))
-
-    (recentf-mode t)
-
-    (defun recentf-open-files-compl ()
-      (interactive)
-      (let* ((all-files recentf-list)
-             (tocpl (mapcar (function
-                             (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
-             (prompt (append '("File name: ") tocpl))
-             (fname (completing-read (car prompt) (cdr prompt) nil nil)))
-        (find-file (cdr (assoc-string fname tocpl)))))
-    (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
-
-    ;; Also store recent opened directories besides files
-    (defun recentf-add-dir ()
-      "Add directory name to recentf file list."
-      (recentf-add-file dired-directory))
-    (add-hook 'dired-mode-hook 'recentf-add-dir))
-  ;; fold
-  ;; (setq fold-mode-prefix-key "\C-c\C-o")
-  ;; (deh-require 'fold
-  ;;   (setq fold-autoclose-other-folds nil)
-  ;;   (add-hook 'find-file-hook 'fold-find-file-hook t))
-  ;; ;; blank-mode
-  ;; (autoload 'blank-mode-on        "blank-mode"
-  ;;   "Turn on blank visualization."   t)
-  ;; (autoload 'blank-mode-off       "blank-mode"
-  ;;   "Turn off blank visualization."  t)
-  ;; (autoload 'blank-mode           "blank-mode"
-  ;;   "Toggle blank visualization."    t)
-  ;; (autoload 'blank-mode-customize "blank-mode"
-  ;;   "Customize blank visualization." t)
-  ;; sdcv
-  (deh-section "sdcv"
-    (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t))
-
-  (deh-require 'smart-mark)
-
-  ;; (deh-section "linum"
-  ;;   (setq linum-format (concat (propertize "%6d " 'face 'default)
-  ;;                              (propertize " " 'face 'fringe)))
-  ;;   (autoload 'linum-mode "linum" "Display line number" t))
-  ;; visible-line
-  (require 'visible-lines nil t)
-  ;; anything, require bm.el
-  (deh-require 'bm
-    (setq bm-repository-file (expand-file-name "bm-repository" my-temp-dir)
-          bm-buffer-persistence t))
-  (deh-section "anything"
-    (autoload 'anything "anything" "" t)
-    (eval-after-load "anything"
-      '(progn
-         (define-key anything-map "\C-n" 'anything-next-line)
-         (define-key anything-map "\C-p" 'anything-previous-line)
-         (define-key anything-map "\M-n" 'anything-next-source)
-         (define-key anything-map "\M-p" 'anything-previous-source)))
-
-    (require 'anything-config)
-
-    (setq anything-c-adaptive-history-file
-          (expand-file-name "anything-c-adaptive-history" my-temp-dir)
-          anything-c-yaoddmuse-cache-file
-          (expand-file-name "yaoddmuse-cache.el" my-temp-dir))
-
-    (setq anything-sources
-          '(
-            ;; Buffer:
-            anything-c-source-buffers
-            anything-c-source-buffer-not-found
-            anything-c-source-buffers+
-            ;; File:
-            anything-c-source-file-name-history
-            anything-c-source-files-in-current-dir
-            anything-c-source-files-in-current-dir+
-            anything-c-source-file-cache
-            anything-c-source-locate
-            anything-c-source-recentf
-            anything-c-source-ffap-guesser
-            anything-c-source-ffap-line
-            ;; Help:
-            anything-c-source-man-pages
-            anything-c-source-info-pages
-            anything-c-source-info-elisp
-            anything-c-source-info-cl
-            ;; Command:
-            anything-c-source-complex-command-history
-            anything-c-source-extended-command-history
-            anything-c-source-emacs-commands
-            ;; Function:
-            anything-c-source-emacs-functions
-            anything-c-source-emacs-functions-with-abbrevs
-            ;; Variable:
-            anything-c-source-emacs-variables
-            ;; Bookmark:
-            anything-c-source-bookmarks
-            anything-c-source-bookmark-set
-            anything-c-source-bookmarks-ssh
-            anything-c-source-bookmarks-su
-            anything-c-source-bookmarks-local
-            ;; Library:
-            anything-c-source-elisp-library-scan
-            ;; Programming:
-            anything-c-source-imenu
-            anything-c-source-ctags
-            anything-c-source-semantic
-            anything-c-source-simple-call-tree-functions-callers
-            anything-c-source-simple-call-tree-callers-functions
-            anything-c-source-commands-and-options-in-file
-            ;; Color and Face:
-            anything-c-source-customize-face
-            anything-c-source-colors
-            ;; Search Engine:
-            anything-c-source-tracker-search
-            anything-c-source-mac-spotlight
-            ;; Kill ring:
-            anything-c-source-kill-ring
-            ;; Mark ring:
-            anything-c-source-global-mark-ring
-            ;; Register:
-            anything-c-source-register
-            ;; Headline Extraction:
-            anything-c-source-fixme
-            anything-c-source-rd-headline
-            anything-c-source-oddmuse-headline
-            anything-c-source-emacs-source-defun
-            anything-c-source-emacs-lisp-expectations
-            anything-c-source-emacs-lisp-toplevels
-            anything-c-source-org-headline
-            anything-c-source-eev-anchor
-            ;; Misc:
-            anything-c-source-evaluation-result
-            anything-c-source-calculation-result
-            anything-c-source-google-suggest
-            anything-c-source-call-source
-            anything-c-source-occur
-            anything-c-source-create
-            anything-c-source-minibuffer-history
-            ;; System:
-            anything-c-source-emacs-process))
-
-    (unless (eq window-system 'w32)
-      (add-to-list 'anything-sources 'anything-c-source-surfraw t))
-
-    )
+  ;; blank-mode
+  (autoload 'blank-mode-on "blank-mode" "Turn on blank visualization."   t)
+  (autoload 'blank-mode-off "blank-mode" "Turn off blank visualization."  t)
+  (autoload 'blank-mode "blank-mode" "Toggle blank visualization."    t)
+  (autoload 'blank-mode-customize "blank-mode" "Customize blank visualization." t)
+  ;; hexl editor
+  (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
+  ;; A visual table editor, very cool
+  (autoload 'table-insert "table" "WYGIWYS table editor")
   ;; ansit
   (autoload 'ansit-ansify-this "ansit"  "Ansi the region." t)
   ;; rst-mode
   (autoload 'rst-mode "rst" "" t)
   ;; minibuf-isearch
-  ;; (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
-  ;; (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
-  ;; (mapcar (lambda (keymap)
-  ;;           (define-key keymap "\C-r" 'minibuf-isearch-prev)
-  ;;           (define-key keymap "\C-s" 'minibuf-isearch-next))
-  ;;         (delq nil (list (and (boundp 'minibuffer-local-map)
-  ;;                              minibuffer-local-map)
-  ;;                         (and (boundp 'minibuffer-local-ns-map)
-  ;;                              minibuffer-local-ns-map)
-  ;;                         (and (boundp 'minibuffer-local-completion-map)
-  ;;                              minibuffer-local-completion-map)
-  ;;                         (and (boundp 'minibuffer-local-must-match-map)
-  ;;                              minibuffer-local-must-match-map))))
+  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
+  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
+  (mapcar (lambda (keymap)
+            (define-key keymap "\C-r" 'minibuf-isearch-prev)
+            (define-key keymap "\C-s" 'minibuf-isearch-next))
+          (delq nil (list (and (boundp 'minibuffer-local-map)
+                               minibuffer-local-map)
+                          (and (boundp 'minibuffer-local-ns-map)
+                               minibuffer-local-ns-map)
+                          (and (boundp 'minibuffer-local-completion-map)
+                               minibuffer-local-completion-map)
+                          (and (boundp 'minibuffer-local-must-match-map)
+                               minibuffer-local-must-match-map))))
 
   ;; Add "CHARSET" for .po default charset
   (setq po-content-type-charset-alist
@@ -732,192 +596,335 @@
 
   (autoload 'yaml-mode "yaml-mode" "Simple mode to edit YAML." t)
   (autoload 'muse-insert-list-item "muse-mode" t)
+  ;; make cursor become a line
+  ;; (require 'bar-cursor)
+  ;; sdcv, dictionary search
+  (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
+  ;; smart mark, useful when edit markuped documents
+  (require 'smart-mark)
+  ;; visible-line
+  (require 'visible-lines nil t)
+  )
 
-  (deh-section "mode-line"
-    
-    (defun get-lines-4-mode-line ()
-      (let ((lines (count-lines (point-min) (point-max))))
-        (concat (propertize
-                 (concat "%l:" (format "%dL" lines))
-                 'mouse-face 'mode-line-highlight
-                 ;; make it colorful
-                 ;; 'face 'mode-line-lines-face
-                 'help-echo (format "%d lines" lines)) " ")))
+;; browse-kill-ring
+(deh-require 'browse-kill-ring
+  (browse-kill-ring-default-keybindings))
+;; recent-jump
+(deh-require 'recent-jump
+  (global-set-key (kbd "M-o") 'recent-jump-jump-backward)
+  (global-set-key (kbd "M-i") 'recent-jump-jump-forward))
+;; recent opened files
+(deh-require 'recentf
+  ;; recent finded buffers
+  (setq recentf-max-saved-items nil)
+  (setq recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir))
+  (recentf-mode t)
+  (defun recentf-open-files-compl ()
+    (interactive)
+    (let* ((all-files recentf-list)
+           (tocpl (mapcar (function
+                           (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
+           (prompt (append '("File name: ") tocpl))
+           (fname (completing-read (car prompt) (cdr prompt) nil nil)))
+      (find-file (cdr (assoc-string fname tocpl)))))
+  (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
+  ;; Also store recent opened directories besides files
+  (defun recentf-add-dir ()
+    "Add directory name to recentf file list."
+    (recentf-add-file dired-directory))
+  (add-hook 'dired-mode-hook 'recentf-add-dir))
+;; fold content
+;; (deh-require 'fold
+;;   (setq fold-mode-prefix-key "\C-c\C-o")
+;;   (setq fold-autoclose-other-folds nil)
+;;   (add-hook 'find-file-hook 'fold-find-file-hook t))
 
-    (defun get-size-indication-format ()
-      (if (and transient-mark-mode mark-active)
-          (format "%d chars" (abs (- (mark t) (point))))
-        "%I"))
+;; (deh-section "linum"
+;;   (setq linum-format (concat (propertize "%6d " 'face 'default)
+;;                              (propertize " " 'face 'fringe)))
+;;   (autoload 'linum-mode "linum" "Display line number" t))
 
-    (defun get-mode-line-region-face ()
-      (and transient-mark-mode mark-active
-           (if window-system 'region 'region-invert)))
+;; anything, require bm.el
+(deh-require 'bm
+  (setq bm-repository-file (expand-file-name "bm-repository" my-temp-dir)
+        bm-buffer-persistence t))
 
-    (size-indication-mode 1)
-    (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
+(deh-section "anything"
+  (autoload 'anything "anything" "" t)
+  (eval-after-load "anything"
+    '(progn
+       (define-key anything-map "\C-n" 'anything-next-line)
+       (define-key anything-map "\C-p" 'anything-previous-line)
+       (define-key anything-map "\M-n" 'anything-next-source)
+       (define-key anything-map "\M-p" 'anything-previous-source)))
 
-    (setq-default
-     mode-line-position
-     `((:eval (get-lines-4-mode-line))
-       (:propertize
-        ;; "%p " ;; no need to indicate this position
-        'local-map mode-line-column-line-number-mode-map
-        'mouse-face 'mode-line-highlight
-        'help-echo "Size indication mode\n\
+  (require 'anything-config)
+
+  (setq anything-c-adaptive-history-file
+        (expand-file-name "anything-c-adaptive-history" my-temp-dir)
+        anything-c-yaoddmuse-cache-file
+        (expand-file-name "yaoddmuse-cache.el" my-temp-dir))
+
+  (setq anything-sources
+        '(
+          ;; Buffer:
+          anything-c-source-buffers
+          anything-c-source-buffer-not-found
+          anything-c-source-buffers+
+          ;; File:
+          anything-c-source-file-name-history
+          anything-c-source-files-in-current-dir
+          anything-c-source-files-in-current-dir+
+          anything-c-source-file-cache
+          anything-c-source-locate
+          anything-c-source-recentf
+          anything-c-source-ffap-guesser
+          anything-c-source-ffap-line
+          ;; Help:
+          anything-c-source-man-pages
+          anything-c-source-info-pages
+          anything-c-source-info-elisp
+          anything-c-source-info-cl
+          ;; Command:
+          anything-c-source-complex-command-history
+          anything-c-source-extended-command-history
+          anything-c-source-emacs-commands
+          ;; Function:
+          anything-c-source-emacs-functions
+          anything-c-source-emacs-functions-with-abbrevs
+          ;; Variable:
+          anything-c-source-emacs-variables
+          ;; Bookmark:
+          anything-c-source-bookmarks
+          anything-c-source-bookmark-set
+          anything-c-source-bookmarks-ssh
+          anything-c-source-bookmarks-su
+          anything-c-source-bookmarks-local
+          ;; Library:
+          anything-c-source-elisp-library-scan
+          ;; Programming:
+          anything-c-source-imenu
+          anything-c-source-ctags
+          anything-c-source-semantic
+          anything-c-source-simple-call-tree-functions-callers
+          anything-c-source-simple-call-tree-callers-functions
+          anything-c-source-commands-and-options-in-file
+          ;; Color and Face:
+          anything-c-source-customize-face
+          anything-c-source-colors
+          ;; Search Engine:
+          anything-c-source-tracker-search
+          anything-c-source-mac-spotlight
+          ;; Kill ring:
+          anything-c-source-kill-ring
+          ;; Mark ring:
+          anything-c-source-global-mark-ring
+          ;; Register:
+          anything-c-source-register
+          ;; Headline Extraction:
+          anything-c-source-fixme
+          anything-c-source-rd-headline
+          anything-c-source-oddmuse-headline
+          anything-c-source-emacs-source-defun
+          anything-c-source-emacs-lisp-expectations
+          anything-c-source-emacs-lisp-toplevels
+          anything-c-source-org-headline
+          anything-c-source-eev-anchor
+          ;; Misc:
+          anything-c-source-evaluation-result
+          anything-c-source-calculation-result
+          anything-c-source-google-suggest
+          anything-c-source-call-source
+          anything-c-source-occur
+          anything-c-source-create
+          anything-c-source-minibuffer-history
+          ;; System:
+          anything-c-source-emacs-process))
+
+  (unless (eq window-system 'w32)
+    (add-to-list 'anything-sources 'anything-c-source-surfraw t))
+
+  )
+(deh-section "mode-line"
+  (defun get-lines-4-mode-line ()
+    (let ((lines (count-lines (point-min) (point-max))))
+      (concat (propertize
+               (concat "%l:" (format "%dL" lines))
+               'mouse-face 'mode-line-highlight
+               ;; make it colorful
+               ;; 'face 'mode-line-lines-face
+               'help-echo (format "%d lines" lines)) " ")))
+
+  (defun get-size-indication-format ()
+    (if (and transient-mark-mode mark-active)
+        (format "%d chars" (abs (- (mark t) (point))))
+      "%I"))
+
+  (defun get-mode-line-region-face ()
+    (and transient-mark-mode mark-active
+         (if window-system 'region 'region-invert)))
+
+  (size-indication-mode 1)
+  (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
+
+  (setq-default
+   mode-line-position
+   `((:eval (get-lines-4-mode-line))
+     (:propertize
+      ;; "%p " ;; no need to indicate this position
+      'local-map mode-line-column-line-number-mode-map
+      'mouse-face 'mode-line-highlight
+      'help-echo "Size indication mode\n\
 mouse-1: Display Line and Column Mode Menu")
-       ;; caculate word numbers of selected region. Otherwise, indicate all word number of this buffer, if no region selected.
-       (size-indication-mode
-        (:eval
-         (propertize (get-size-indication-format)
-                     'face (and transient-mark-mode mark-active (get-mode-line-region-face))
-                     'local-map mode-line-column-line-number-mode-map
-                     'mouse-face 'mode-line-highlight
-                     'help-echo "Buffer position, mouse-1: Line/col menu")))))
+     ;; caculate word numbers of selected region. Otherwise, indicate all word number of this buffer, if no region selected.
+     (size-indication-mode
+      (:eval
+       (propertize (get-size-indication-format)
+                   'face (and transient-mark-mode mark-active (get-mode-line-region-face))
+                   'local-map mode-line-column-line-number-mode-map
+                   'mouse-face 'mode-line-highlight
+                   'help-echo "Buffer position, mouse-1: Line/col menu")))))
 
-    (let* ((help-echo
-            "mouse-1: Select (drag to resize)\n\
+  (let* ((help-echo
+          "mouse-1: Select (drag to resize)\n\
 mouse-2: Make current window occupy the whole frame\n\
 mouse-3: Remove current window from display")
-           (recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
-           (standard-mode-line-modes
-            (list
-             " "
-             (propertize "%[" 'help-echo recursive-edit-help-echo)
-             (propertize "(" 'help-echo help-echo)
-             `(:propertize ("" mode-name)
-                           help-echo "Major mode\n\
+         (recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
+         (standard-mode-line-modes
+          (list
+           " "
+           (propertize "%[" 'help-echo recursive-edit-help-echo)
+           (propertize "(" 'help-echo help-echo)
+           `(:propertize ("" mode-name)
+                         help-echo "Major mode\n\
 mouse-1: Display major mode menu\n\
 mouse-2: Show help for major mode\n\
 mouse-3: Toggle minor modes"
-                           mouse-face mode-line-highlight
-                           local-map ,mode-line-major-mode-keymap)
-             '("" mode-line-process)
-             `(:propertize ("" minor-mode-alist)
-                           mouse-face mode-line-highlight
-                           help-echo "Minor mode\n\
+                         mouse-face mode-line-highlight
+                         local-map ,mode-line-major-mode-keymap)
+           '("" mode-line-process)
+           `(:propertize ("" minor-mode-alist)
+                         mouse-face mode-line-highlight
+                         help-echo "Minor mode\n\
 mouse-1: Display minor mode menu\n\
 mouse-2: Show help for minor mode\n\
 mouse-3: Toggle minor modes"
-                           local-map ,mode-line-minor-mode-keymap)
-             (propertize "%n" 'help-echo "mouse-2: Remove narrowing from the current buffer"
-                         'mouse-face 'mode-line-highlight
-                         'local-map (make-mode-line-mouse-map
-                                     'mouse-1 #'mode-line-widen))
-             (propertize ")" 'help-echo help-echo)
-             (propertize "%]" 'help-echo recursive-edit-help-echo))))
-      (setq-default mode-line-modes standard-mode-line-modes)
-      (setq-default mode-line-format
-                    `("%e%t"
-                      mode-line-mule-info
-                      mode-line-client
-                      mode-line-modified
-                      mode-line-remote
-                      " "
-                      mode-line-buffer-identification
-                      ,(propertize " " 'help-echo help-echo)
-                      mode-line-position
-                      (which-func-mode (" " which-func-format))
-                      (vc-mode vc-mode)
-                      mode-line-modes
-                      (working-mode-line-message (" " working-mode-line-message))
-                      ,(propertize "-%-" 'help-echo help-echo))))
+                         local-map ,mode-line-minor-mode-keymap)
+           (propertize "%n" 'help-echo "mouse-2: Remove narrowing from the current buffer"
+                       'mouse-face 'mode-line-highlight
+                       'local-map (make-mode-line-mouse-map
+                                   'mouse-1 #'mode-line-widen))
+           (propertize ")" 'help-echo help-echo)
+           (propertize "%]" 'help-echo recursive-edit-help-echo))))
+    (setq-default mode-line-modes standard-mode-line-modes)
+    (setq-default mode-line-format
+                  `("%e%t"
+                    mode-line-mule-info
+                    mode-line-client
+                    mode-line-modified
+                    mode-line-remote
+                    " "
+                    mode-line-buffer-identification
+                    ,(propertize " " 'help-echo help-echo)
+                    mode-line-position
+                    (which-func-mode (" " which-func-format))
+                    (vc-mode vc-mode)
+                    mode-line-modes
+                    (working-mode-line-message (" " working-mode-line-message))
+                    ,(propertize "-%-" 'help-echo help-echo))))
 
-    (setq mode-line-format-bak mode-line-format)
-    (setq mode-line t)
-    (defun toggle-mode-line ()
-      "Toggle mode-line."
-      (interactive)
-      (if mode-line
-          (setq-default mode-line-format nil)
-        (setq-default mode-line-format mode-line-format-bak))
-      (setq mode-line (not mode-line)))
+  (setq mode-line-format-bak mode-line-format)
+  (setq mode-line t)
+  (defun toggle-mode-line ()
+    "Toggle mode-line."
+    (interactive)
+    (if mode-line
+        (setq-default mode-line-format nil)
+      (setq-default mode-line-format mode-line-format-bak))
+    (setq mode-line (not mode-line)))
 
-    (setq frame-title-format
-          '((:eval
-             (let ((login-name (getenv-internal "LOGNAME")))
-               (if login-name (concat login-name "@") "")))
-            (:eval (system-name))
-            ":"
-            (:eval (or (buffer-file-name) (buffer-name)))))
-    )
+  (setq frame-title-format
+        '((:eval
+           (let ((login-name (getenv-internal "LOGNAME")))
+             (if login-name (concat login-name "@") "")))
+          (:eval (system-name))
+          ":"
+          (:eval (or (buffer-file-name) (buffer-name)))))
+  )
 
-  ;; speedbar
-  (deh-require 'speedbar
-    (setq speedbar-update-speed 3)
-    (setq speedbar-use-images t)
+;; speedbar
+(deh-require 'speedbar
+  (setq speedbar-update-speed 3)
+  (setq speedbar-use-images t)
 
-    (defvar my-speedbar-buffer-name 
-      (if (buffer-live-p speedbar-buffer)
-          (buffer-name speedbar-buffer)
-        "*SpeedBar*"))
+  (defvar my-speedbar-buffer-name 
+    (if (buffer-live-p speedbar-buffer)
+        (buffer-name speedbar-buffer)
+      "*SpeedBar*"))
 
-    ;; Speedbar within frame
-    (defun my-speedbar-no-separate-frame ()
-      (interactive)
-      (when (not (buffer-live-p speedbar-buffer))
-        (setq speedbar-buffer (get-buffer-create my-speedbar-buffer-name)
-              speedbar-frame (selected-frame)
-              dframe-attached-frame (selected-frame)
-              speedbar-select-frame-method 'attached
-              speedbar-verbosity-level 0
-              speedbar-last-selected-file nil)
-        (set-buffer speedbar-buffer)
-        (speedbar-mode)
-        (speedbar-reconfigure-keymaps)
-        (speedbar-update-contents)
-        (speedbar-set-timer 1)
-        ;; (make-local-hook 'kill-buffer-hook)
-        (add-hook 'kill-buffer-hook
-                  (lambda () (when (eq (current-buffer) speedbar-buffer)
-                               (setq speedbar-frame nil
-                                     dframe-attached-frame nil
-                                     speedbar-buffer nil)
-                               (speedbar-set-timer nil)))))
-      (set-window-buffer (selected-window)
-                         (get-buffer my-speedbar-buffer-name))))
+  ;; Speedbar within frame
+  (defun my-speedbar-no-separate-frame ()
+    (interactive)
+    (when (not (buffer-live-p speedbar-buffer))
+      (setq speedbar-buffer (get-buffer-create my-speedbar-buffer-name)
+            speedbar-frame (selected-frame)
+            dframe-attached-frame (selected-frame)
+            speedbar-select-frame-method 'attached
+            speedbar-verbosity-level 0
+            speedbar-last-selected-file nil)
+      (set-buffer speedbar-buffer)
+      (speedbar-mode)
+      (speedbar-reconfigure-keymaps)
+      (speedbar-update-contents)
+      (speedbar-set-timer 1)
+      ;; (make-local-hook 'kill-buffer-hook)
+      (add-hook 'kill-buffer-hook
+                (lambda () (when (eq (current-buffer) speedbar-buffer)
+                             (setq speedbar-frame nil
+                                   dframe-attached-frame nil
+                                   speedbar-buffer nil)
+                             (speedbar-set-timer nil)))))
+    (set-window-buffer (selected-window)
+                       (get-buffer my-speedbar-buffer-name))))
 
-  ;; highlight mode
-  (deh-require 'highlight-symbol
-    (setq highlight-symbol-idle-delay 0.5)
-    (dolist (hook '(emacs-lisp-mode-hook
-                    lisp-interaction-mode-hook
-                    java-mode-hook
-                    c-mode-common-hook
-                    text-mode-hook
-                    html-mode-hook))
-      (add-hook
-       hook (lambda ()
-              (highlight-symbol-mode 1)
-              (local-set-key (kbd "C-c l l") 'highlight-symbol-at-point)
-              (local-set-key (kbd "C-c l u") 'highlight-symbol-remove-all)
-              (local-set-key (kbd "C-c l n") 'highlight-symbol-next)
-              (local-set-key (kbd "C-c l p") 'highlight-symbol-prev)
-              (local-set-key (kbd "C-c l q") 'highlight-symbol-query-replace)
-              (local-set-key (kbd "C-c l N") 'highlight-symbol-next-in-defun)
-              (local-set-key (kbd "C-c l P") 'highlight-symbol-prev-in-defun)
-              ))))
-  
-  ;; shell-completion
-  (deh-require 'shell-completion
-    (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
-    (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
-                              (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
-    (add-to-list 'shell-completion-options-alist
-                 '("lftp" my-lftp-sites))
-    (add-to-list 'shell-completion-prog-cmdopt-alist
-                 '("lftp" ("help" "open" "get" "mirror" "bookmark")
-                   ("open" my-lftp-sites)
-                   ("bookmark" "add"))))
+;; highlight mode
+(deh-require 'highlight-symbol
+  (setq highlight-symbol-idle-delay 0.5)
+  (dolist (hook '(emacs-lisp-mode-hook
+                  lisp-interaction-mode-hook
+                  java-mode-hook
+                  c-mode-common-hook
+                  text-mode-hook
+                  html-mode-hook))
+    (add-hook
+     hook (lambda ()
+            (highlight-symbol-mode 1)
+            (local-set-key (kbd "C-c l l") 'highlight-symbol-at-point)
+            (local-set-key (kbd "C-c l u") 'highlight-symbol-remove-all)
+            (local-set-key (kbd "C-c l n") 'highlight-symbol-next)
+            (local-set-key (kbd "C-c l p") 'highlight-symbol-prev)
+            (local-set-key (kbd "C-c l q") 'highlight-symbol-query-replace)
+            (local-set-key (kbd "C-c l N") 'highlight-symbol-next-in-defun)
+            (local-set-key (kbd "C-c l P") 'highlight-symbol-prev-in-defun)
+            ))))
 
-    ;; (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
+;; shell-completion
+(deh-require 'shell-completion
+  (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
+  (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
+                            (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
+  (add-to-list 'shell-completion-options-alist
+               '("lftp" my-lftp-sites))
+  (add-to-list 'shell-completion-prog-cmdopt-alist
+               '("lftp" ("help" "open" "get" "mirror" "bookmark")
+                 ("open" my-lftp-sites)
+                 ("bookmark" "add"))))
 
-    )
 ;;}}}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Extra library ;;;;;;;;;;;;;;;;;;
 ;; Tricks to load feature when needed
 
-  
 (setq
  deh-enable-list
  '(
