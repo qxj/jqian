@@ -84,6 +84,9 @@
       ediff-split-window-function 'split-window-horizontally
       ediff-window-setup-function 'ediff-setup-windows-plain)
 
+;; ediff
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 ;; diary, todo, calendar
 (deh-section "calendar"
   (setq diary-file "~/.emacs.d/diary")
