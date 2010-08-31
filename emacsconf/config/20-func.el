@@ -10,7 +10,7 @@
 
 
 
-;; hack comment-or-uncomment-region
+;;{{{ hack comment-or-uncomment-region
 (defun my-comment-or-uncomment-region (&optional line)
   "This function is to comment or uncomment a line or a region"
   (interactive "P")
@@ -26,6 +26,20 @@
            (end-of-line)
            (point))))
     (call-interactively 'comment-or-uncomment-region)))
+;;}}}
+
+;;{{{ hack kill-line
+(defadvice kill-line (before check-position activate)
+  "killing the newline between indented lines and remove extra spaces."
+  (if (member major-mode
+              '(emacs-lisp-mode scheme-mode lisp-mode
+                                c-mode c++-mode objc-mode python-mode
+                                latex-mode plain-tex-mode))
+      (if (and (eolp) (not (bolp)))
+          (progn (forward-char 1)
+                 (just-one-space 0)
+                 (backward-char 1)))))
+;;}}}
 
 ;;{{{ similar to dd & yy in VIM
 (defadvice kill-ring-save (before slickcopy activate compile)
@@ -228,9 +242,10 @@ ad."
     (save-excursion
       (goto-char start)
       (while (< (point) end)
-        (setq line (split-string (buffer-substring-no-properties (line-beginning-position)
-                                                                 (line-end-position))
-                                 "\t"))
+        (setq line (split-string
+                    (buffer-substring-no-properties (line-beginning-position)
+                                                    (line-end-position))
+                    "\t"))
         (princ (mapconcat 'identity (mapcar (lambda (c)
                                               (nth (1- c) line))
                                             cols) "\t"))

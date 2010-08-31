@@ -1,5 +1,5 @@
 ### TEMPLATE.Makefile.tpl --- 
-## Time-stamp: <Julian Qian 2010-08-20 11:25:27>
+## Time-stamp: <Julian Qian 2010-08-24 18:42:25>
 ## Author: (>>>AUTHOR<<<)
 ## Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
 ## Keywords: (>>>1<<<)
@@ -10,8 +10,8 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-O -DUNIX -DDEBUG -DTRACE_FILE='"./trace"' -D__PATH__='"$(PWD)/"'
-CXXFLAGS=-O -DUNIX -DDEBUG -DTRACE_FILE='"./trace"' -D__PATH__='"$(PWD)/"'
+CFLAGS=-O -DUNIX -DDEBUG -std=c99 -DTRACE_FILE='"./trace"' -D__PATH__='"$(PWD)/"'
+CXXFLAGS=-O -DUNIX -DDEBUG -std=c99 -DTRACE_FILE='"./trace"' -D__PATH__='"$(PWD)/"'
 
 EDF=
 
@@ -21,7 +21,7 @@ SRCS=(>>>POINT<<<)
 
 # flymake
 check-syntax:
-	$(CXX) $(CFLAGS) -Wall -Wextra -pedantic -fsyntax-only $(SRCS)
+	$(CXX) $(CXXFLAGS) -Wall -Wextra -pedantic -fsyntax-only $(SRCS)
 
 all:
 

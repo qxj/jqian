@@ -8,10 +8,6 @@
 
         (semantic-load-enable-code-helpers)
         ;; (semantic-load-enable-minimum-features)
-        (setq semanticdb-project-roots
-              (list
-               (expand-file-name "/")))
-
 
         (require 'semantic-decorate-include)
 
@@ -41,14 +37,14 @@
              ("C-c , s" eassist-switch-h-cpp)
              ("C-c , l" eassist-list-methods)
              ("C-c , r" semantic-symref)
-             ;; ("<C-return>" semantic-ia-complete-symbol-menu)
-             ;; ("C-c , c" semantic-ia-complete-symbol)
-             ;; ("C-c , i" semantic-complete-analyze-inline)
-             ;; ("C-c , =" semantic-decoration-include-visit)
-             ;; ("C-c , j" semantic-ia-fast-jump)
-             ;; ("C-c , q" semantic-ia-show-doc)
-             ;; ("C-c , s" semantic-ia-show-summary)
-             ;; ("C-c , p" semantic-analyze-proto-impl-toggle)
+             ("<C-return>" semantic-ia-complete-symbol-menu)
+             ("C-c , c" semantic-ia-complete-symbol)
+             ("C-c , i" semantic-complete-analyze-inline)
+             ("C-c , =" semantic-decoration-include-visit)
+             ("C-c , j" semantic-ia-fast-jump)
+             ("C-c , q" semantic-ia-show-doc)
+             ("C-c , s" semantic-ia-show-summary)
+             ("C-c , p" semantic-analyze-proto-impl-toggle)
              ("C-c , h" senator-fold-tag-toggle))))
 
         ;; customization
@@ -65,9 +61,8 @@
         ;; enable support for gnu global
         (unless (eq window-system 'w32)
           (require 'semanticdb-global)
-          ;; (semanticdb-enable-gnu-global-databases 'c-mode)
-          ;; (semanticdb-enable-gnu-global-databases 'c++-mode)
-          )
+          (semanticdb-enable-gnu-global-databases 'c-mode)
+          (semanticdb-enable-gnu-global-databases 'c++-mode))
 
         ;; enable support for exuberent ctags
         (when (and (fboundp 'semantic-ectag-version)
@@ -76,9 +71,15 @@
           (semantic-load-enable-primary-exuberent-ctags-support))
 
         ;; Semantic search scope
-        ;; (setq semanticdb-project-roots
-        ;;    (list
-        ;;     (expand-file-name "~/src")))
+        (setq semanticdb-project-roots
+           (list
+            (expand-file-name "/")))
+
+        ;; Ede project support
+        (global-ede-mode t)
+
+        ;; Enable visual bookmarks, similar to native bookmarks and bm.el
+        (enable-visual-studio-bookmarks)
 
         ;; semantic cache directory
         (setq semanticdb-default-save-directory my-temp-dir)
@@ -94,6 +95,8 @@
         ;; Maximum size in bytes of buffers automatically reparsed
         (setq semantic-idle-scheduler-max-buffer-size 100000)
 
+        ;; hippie-try-expand setting
+        (add-to-list 'hippie-expand-try-functions-list 'semantic-ia-complete-symbol)
 
         (global-srecode-minor-mode 1)
 

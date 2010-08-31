@@ -30,6 +30,9 @@
 
 (setq truncate-partial-width-windows nil)
 
+;; no trailing whitespace
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
 ;; Wrap too long lines
 (toggle-truncate-lines nil)
 (setq hscroll-margin 1)
@@ -53,7 +56,6 @@
 ;; show matching parentheses
 (show-paren-mode t)
 (setq show-paren-style 'parentheses)
-
 
 (mouse-avoidance-mode 'animate)
 (auto-image-file-mode t)
@@ -130,6 +132,8 @@
                             ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
                             ;; highlight parentheses
                             ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
+                            ;; hightlight numbers
+                            ("[0-9]" . font-lock-constant-face)
 )))
 
 ;;}}}

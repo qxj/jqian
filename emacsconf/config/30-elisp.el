@@ -308,6 +308,7 @@
   (global-set-key (kbd "M-n") 'pager-row-down)
   )
 ;;}}}
+
 ;;{{{ std-lib
 (deh-section "std-lib"
   (partial-completion-mode 1)
@@ -539,6 +540,8 @@
                                yas/ido-prompt
                                yas/completing-prompt))
 
+  ;; FOR `hippie-try-expand' setting
+  (add-to-list 'hippie-expand-try-functions-list 'yas/hippie-try-expand)
 
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
