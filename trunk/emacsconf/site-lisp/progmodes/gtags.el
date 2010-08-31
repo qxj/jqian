@@ -1,7 +1,7 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009, 2010
+;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008
 ;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
@@ -22,9 +22,9 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.8
+;; Version: 2.4
 ;; Keywords: tools
-;; Required version: GLOBAL 5.9 or later
+;; Required version: GLOBAL 5.7 or later
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
 ;; other major modes. Gtags-select mode is implemented as a major mode.
@@ -41,25 +41,6 @@
 ;;	    '(lambda ()
 ;;		(gtags-mode 1)
 ;;	))
-;;
-;; There are two hooks, gtags-mode-hook and gtags-select-mode-hook.
-;; The usage of the hook is shown as follows.
-;;
-;; [Setting to reproduce old 'Gtags mode']
-;;
-;; (setq gtags-mode-hook
-;;   '(lambda ()
-;;      (setq gtags-pop-delete t)
-;;      (setq gtags-path-style 'absolute)
-;; ))
-;;
-;; [Setting to make 'Gtags select mode' easy to see]
-;;
-;; (setq gtags-select-mode-hook
-;;   '(lambda ()
-;;      (setq hl-line-face 'underline)
-;;      (hl-line-mode 1)
-;; ))
 
 ;;; Code
 
@@ -87,16 +68,6 @@
   :type 'boolean
   :group 'gtags)
 
-(defcustom gtags-pop-delete nil
-  "*If non-nil, gtags-pop will delete the buffer."
-  :group 'gtags
-  :type 'boolean)
-
-(defcustom gtags-select-buffer-single nil
-  "*If non-nil, gtags select buffer is single."
-  :group 'gtags
-  :type 'boolean)
-
 ;; Variables
 (defvar gtags-current-buffer nil
   "Current buffer.")
@@ -121,7 +92,6 @@
 ;
 (define-key gtags-mode-map "\e*" 'gtags-pop-stack)
 (define-key gtags-mode-map "\e." 'gtags-find-tag)
-(define-key gtags-mode-map "\C-x4." 'gtags-find-tag-other-window)
 ;
 ; Old key assignment.
 ;
@@ -170,7 +140,6 @@
 (define-key gtags-select-mode-map "u" 'gtags-pop-stack)
 (define-key gtags-select-mode-map "\C-t" 'gtags-pop-stack)
 (define-key gtags-select-mode-map "\C-m" 'gtags-select-tag)
-(define-key gtags-select-mode-map "\C-o" 'gtags-select-tag-other-window)
 (define-key gtags-select-mode-map "\e." 'gtags-select-tag)
 
 ;;
@@ -183,9 +152,9 @@
 (defun gtags-current-token ()
   (cond
    ((looking-at "[0-9A-Za-z_]")
-    (while (and (not (bolp)) (looking-at "[0-9A-Za-z_]"))
+    (while (looking-at "[0-9A-Za-z_]")
       (forward-char -1))
-    (if (not (looking-at "[0-9A-Za-z_]")) (forward-char 1)))
+    (forward-char 1))
    (t
     (while (looking-at "[ \t]")
       (forward-char 1))))
@@ -228,38 +197,21 @@
   (gtags-completing 'gtags string predicate code))
 (defun gtags-completing-gsyms (string predicate code)
   (gtags-completing 'gsyms string predicate code))
-(defun gtags-completing-files (string predicate code)
-  (gtags-completing 'files string predicate code))
 ;; common part of completing-XXXX
-;;   flag: 'gtags or 'gsyms or 'files
+;;   flag: 'gtags or 'gsyms
 (defun gtags-completing (flag string predicate code)
-  ; The purpose of using the -n option for the -P command is to exclude
-  ; dependence on the execution directory.
-  (let ((option (cond ((eq flag 'files) "-Pon")
-                      ((eq flag 'gsyms)  "-cs")
-                      (t                "-c")))
+  (let ((option "-c")
         (complete-list (make-vector 63 0))
         (prev-buffer (current-buffer)))
     ; build completion list
     (set-buffer (generate-new-buffer "*Completions*"))
+    (if (eq flag 'gsyms)
+        (setq option (concat option "s")))
     (call-process "global" nil t nil option string)
     (goto-char (point-min))
-    ;
-    ; The specification of the completion for files is different from that for symbols.
-    ; The completion for symbols matches only to the head of the symbol. But the completion
-    ; for files matches any part of the path.
-    ;
-    (if (eq flag 'files)
-        ; extract input string and the following part.
-        (let ((match-string (if (equal "" string) "\./\\(.*\\)" (concat ".*\\(" string ".*\\)"))))
-          (while (not (eobp))
-            (looking-at match-string)
-            (intern (gtags-match-string 1) complete-list)
-            (forward-line)))
-      (while (not (eobp))
-        (looking-at gtags-symbol-regexp)
-        (intern (gtags-match-string 0) complete-list)
-        (forward-line)))
+    (while (looking-at gtags-symbol-regexp)
+      (intern (gtags-match-string 0) complete-list)
+      (forward-line))
     (kill-buffer (current-buffer))
     ; recover current buffer
     (set-buffer prev-buffer)
@@ -283,17 +235,6 @@
       (kill-buffer buffer))
     path))
 
-;; decode path name
-;; The path is encoded by global(1) with the --encode-path="..." option.
-;; A blank is encoded to %20.
-(defun gtags-decode-pathname (path)
-  (let (start result)
-    (while (setq start (string-match "%\\([0-9a-f][0-9a-f]\\)" path))
-      (setq result (concat result
-                     (substring path 0 start)
-                     (format "%c" (string-to-int (substring path (match-beginning 1) (match-end 1)) 16))))
-      (setq path (substring path (match-end 1))))
-    (concat result path)))
 ;;
 ;; interactive command
 ;;
@@ -313,7 +254,7 @@
        (setq gtags-rootdir (expand-file-name input))
        (setenv "GTAGSROOT" gtags-rootdir)))))
 
-(defun gtags-find-tag (&optional other-win)
+(defun gtags-find-tag ()
   "Input tag name and move to the definition."
   (interactive)
   (let (tagname prompt input)
@@ -326,12 +267,7 @@
     (if (not (equal "" input))
       (setq tagname input))
     (gtags-push-context)
-    (gtags-goto-tag tagname "" other-win)))
-
-(defun gtags-find-tag-other-window ()
-  "Input tag name and move to the definition in other window."
-  (interactive)
-  (gtags-find-tag t))
+    (gtags-goto-tag tagname "")))
 
 (defun gtags-find-rtag ()
   "Input tag name and move to the referenced point."
@@ -382,11 +318,10 @@
   (interactive)
   (let (tagname prompt input)
     (setq prompt "Find files: ")
-    (setq input (completing-read prompt 'gtags-completing-files
-                  nil nil nil gtags-history-list))
+    (setq input (read-string prompt))
     (if (not (equal "" input)) (setq tagname input))
     (gtags-push-context)
-    (gtags-goto-tag tagname "Po")))
+    (gtags-goto-tag tagname "P")))
 
 (defun gtags-parse-file ()
   "Input file name, parse it and show object list."
@@ -441,16 +376,11 @@
       (gtags-push-context)
       (gtags-goto-tag tagname flag))))
 
-(defun gtags-select-tag (&optional other-win)
+(defun gtags-select-tag ()
   "Select a tag in [GTAGS SELECT MODE] and move there."
   (interactive)
   (gtags-push-context)
-  (gtags-select-it nil other-win))
-
-(defun gtags-select-tag-other-window ()
-  "Select a tag in [GTAGS SELECT MODE] and move there in other window."
-  (interactive)
-  (gtags-select-tag t))
+  (gtags-select-it nil))
 
 (defun gtags-select-tag-by-event (event)
   "Select a tag in [GTAGS SELECT MODE] and move there."
@@ -469,12 +399,8 @@
     (if (and (not (equal gtags-current-buffer nil))
              (not (equal gtags-current-buffer (current-buffer))))
          (switch-to-buffer gtags-current-buffer)
-         ; By default, the buffer of the referred file is left.
-         ; If gtags-pop-delete is set to t, the file is deleted.
-         ; Gtags select mode buffer is always deleted.
-         (if (and (or gtags-pop-delete (equal mode-name "Gtags-Select"))
-                  (not (gtags-exist-in-stack (current-buffer))))
-	     (setq delete t))
+      (if (not (gtags-exist-in-stack (current-buffer)))
+	  (setq delete t))
       (setq context (gtags-pop-context))
       (if (not context)
 	  (message "The tags stack is empty.")
@@ -502,55 +428,29 @@
     (gtags-goto-tag tagname flag)))
 
 ;; goto tag's point
-(defun gtags-goto-tag (tagname flag &optional other-win)
-  (let (option context save prefix buffer lines flag-char)
+(defun gtags-goto-tag (tagname flag)
+  (let (option context save prefix buffer lines)
     (setq save (current-buffer))
-    (setq flag-char (string-to-char flag))
     ; Use always ctags-x format.
     (setq option "-x")
-    (if (char-equal flag-char ?C)
+    (if (equal flag "C")
         (setq context (concat "--from-here=" (number-to-string (gtags-current-lineno)) ":" buffer-file-name))
         (setq option (concat option flag)))
     (cond
-     ((char-equal flag-char ?C)
+     ((equal flag "C")
       (setq prefix "(CONTEXT)"))
-     ((char-equal flag-char ?P)
+     ((equal flag "P")
       (setq prefix "(P)"))
-     ((char-equal flag-char ?g)
+     ((equal flag "g")
       (setq prefix "(GREP)"))
-     ((char-equal flag-char ?I)
+     ((equal flag "I")
       (setq prefix "(IDUTILS)"))
-     ((char-equal flag-char ?s)
+     ((equal flag "s")
       (setq prefix "(S)"))
-     ((char-equal flag-char ?r)
+     ((equal flag "r")
       (setq prefix "(R)"))
      (t (setq prefix "(D)")))
     ;; load tag
-    (if gtags-select-buffer-single
-        (progn
-          ; delete "*GTAGS SELECT*" buffer info from gtags-buffer-stack and gtags-point-stack
-          (let (now-gtags-buffer-stack now-buffer now-gtags-point-stack now-point)
-            (setq now-gtags-buffer-stack (reverse gtags-buffer-stack))
-            (setq now-gtags-point-stack (reverse gtags-point-stack))
-            (setq gtags-buffer-stack nil)
-            (setq gtags-point-stack nil)
-            (while now-gtags-buffer-stack
-              (setq now-buffer (car now-gtags-buffer-stack))
-              (setq now-point (car now-gtags-point-stack))
-              (if (and (buffer-name now-buffer) (not (string-match "*GTAGS SELECT*" (buffer-name now-buffer))))
-                  (progn
-                    (setq gtags-buffer-stack (cons now-buffer gtags-buffer-stack))
-                    (setq gtags-point-stack (cons now-point gtags-point-stack))))
-              (setq now-gtags-buffer-stack (cdr now-gtags-buffer-stack))
-              (setq now-gtags-point-stack (cdr now-gtags-point-stack))))
-          ; kill "*GTAGS SELECT*" buffer
-          (let (now-buffer-list now-buffer)
-            (setq now-buffer-list (buffer-list))
-            (while now-buffer-list
-              (setq now-buffer (car now-buffer-list))
-              (if (string-match "*GTAGS SELECT*" (buffer-name now-buffer))
-                  (kill-buffer now-buffer))
-              (setq now-buffer-list (cdr now-buffer-list))))))
     (setq buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
     (set-buffer buffer)
     ;
@@ -570,8 +470,8 @@
         (if rootdir (cd rootdir)))))
     (message "Searching %s ..." tagname)
     (if (not (= 0 (if (equal flag "C")
-                      (call-process "global" nil t nil option "--encode-path=\" \t\"" context tagname)
-                      (call-process "global" nil t nil option "--encode-path=\" \t\"" tagname))))
+                      (call-process "global" nil t nil option context tagname)
+                      (call-process "global" nil t nil option tagname))))
 	(progn (message (buffer-substring (point-min)(1- (point-max))))
                (gtags-pop-context))
       (goto-char (point-min))
@@ -579,13 +479,13 @@
       (cond
        ((= 0 lines)
          (cond
-          ((char-equal flag-char ?P)
+          ((equal flag "P")
            (message "%s: path not found" tagname))
-          ((char-equal flag-char ?g)
+          ((equal flag "g")
            (message "%s: pattern not found" tagname))
-          ((char-equal flag-char ?I)
+          ((equal flag "I")
            (message "%s: token not found" tagname))
-          ((char-equal flag-char ?s)
+          ((equal flag "s")
            (message "%s: symbol not found" tagname))
           (t
            (message "%s: tag not found" tagname)))
@@ -594,22 +494,20 @@
 	(set-buffer save))
        ((= 1 lines)
 	(message "Searching %s ... Done" tagname)
-	(gtags-select-it t other-win))
+	(gtags-select-it t))
        (t
-        (if (null other-win)
-            (switch-to-buffer buffer)
-          (switch-to-buffer-other-window buffer))
+	(switch-to-buffer buffer)
 	(gtags-select-mode))))))
 
 ;; select a tag line from lines
-(defun gtags-select-it (delete &optional other-win)
+(defun gtags-select-it (delete)
   (let (line file)
     ;; get context from current tag line
     (beginning-of-line)
     (if (not (looking-at "[^ \t]+[ \t]+\\([0-9]+\\)[ \t]\\([^ \t]+\\)[ \t]"))
         (gtags-pop-context)
       (setq line (string-to-number (gtags-match-string 1)))
-      (setq file (gtags-decode-pathname (gtags-match-string 2)))
+      (setq file (gtags-match-string 2))
       ;;
       ;; Why should we load new file before killing current-buffer?
       ;;
@@ -620,11 +518,7 @@
       ;; 
       (let ((prev-buffer (current-buffer)))
         ;; move to the context
-        (if gtags-read-only 
-	    (if (null other-win) (find-file-read-only file) 
-	      (find-file-read-only-other-window file))
-	  (if (null other-win) (find-file file)
-	    (find-file-other-window file)))
+        (if gtags-read-only (find-file-read-only file) (find-file file))
         (if delete (kill-buffer prev-buffer)))
       (setq gtags-current-buffer (current-buffer))
       (goto-line line)
@@ -644,8 +538,6 @@ Specify the root directory of project.
 	\\[gtags-visit-rootdir]
 Input tag name and move to the definition.
 	\\[gtags-find-tag]
-Input tag name and move to the definition in other window.
-        \\[gtags-find-tag-other-window]
 Input tag name and move to the referenced point.
 	\\[gtags-find-rtag]
 Input symbol and move to the locations.
