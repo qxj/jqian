@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; func-skeleton.el --- skeleton mode
-;; Time-stamp: <Julian Qian 2010-08-20 16:18:24>
+;; Time-stamp: <Julian Qian 2010-08-27 23:16:34>
 
 ;;; c, c++, objc, javascript
 (defun my-c-mode-auto-pair ()
@@ -22,6 +22,7 @@
 (add-hook 'c++-mode-hook 'my-c-mode-auto-pair)
 (add-hook 'objc-mode-hook 'my-c-mode-auto-pair)
 (add-hook 'js2-mode-hook 'my-c-mode-auto-pair)
+(add-hook 'javascript-mode-hook 'my-c-mode-auto-pair)
 (add-hook 'java-mode-hook 'my-c-mode-auto-pair)
 
 ;;; c-mode auto complete
