@@ -40,15 +40,15 @@
 
 ;; delete whole line
 (setq-default kill-whole-line t)
-(setq kill-ring-max 50) 
+(setq kill-ring-max 50)
 ;; indent without tab '\t' but white space
-(setq-default indent-tabs-mode nil) 
+(setq-default indent-tabs-mode nil)
 (setq default-tab-width 4)
 (setq tab-stop-list nil)
 (setq display-time-mail-file "~/.emacs.d/mail")
 
 ;; chinese charactor at the end of sentences
-(setq sentence-end "\\([。！？。！？]\\|……\\|[.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*"
+(setq sentence-end "\\([。！？]\\|……\\|[.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*"
       sentence-end-double-space nil)
 ;; scroll-margin, which conflict with pager-mode, thus set to zero
 (setq scroll-margin 0
@@ -103,18 +103,17 @@
         calendar-location-name "Beijing"))
 
 ;; set my file register
-(deh-section "register" 
-  (set-register ?. '(file . "~/.emacs"))
-  (set-register ?, '(file . "~/.emacs.d"))
+(deh-section "register"
+  (set-register ?. '(file . "~/.emacs.d"))
   (set-register ?t '(file . "~/temp"))
-  (set-register ?d '(file . "~/downloads")))
+  (set-register ?d '(file . "~/Downloads")))
 
 ;; prevent no response if click the memu in File
 (fset 'print-buffer 'ignore)
 (setq lpr-command "")
 (setq printer-name "")
 
-;; abbrev
+;; abbrevation setting
 (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-temp-dir))
 (if (file-exists-p abbrev-file-name)
     (read-abbrev-file abbrev-file-name))
@@ -125,17 +124,16 @@
 ;;{{{ Customized keywords
 (dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode
                        php-mode lisp-interaction-mode sh-mode sgml-mode))
-  (font-lock-add-keywords mode
-                          '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\):" 1 font-lock-warning-face prepend)
-                            ("\\<\\(DONE\\|NOTE\\):" 1 font-lock-doc-face t)
-                            ;; highlight too long lines
-                            ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
-                            ;; highlight parentheses
-                            ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
-                            ;; hightlight numbers
-                            ("[0-9]" . font-lock-constant-face)
-)))
-
+  (font-lock-add-keywords
+   mode
+   '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\):" 1 font-lock-warning-face prepend)
+     ("\\<\\(DONE\\|NOTE\\):" 1 font-lock-doc-face t)
+     ;; highlight too long lines
+     ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
+     ;; highlight parentheses
+     ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
+     ;; hightlight numbers
+     ("\\<[0-9]*\\.?[0-9]+\\>" . font-lock-constant-face))))
 ;;}}}
 
 ;; Turn on the features disabled default
