@@ -53,7 +53,7 @@
     ("a" . 'sourcepair-load)
     ("b" . 'bm-toggle)
     ("c" . 'ctl-cc-map)
-    ("d" . 'dirtree-show)
+    ;; ("d" . 'dirtree-show)
     ("f" . 'comint-dynamic-complete)
     ("g" . 'fold-dwim-hide-all)
     ;; ("h" . 'help-dwim)

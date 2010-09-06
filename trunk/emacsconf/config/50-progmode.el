@@ -22,7 +22,7 @@
             (lambda ()
               (toggle-truncate-lines t))))
 
-(deh-require 'dirtree)
+;; (deh-require 'dirtree) ; instead dirtree with sr-speedbar
 
 ;; Rebinding keys for hideshow
 (deh-require 'hideshow
