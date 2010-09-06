@@ -45,7 +45,7 @@
   (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
     (add-hook
      hook
-     (lambda () 
+     (lambda ()
        (gtags-mode 1)
        ;; Instead of `find-tag' & `pop-tag-mark'
        (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag-from-here)
@@ -63,7 +63,7 @@
        (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
        (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
        )))
-  
+
   (defun yp-gtags-append ()
     (interactive)
     (if gtags-mode
@@ -85,10 +85,12 @@
     (add-hook hook (lambda () (flyspell-prog-mode)))))
 
 (deh-require 'flymake
+  (setq flymake-gui-warnings-enabled nil)
+
   (dolist (hook '(c-mode-hook c++-mode-hook makefile-mode-hook))
     (add-hook
      hook
-     (lambda () 
+     (lambda ()
        ;; (flymake-mode t)
        ;; (setq flymake-log-level 1)
        (local-set-key (kbd "C-c C-v") 'flymake-goto-next-error))))

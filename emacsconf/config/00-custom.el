@@ -2,7 +2,7 @@
 ;;; customization
 (setq custom-file (expand-file-name "01-my-custom.el" my-config-dir))
 
-(setq debug-on-error t)
+;; (setq debug-on-error t)
 
 ;;{{{ Generic Settings
 ;; syntax highlight
@@ -149,10 +149,7 @@
  '(confirm-kill-emacs (quote y-or-n-p))
  '(cperl-invalid-face nil)
  '(desktop-globals-to-save (quote (sql-mysql-schema bibus-formats desktop-missing-file-warning search-ring regexp-search-ring register-alist windata-named-winconf)))
- '(flymake-gui-warnings-enabled nil)
  '(folding-folding-on-startup nil)
- '(ido-enable-regexp t)
- '(ido-everywhere t)
  '(outline-minor-mode-prefix "")
  '(tooltip-use-echo-area nil)
  '(view-read-only t)
