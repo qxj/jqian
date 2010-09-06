@@ -38,7 +38,7 @@
   (setq dired-recursive-copies 'top)
   (setq dired-recursive-deletes 'top)
   (setq dired-dwim-target t)
-  
+
   (deh-section "dired-omit"
     (add-hook 'dired-mode-hook
               (lambda ()
@@ -88,7 +88,7 @@
   ;;     (if prg
   ;;         (setcdr prg (delete-dups (cons (car file) (cdr prg))))
   ;;       (add-to-list 'dired-guess-shell-alist-default (list suf (car file))))))))
-  ;; sort directories first 
+  ;; sort directories first
   (defun my-dired-sort ()
     "Dired sort hook to list directories first."
     (save-excursion
@@ -142,7 +142,7 @@
           "^\\*.*Completions\\*$" "^\\*Ediff" "^\\*tramp" "^\\*cvs-" "^\\*Kill"
           "^\\*Backtrace" "^\\*grep" "^\\*Bookmark" "\\-preprocessed\\*"
           "^\\*XML" "^\\*sdcv" "^\\*imenu" "^\\*smart" "^\\*anything"
-          "^\\*dirtree"
+          "^\\*dirtree" "^\\*SPEEDBAR\\*$"
           "_region_" " output\\*$" "^TAGS$" "^\\*Ido" "^\\*GTAGS" "^\\*Minibuf")
         ido-ignore-directories
         '("^auto/" "\\.prv/" "^CVS/" "^\\.")
@@ -158,11 +158,10 @@
   (mapc (lambda (dir)
           (add-to-list 'ido-work-directory-list
                        (expand-file-name dir)))
-        '("~/.emacs.d/"
+        '("~/.emacs.d/config/"
           "~/.emacs.d/site-lisp/"
           "~/projects/"
           "~/work/"
-          "/usr/share/emacs/22.0.50/lisp/"
           "~/temp/"
           "~/bin/"
           "~/")))
@@ -257,39 +256,6 @@
   )
 ;;}}}
 
-;;{{{ shell
-(deh-section "shell"
-  (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
-  ;; 我做了一些修改，一是可以保留本次的命令到文件，二是可以在 Ibuffer 或
-  ;; 者其它 buffer 中退出时不删除当前的 buffer
-  (defun wcy-shell-mode-kill-buffer-on-exit (process state)
-    (shell-write-history-on-exit process state)
-    (kill-buffer (process-buffer process)))
-  (defun ywb-shell-mode-hook ()
-    (rename-buffer  (concat "*shell: " default-directory "*") t)
-    (set-process-sentinel (get-buffer-process (current-buffer))
-                          #'wcy-shell-mode-kill-buffer-on-exit)
-
-    (ansi-color-for-comint-mode-on)
-    (setq-default
-     comint-dynamic-complete-functions
-     (let ((list (default-value 'comint-dynamic-complete-functions)))
-       (add-to-list 'list 'shell-dynamic-complete-command t)))
-    (abbrev-mode t))
-  (add-hook 'shell-mode-hook 'ywb-shell-mode-hook))
-;;}}}
-
-(deh-section "erc"
-  (setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir))
-  (eval-after-load "erc"
-    '(deh-require 'emoticons
-       (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)
-       (add-hook 'erc-send-modify-hook 'emoticons-fill-buffer)
-       (add-hook 'erc-mode-hook
-                 (lambda ()
-                   (eldoc-mode t)
-                   (setq eldoc-documentation-function 'emoticons-help-echo))))))
-
 ;;{{{  session
 (deh-require 'session
   (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
@@ -309,7 +275,7 @@
   )
 ;;}}}
 
-;;{{{ std-lib
+;;{{{ standard libraries and settings
 (deh-section "std-lib"
   (partial-completion-mode 1)
   (icomplete-mode 1)
@@ -388,6 +354,8 @@
   ;; (filesets-init)
   (defalias 'default-generic-mode 'conf-mode)
   )
+
+;; formats and timestamp
 (deh-section "formats"
   (setq display-time-format "%m月%d日 星期%a %R")
   (setq frame-title-format
@@ -507,7 +475,7 @@
 ;;}}}
 
 ;;{{{ auto-complete
-(deh-section "auto-complete" 
+(deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
@@ -551,7 +519,7 @@
         (define-key yas/keymap (kbd "M-k") 'yas/prev-field))))
 ;;}}}
 
-;;{{{ template,browse-kill-ring,wb-line,htmlize,moccur,recent-jump,and so on
+;;{{{ autoloads non-std libraries
 (deh-section "non-std-lib"
   ;; wb-line
   (autoload 'wb-line-number-toggle "wb-line-number" nil t)
@@ -612,10 +580,12 @@
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
   (browse-kill-ring-default-keybindings))
+
 ;; recent-jump
 (deh-require 'recent-jump
   (global-set-key (kbd "M-o") 'recent-jump-jump-backward)
   (global-set-key (kbd "M-i") 'recent-jump-jump-forward))
+
 ;; recent opened files
 (deh-require 'recentf
   ;; recent finded buffers
@@ -636,6 +606,7 @@
     "Add directory name to recentf file list."
     (recentf-add-file dired-directory))
   (add-hook 'dired-mode-hook 'recentf-add-dir))
+
 ;; fold content
 ;; (deh-require 'fold
 ;;   (setq fold-mode-prefix-key "\C-c\C-o")
@@ -855,40 +826,24 @@ mouse-3: Toggle minor modes"
           (:eval (or (buffer-file-name) (buffer-name)))))
   )
 
-;; speedbar
-(deh-require 'speedbar
-  (setq speedbar-update-speed 3)
-  (setq speedbar-use-images t)
+;; sr-speedbar
+(deh-require 'sr-speedbar
+  ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
+  (define-key speedbar-key-map (kbd "M-u") '(lambda () (interactive) (speedbar-up-directory)))
 
-  (defvar my-speedbar-buffer-name 
-    (if (buffer-live-p speedbar-buffer)
-        (buffer-name speedbar-buffer)
-      "*SpeedBar*"))
+  ;; wordaround to disable view-mode in speedbar
+  (setq speedbar-mode-hook '(lambda () (View-exit)))
+  ;; add supported extensions
+  (dolist (ext (list ".php" ".js" ".css" ".txt" "README"))
+    (speedbar-add-supported-extension ext))
 
-  ;; Speedbar within frame
-  (defun my-speedbar-no-separate-frame ()
-    (interactive)
-    (when (not (buffer-live-p speedbar-buffer))
-      (setq speedbar-buffer (get-buffer-create my-speedbar-buffer-name)
-            speedbar-frame (selected-frame)
-            dframe-attached-frame (selected-frame)
-            speedbar-select-frame-method 'attached
-            speedbar-verbosity-level 0
-            speedbar-last-selected-file nil)
-      (set-buffer speedbar-buffer)
-      (speedbar-mode)
-      (speedbar-reconfigure-keymaps)
-      (speedbar-update-contents)
-      (speedbar-set-timer 1)
-      ;; (make-local-hook 'kill-buffer-hook)
-      (add-hook 'kill-buffer-hook
-                (lambda () (when (eq (current-buffer) speedbar-buffer)
-                             (setq speedbar-frame nil
-                                   dframe-attached-frame nil
-                                   speedbar-buffer nil)
-                             (speedbar-set-timer nil)))))
-    (set-window-buffer (selected-window)
-                       (get-buffer my-speedbar-buffer-name))))
+  (add-to-list 'speedbar-fetch-etags-parse-list
+               '("\\.php" . speedbar-parse-c-or-c++tag))
+
+  (setq sr-speedbar-skip-other-window-p t
+        sr-speedbar-delete-windows t
+        sr-speedbar-width-x 22
+        sr-speedbar-max-width 30))
 
 ;; highlight mode
 (deh-require 'highlight-symbol
@@ -911,23 +866,53 @@ mouse-3: Toggle minor modes"
             (local-set-key (kbd "C-c l P") 'highlight-symbol-prev-in-defun)
             ))))
 
-;; shell-completion
-(deh-require 'shell-completion
-  (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
-  (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
-                            (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
-  (add-to-list 'shell-completion-options-alist
-               '("lftp" my-lftp-sites))
-  (add-to-list 'shell-completion-prog-cmdopt-alist
-               '("lftp" ("help" "open" "get" "mirror" "bookmark")
-                 ("open" my-lftp-sites)
-                 ("bookmark" "add"))))
+;; shell
+(deh-section "shell"
+  (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
+  (defun wcy-shell-mode-kill-buffer-on-exit (process state)
+    "Auto save command history and kill buffers when exit ibuffer."
+    (shell-write-history-on-exit process state)
+    (kill-buffer (process-buffer process)))
+  (defun ywb-shell-mode-hook ()
+    (rename-buffer  (concat "*shell: " default-directory "*") t)
+    (set-process-sentinel (get-buffer-process (current-buffer))
+                          #'wcy-shell-mode-kill-buffer-on-exit)
 
+    (ansi-color-for-comint-mode-on)
+    (setq-default
+     comint-dynamic-complete-functions
+     (let ((list (default-value 'comint-dynamic-complete-functions)))
+       (add-to-list 'list 'shell-dynamic-complete-command t)))
+    (abbrev-mode t))
+  (add-hook 'shell-mode-hook 'ywb-shell-mode-hook)
+
+  ;; shell-completion
+  (deh-require 'shell-completion
+    (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
+    (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
+                              (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
+    (add-to-list 'shell-completion-options-alist
+                 '("lftp" my-lftp-sites))
+    (add-to-list 'shell-completion-prog-cmdopt-alist
+                 '("lftp" ("help" "open" "get" "mirror" "bookmark")
+                   ("open" my-lftp-sites)
+                   ("bookmark" "add")))))
+
+;; erc
+(deh-section "erc"
+  (setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir))
+  (eval-after-load "erc"
+    '(deh-require 'emoticons
+       (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)
+       (add-hook 'erc-send-modify-hook 'emoticons-fill-buffer)
+       (add-hook 'erc-mode-hook
+                 (lambda ()
+                   (eldoc-mode t)
+                   (setq eldoc-documentation-function 'emoticons-help-echo))))))
 ;;}}}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Extra library ;;;;;;;;;;;;;;;;;;
 ;; Tricks to load feature when needed
-
 (setq
  deh-enable-list
  '(
