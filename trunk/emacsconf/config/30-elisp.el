@@ -522,7 +522,7 @@
 ;;{{{ autoloads non-std libraries
 (deh-section "non-std-lib"
   ;; wb-line
-  (autoload 'wb-line-number-toggle "wb-line-number" nil t)
+  ;; (autoload 'wb-line-number-toggle "wb-line-number" nil t)
   ;; htmlize
   (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
   ;; moccur
