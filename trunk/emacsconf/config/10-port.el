@@ -29,7 +29,7 @@
         (set-frame-parameter (selected-frame) 'alpha '(95 85))
         (add-to-list 'default-frame-alist '(alpha 95 85))
         )))
-    
+
 (deh-section "coding-system"
   (unless (coding-system-p 'gbk)
     (define-coding-system-alias 'gbk 'chinese-iso-8bit))
@@ -62,7 +62,7 @@
             (append
              '("~/bin" "~/proj/perl/bin/" "~/local/bin")
              (when (eq system-type 'windows-nt)
-               '("d:/programs/emacs/bin"))))
+               '("c:/programs/emacs/bin" "c:/cygwin/bin" "c:/cygwin/usr/bin"))))
     (setenv "PATH" (mapconcat 'identity path path-separator))))
 
 (deh-section "win32"
@@ -83,6 +83,10 @@
           (cons '("gbk" w32-charset-gb2312 . 936)
                 w32-charset-info-alist))
     (setq abbreviated-home-dir nil)
+
+    (setenv "SHELL" "c:/cygwin/bin/bash.exe")
+
+    (setq explicit-shell-file-name "bash.exe")
 
     (defun ywb-convert-to-cygwin-path (path)
       (concat "file:///cygdrive/" (substring path 0 1) (substring path 2)))
