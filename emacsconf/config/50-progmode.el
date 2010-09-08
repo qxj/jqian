@@ -73,6 +73,21 @@
   )
 ;;}}}
 
+;;{{{ svn settins
+(deh-require 'psvn
+  (defsubst svn-status-interprete-state-mode-color (stat)
+    "Interpret vc-svn-state symbol to mode line color"
+    (case stat
+      ('up-to-date "GreenYellow")
+      ('edited     "tomato")
+      ('unknown    "gray")
+      ('added      "blue")
+      ('deleted    "red")
+      ('unmerged   "purple")
+      (t           "black")))
+  )
+;;}}}
+
 ;;{{{ flymake & flyspell
 (deh-section "flyspell"
   ;; flyspell-goto-next-error: `C-,'
