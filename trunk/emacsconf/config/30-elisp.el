@@ -142,7 +142,7 @@
           "^\\*.*Completions\\*$" "^\\*Ediff" "^\\*tramp" "^\\*cvs-" "^\\*Kill"
           "^\\*Backtrace" "^\\*grep" "^\\*Bookmark" "\\-preprocessed\\*"
           "^\\*XML" "^\\*sdcv" "^\\*imenu" "^\\*smart" "^\\*anything"
-          "^\\*dirtree" "^\\*SPEEDBAR\\*$"
+          "^\\*dirtree" "^\\*SPEEDBAR"
           "_region_" " output\\*$" "^TAGS$" "^\\*Ido" "^\\*GTAGS" "^\\*Minibuf")
         ido-ignore-directories
         '("^auto/" "\\.prv/" "^CVS/" "^\\.")
