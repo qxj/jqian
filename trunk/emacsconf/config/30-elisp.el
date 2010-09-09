@@ -368,15 +368,16 @@
 ;; desktop
 (deh-require 'desktop
   (setq desktop-globals-to-save
-        (delq 'tags-table-list desktop-globals-to-save))
-
-  (setq desktop-base-file-name "emacs.desktop")
-  (setq desktop-path (list my-temp-dir))
-  (setq history-length 250)
-  (add-to-list 'desktop-globals-to-save 'file-name-history)
-  ;; Do not save to desktop
-  (setq desktop-buffers-not-to-save
+        (delq 'tags-table-list desktop-globals-to-save)
+        ;; Do not save to desktop
+        desktop-buffers-not-to-save
         (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
+
+  (setq desktop-base-file-name "emacs.desktop"
+        desktop-path (list "." my-temp-dir)
+        history-length 250)
+  (add-to-list 'desktop-globals-to-save 'file-name-history)
+
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   (add-to-list 'desktop-modes-not-to-save 'Info-mode)
   (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
@@ -385,7 +386,13 @@
   ;; (condition-case nil
   ;;     (desktop-read)
   ;;   (error nil))
-  (desktop-save-mode 1))
+  (desktop-save-mode 1)
+  ;; for multiple desktops
+  (require 'desktop-menu)
+  (setq desktop-menu-directory my-temp-dir
+        desktop-menu-base-filename desktop-base-file-name
+        desktop-menu-list-file "emacs.desktops")
+  )
 
 ;; uniquify
 (deh-require 'uniquify
@@ -618,10 +625,19 @@
 ;;                              (propertize " " 'face 'fringe)))
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
 
+(deh-require 'bookmark+
+  (setq bmkp-bmenu-commands-file
+        (expand-file-name "emacs-bmk-bmenu-commands.el" my-temp-dir)
+        bmkp-bmenu-state-file
+        (expand-file-name "emacs-bmk-bmenu-state.el" my-temp-dir))
+  (require 'bookmark+-lit)
+  (setq bmkp-auto-light-when-jump (quote all-in-buffer)
+        bmkp-auto-light-when-set (quote all-in-buffer))
+	)
 ;; anything, require bm.el
-(deh-require 'bm
-  (setq bm-repository-file (expand-file-name "bm-repository" my-temp-dir)
-        bm-buffer-persistence t))
+;(deh-require 'bm
+;  (setq bm-repository-file (expand-file-name "bm-repository" my-temp-dir)
+;        bm-buffer-persistence t))
 
 (deh-section "anything"
   (autoload 'anything "anything" "" t)
