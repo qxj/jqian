@@ -1,21 +1,4 @@
 ;; -*- mode: Emacs-Lisp -*-
-;;{{{ etags, hideshow, tree-imenu, smart-compile
-;; etags
-(deh-section "etags"
-  (setq tags-add-tables nil
-        default-tags-table-function
-        (lambda nil
-          (ywb-find-top-directory "TAGS"))))
-
-(deh-require 'help-dwim
-  (help-dwim-register
-   '(clibpc . ["a-zA-Z0-9_" clibpc-obarray nil
-               (lambda (sym)
-                 (clibpc-describe-function (symbol-name sym)))])
-   t
-   '((setq clibpc-cache-file (expand-file-name "clibpc-symbols.el" my-temp-dir))
-     (require 'clibpc nil t)))
-  )
 
 (deh-require 'imenu-tree
   (add-hook 'tree-mode-hook
@@ -24,7 +7,7 @@
 
 ;; (deh-require 'dirtree) ; instead dirtree with sr-speedbar
 
-;; Rebinding keys for hideshow
+;;{{{ Rebinding keys for hideshow
 (deh-require 'hideshow
   (define-key hs-minor-mode-map "\C-ch"
     (let ((map (lookup-key hs-minor-mode-map "\C-c@")))
@@ -39,30 +22,42 @@
       map)))
 ;;}}}
 
-;;{{{ Etags, Gtags
+;;{{{ Etags
+(deh-section "etags"
+  (setq tags-add-tables nil
+        default-tags-table-function
+        (lambda nil
+          (ywb-find-top-directory "TAGS"))))
+;;}}}
+
+;;{{{ Gtags
 (deh-section "gtags"
   (autoload 'gtags-mode "gtags" "" t)
-  (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
-    (add-hook
-     hook
-     (lambda ()
-       (gtags-mode 1)
-       ;; Instead of `find-tag' & `pop-tag-mark'
-       (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag-from-here)
-       (define-key gtags-mode-map (kbd "M-*") 'gtags-pop-stack)
-       ;; Key bind for gtags-mode
-       (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
-       (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
-       (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
-       (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
-       (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
-       (define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
-       (define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
-       (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
-       (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
-       (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
-       (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
-       )))
+
+  ;; (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
+  ;;   (add-hook
+  ;;    hook
+  ;;    (lambda ()
+  ;;      (gtags-mode 1))))
+
+  (setq gtags-mode-hook
+        '(lambda ()
+           ;; Instead of `find-tag' & `pop-tag-mark'
+           (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag-from-here)
+           (define-key gtags-mode-map (kbd "M-*") 'gtags-pop-stack)
+           ;; Key bind for gtags-mode
+           (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
+           (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
+           (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
+           (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
+           (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
+           (define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
+           (define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
+           (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
+           (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
+           (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
+           (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
+           ))
 
   (defun yp-gtags-append ()
     (interactive)
@@ -71,6 +66,17 @@
           (message "start to global -u")
           (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
   )
+;;}}}
+
+;;{{{ Cscope
+(deh-require 'xcscope
+  (setq cscope-minor-mode-hooks
+        '(lambda ()
+           ;; Instead of `find-tag' & `pop-tag-mark'
+           (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
+           (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
+           ;; Key bind for cscope-minor-mode
+           )))
 ;;}}}
 
 ;;{{{ svn settins

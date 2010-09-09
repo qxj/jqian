@@ -256,12 +256,49 @@
   )
 ;;}}}
 
-;;{{{  session
-(deh-require 'session
-  (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
-  (setq session-save-file-coding-system 'utf-8-unix)
-  (add-to-list 'session-globals-exclude 'org-mark-ring)
-  (add-hook 'after-init-hook 'session-initialize))
+;;{{{ session management
+(deh-section "session-management"
+  (deh-require 'desktop
+    (setq desktop-globals-to-save
+          (delq 'tags-table-list desktop-globals-to-save)
+          ;; Do not save to desktop
+          desktop-buffers-not-to-save
+          (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
+
+    (setq desktop-base-file-name "emacs.desktop"
+          desktop-path (list my-temp-dir)
+          history-length 250)
+    (add-to-list 'desktop-globals-to-save 'file-name-history)
+
+    (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+    (add-to-list 'desktop-modes-not-to-save 'Info-mode)
+    (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+    (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+    ;; if error occurred, no matter it!
+    ;; (condition-case nil
+    ;;     (desktop-read)
+    ;;   (error nil))
+    (desktop-save-mode 1)
+    ;; for multiple desktops
+    (require 'desktop-menu)
+    (setq desktop-menu-directory my-temp-dir
+          desktop-menu-base-filename desktop-base-file-name
+          desktop-menu-list-file "emacs.desktops")
+    )
+  (deh-require 'session
+    (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
+    (setq session-save-file-coding-system 'utf-8-unix)
+    (add-to-list 'session-globals-exclude 'org-mark-ring)
+    (add-hook 'after-init-hook 'session-initialize))
+  (deh-require 'winsav
+    (setq winsav-dirname my-temp-dir
+          winsav-base-file-name (expand-file-name "emacs.winsav" my-temp-dir))
+    (winsav-save-mode 1))
+;;   (autoload 'dta-hook-up "desktopaid.elc" "Desktop Aid" t)
+;; ;;  (dta-hook-up)
+;;   (setq dta-cfg-dir my-temp-dir)
+;;   (setq dta-default-cfg "desktopaid.cfg")
+  )
 ;;}}}
 
 ;;{{{ pager
@@ -365,35 +402,6 @@
   ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
   (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
 
-;; desktop
-(deh-require 'desktop
-  (setq desktop-globals-to-save
-        (delq 'tags-table-list desktop-globals-to-save)
-        ;; Do not save to desktop
-        desktop-buffers-not-to-save
-        (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
-
-  (setq desktop-base-file-name "emacs.desktop"
-        desktop-path (list "." my-temp-dir)
-        history-length 250)
-  (add-to-list 'desktop-globals-to-save 'file-name-history)
-
-  (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-  (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-  (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-  (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
-  ;; if error occurred, no matter it!
-  ;; (condition-case nil
-  ;;     (desktop-read)
-  ;;   (error nil))
-  (desktop-save-mode 1)
-  ;; for multiple desktops
-  (require 'desktop-menu)
-  (setq desktop-menu-directory my-temp-dir
-        desktop-menu-base-filename desktop-base-file-name
-        desktop-menu-list-file "emacs.desktops")
-  )
-
 ;; uniquify
 (deh-require 'uniquify
   (setq uniquify-buffer-name-style 'forward)
@@ -481,6 +489,31 @@
                              )))))
 ;;}}}
 
+;;{{{ autopair, like skeleton
+(deh-require 'autopair
+  (dolist (hook '(java-mode-hook
+                  c-mode-common-hook
+                  html-mode-hook))
+    (add-hook hook
+              #'(lambda () (autopair-mode))))
+
+  ;; autopair work with paredit when editing emacs lisp
+  (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
+  (dolist (hook '(emacs-lisp-mode-hook lisp-mode-hook lisp-interaction-mode-hook))
+    (add-hook hook
+              (lambda () (paredit-mode +1))))
+
+  (defadvice paredit-mode (around disable-autopairs-around (arg))
+    "Disable autopairs mode if paredit-mode is turned on"
+    ad-do-it
+    (if (null ad-return-value)
+        (autopair-mode 1)
+      (autopair-mode 0)))
+
+  (ad-activate 'paredit-mode)
+  )
+;;}}}
+
 ;;{{{ auto-complete
 (deh-section "auto-complete"
   (require 'auto-complete-config)
@@ -492,12 +525,27 @@
 
   (ac-config-default)
 
+  ;; keybind, donot use RET for auto complete, only TAB
+  (define-key ac-complete-mode-map (kbd "<return>") nil)
+  (define-key ac-complete-mode-map (kbd "RET") nil)
+
+  ;; c/c++
+  (eval-after-load "cc-mode"
+    '(ac-settings-4-cc))
+
+  (defun ac-settings-4-cc ()
+    "`auto-complete' settings for `cc-mode'."
+    (dolist (command `(c-electric-backspace
+                       c-electric-backspace-kill))
+      (add-to-list 'ac-trigger-commands-on-completing command)))
+
   (defun ac-cc-mode-setup ()
     (setq ac-sources (append '(ac-source-yasnippet
                                ac-source-gtags
                                ac-source-semantic
                                ac-source-imenu) ac-sources)))
 
+  ;; python
   (defun ac-python-mode-setup ()
     (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
 
@@ -524,6 +572,19 @@
         (setq yas/trigger-key nil)
         (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "M-k") 'yas/prev-field))))
+;;}}}
+
+;;{{{ template
+(deh-require 'template
+  (template-initialize)
+  (setq template-default-directories (list my-template-dir))
+  (add-to-list 'template-default-expansion-alist
+               '("ENDATE"
+                 (let ((system-time-locale "C"))
+                   (insert (format-time-string "%d %b %Y")))))
+  (dolist (cmd '(ido-select-text ido-magic-forward-char
+                                 ido-exit-minibuffer))
+    (add-to-list 'template-find-file-commands cmd)))
 ;;}}}
 
 ;;{{{ autoloads non-std libraries
@@ -857,7 +918,7 @@ mouse-3: Toggle minor modes"
                '("\\.php" . speedbar-parse-c-or-c++tag))
 
   (setq sr-speedbar-skip-other-window-p t
-        sr-speedbar-delete-windows t
+        ;; sr-speedbar-delete-windows t
         sr-speedbar-width-x 22
         sr-speedbar-max-width 30))
 
