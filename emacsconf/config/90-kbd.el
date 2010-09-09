@@ -78,7 +78,6 @@
     ("t"    . 'template-simple-expand-template)
     ("m"    . 'message-mail)
     ("c"    . 'ywb-clone-buffer)
-    ("j"    . 'jump-to-register)
     ("an"   . 'tempo-forward-mark)
     ("ap"   . 'tempo-backward-mark)
     ("{"    . 'ywb-change-window-size)
