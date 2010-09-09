@@ -2,7 +2,7 @@
 ;;; customization
 (setq custom-file (expand-file-name "01-my-custom.el" my-config-dir))
 
-;; (setq debug-on-error t)
+(setq debug-on-error t)
 
 ;;{{{ Generic Settings
 ;; syntax highlight
@@ -104,8 +104,9 @@
 
 ;; set my file register
 (deh-section "register"
-  (set-register ?. '(file . "~/.emacs.d"))
+  (set-register ?. '(file . "~/.emacs.d/config"))
   (set-register ?t '(file . "~/temp"))
+  (set-register ?p '(file . "~/projects"))
   (set-register ?d '(file . "~/Downloads")))
 
 ;; prevent no response if click the memu in File

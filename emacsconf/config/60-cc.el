@@ -38,7 +38,8 @@
                                    empty-defun-braces
                                    defun-close-semi))
     ;; Association list of syntactic element symbols and indentation offsets.
-    (c-offsets-alist            . ((topmost-intro . 0)
+    (c-offsets-alist            . (
+                                   ;; (topmost-intro . 0)
                                    (arglist-close . c-lineup-arglist)
                                    (substatement  . +)
                                    (substatement-open . 0)
@@ -64,13 +65,10 @@
     (local-set-key "*" 'self-insert-command)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
-    (c-toggle-auto-newline t)
+    ;; (c-toggle-auto-newline t)
     (hs-minor-mode 1)
-    ;; (define-key c-mode-map "\t" 'clibpc-complete-function)
     (eldoc-mode 1)
     (setq comment-style 'extra-line)
-    (set (make-local-variable 'eldoc-documentation-function)
-         'clibpc-eldoc-function)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     (tempo-use-tag-list 'tempo-c-tags))
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
@@ -85,7 +83,7 @@
                    (c-hanging-braces-alist
                     (substatement-open after))
                    (c-offsets-alist
-                    (topmost-intro . 0)
+                    ;; (topmost-intro . 0)
                     (substatement . +)
                     (substatement-open . 0)
                     (case-label . +)
