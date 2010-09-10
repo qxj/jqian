@@ -141,14 +141,14 @@
     ;; (define-key lisp-mode-shared-map (kbd "<f6>") 'find-tag)
     ;; (define-key lisp-mode-shared-map (kbd "<f5>") 'pop-tag-mark)
     )
-
-  (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode))
+  (if (featurep 'ffap)
+      (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
   (defun my-emacs-lisp-mode-hook ()
     (my-mode-common-hook)
     (define-key lisp-mode-shared-map (kbd "C-)") 'ywb-insert-paren)
     ;; (local-set-key "\t" 'PC-lisp-complete-symbol)
     ;; (tempo-install "(?\\([^\\b]+\\)\\=" 'tempo-elisp-tags)
-    (tempo-use-tag-list 'tempo-elisp-tags)
+    ;; (tempo-use-tag-list 'tempo-elisp-tags)
     (hs-minor-mode 1)
     (turn-on-eldoc-mode))
   (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook))
@@ -281,8 +281,9 @@
   (add-to-list 'auto-mode-alist '("\\.pod$" . pod-mode))
   (add-to-list 'auto-mode-alist '("\\.pir$" . pir-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . xs-mode))
-  (add-to-list 'auto-mode-alist '("\\.muse$" . muse-mode))
-  (add-to-list 'auto-mode-alist '("\\.twiki$" . oddmuse-mode)))
+  ;; (add-to-list 'auto-mode-alist '("\\.muse$" . muse-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.twiki$" . oddmuse-mode))
+  )
 
 (deh-section "php"
   ;; (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
@@ -316,7 +317,7 @@
            "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
           ))
   (defun my-php-mode-hook ()
-    (tempo-use-tag-list 'tempo-php-tags)
+    ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
     (setq php-beginning-of-defun-regexp "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(")
     (when (featurep 'php-doc)
@@ -343,6 +344,8 @@
     (if (string-match "^[a-zA-Z0-9_]+$" name)
         (ffap-locate-file (replace-regexp-in-string "_" "/" name) '(".class.php" ".php") ffap-php-path)
       (ffap-locate-file name t ffap-php-path)))
-  (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate)))
+  (if (featurep 'ffap)
+      (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate)))
+)
 
 

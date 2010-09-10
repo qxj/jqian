@@ -16,7 +16,7 @@
   (if (eq window-system 'w32) "d:/My Dropbox/Notes/" "~/Dropbox/Notes/")
   "Put my temporary notes here, eg: in dropbox directory")
 (defconst my-temp-dir
-  (if (eq window-system 'w32) "c:/windows/temp/emacs/" "~/.tmp-emacs/")
+  (if (eq window-system 'w32) "c:/windows/temp/emacs/" "~/.tmp-emacs")
   "Temporary directory to store autosave, desktop, session, backup files.")
 
 ;;; Load-path

@@ -26,26 +26,25 @@
         ;; eassit
         (require 'eassist)
 
-        (dolist (map (list
-                      c-mode-base-map
-                      ;; python-mode-map
-                      ;; php-mode-map
-                      emacs-lisp-mode-map))
-          (apply-define-key
-           map
-           `(
-             ("C-c , s" eassist-switch-h-cpp)
-             ("C-c , l" eassist-list-methods)
-             ("C-c , r" semantic-symref)
-             ("<C-return>" semantic-ia-complete-symbol-menu)
-             ("C-c , c" semantic-ia-complete-symbol)
-             ("C-c , i" semantic-complete-analyze-inline)
-             ("C-c , =" semantic-decoration-include-visit)
-             ("C-c , j" semantic-ia-fast-jump)
-             ("C-c , q" semantic-ia-show-doc)
-             ("C-c , s" semantic-ia-show-summary)
-             ("C-c , p" semantic-analyze-proto-impl-toggle)
-             ("C-c , h" senator-fold-tag-toggle))))
+        (dolist (hook '(c-mode-common-hook
+                        emacs-lisp-mode-hook))
+          (add-hook
+           hook
+           (lambda ()
+             (local-set-key (kbd "C-c , s") 'eassist-switch-h-cpp)
+             (local-set-key (kbd "C-c , l") 'eassist-list-methods)
+             (local-set-key (kbd "C-c , r") 'semantic-symref)
+             (local-set-key (kbd "<C-return>") 'semantic-ia-complete-symbol-menu)
+             (local-set-key (kbd "C-c , c") 'semantic-ia-complete-symbol)
+             (local-set-key (kbd "C-c , i") 'semantic-complete-analyze-inline)
+             (local-set-key (kbd "C-c , =") 'semantic-decoration-include-visit)
+             (local-set-key (kbd "C-c , j") 'semantic-ia-fast-jump)
+             (local-set-key (kbd "C-c , q") 'semantic-ia-show-doc)
+             (local-set-key (kbd "C-c , s") 'semantic-ia-show-summary)
+             (local-set-key (kbd "C-c , p") 'semantic-analyze-proto-impl-toggle)
+             (local-set-key (kbd "C-c , h") 'senator-fold-tag-toggle)
+             ))
+          )
 
         ;; customization
         (custom-set-variables

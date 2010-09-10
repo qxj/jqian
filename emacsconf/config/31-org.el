@@ -8,26 +8,27 @@
               ;;   (define-key org-mode-map (org-key 'S-down)     nil)
               ;;   (define-key org-mode-map (org-key 'S-left)     nil)
               ;;   (define-key org-mode-map (org-key 'S-right)    nil))
-              (add-to-list 'org-link-frame-setup '(file . my-find-file-function))))
+              (add-to-list 'org-link-frame-setup
+                           '(file . my-find-file-function))))
   (add-hook 'org-mode-hook
             (lambda ()
-              (toggle-truncate-lines nil)))
+              (toggle-truncate-lines nil)
+              (turn-on-auto-fill)
+              (outline-minor-mode t)
+              ;; keybinds
+            (local-set-key (kbd "C-c o l") 'org-store-link)
+            (local-set-key (kbd "C-c o a") 'org-agenda)
+            (local-set-key (kbd "C-c o b") 'org-iswitchb)
+            (local-set-key (kbd "C-c o r") 'org-remember)
+            ))
 
-  (define-prefix-command 'org-mode-map-prefix)
-  (global-set-key (kbd "C-c o") 'org-mode-map-prefix)
-
-  (dolist (map (list global-map))
-    (apply-define-key
-     map
-     `(("C-c o l" org-store-link)
-       ("C-c o a" org-agenda)
-       ("C-c o b" org-iswitchb)
-       ("C-c o r" org-remember)
-       ;; for outline-minor-mode-map
-       ("C-c o s" show-entry)
-       ("C-c o S" show-all)
-       ("C-c o h" hide-entry)
-       ("C-c o H" hide-body))))
+  (add-hook 'outline-minor-mode-hook
+            (lambda ()
+            (local-set-key (kbd "C-c o s") 'show-entry)
+            (local-set-key (kbd "C-c o S") 'show-all)
+            (local-set-key (kbd "C-c o h") 'hide-entry)
+            (local-set-key (kbd "C-c o H") 'hide-body)
+              ))
 
   ;;(setq org-agenda-include-diary t) ; contain calendar
   ;;(setq org-log-done t)
@@ -46,8 +47,8 @@
 
   (setq org-todo-keywords
         '((sequence  "TODO(t)"  "WAIT(w@/!)" "START(s!)" "|" "CANCEL(c@/!)" "DONE(d!)")))
-  
-  
+
+
   (setq org-export-with-sub-superscripts nil)
   (defun my-find-file-function (file)
     "find file according to the file extension."
@@ -85,4 +86,74 @@
           (todo priority-down category-keep)
           (tags priority-down category-keep)))
 
+  ;;; org + beamer = owesome slides
+  ;; allow for export=>beamer by placing
+
+  ;; #+LaTeX_CLASS: beamer in org files
+  (unless (boundp 'org-export-latex-classes)
+    (setq org-export-latex-classes nil))
+  (add-to-list 'org-export-latex-classes
+               ;; beamer class, for presentations
+               '("beamer"
+                 "\\documentclass[11pt]{beamer}\n
+\\mode<{{{beamermode}}}>
+\\usetheme{{{{beamertheme}}}}
+\\usecolortheme{{{{beamercolortheme}}}}
+\\beamertemplateballitem
+\\setbeameroption{show notes}
+\\usepackage{CJKutf8}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[CJKbookmarks=true]{hyperref}
+\\usepackage[pdftex]{graphicx}
+\\usepackage{color}
+\\usepackage{listings}
+\\lstset{numbers=none,language=[ISO]C++,tabsize=4,
+  frame=single,
+  basicstyle=\\small,
+  showspaces=false,showstringspaces=false,
+  showtabs=false,
+  keywordstyle=\\color{blue}\\bfseries,
+  commentstyle=\\color{red},
+  }
+\\usepackage{verbatim}
+\\institute{{{{beamerinstitute}}}}
+\\subject{{{{beamersubject}}}}\n
+"
+                 ("\\begin{CJK*}{UTF8}{song}" . "\\end{CJK*}")
+                 ("\\section{%s}" . "\\section*{%s}")
+
+                 ("\\begin{frame}[fragile]\\frametitle{%s}"
+                  "\\end{frame}"
+                  "\\begin{frame}[fragile]\\frametitle{%s}"
+                  "\\end{frame}")))
+
+  ;; letter class, for formal letters
+
+  (add-to-list 'org-export-latex-classes
+
+               '("article"
+                 "\\documentclass[11pt]{article}\n
+\\usepackage{CJKutf8}
+\\usepackage{indentfirst}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[CJKbookmarks=true]{hyperref}
+\\usepackage[pdftex]{graphicx}
+\\usepackage{color}"
+
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
   )
+
+(deh-section "rst"
+  (add-hook 'rst-adjust-hook 'rst-toc-update)
+  ;; Auto fill and outline mode
+  (add-hook 'rst-mode-hook
+            (function (lambda ()
+                        (turn-on-auto-fill)
+                        (outline-minor-mode t)))))
