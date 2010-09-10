@@ -104,10 +104,10 @@
 
 ;; set my file register
 (deh-section "register"
-  (set-register ?. '(file . "~/.emacs.d/config"))
-  (set-register ?t '(file . "~/temp"))
-  (set-register ?p '(file . "~/projects"))
-  (set-register ?d '(file . "~/Downloads")))
+  (set-register ?. '(file . "~/.emacs.d/config/"))
+  (set-register ?t '(file . "~/temp/"))
+  (set-register ?p '(file . "~/projects/"))
+  (set-register ?d '(file . "~/Downloads/")))
 
 ;; prevent no response if click the memu in File
 (fset 'print-buffer 'ignore)
@@ -127,7 +127,7 @@
                        php-mode lisp-interaction-mode sh-mode sgml-mode))
   (font-lock-add-keywords
    mode
-   '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\):" 1 font-lock-warning-face prepend)
+   '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\|WORKAROUND\\):" 1 font-lock-warning-face prepend)
      ("\\<\\(DONE\\|NOTE\\):" 1 font-lock-doc-face t)
      ;; highlight too long lines
      ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)

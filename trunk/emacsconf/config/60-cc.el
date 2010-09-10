@@ -15,7 +15,7 @@
   (setq which-func-unknown "unknown"))
 
 (deh-section "ebrowse"
-;;  (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
+  ;;  (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
   (setq ebrowse-global-prefix-key "\C-z"))
 
 (defconst my-c-style
@@ -70,7 +70,8 @@
     (eldoc-mode 1)
     (setq comment-style 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
-    (tempo-use-tag-list 'tempo-c-tags))
+    ;; (tempo-use-tag-list 'tempo-c-tags)
+    )
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 
 (deh-section "c++-mode"

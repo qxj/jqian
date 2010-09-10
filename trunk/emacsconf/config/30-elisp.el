@@ -249,9 +249,11 @@
                      (mode . java-mode)
                      (mode . idl-mode)
                      (mode . lisp-interaction-mode))))
-          ("m" ((mode . muse-mode)))
           ("w" ((or (mode . emacs-wiki-mode)
-                    (mode . muse-mode))))
+                    (mode . muse-mode)
+                    (mode . rst-mode)
+                    (mode . org-mode)
+                    (mode . LaTeX-mode))))
           ("*" ((name . "*")))))
   )
 ;;}}}
@@ -266,8 +268,12 @@
           (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
     (setq desktop-base-file-name "emacs.desktop"
-          desktop-path (list my-temp-dir)
-          history-length 250)
+          ;; WORKAROUND: avoiding auto-fill-mode failure, put desktop
+          ;; file into another individual directory.
+          desktop-path (list (expand-file-name "desktop" my-temp-dir))
+          ;; desktop-path (list "/tmp/")
+          history-length 100)
+
     (add-to-list 'desktop-globals-to-save 'file-name-history)
 
     (add-to-list 'desktop-modes-not-to-save 'dired-mode)
@@ -280,10 +286,10 @@
     ;;   (error nil))
     (desktop-save-mode 1)
     ;; for multiple desktops
-    (require 'desktop-menu)
-    (setq desktop-menu-directory my-temp-dir
-          desktop-menu-base-filename desktop-base-file-name
-          desktop-menu-list-file "emacs.desktops")
+    ;; (require 'desktop-menu)
+    ;; (setq desktop-menu-directory my-temp-dir
+    ;;       desktop-menu-base-filename desktop-base-file-name
+    ;;       desktop-menu-list-file "emacs.desktops")
     )
   (deh-require 'session
     (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
@@ -499,9 +505,11 @@
 
   ;; autopair work with paredit when editing emacs lisp
   (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
-  (dolist (hook '(emacs-lisp-mode-hook lisp-mode-hook lisp-interaction-mode-hook))
+  (dolist (hook '(emacs-lisp-mode-hook
+                  lisp-mode-hook
+                  lisp-interaction-mode-hook))
     (add-hook hook
-              (lambda () (paredit-mode +1))))
+              #'(lambda () (paredit-mode +1))))
 
   (defadvice paredit-mode (around disable-autopairs-around (arg))
     "Disable autopairs mode if paredit-mode is turned on"
@@ -510,8 +518,7 @@
         (autopair-mode 1)
       (autopair-mode 0)))
 
-  (ad-activate 'paredit-mode)
-  )
+  (ad-activate 'paredit-mode))
 ;;}}}
 
 ;;{{{ auto-complete
@@ -634,7 +641,7 @@
     "Major mode for translators to edit PO files" t)
 
   (autoload 'yaml-mode "yaml-mode" "Simple mode to edit YAML." t)
-  (autoload 'muse-insert-list-item "muse-mode" t)
+  ;; (autoload 'muse-insert-list-item "muse-mode" t)
   ;; make cursor become a line
   ;; (require 'bar-cursor)
   ;; sdcv, dictionary search
@@ -908,7 +915,7 @@ mouse-3: Toggle minor modes"
   ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
   (define-key speedbar-key-map (kbd "M-u") '(lambda () (interactive) (speedbar-up-directory)))
 
-  ;; wordaround to disable view-mode in speedbar
+  ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit)))
   ;; add supported extensions
   (dolist (ext (list ".php" ".js" ".css" ".txt" "README"))
