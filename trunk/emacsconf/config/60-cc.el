@@ -21,7 +21,7 @@
 (defconst my-c-style
   ;; Always indent c/c++ sources, never insert tabs
   '((c-basic-offset             . 4)
-    (c-tab-always-indent        . t)
+    ;; (c-tab-always-indent        . t)
     ;; Offset for line only comments
     (c-comment-only-line-offset . 0)
     ;; Controls the insertion of newlines before and after braces.

@@ -97,6 +97,10 @@
 
       ;; org + beamer = owesome slides
       (require 'org-latex)
+      ;; patch org-latex.el
+      ;; Add "\\begin{CJK*}{UTF8}{song}" to `org-export-latex-make-header'
+      ;; Add "\\end{CJK*}" to `org-export-as-latex'
+
       (setq org-export-latex-default-packages-alist
             '(("" "CJKutf8" t)
               ("" "indentfirst" t)
