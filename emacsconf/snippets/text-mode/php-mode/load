@@ -1,3 +1,0 @@
-#name: $this->load->view(..)
-# --
-$this->load->view("$1",${2:\$data})

@@ -147,7 +147,7 @@
         ido-ignore-directories
         '("^auto/" "\\.prv/" "^CVS/" "^\\.")
         ido-ignore-files
-        '("_region_" "^\\(CVS\\|TAGS\\)" "^[.#]"
+        '("_region_" "^\\(CVS\\|TAGS\\)" "^[.#]" "\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\)$"
           "^\\(GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"))
   ;; visit with dired also push the diretory to `ido-work-directory-list'
   (defadvice ido-file-internal (after ido-dired-add-work-directory)
@@ -270,7 +270,8 @@
     (setq desktop-base-file-name "emacs.desktop"
           ;; WORKAROUND: avoiding auto-fill-mode failure, put desktop
           ;; file into another individual directory.
-          desktop-path (list (expand-file-name "desktop" my-temp-dir))
+          ;; desktop-path (list (expand-file-name "desktop" my-temp-dir))
+          desktop-path (list my-temp-dir)
           ;; desktop-path (list "/tmp/")
           history-length 100)
 
@@ -585,13 +586,18 @@
 (deh-require 'template
   (template-initialize)
   (setq template-default-directories (list my-template-dir))
+  ;; make custom prompts `ENDATE'
   (add-to-list 'template-default-expansion-alist
                '("ENDATE"
                  (let ((system-time-locale "C"))
                    (insert (format-time-string "%d %b %Y")))))
+  ;; work with `ido-find-file'
   (dolist (cmd '(ido-select-text ido-magic-forward-char
                                  ido-exit-minibuffer))
-    (add-to-list 'template-find-file-commands cmd)))
+    (add-to-list 'template-find-file-commands cmd))
+  ;; WORKAROUND: avoid to auto update buffer `.ido-last'
+  (setq template-header-lines 2)
+  )
 ;;}}}
 
 ;;{{{ autoloads non-std libraries

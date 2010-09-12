@@ -1,3 +1,0 @@
-#lang: $this->lang->line(..)
-# --
-$this->lang->line("$1")
