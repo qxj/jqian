@@ -35,10 +35,7 @@
   (autoload 'gtags-mode "gtags" "" t)
 
   ;; (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
-  ;;   (add-hook
-  ;;    hook
-  ;;    (lambda ()
-  ;;      (gtags-mode 1))))
+  ;;   (add-hook hook (lambda () (gtags-mode 1))))
 
   (setq gtags-mode-hook
         '(lambda ()
@@ -130,7 +127,6 @@
   (set (make-local-variable 'tab-stop-list) (number-sequence tab-width 80 tab-width))
   (abbrev-mode t)
   (set (make-local-variable 'comment-style) 'indent)
-  ;; (local-set-key "\t" 'hippie-expand)
   (setq c-basic-offset tab-width))
 
 ;;{{{ elisp
@@ -138,17 +134,12 @@
   (deh-require 'browse-el
     (define-key lisp-mode-shared-map (kbd "M-.") 'browse-el-find-funtion)
     (define-key lisp-mode-shared-map (kbd "M-*") 'browse-el-go-back)
-    ;; (define-key lisp-mode-shared-map (kbd "<f6>") 'find-tag)
-    ;; (define-key lisp-mode-shared-map (kbd "<f5>") 'pop-tag-mark)
     )
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
   (defun my-emacs-lisp-mode-hook ()
     (my-mode-common-hook)
     (define-key lisp-mode-shared-map (kbd "C-)") 'ywb-insert-paren)
-    ;; (local-set-key "\t" 'PC-lisp-complete-symbol)
-    ;; (tempo-install "(?\\([^\\b]+\\)\\=" 'tempo-elisp-tags)
-    ;; (tempo-use-tag-list 'tempo-elisp-tags)
     (hs-minor-mode 1)
     (turn-on-eldoc-mode))
   (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook))
@@ -250,11 +241,15 @@
   (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'python-mode "python" "Python editing mode." t)
   (autoload 'php-mode "php-mode" "php mode" t)
+  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
   (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
   ;; (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
   (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
   (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
-  (autoload 'sourcepair-load "sourcepair" nil t))
+  (autoload 'sourcepair-load "sourcepair" nil t)
+  (autoload 'compile-dwim-compile "compile-dwim" nil t)
+  (autoload 'compile-dwim-run "compile-dwim" nil t)
+  )
 
 (deh-section "auto-mode"
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))

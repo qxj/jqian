@@ -71,15 +71,15 @@
 
 
 ;; Way 2
-(let ((fontset nil)
-      (zh-font (font-spec :family "WenQuanYi Bitmap Song" :size 12)))
-  (set-default-font "DejaVu Sans Mono:pixelsize=12:foundry=unknown")
-  (setq fontset (frame-parameter nil 'font))
-  (dolist (charset '(kana han symbol cjk-misc bopomofo))
-    (set-fontset-font fontset charset zh-font))
-  (add-to-list 'default-frame-alist `(font . ,fontset)))
+;; (let ((fontset nil)
+;;       (zh-font (font-spec :family "WenQuanYi Bitmap Song" :size 12)))
+;;   (set-default-font "DejaVu Sans Mono:pixelsize=12:foundry=unknown")
+;;   (setq fontset (frame-parameter nil 'font))
+;;   (dolist (charset '(kana han symbol cjk-misc bopomofo))
+;;     (set-fontset-font fontset charset zh-font))
+;;   (add-to-list 'default-frame-alist `(font . ,fontset)))
 
 ;; Way 3
-;; (set-frame-font "Consolas:pixelsize=13")  ; set-default-font has been obsoleted
-;; (set-fontset-font (frame-parameter nil 'font)
-;;                   'han '("Microsoft YaHei" . "unicode-bmp"))
+(set-frame-font "Consolas:pixelsize=12")  ; set-default-font has been obsoleted
+(set-fontset-font (frame-parameter nil 'font)
+                  'han '("Microsoft YaHei" . "unicode-bmp"))

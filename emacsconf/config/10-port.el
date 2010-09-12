@@ -183,3 +183,18 @@
       (load (expand-file-name "my-fontset.el" my-config-dir))
       (load (expand-file-name "my-theme.el" my-config-dir)))
     ))
+
+(defun my-compile-command ()
+    (let ((mak-file))
+      ;; Check if a .mak file exists in the current directory
+      (setq mak-file (car (directory-files default-directory nil "\\.mak$")))
+      (if mak-file
+        (concat "nmake /nologo -f " mak-file " CFG=\""
+                (file-name-sans-extension mak-file) " - Win32 Release\"")
+        (concat "make -k " (file-name-sans-extension (file-relative-name buffer-file-name)) ".o")
+      ))
+  )
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (set (make-local-variable 'compile-command) (my-compile-command))))
