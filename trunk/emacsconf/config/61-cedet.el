@@ -1,137 +1,137 @@
 ;; (load "cedet")
 
-(let ((cedet-path "~/src/cedet/common/cedet.el"))
-  (if (file-exists-p cedet-path)
-      (progn
-        (load-file cedet-path)
-        (setq semantic-load-turn-useful-things-on t)
+(deh-section "cedet"
+  (let ((cedet-path "~/src/cedet/common/cedet.el"))
+    (when (file-exists-p cedet-path)
+      (load-file cedet-path)
+      (setq semantic-load-turn-useful-things-on t)
 
-        (semantic-load-enable-code-helpers)
-        ;; (semantic-load-enable-minimum-features)
+      (semantic-load-enable-code-helpers)
+      ;; (semantic-load-enable-minimum-features)
 
-        (require 'semantic-decorate-include)
+      (require 'semantic-decorate-include)
 
-        ;; gcc setup
-        (require 'semantic-gcc)
+      ;; gcc setup
+      (require 'semantic-gcc)
 
-        ;; smart complitions
-        (require 'semantic-ia)
+      ;; smart complitions
+      (require 'semantic-ia)
 
-        (setq-mode-local c-mode semanticdb-find-default-throttle
-                         '(project unloaded system recursive))
-        (setq-mode-local c++-mode semanticdb-find-default-throttle
-                         '(project unloaded system recursive))
+      (setq-mode-local c-mode semanticdb-find-default-throttle
+                       '(project unloaded system recursive))
+      (setq-mode-local c++-mode semanticdb-find-default-throttle
+                       '(project unloaded system recursive))
 
 
-        ;; eassit
-        (require 'eassist)
+      ;; eassit
+      (require 'eassist)
 
-        (dolist (hook '(c-mode-common-hook
-                        emacs-lisp-mode-hook))
-          (add-hook
-           hook
-           (lambda ()
-             (local-set-key (kbd "C-c , s") 'eassist-switch-h-cpp)
-             (local-set-key (kbd "C-c , l") 'eassist-list-methods)
-             (local-set-key (kbd "C-c , r") 'semantic-symref)
-             (local-set-key (kbd "<C-return>") 'semantic-ia-complete-symbol-menu)
-             (local-set-key (kbd "C-c , c") 'semantic-ia-complete-symbol)
-             (local-set-key (kbd "C-c , i") 'semantic-complete-analyze-inline)
-             (local-set-key (kbd "C-c , =") 'semantic-decoration-include-visit)
-             (local-set-key (kbd "C-c , j") 'semantic-ia-fast-jump)
-             (local-set-key (kbd "C-c , q") 'semantic-ia-show-doc)
-             (local-set-key (kbd "C-c , s") 'semantic-ia-show-summary)
-             (local-set-key (kbd "C-c , p") 'semantic-analyze-proto-impl-toggle)
-             (local-set-key (kbd "C-c , h") 'senator-fold-tag-toggle)
-             ))
-          )
+      (dolist (hook '(c-mode-common-hook
+                      emacs-lisp-mode-hook))
+        (add-hook
+         hook
+         (lambda ()
+           (local-set-key (kbd "C-c , s") 'eassist-switch-h-cpp)
+           (local-set-key (kbd "C-c , l") 'eassist-list-methods)
+           (local-set-key (kbd "C-c , r") 'semantic-symref)
+           (local-set-key (kbd "<C-return>") 'semantic-ia-complete-symbol-menu)
+           (local-set-key (kbd "C-c , c") 'semantic-ia-complete-symbol)
+           (local-set-key (kbd "C-c , i") 'semantic-complete-analyze-inline)
+           (local-set-key (kbd "C-c , =") 'semantic-decoration-include-visit)
+           (local-set-key (kbd "C-c , j") 'semantic-ia-fast-jump)
+           (local-set-key (kbd "C-c , q") 'semantic-ia-show-doc)
+           (local-set-key (kbd "C-c , s") 'semantic-ia-show-summary)
+           (local-set-key (kbd "C-c , p") 'semantic-analyze-proto-impl-toggle)
+           (local-set-key (kbd "C-c , h") 'senator-fold-tag-toggle)
+           ))
+        )
 
-        ;; customization
-        (custom-set-variables
-         '(semantic-self-insert-show-completion-function
-           (lambda nil (semantic-ia-complete-symbol-menu (point)))))
+      ;; customization
+      (custom-set-variables
+       '(semantic-self-insert-show-completion-function
+         (lambda nil (semantic-ia-complete-symbol-menu (point)))))
 
-        ;; (when window-system
-        ;;   (global-semantic-folding-mode 1)
-        ;;   (global-semantic-tag-folding-mode 1))
+      ;; (when window-system
+      ;;   (global-semantic-folding-mode 1)
+      ;;   (global-semantic-tag-folding-mode 1))
 
-        ;; (global-semantic-idle-tag-highlight-mode 1)
+      ;; (global-semantic-idle-tag-highlight-mode 1)
 
-        ;; enable support for gnu global
-        (unless (eq window-system 'w32)
-          (require 'semanticdb-global)
-          (semanticdb-enable-gnu-global-databases 'c-mode)
-          (semanticdb-enable-gnu-global-databases 'c++-mode))
+      ;; enable support for gnu global
+      (unless (eq window-system 'w32)
+        (require 'semanticdb-global)
+        (semanticdb-enable-gnu-global-databases 'c-mode)
+        (semanticdb-enable-gnu-global-databases 'c++-mode))
 
-        ;; enable support for exuberent ctags
-        (when (and (fboundp 'semantic-ectag-version)
-                   (semantic-ectag-version))
-          (require 'semanticdb-ectag)
-          (semantic-load-enable-primary-exuberent-ctags-support))
+      ;; enable support for exuberent ctags
+      (when (and (fboundp 'semantic-ectag-version)
+                 (semantic-ectag-version))
+        (require 'semanticdb-ectag)
+        (semantic-load-enable-primary-exuberent-ctags-support))
 
-        ;; Semantic search scope
-        (setq semanticdb-project-roots
-           (list
-            (expand-file-name "/")))
+      ;; Semantic search scope
+      (setq semanticdb-project-roots
+            (list
+             (expand-file-name "/")))
 
-        ;; Ede project support
-        (global-ede-mode t)
+      ;; Ede project support
+      (global-ede-mode t)
 
-        ;; Enable visual bookmarks, similar to native bookmarks and bm.el
-        (enable-visual-studio-bookmarks)
+      ;; Enable visual bookmarks, similar to native bookmarks and bm.el
+      (enable-visual-studio-bookmarks)
 
-        ;; semantic cache directory
-        (setq semanticdb-default-save-directory my-temp-dir)
+      ;; semantic cache directory
+      (setq semanticdb-default-save-directory my-temp-dir)
 
-        ;; keybind
-        (global-set-key (kbd "M-?") 'semantic-ia-complete-symbol-menu)
+      ;; keybind
+      (global-set-key (kbd "M-?") 'semantic-ia-complete-symbol-menu)
 
-        (autoload 'senator-try-expand-semantic "senator")
-        ;; Time in seconds of idle before scheduling events
-        (setq semantic-idle-scheduler-idle-time 5)
-        ;; Time in seconds of idle before scheduling big work.
-        (setq semantic-idle-scheduler-work-idle-time 10)
-        ;; Maximum size in bytes of buffers automatically reparsed
-        (setq semantic-idle-scheduler-max-buffer-size 100000)
+      (autoload 'senator-try-expand-semantic "senator")
+      ;; Time in seconds of idle before scheduling events
+      (setq semantic-idle-scheduler-idle-time 5)
+      ;; Time in seconds of idle before scheduling big work.
+      (setq semantic-idle-scheduler-work-idle-time 10)
+      ;; Maximum size in bytes of buffers automatically reparsed
+      (setq semantic-idle-scheduler-max-buffer-size 100000)
 
-        ;; hippie-try-expand setting
-        (add-to-list 'hippie-expand-try-functions-list 'semantic-ia-complete-symbol)
+      ;; hippie-try-expand setting
+      (add-to-list 'hippie-expand-try-functions-list 'semantic-ia-complete-symbol)
 
-        (global-srecode-minor-mode 1)
+      (global-srecode-minor-mode 1)
 
-        (if (<= 23 emacs-major-version)
-            (cogre-uml-enable-unicode))
+      (if (<= 23 emacs-major-version)
+          (cogre-uml-enable-unicode))
 
-        ;; if windows system, add header file as far as possible
-        (if (eq window-system 'w32)
-            (dolist (mode '(c-mode c++-mode))
-              (semantic-add-system-include (concat my-cygwin-dir "usr/include/") mode)))
+      ;; if windows system, add header file as far as possible
+      (if (eq window-system 'w32)
+          (dolist (mode '(c-mode c++-mode))
+            (semantic-add-system-include (concat my-cygwin-dir "usr/include/") mode)))
 
-        ;; restore imenu original setting rather than semantic-create-imenu-index
-        (dolist (hook (list
-                       c-mode-common-hook
-                       lisp-mode-hook
-                       emacs-lisp-mode-hook
-                       python-mode-hook
-                       java-mode-hook))
-          (add-hook 'hook '(lambda ()
-                             (setq imenu-create-index-function
-                                   'imenu-default-create-index-function))))
+      ;; restore imenu original setting rather than semantic-create-imenu-index
+      (dolist (hook (list
+                     c-mode-common-hook
+                     lisp-mode-hook
+                     emacs-lisp-mode-hook
+                     python-mode-hook
+                     java-mode-hook))
+        (add-hook 'hook '(lambda ()
+                           (setq imenu-create-index-function
+                                 'imenu-default-create-index-function))))
 
-        ;; enable ctags for some languages:
-        ;;  Unix Shell, Perl, Pascal, Tcl, Fortran, Asm
-        ;; (when (semantic-ectag-version)
-        ;;   (semantic-load-enable-primary-exuberent-ctags-support))
+      ;; enable ctags for some languages:
+      ;;  Unix Shell, Perl, Pascal, Tcl, Fortran, Asm
+      ;; (when (semantic-ectag-version)
+      ;;   (semantic-load-enable-primary-exuberent-ctags-support))
 
-        (defvar ywb-semantic-imenu-function (symbol-function 'semantic-create-imenu-index))
-        (defun ywb-toggle-semantic-imenu ()
-          (interactive)
-          (if (eq (symbol-function 'semantic-create-imenu-index)
-                  (symbol-function 'imenu-default-create-index-function))
-              (progn
-                (fset 'semantic-create-imenu-index ywb-semantic-imenu-function)
-                (message "Using semantic-create-imenu-index"))
-            (fset 'semantic-create-imenu-index
-                  (symbol-function 'imenu-default-create-index-function))
-            (message "Using imemu default")))
-        )))
+      (defvar ywb-semantic-imenu-function (symbol-function 'semantic-create-imenu-index))
+      (defun ywb-toggle-semantic-imenu ()
+        (interactive)
+        (if (eq (symbol-function 'semantic-create-imenu-index)
+                (symbol-function 'imenu-default-create-index-function))
+            (progn
+              (fset 'semantic-create-imenu-index ywb-semantic-imenu-function)
+              (message "Using semantic-create-imenu-index"))
+          (fset 'semantic-create-imenu-index
+                (symbol-function 'imenu-default-create-index-function))
+          (message "Using imemu default")))
+      )))
