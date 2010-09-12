@@ -27,23 +27,22 @@
       (require 'eassist)
 
       (dolist (hook '(c-mode-common-hook
+                      python-mode-hook
                       emacs-lisp-mode-hook))
         (add-hook
          hook
-         (lambda ()
-           (local-set-key (kbd "C-c , s") 'eassist-switch-h-cpp)
-           (local-set-key (kbd "C-c , l") 'eassist-list-methods)
-           (local-set-key (kbd "C-c , r") 'semantic-symref)
-           (local-set-key (kbd "<C-return>") 'semantic-ia-complete-symbol-menu)
-           (local-set-key (kbd "C-c , c") 'semantic-ia-complete-symbol)
-           (local-set-key (kbd "C-c , i") 'semantic-complete-analyze-inline)
-           (local-set-key (kbd "C-c , =") 'semantic-decoration-include-visit)
-           (local-set-key (kbd "C-c , j") 'semantic-ia-fast-jump)
-           (local-set-key (kbd "C-c , q") 'semantic-ia-show-doc)
-           (local-set-key (kbd "C-c , s") 'semantic-ia-show-summary)
-           (local-set-key (kbd "C-c , p") 'semantic-analyze-proto-impl-toggle)
-           (local-set-key (kbd "C-c , h") 'senator-fold-tag-toggle)
-           ))
+         '(lambda ()
+            (local-set-key (kbd "C-c , l") 'eassist-list-methods)
+            (local-set-key (kbd "C-c , G") 'semantic-symref)
+            (local-set-key (kbd "<C-return>") 'semantic-ia-complete-symbol-menu)
+            (local-set-key (kbd "C-c , c") 'semantic-ia-complete-symbol)
+            (local-set-key (kbd "C-c , =") 'semantic-decoration-include-visit)
+            (local-set-key (kbd "C-c , j") 'semantic-ia-fast-jump)
+            (local-set-key (kbd "C-c , q") 'semantic-ia-show-doc)
+            (local-set-key (kbd "C-c , s") 'semantic-ia-show-summary)
+            (local-set-key (kbd "C-c , p") 'semantic-analyze-proto-impl-toggle)
+            (local-set-key (kbd "C-c , h") 'senator-fold-tag-toggle)
+            ))
         )
 
       ;; customization
@@ -75,7 +74,10 @@
              (expand-file-name "/")))
 
       ;; Ede project support
+      ;; M-x `ede-new' to generate Project.ede to project root directory.
       (global-ede-mode t)
+      (setq ede-project-placeholder-cache-file
+            (expand-file-name "ede-project.el" my-temp-dir))
 
       ;; Enable visual bookmarks, similar to native bookmarks and bm.el
       (enable-visual-studio-bookmarks)

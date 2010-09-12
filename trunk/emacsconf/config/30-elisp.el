@@ -17,21 +17,36 @@
      (setq dired-no-confirm
            '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
      ;; Keybind for dired
-     (define-key dired-mode-map [return] 'joc-dired-single-buffer)
-     (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
-     (define-key dired-mode-map "^"
-        (lambda () (interactive) (joc-dired-single-buffer "..")))
-     (define-key dired-mode-map (kbd "M-u")
-        (lambda () (interactive) (joc-dired-single-buffer "..")))
      ;; (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
+     (deh-define-key dired-mode-map
+       ( [return] . 'joc-dired-single-buffer)
+       ( [mouse-1] . 'joc-dired-single-buffer-mouse)
+       ( "^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ( "\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ( "z"    . 'ywb-dired-compress-dir)
+       ( "b"    . 'ywb-list-directory-recursive)
+       ( "E"    . 'ywb-dired-w3m-visit)
+       ( "j"    . 'ywb-dired-jump-to-file)
+       ( "J"    . 'woman-dired-find-file)
+       ( " "    . 'ywb-dired-count-dir-size)
+       ( "r"    . 'wdired-change-to-wdired-mode)
+       ( "W"    . 'ywb-dired-copy-fullname-as-kill)
+       ( "a"    . 'ywb-add-description)
+       ( "\C-q" . 'ywb-dired-quickview)
+       ( "/r"   . 'ywb-dired-filter-regexp)
+       ( "/."   . 'ywb-dired-filter-extension)
+       )
      ;; Sort something, prefix key `s'
      (make-local-variable  'dired-sort-map)
      (setq dired-sort-map (make-sparse-keymap))
      (define-key dired-mode-map "s" dired-sort-map)
-     (define-key dired-sort-map "s" '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
-     (define-key dired-sort-map "x" '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
-     (define-key dired-sort-map "t" '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
-     (define-key dired-sort-map "n" '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches ""))))))
+     (deh-define-key dired-sort-map
+       ("s" . '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
+       ("x" . '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
+       ("t" . '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
+       ("n" . '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches "")))))
+     ))
+
 
   ;; Setting for dired
   (setq dired-listing-switches "-alvh")
@@ -135,20 +150,16 @@
   (setq ido-enable-regexp t
         ido-everywhere t)
 
-  (setq ido-save-directory-list-file (expand-file-name "emacs.ido-last" my-temp-dir))
+  (setq ido-save-directory-list-file
+        (expand-file-name "emacs.ido-last" my-temp-dir))
   (setq ido-ignore-buffers
-        '("\\` " "^\\*ESS\\*" "^\\*Messages\\*" "^\\*Help\\*" "^\\*Buffer"
-          "^\\*Shell*" "^\\*CEDET" "^\\*Customize" "^\\*Ibuffer" "^\\*.*Log\\*$"
-          "^\\*.*Completions\\*$" "^\\*Ediff" "^\\*tramp" "^\\*cvs-" "^\\*Kill"
-          "^\\*Backtrace" "^\\*grep" "^\\*Bookmark" "\\-preprocessed\\*"
-          "^\\*XML" "^\\*sdcv" "^\\*imenu" "^\\*smart" "^\\*anything"
-          "^\\*dirtree" "^\\*SPEEDBAR"
-          "_region_" " output\\*$" "^TAGS$" "^\\*Ido" "^\\*GTAGS" "^\\*Minibuf")
+        '("\\` " "^\\*.+\\*$" "_region_" "^TAGS$")
         ido-ignore-directories
-        '("^auto/" "\\.prv/" "^CVS/" "^\\.")
+        '("^auto/" "^CVS/" "^\\.")
         ido-ignore-files
-        '("_region_" "^\\(CVS\\|TAGS\\)" "^[.#]" "\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\)$"
-          "^\\(GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"))
+        '("\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\|vrb\\)$"
+          "^\\(CVS\\|TAGS\\|GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"
+          "_region_" "^[.#]"))
   ;; visit with dired also push the diretory to `ido-work-directory-list'
   (defadvice ido-file-internal (after ido-dired-add-work-directory)
     (when (eq ido-exit 'dired)
@@ -532,19 +543,25 @@
 
   (ac-config-default)
 
-  ;; keybind, donot use RET for auto complete, only TAB
-  (define-key ac-complete-mode-map (kbd "<return>") nil)
-  (define-key ac-complete-mode-map (kbd "RET") nil)
-  (define-key ac-complete-mode-map (kbd "M-j") 'ac-complete)
+  ;; keybind, `ac-complete-map' is deperecated, instead of `ac-menu-map'
+  (setq ac-use-menu-map t)
+  (define-key ac-menu-map (kbd "C-n") 'ac-next)
+  (define-key ac-menu-map (kbd "C-p") 'ac-previous)
+  ;; donot use RET for auto complete, only TAB
+  (define-key ac-menu-map (kbd "<return>") nil)
+  (define-key ac-menu-map (kbd "RET") nil)
+  (define-key ac-menu-map (kbd "M-j") 'ac-complete)
+
+
 
   ;; c/c++
   ;; hack auto-complete.el (deperated)
   ;; add ac-prefix "->" to function `ac-prefix-c-dot'
   (defun ac-cc-mode-setup ()
     "customized setup for `c-mode-common-hook'"
-    ;; (dolist (command `(c-electric-backspace
-    ;;                    c-electric-backspace-kill))
-    ;;   (add-to-list 'ac-trigger-commands-on-completing command))
+    (dolist (command `(c-electric-backspace
+                       c-electric-backspace-kill))
+      (add-to-list 'ac-trigger-commands-on-completing command))
     (setq ac-sources (append '(ac-source-yasnippet
                                ac-source-gtags
                                ac-source-semantic
@@ -576,10 +593,11 @@
       (progn
         (setq yas/trigger-key "<C-tab>")
         (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)
-        (define-key yas/keymap (kbd "M-k") 'yas/prev-field))))
+        (define-key yas/keymap (kbd "M-k") 'yas/prev-field)))
+)
 ;;}}}
 
-;;{{{ template
+;;{{{ Template
 (deh-require 'template
   (template-initialize)
   (setq template-default-directories (list my-template-dir))
