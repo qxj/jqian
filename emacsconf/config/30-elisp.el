@@ -268,11 +268,10 @@
           (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
     (setq desktop-base-file-name "emacs.desktop"
+          desktop-path (list my-temp-dir)
           ;; WORKAROUND: avoiding auto-fill-mode failure, put desktop
           ;; file into another individual directory.
           ;; desktop-path (list (expand-file-name "desktop" my-temp-dir))
-          desktop-path (list my-temp-dir)
-          ;; desktop-path (list "/tmp/")
           history-length 100)
 
     (add-to-list 'desktop-globals-to-save 'file-name-history)
@@ -536,18 +535,16 @@
   ;; keybind, donot use RET for auto complete, only TAB
   (define-key ac-complete-mode-map (kbd "<return>") nil)
   (define-key ac-complete-mode-map (kbd "RET") nil)
+  (define-key ac-complete-mode-map (kbd "M-j") 'ac-complete)
 
   ;; c/c++
-  (eval-after-load "cc-mode"
-    '(ac-settings-4-cc))
-
-  (defun ac-settings-4-cc ()
-    "`auto-complete' settings for `cc-mode'."
-    (dolist (command `(c-electric-backspace
-                       c-electric-backspace-kill))
-      (add-to-list 'ac-trigger-commands-on-completing command)))
-
+  ;; hack auto-complete.el (deperated)
+  ;; add ac-prefix "->" to function `ac-prefix-c-dot'
   (defun ac-cc-mode-setup ()
+    "customized setup for `c-mode-common-hook'"
+    ;; (dolist (command `(c-electric-backspace
+    ;;                    c-electric-backspace-kill))
+    ;;   (add-to-list 'ac-trigger-commands-on-completing command))
     (setq ac-sources (append '(ac-source-yasnippet
                                ac-source-gtags
                                ac-source-semantic
@@ -577,7 +574,7 @@
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
-        (setq yas/trigger-key nil)
+        (setq yas/trigger-key "<C-tab>")
         (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "M-k") 'yas/prev-field))))
 ;;}}}
