@@ -1,9 +1,51 @@
+;;{{{ sudo find file
+(defvar find-file-root-prefix
+  (if (featurep 'xemacs)
+      "/[sudo/root@localhost]"
+    "/sudo:root@localhost:" )
+  "*The filename prefix used to open a file with `find-file-root'.")
+
+
+(defvar find-file-root-history nil
+  "History list for files found using `find-file-root'.")
+
+(defvar find-file-root-hook nil
+  "Normal hook for functions to run after finding a \"root\" file.")
+
+;;;###autoload
+(defun find-file-root ()
+  "*Open a file as the root user.
+   Prepends `find-file-root-prefix' to the selected file name so that it
+   maybe accessed via the corresponding tramp method."
+  (interactive)
+  (require 'tramp)
+  (let* ( ;; We bind the variable `file-name-history' locally so we can
+         ;; use a separate history list for "root" files.
+         (file-name-history find-file-root-history)
+         (name (or buffer-file-name default-directory))
+         (tramp (and (tramp-tramp-file-p name)
+                     (tramp-dissect-file-name name)))
+         path dir file)
+
+    ;; If called from a "root" file, we need to fix up the path.
+;;     (when tramp
+;;       (setq path (tramp-file-name-path tramp)
+;;             dir (file-name-directory path)))
+
+    (when (setq file (read-file-name "Find file (UID = 0): " dir path))
+      (find-file (concat find-file-root-prefix file))
+      ;; If this all succeeded save our new history list.
+      (setq find-file-root-history file-name-history)
+      ;; allow some user customization
+      (run-hooks 'find-file-root-hook))))
+;;}}}
+
 ;;{{{ toggle char case
 (defun ywb-toggle-case-char (char)
   (cond ((and (> char 64) (< char 91)) (downcase char))
         ((and (> char 96) (< char 123)) (upcase char))
         (t char)))
-;;;###autoload 
+;;;###autoload
 (defun ywb-toggle-case-region (beg end)
   (interactive "r")
   (save-excursion
@@ -11,7 +53,7 @@
     (while (and (not (eobp)) (< (point) end))
       (insert-char (ywb-toggle-case-char (char-after)) 1)
       (delete-char 1))))
-;;;###autoload 
+;;;###autoload
 (defun ywb-toggle-case-dwim (arg)
   (interactive "p")
   (let ((start (point))
@@ -22,6 +64,51 @@
     (ywb-toggle-case-region start end)
     (goto-char end)))
 ;;}}}
+
+;;{{{ manipulate item
+;;;###autoload
+(defun ywb-insert-item ()
+  (interactive)
+  (let (curr next)
+    (beginning-of-line)
+    (cond ((looking-at "\\(\\s-*\\)\\([0-9]+\\)\\.\\s-*")
+           (setq curr (string-to-number (buffer-substring (match-beginning 2)
+                                                          (match-end 2))))
+           (setq next (number-to-string (1+ curr)))
+           (end-of-line)
+           (insert "\n" (buffer-substring (match-beginning 1)
+                                          (match-end 1))
+                   next ". ")
+           (ywb-sync-item))
+          ((looking-at "\\s-*[-+]\\s-*")
+           (progn
+             (end-of-line)
+             (insert "\n" (buffer-substring (match-beginning 0)
+                                            (match-end 0)))))
+          (t
+           (progn
+             (end-of-line)
+             (newline-and-indent))))))
+;;;###autoload
+(defun ywb-sync-item ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at "\\(\\s-*\\)\\([0-9]+\\)\\.\\s-*")
+        (let ((curr (string-to-number (buffer-substring (match-beginning 2)
+                                                        (match-end 2))))
+              (blank1 (buffer-substring (match-beginning 1)
+                                        (match-end 1)))
+              (blank2 (buffer-substring (match-end 2)
+                                        (match-end 0))))
+          (while (progn
+                   (beginning-of-line 2)
+                   (looking-at "\\s-*[0-9]+\\.\\s-*"))
+            (setq curr (1+ curr))
+            (delete-region (match-beginning 0) (match-end 0))
+            (insert blank1 (number-to-string curr) blank2))))))
+;;}}}
+
 
 ;;;###autoload
 (defun ywb-find-bad-char ()
@@ -39,7 +126,7 @@
           (setq unread-command-events (list char)))
       (message "No bad char found"))))
 
-;;;###autoload 
+;;;###autoload
 (defun ywb-change-ftp-coding-system (coding)
   (interactive "zCoding: ")
   (when (and coding (coding-system-p coding))
@@ -49,7 +136,7 @@
                             (nth 0 parsed) (nth 1 parsed)))
        coding coding))))
 
-;;;###autoload 
+;;;###autoload
  (defun ywb-goto-section (section)
   "move to numbered section, like
 
@@ -76,7 +163,7 @@ M-x ywb-goto-section RET 1.2 RET move to line 1.2
                                    (looking-at "^-+$"))))))
 
 ;; find backup
-;;;###autoload 
+;;;###autoload
 (defun ywb-revert-buffer-to-backup (backup)
   "If with prefix arg, revert to newest backup. Otherwise read a
 backup file name and revert to it"
@@ -99,8 +186,7 @@ backup file name and revert to it"
 
 ;; run command
 (defvar ywb-command-list
-  '(("xfce-setting-show")
-    ("beep-media-player")
+  '(("nautilus")
     ("gnome-terminal")))
 
 (defun ywb-run-command (cmd)
@@ -138,7 +224,7 @@ backup file name and revert to it"
     (goto-char (point-min))
     (while (not (eobp))
       (funcall func (point) (progn (forward-line 1) (point))))))
-;;;###autoload 
+;;;###autoload
 (defun ywb-delete-line-not-match (regexp)
   "Delete line not match the REGEXP."
   (interactive "sDelete Line not match: ")
@@ -183,7 +269,7 @@ backup file name and revert to it"
       (encode-coding-region (point-min) (point-max) coding)
       (base64-encode-region (point-min) (point-max)))))
 
-;;;###autoload 
+;;;###autoload
 ;; window split
 (defun ywb-toggle-window-split (arg)
   "Split window vertically or horizontally."
@@ -197,7 +283,7 @@ backup file name and revert to it"
     (delete-other-windows)
     (set-window-buffer (split-window nil size horflag) buf)))
 
-;;;###autoload 
+;;;###autoload
 ;; replace-in-rectangle
 (defun ywb-replace-in-rectangle (beg end)
   "Replace text in the rectangle"
@@ -213,7 +299,7 @@ backup file name and revert to it"
 ;; csv-to-tsv
 (defun ywb-csv-to-tsv (beg end)
   (interactive "r")
-  (save-excursion 
+  (save-excursion
     (perform-replace "^[\"']?" "" nil t nil nil nil beg end)
     (perform-replace "[\"']?$" "" nil t nil nil nil beg end)
     (perform-replace "[\"']?,\\s-?[\"']?" "\t" nil t nil nil nil beg
@@ -225,7 +311,7 @@ backup file name and revert to it"
     (write-region beg end file)
     (browse-url file)))
 
-;; save macro 
+;; save macro
 (defvar ywb-kbd-macro
   `(("gnus-delete-letter-noconfirm" . [66 backspace 121 14]))
   "my kbd macros")
@@ -248,7 +334,7 @@ backup file name and revert to it"
     (goto-line num)))
 
 ;; shell-command-background
-;;;###autoload 
+;;;###autoload
 (defun ywb-shell-command-background (command &optional no-output)
   (interactive (list (read-from-minibuffer "Shell Command: " nil
                                            nil nil 'shell-command-history)
@@ -263,7 +349,7 @@ backup file name and revert to it"
     (pop-to-buffer buffer t)))
 
 ;; count-word-region
-;;;###autoload 
+;;;###autoload
 (defun my-count-ce-word (beg end)
   "Count Chinese and English words in marked region."
   (interactive
@@ -281,7 +367,7 @@ backup file name and revert to it"
     (message (format "Total: %d (cn: %d, en: %d) words, %d bytes."
                      total-word cn-word en-word total-byte))))
 ;; ascii-table-show
-;;;###autoload 
+;;;###autoload
 (defun ascii-table-show ()
   "Print the ascii table"
   (interactive)
@@ -313,13 +399,13 @@ backup file name and revert to it"
     (display-buffer (current-buffer))))
 
 ;; swap-text
-;;;###autoload 
+;;;###autoload
 (defun his-swap-text (str1 str2 beg end)
   "Changes all STR1 to STR2 and all STR2 to STR1 in beg/end region."
   (interactive "sString A: \nsString B: \nr")
   (if mark-active
       (setq deactivate-mark t)
-    (setq beg (point-min) end (point-max))) 
+    (setq beg (point-min) end (point-max)))
   (goto-char beg)
   (while (re-search-forward
           (concat "\\(?:\\b\\(" (regexp-quote str1) "\\)\\|\\("
@@ -344,28 +430,6 @@ that your video hardware might not support 50-line mode."
   (if (eq (frame-height (selected-frame)) 50)
       nil  ; the original built-in function returned nil
     (set-frame-size (selected-frame) 80 43)))
-
-(defun ywb-save-desktop (file)
-  (interactive
-   (list (let ((default-directory "~/.emacs.d/desktop"))
-           (read-file-name "Save desktop: "))))
-    (let ((desktop-base-file-name (file-name-nondirectory file)))
-      (desktop-save (file-name-directory file))))
-;;;###autoload 
-(defun ywb-load-desktop (file)
-  (interactive
-   (list (let ((default-directory "~/.emacs.d/desktop"))
-           (read-file-name "Load desktop: "))))
-  (if (y-or-n-p "kill all buffer")
-      (mapc (lambda (buf)
-              (let ((name (buffer-name buf))
-                    (file (buffer-file-name buf)))
-                (unless (or (and (string= (substring name 0 1) " ") (null file))
-                            (string-match "^\\*.*\\*" (buffer-name buf)))
-                  (kill-buffer buf))))
-            (buffer-list)))
-  (let ((desktop-base-file-name (file-name-nondirectory file)))
-    (desktop-read (file-name-directory file))))
 
 ;;;###autoload
 (defun rgb-mode ()
@@ -405,29 +469,6 @@ that your video hardware might not support 50-line mode."
       (insert (substitute-command-keys (format "\\{%s}" keymap)))
       (run-hooks 'temp-buffer-show-hook)))
   (display-buffer (help-buffer)))
-
-;;;###autoload
-(defun when-is-lunar-new-year (&optional year)
-  (interactive "P")
-  (require 'cal-china)
-  (require 'cal-china-x)
-  (let (new-year)
-    (if year
-        (progn
-          (setq new-year (calendar-gregorian-from-absolute (car (cdr (assoc 1 (chinese-year year))))))
-          (message "%d年春节: %d年%d月%d日  %s年"
-                   year (car (cdr (cdr new-year))) (car new-year) (car (cdr new-year))
-                   (aref cal-china-x-zodiac-name (mod (+ 8 year) 12))))
-      (let ((today (decode-time)))
-        (setq today (list (nth 4 today) (nth 3 today) (nth 5 today))
-              year (nth 2 today)
-              new-year (calendar-gregorian-from-absolute (cadr (assoc 1 (chinese-year year)))))
-        (if (calendar-date-compare (list new-year) (list today))
-            (setq year (1+ year)
-                  new-year (calendar-gregorian-from-absolute (cadr (assoc 1 (chinese-year year))))))
-        (message "下一个春节: %d年%d月%d日  %s年"
-                 (car (cdr (cdr new-year))) (car new-year) (car (cdr new-year))
-                 (aref cal-china-x-zodiac-name (mod (+ 8 year) 12)))))))
 
 ;; folding-summary
 ;;;###autoload
@@ -551,8 +592,16 @@ that your video hardware might not support 50-line mode."
         (insert "\"")
         (skip-syntax-forward "^w")))))
 
-;;;###autoload 
+;;;###autoload
 (define-derived-mode asciidoc-mode outline-mode "AsciiDoc"
   "Major mode for editing asciidoc file"
   (setq outline-regexp "[=\f]+")
   )
+
+(defun my-start-demo ()
+  "start presentation, learn from Sacha Chua"
+  (interactive)
+  (set-face-attribute 'default nil :height 500)
+  (delete-other-windows)
+  (sit-for 1)
+  (animate-sequence (list "Livin' la Vida Emacs" "Demonstration" (user-full-name)) 1))

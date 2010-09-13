@@ -279,7 +279,7 @@
           (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
     (setq desktop-base-file-name "emacs.desktop"
-          ;; desktop-path (list my-temp-dir)
+          desktop-path (list my-temp-dir)
           ;; WORKAROUND: avoiding auto-fill-mode failure, put desktop
           ;; file into another individual directory.
           ;; desktop-path (list (expand-file-name "desktop" my-temp-dir))
@@ -301,6 +301,28 @@
     ;; (setq desktop-menu-directory my-temp-dir
     ;;       desktop-menu-base-filename desktop-base-file-name
     ;;       desktop-menu-list-file "emacs.desktops")
+
+    (defun my-save-desktop (file)
+      (interactive
+       (list (let ((default-directory "~"))
+               (read-file-name "Save desktop: "))))
+      (let ((desktop-base-file-name (file-name-nondirectory file)))
+        (desktop-save (file-name-directory file))))
+    (defun my-load-desktop (file)
+      (interactive
+       (list (let ((default-directory "~"))
+               (read-file-name "Load desktop: "))))
+      (if (y-or-n-p "kill all buffer")
+          (mapc (lambda (buf)
+                  (let ((name (buffer-name buf))
+                        (file (buffer-file-name buf)))
+                    (unless (or (and (string= (substring name 0 1) " ") (null file))
+                                (string-match "^\\*.*\\*" (buffer-name buf)))
+                      (kill-buffer buf))))
+                (buffer-list)))
+      (let ((desktop-base-file-name (file-name-nondirectory file)))
+        (desktop-read (file-name-directory file))))
+
     )
   (deh-require 'session
     (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
@@ -499,7 +521,28 @@
                              nil
                              ,(concat "<a\\s-+href=" w3m-html-string-regexp
                                       "\\s-*>.\\{,25\\}\\(?:index\\|目录\\)")
-                             )))))
+                             ))))
+  (defun my-toggle-w3m ()
+    "Switch to a w3m buffer or return to the previous buffer."
+    (interactive)
+    (if (derived-mode-p 'w3m-mode)
+        ;; Currently in a w3m buffer
+        ;; Bury buffers until you reach a non-w3m one
+        (while (derived-mode-p 'w3m-mode)
+          (bury-buffer))
+      ;; Not in w3m
+      ;; Find the first w3m buffer
+      (let ((list (buffer-list)))
+        (while list
+          (if (with-current-buffer (car list)
+                (derived-mode-p 'w3m-mode))
+              (progn
+                (switch-to-buffer (car list))
+                (setq list nil))
+            (setq list (cdr list))))
+        (unless (derived-mode-p 'w3m-mode)
+          (call-interactively 'w3m)))))
+  )
 ;;}}}
 
 ;;{{{ autopair, like skeleton
