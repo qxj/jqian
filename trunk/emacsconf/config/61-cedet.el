@@ -1,7 +1,7 @@
 ;; (load "cedet")
 
 (deh-section "cedet"
-  (let ((cedet-path "~/src/cedet/common/cedet.el"))
+  (let ((cedet-path "~/src/cedet-1.0/common/cedet.el"))
     (when (file-exists-p cedet-path)
       (load-file cedet-path)
       (setq semantic-load-turn-useful-things-on t)
