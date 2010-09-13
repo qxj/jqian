@@ -8,14 +8,13 @@
       (require 'org-install)
 
       (setq org-CUA-compatible t)
+      (defun my-find-file-function (file)
+        "find file according to the file extension."
+        (funcall (or (assoc-default file ywb-dired-guess-command-alist
+                                    'string-match)
+                     'find-file) file))
       (add-hook 'org-load-hook
                 (lambda ()
-                  ;; (let (org-CUA-compatible)
-                  ;;   (define-key org-mode-map (org-key 'S-return)   nil)
-                  ;;   (define-key org-mode-map (org-key 'S-up)       nil)
-                  ;;   (define-key org-mode-map (org-key 'S-down)     nil)
-                  ;;   (define-key org-mode-map (org-key 'S-left)     nil)
-                  ;;   (define-key org-mode-map (org-key 'S-right)    nil))
                   (add-to-list 'org-link-frame-setup
                                '(file . my-find-file-function))))
       (add-hook 'org-mode-hook
@@ -28,8 +27,13 @@
                   (local-set-key (kbd "C-c o a") 'org-agenda)
                   (local-set-key (kbd "C-c o b") 'org-iswitchb)
                   (local-set-key (kbd "C-c o r") 'org-remember)
-                  ;; beamer keybinds
+                  ;; org keybinds reminds
                   ;; (local-set-key (kbd "C-c C-b") 'org-beamer-select-environment)
+                  ;; (local-set-key (kbd "C-c C-x p") 'org-set-property)
+                  ;; (local-set-key (kbd "C-c /") 'org-sparse-tree)
+                  ;; (local-set-key (kbd "C-c C-x C-c") 'org-columns)
+                  ;; (local-set-key (kbd "C-c C-x C-l") 'org-preview-latex-fragment)
+                  ;; (local-set-key (kbd "C-c C-e") 'org-export)
                   ))
 
       (add-hook 'outline-minor-mode-hook
@@ -58,13 +62,11 @@
       (setq org-todo-keywords
             '((sequence  "TODO(t)"  "WAIT(w@/!)" "START(s!)" "|" "CANCEL(c@/!)" "DONE(d!)")))
 
+      ;; Single keys to execute commands at the beginning of a headline
+      (setq org-use-speed-commands t)
 
       (setq org-export-with-sub-superscripts nil)
-      (defun my-find-file-function (file)
-        "find file according to the file extension."
-        (funcall (or (assoc-default file ywb-dired-guess-command-alist
-                                    'string-match)
-                     'find-file) file))
+
       (setq org-file-apps-defaults-gnu '((t . emacs)))
 
       ;; Remember Settings
@@ -95,14 +97,17 @@
               (todo priority-down category-keep)
               (tags priority-down category-keep)))
 
-      ;; org + beamer = owesome slides
-      (require 'org-latex)
-      ;; patch org-latex.el
+      ;; Hack org-latex.el for CJK environment:
       ;; Add "\\begin{CJK*}{UTF8}{song}" to `org-export-latex-make-header'
       ;; Add "\\end{CJK*}" to `org-export-as-latex'
+      (setq org-export-latex-cjk-font "kai")
+      (require 'org-latex)
 
+      ;; org + beamer = owesome slides
       (setq org-export-latex-default-packages-alist
-            '(("" "CJKutf8" t)
+            '(("" "CJKutf8" t)          ; cjk fonts
+              ;; ("" "times" t)            ; english fonts
+              ("" "bookman" t)          ; english fonts
               ("" "indentfirst" t)
               ("english" "babel" t)
               ("AUTO" "inputenc" t)
@@ -112,8 +117,18 @@
               ;; ("CJKbookmarks=true" "hyperref" nil)
               ;; ("pdftex" "graphicx" nil)
               "\\tolerance=1000"))
+      ;; Only 2 level headlines will be exported as frames
+      ;; (setq org-export-headline-levels 2)
       ;; During HTML export, convert latex fragment
       (setq org-export-with-LaTeX-fragments t)
+      ;; fontify source code with listings
+      (setq org-export-latex-listings t)
+      ;; Compatible with yasnippet.el
+      (add-hook 'org-mode-hook
+                (lambda ()
+                  (org-set-local 'yas/trigger-key [tab])
+                  (define-key yas/keymap [tab] 'yas/next-field-or-maybe-expand)
+                  ))
       )))
 
 

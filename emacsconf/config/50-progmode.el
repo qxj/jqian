@@ -65,17 +65,6 @@
   )
 ;;}}}
 
-;;{{{ Cscope
-(deh-require 'xcscope
-  (setq cscope-minor-mode-hooks
-        '(lambda ()
-           ;; Instead of `find-tag' & `pop-tag-mark'
-           (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
-           (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
-           ;; Key bind for cscope-minor-mode
-           )))
-;;}}}
-
 ;;{{{ svn settins
 (deh-require 'psvn
   (defsubst svn-status-interprete-state-mode-color (stat)
@@ -99,13 +88,13 @@
     (add-hook hook (lambda () (flyspell-mode 1))))
   (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
     (add-hook hook (lambda () (flyspell-mode -1))))
-  (dolist (hook '(c-mode-hook c++-mode-hook python-mode-hook))
+  (dolist (hook '(c-mode-common-hook python-mode-hook))
     (add-hook hook (lambda () (flyspell-prog-mode)))))
 
 (deh-require 'flymake
   (setq flymake-gui-warnings-enabled nil)
 
-  (dolist (hook '(c-mode-hook c++-mode-hook makefile-mode-hook))
+  (dolist (hook '(c-mode-common-hook makefile-mode-hook))
     (add-hook
      hook
      (lambda ()
