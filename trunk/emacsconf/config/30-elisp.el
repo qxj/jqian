@@ -279,7 +279,7 @@
           (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
     (setq desktop-base-file-name "emacs.desktop"
-          desktop-path (list my-temp-dir)
+          ;; desktop-path (list my-temp-dir)
           ;; WORKAROUND: avoiding auto-fill-mode failure, put desktop
           ;; file into another individual directory.
           ;; desktop-path (list (expand-file-name "desktop" my-temp-dir))
@@ -308,13 +308,9 @@
     (add-to-list 'session-globals-exclude 'org-mark-ring)
     (add-hook 'after-init-hook 'session-initialize))
   (deh-require 'winsav
+    ;; (winsav-save-mode 1)
     (setq winsav-dirname my-temp-dir
-          winsav-base-file-name (expand-file-name "emacs.winsav" my-temp-dir))
-    (winsav-save-mode 1))
-;;   (autoload 'dta-hook-up "desktopaid.elc" "Desktop Aid" t)
-;; ;;  (dta-hook-up)
-;;   (setq dta-cfg-dir my-temp-dir)
-;;   (setq dta-default-cfg "desktopaid.cfg")
+          winsav-base-file-name (expand-file-name "emacs.winsav" my-temp-dir)))
   )
 ;;}}}
 
@@ -520,7 +516,8 @@
                   lisp-mode-hook
                   lisp-interaction-mode-hook))
     (add-hook hook
-              #'(lambda () (paredit-mode +1))))
+              #'(lambda () (paredit-mode +1)
+                  (local-set-key "\C-cp" 'paredit-mode))))
 
   (defadvice paredit-mode (around disable-autopairs-around (arg))
     "Disable autopairs mode if paredit-mode is turned on"
@@ -592,6 +589,7 @@
   (if (fboundp 'auto-complete-mode)
       (progn
         (setq yas/trigger-key "<C-tab>")
+        ;; (setq yas/trigger-key nil)
         (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "M-k") 'yas/prev-field)))
 )

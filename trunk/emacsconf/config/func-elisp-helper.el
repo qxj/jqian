@@ -125,7 +125,8 @@ of an error, just add the package to a list of missing packages."
     (dolist (file
              (append
               (directory-files my-config-dir t "func-.*.el$")
-              (directory-files (expand-file-name "contrib" my-site-lisp-dir) t ".*.el$")))
+              (directory-files (expand-file-name "contrib" my-site-lisp-dir) t ".*.el$")
+              (directory-files (expand-file-name "goodies" my-site-lisp-dir) t ".*.el$")))
       (unless (file-directory-p file)
         (generate-file-autoloads file)))
     (write-region (point-min) (point-max) "~/.emacs.d/config/100-loaddefs.el")))

@@ -2,13 +2,18 @@
   (setq cscope-database-regexps
         '(("."
            (t)
-           ("d:/Sources/postgresql-8.3.0/src" ("-d")))
-          ("gedit"
-           ( t )
-           ("/home/ywb/softwares/source/gnome/gtk+-2.10.11/" ("-d"))
-           ("/home/ywb/softwares/source/gnome/glib-2.12.11/" ("-d")))))
+           ("~/src" ("-d")))
+          ))
   (setq cscope-do-not-update-database t
-        cscope-adjust nil))
+        cscope-adjust nil)
+  ;; keybinds
+  (setq cscope-minor-mode-hooks
+        '(lambda ()
+           ;; Instead of `find-tag' & `pop-tag-mark'
+           (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
+           (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
+           ;; Key bind for cscope-minor-mode
+           )))
 
 (deh-require 'which-func
   (which-func-mode 1)
@@ -71,6 +76,8 @@
     (setq comment-style 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; (tempo-use-tag-list 'tempo-c-tags)
+    ;; keybinds
+    (local-set-key "\C-ca" 'sourcepair-load)
     )
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 
