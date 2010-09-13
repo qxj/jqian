@@ -4,7 +4,7 @@
 (dolist (func '("func-dired-ext"
                 "func-elisp-helper"
                 "func-prog"
-                "func-sudo"))
+                "func-misc"))
   (load (expand-file-name func my-config-dir)))
 
 

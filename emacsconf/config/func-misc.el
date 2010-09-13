@@ -109,7 +109,6 @@
             (insert blank1 (number-to-string curr) blank2))))))
 ;;}}}
 
-
 ;;;###autoload
 (defun ywb-find-bad-char ()
   "Find not displayable characters in current buffer."
