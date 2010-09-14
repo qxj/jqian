@@ -54,11 +54,6 @@
 
       ;; (setq org-agenda-files my-org-dir) ; cause Shift-Right issue
 
-      (defcustom org-export-html-style
-        "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">" ""
-        :group 'org-export-html
-        :type 'string)
-
       (setq org-todo-keywords
             '((sequence  "TODO(t)"  "WAIT(w@/!)" "START(s!)" "|" "CANCEL(c@/!)" "DONE(d!)")))
 
@@ -97,7 +92,7 @@
               (todo priority-down category-keep)
               (tags priority-down category-keep)))
 
-      ;; export org documents to latex & pdf
+      ;;;# export org documents to latex & pdf
       (require 'org-latex)
 
       (setq org-latex-to-pdf-process
@@ -126,6 +121,14 @@
       (setq org-export-with-LaTeX-fragments t)
       ;; fontify source code with listings
       (setq org-export-latex-listings t)
+
+      ;;;# export org documents to html
+      (setq org-export-html-inline-images t
+            org-export-html-with-timestamp t)
+
+      (setq org-export-html-style
+            "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">")
+
       ;; Compatible with yasnippet.el
       (if (featurep 'yasnippet)
           (add-hook 'org-mode-hook

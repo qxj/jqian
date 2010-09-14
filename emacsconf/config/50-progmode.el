@@ -145,7 +145,7 @@
   (set 'html-mode-hook
        (lambda ()
          (define-key html-mode-map (kbd "<C-return>") 'ywb-html-insert-newline)
-         (tempo-use-tag-list 'tempo-html-tags)
+         ;; (tempo-use-tag-list 'tempo-html-tags)
          (let ((str '(""))
                (align '(("align" ("left") ("center") ("right")))))
            (setq sgml-tag-alist `(("style"
