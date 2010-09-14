@@ -280,9 +280,6 @@
 
     (setq desktop-base-file-name "emacs.desktop"
           desktop-path (list my-temp-dir)
-          ;; WORKAROUND: avoiding auto-fill-mode failure, put desktop
-          ;; file into another individual directory.
-          ;; desktop-path (list (expand-file-name "desktop" my-temp-dir))
           history-length 100)
 
     (add-to-list 'desktop-globals-to-save 'file-name-history)
@@ -764,10 +761,10 @@
   (setq bmkp-auto-light-when-jump (quote all-in-buffer)
         bmkp-auto-light-when-set (quote all-in-buffer))
 	)
-;; anything, require bm.el
-;(deh-require 'bm
-;  (setq bm-repository-file (expand-file-name "bm-repository" my-temp-dir)
-;        bm-buffer-persistence t))
+
+(deh-require 'auto-install
+  ;; (auto-install-update-emacswiki-package-name t)
+  (auto-install-compatibility-setup))
 
 (deh-section "anything"
   (autoload 'anything "anything" "" t)
@@ -980,7 +977,7 @@ mouse-3: Toggle minor modes"
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit)))
   ;; add supported extensions
-  (dolist (ext (list ".php" ".js" ".css" ".txt" "README"))
+  (dolist (ext (list ".php" ".js" ".css" ".txt" "README" ".jpg" ".png"))
     (speedbar-add-supported-extension ext))
 
   (add-to-list 'speedbar-fetch-etags-parse-list
