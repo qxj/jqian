@@ -97,25 +97,28 @@
               (todo priority-down category-keep)
               (tags priority-down category-keep)))
 
-      ;; Hack org-latex.el for CJK environment:
-      ;; Add "\\begin{CJK*}{UTF8}{song}" to `org-export-latex-make-header'
-      ;; Add "\\end{CJK*}" to `org-export-as-latex'
-      (setq org-export-latex-cjk-font "kai")
+      ;; export org documents to latex & pdf
       (require 'org-latex)
 
+      (setq org-latex-to-pdf-process
+            '("xelatex -interaction nonstopmode %s"
+              "xelatex -interaction nonstopmode %s"))
       ;; org + beamer = owesome slides
-      (setq org-export-latex-default-packages-alist
-            '(("" "CJKutf8" t)          ; cjk fonts
-              ;; ("" "times" t)            ; english fonts
-              ("" "bookman" t)          ; english fonts
+      (setq org-export-latex-default-packages-alist ; for xelatex
+            '(("" "fontspec,xunicode" t)
               ("" "indentfirst" t)
               ("english" "babel" t)
               ("AUTO" "inputenc" t)
-              ("T1" "fontenc" t)
               ("" "color" t)
               ("" "listings" t)
-              ;; ("CJKbookmarks=true" "hyperref" nil)
+              ("" "hyperref" t)
               ;; ("pdftex" "graphicx" nil)
+              "\\setmainfont{AR PL ShanHeiSun Uni}"
+              "\\setsansfont[BoldFont=AR PL ZenKai Uni]{AR PL ZenKai Uni}"
+              "\\setmonofont{Bitstream Vera Sans Mono}"
+              "\\defaultfontfeatures{Mapping=tex-text}"
+              "\\XeTeXlinebreaklocale \"zh\""
+              "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
               "\\tolerance=1000"))
       ;; Only 2 level headlines will be exported as frames
       ;; (setq org-export-headline-levels 2)
