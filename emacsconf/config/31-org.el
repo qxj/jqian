@@ -27,13 +27,14 @@
                   (local-set-key (kbd "C-c o a") 'org-agenda)
                   (local-set-key (kbd "C-c o b") 'org-iswitchb)
                   (local-set-key (kbd "C-c o r") 'org-remember)
-                  ;; org keybinds reminds
+                  ;;;## Org Keybinds Reminds ;;;;;;;;;;;;;;;;;;;
                   ;; (local-set-key (kbd "C-c C-b") 'org-beamer-select-environment)
                   ;; (local-set-key (kbd "C-c C-x p") 'org-set-property)
                   ;; (local-set-key (kbd "C-c /") 'org-sparse-tree)
                   ;; (local-set-key (kbd "C-c C-x C-c") 'org-columns)
                   ;; (local-set-key (kbd "C-c C-x C-l") 'org-preview-latex-fragment)
                   ;; (local-set-key (kbd "C-c C-e") 'org-export)
+                  ;; (local-set-key (kbd "C-c C-a") 'org-attach)
                   ))
 
       (add-hook 'outline-minor-mode-hook
@@ -100,17 +101,38 @@
               "xelatex -interaction nonstopmode %s"))
       ;; org + beamer = owesome slides
       (setq org-export-latex-default-packages-alist ; for xelatex
-            '(("" "fontspec,xunicode" t)
+            '(("cm-default" "fontspec" t) ; provides font selecting commands
+              ("" "xunicode" t)      ; provides unicode character macros
+              ("" "xltxtra" t)       ; provides some fixes/extras
               ("" "indentfirst" t)
               ("english" "babel" t)
               ("AUTO" "inputenc" t)
               ("" "color" t)
-              ("" "listings" t)
+              ;;# donot need unicode option
               ("" "hyperref" t)
-              ;; ("pdftex" "graphicx" nil)
+              ;; ("pdftex" "graphicx" t)
+              ;;# listings for source code exporting
+              ("" "listings" t)
+              ("" "xcolor" t)
+              ("" "fancyvrb" t)
+              "\\lstset{
+   fancyvrb=true,
+   %% language=C++,
+   basicstyle=\\ttfamily,
+   stringstyle=\\ttfamily\\color{green!50!black},
+   keywordstyle=\\color{blue}\\bfseries,
+   commentstyle=\\color{red!50!black}\\itshape,
+   showspaces=false,
+   showstringspaces=true,
+   fontadjust=true,
+   keepspaces=true,
+   flexiblecolumns=true,
+   frame=single,
+   upquote=true
+}"
               "\\setmainfont{AR PL ShanHeiSun Uni}"
               "\\setsansfont[BoldFont=AR PL ZenKai Uni]{AR PL ZenKai Uni}"
-              "\\setmonofont{Bitstream Vera Sans Mono}"
+              "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
               "\\defaultfontfeatures{Mapping=tex-text}"
               "\\XeTeXlinebreaklocale \"zh\""
               "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
@@ -135,6 +157,7 @@
                     (lambda ()
                       (org-set-local 'yas/trigger-key [tab])
                       (define-key yas/keymap [tab] 'yas/next-field-or-maybe-expand)
+                      (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)
                       )))
       )))
 

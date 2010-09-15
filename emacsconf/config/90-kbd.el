@@ -7,6 +7,7 @@
 (deh-define-key global-map
   ((kbd "C-z")   . 'ctl-z-map)
   ((kbd "C-d")   . 'delete-char-or-region)
+  ((kbd "<C-delete>")   . 'delete-char-or-region)
   ((kbd "C-1")   . 'smart-mark-whole-sexp)
   ((kbd "C-2")   . 'set-mark-command)
   ((kbd "C-m")   . 'newline-and-indent)

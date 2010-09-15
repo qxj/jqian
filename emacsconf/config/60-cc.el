@@ -77,6 +77,7 @@
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; (tempo-use-tag-list 'tempo-c-tags)
     ;; keybinds
+    (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
     (local-set-key "\C-ca" 'sourcepair-load)
     )
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))

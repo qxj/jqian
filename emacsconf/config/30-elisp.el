@@ -278,7 +278,7 @@
           desktop-buffers-not-to-save
           (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
-    (setq desktop-base-file-name "emacs.desktop"
+    (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
           desktop-path (list my-temp-dir)
           history-length 100)
 
@@ -427,10 +427,16 @@
 ;; formats and timestamp
 (deh-section "formats"
   (setq display-time-format "%m月%d日 星期%a %R")
+
+  ;; emacs frame title
   (setq frame-title-format
-        (list (format "emacs%d@%%b %%f" emacs-major-version)
-              " -- "
-              'display-time-string))
+        '((:eval
+           (let ((login-name (getenv-internal "LOGNAME")))
+             (if login-name (concat login-name "@") "")))
+          (:eval (system-name))
+          ":"
+          (:eval (or (buffer-file-name) (buffer-name)))))
+
   ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
   (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
 
@@ -959,14 +965,6 @@ mouse-3: Toggle minor modes"
         (setq-default mode-line-format nil)
       (setq-default mode-line-format mode-line-format-bak))
     (setq mode-line (not mode-line)))
-
-  (setq frame-title-format
-        '((:eval
-           (let ((login-name (getenv-internal "LOGNAME")))
-             (if login-name (concat login-name "@") "")))
-          (:eval (system-name))
-          ":"
-          (:eval (or (buffer-file-name) (buffer-name)))))
   )
 
 ;; sr-speedbar

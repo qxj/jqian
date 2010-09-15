@@ -30,6 +30,9 @@
 
 (setq truncate-partial-width-windows nil)
 
+;; highlight trailing whitespace
+(setq show-trailing-whitespace t)
+
 ;; no trailing whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
