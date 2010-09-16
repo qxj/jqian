@@ -84,13 +84,10 @@
 ;; use clipboard
 (setq x-select-enable-clipboard t)
 
-;; diff
-(setq diff-switches "-ubB"
-      ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-windows-plain)
-
-;; ediff
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(deh-section "ediff"
+  (setq diff-switches "-ubB"
+        ediff-split-window-function 'split-window-horizontally
+        ediff-window-setup-function 'ediff-setup-windows-plain))
 
 ;; diary, todo, calendar
 (deh-section "calendar"
