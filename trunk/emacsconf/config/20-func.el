@@ -42,14 +42,14 @@
 
 ;;{{{ similar to dd & yy in VIM
 (defadvice kill-ring-save (before slickcopy activate compile)
+  "When called interactively with no active region, copy the current single line to `kill-ring' instead."
   (interactive
    (if mark-active (list (region-beginning) (region-end))
      (list (line-beginning-position)
                    (line-beginning-position 2)))))
 
 (defadvice kill-region (before slickcut activate compile)
-  "When called interactively with no active region, kill a single line inste
-ad."
+  "When called interactively with no active region, kill the current single line instead."
   (interactive
    (if mark-active (list (region-beginning) (region-end))
      (list (line-beginning-position)
