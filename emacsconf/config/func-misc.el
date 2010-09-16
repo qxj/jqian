@@ -596,11 +596,3 @@ that your video hardware might not support 50-line mode."
   "Major mode for editing asciidoc file"
   (setq outline-regexp "[=\f]+")
   )
-
-(defun my-start-demo ()
-  "start presentation, learn from Sacha Chua"
-  (interactive)
-  (set-face-attribute 'default nil :height 500)
-  (delete-other-windows)
-  (sit-for 1)
-  (animate-sequence (list "Livin' la Vida Emacs" "Demonstration" (user-full-name)) 1))
