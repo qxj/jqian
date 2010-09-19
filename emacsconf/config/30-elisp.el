@@ -49,7 +49,8 @@
 
 
   ;; Setting for dired
-  (setq dired-listing-switches "-alvh")
+  (unless (eq system-type 'usg-unix-v)  ; solaris
+    (setq dired-listing-switches "-alvh"))
   (setq dired-recursive-copies 'top)
   (setq dired-recursive-deletes 'top)
   (setq dired-dwim-target t)
@@ -145,13 +146,20 @@
 ;;{{{ ido
 (deh-require 'ido
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
+  (ido-everywhere t)
   (add-hook 'term-setup-hook 'ido-mode)
 
   (setq ido-enable-regexp t
-        ido-everywhere t)
+        ido-enable-tramp-completion nil
+        ido-use-faces t
+        ido-use-filename-at-point 'guess
+        ido-use-url-at-point t
+        ido-auto-merge-work-directories-length -1)
 
   (setq ido-save-directory-list-file
-        (expand-file-name "emacs.ido-last" my-temp-dir))
+        (expand-file-name "emacs.ido-last" my-temp-dir)
+        org-id-locations-file
+        (expand-file-name "emacs.ido-locations" my-temp-dir))
   (setq ido-ignore-buffers
         '("\\` " "^\\*.+\\*$" "_region_" "^TAGS$")
         ido-ignore-directories
@@ -732,15 +740,20 @@
   (setq recentf-max-saved-items nil)
   (setq recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir))
   (recentf-mode t)
+
   (defun recentf-open-files-compl ()
     (interactive)
     (let* ((all-files recentf-list)
            (tocpl (mapcar (function
                            (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
-           (prompt (append '("File name: ") tocpl))
-           (fname (completing-read (car prompt) (cdr prompt) nil nil)))
+           (tokey (mapcar (function
+                           (lambda (x) (file-name-nondirectory x))) all-files))
+           ;; use `ido-completing-read' instead of `completing-read'
+           (fname (ido-completing-read "Open file: " tokey nil t)))
+
       (find-file (cdr (assoc-string fname tocpl)))))
   (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
+
   ;; Also store recent opened directories besides files
   (defun recentf-add-dir ()
     "Add directory name to recentf file list."

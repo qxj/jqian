@@ -47,7 +47,6 @@
   ;; ("u" . 'revert-buffer)
   ("v" . 'imenu-tree)
   ("w" . 'ywb-favorite-window-config)
-  ("\C-a" . 'ywb-create/switch-scratch)
   ("\C-o" . 'browse-url-at-point)
   ("\C-t" . 'his-transpose-windows)
   )
@@ -65,6 +64,7 @@
 (deh-define-key ctl-cc-map
   ("a" . 'org-agenda)
   ("b" . 'org-iswitchb)
+  ("c" . 'ywb-create/switch-scratch)
   ("d" . 'deh-customize-inplace)
   ("f" . 'find-library)
   ("i" . 'ispell-word)
