@@ -19,6 +19,7 @@
                                '(file . my-find-file-function))))
       (add-hook 'org-mode-hook
                 (lambda ()
+                  (org-set-local 'comment-start "#+COMMENT:")
                   (toggle-truncate-lines nil)
                   (auto-fill-mode 1)
                   (outline-minor-mode t)
