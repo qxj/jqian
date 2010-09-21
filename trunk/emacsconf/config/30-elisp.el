@@ -589,8 +589,14 @@
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
 
-  (add-to-list 'ac-dictionary-directories (expand-file-name "ac-dict" my-startup-dir))
-  (add-to-list 'ac-user-dictionary-files (expand-file-name "ac.dict" my-startup-dir))
+  (add-to-list 'ac-dictionary-directories
+               (expand-file-name "ac-dict" my-startup-dir))
+  (add-to-list 'ac-user-dictionary-files
+               (expand-file-name "ac.dict" my-startup-dir))
+
+  ;; enable auto-complete in comments
+  (setq ac-disable-faces
+        '(font-lock-string-face font-lock-doc-face))
 
   (ac-config-default)
 
@@ -794,7 +800,7 @@
        (define-key anything-map "\M-n" 'anything-next-source)
        (define-key anything-map "\M-p" 'anything-previous-source)))
 
-  (require 'anything-config)
+  (try-require 'anything-config)
 
   (setq anything-c-adaptive-history-file
         (expand-file-name "anything-c-adaptive-history" my-temp-dir)
