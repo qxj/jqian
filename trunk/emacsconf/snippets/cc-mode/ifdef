@@ -1,0 +1,7 @@
+#name : #ifdef ... #endif
+# --
+#ifdef $1
+$2${3:
+#else
+$4}
+#endif /* $1 */

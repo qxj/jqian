@@ -1043,7 +1043,7 @@ mouse-3: Toggle minor modes"
      comint-dynamic-complete-functions
      (let ((list (default-value 'comint-dynamic-complete-functions)))
        (add-to-list 'list 'shell-dynamic-complete-command t)))
-    (abbrev-mode t))
+    )
   (add-hook 'shell-mode-hook 'ywb-shell-mode-hook)
 
   ;; shell-completion
