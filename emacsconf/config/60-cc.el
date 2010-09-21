@@ -20,7 +20,7 @@
   (setq which-func-unknown "unknown"))
 
 (deh-section "ebrowse"
-  ;;  (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
+   (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
   (setq ebrowse-global-prefix-key "\C-z"))
 
 (defconst my-c-style
@@ -42,7 +42,7 @@
     (c-cleanup-list             . (scope-operator
                                    empty-defun-braces
                                    defun-close-semi))
-    ;; Association list of syntactic element symbols and indentation offsets.
+    ;; ;; Association list of syntactic element symbols and indentation offsets.
     (c-offsets-alist            . (
                                    ;; (topmost-intro . 0)
                                    (arglist-close . c-lineup-arglist)
@@ -54,9 +54,8 @@
                                    (label             . -)
                                    (inclass           . +)
                                    (inline-open       . 0)
-                                   ;; (c-echo-syntactic-information-p . t)
                                    (knr-argdecl-intro . -)))
-    (c-echo-syntactic-information-p . t)
+    ;; (c-echo-syntactic-information-p . t)
     )
   "My C/C++/ObjC Programming Style")
 
@@ -75,7 +74,6 @@
     (eldoc-mode 1)
     (setq comment-style 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
-    ;; (tempo-use-tag-list 'tempo-c-tags)
     ;; keybinds
     (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
     (local-set-key "\C-ca" 'sourcepair-load)
