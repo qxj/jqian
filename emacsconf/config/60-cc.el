@@ -2,7 +2,7 @@
   (setq cscope-database-regexps
         '(("."
            (t)
-           ("~/src" ("-d")))
+           ("~/projects/nbu" ("-d")))
           ))
   (setq cscope-do-not-update-database t
         cscope-adjust nil)
@@ -69,7 +69,7 @@
     (local-set-key "*" 'self-insert-command)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
-    ;; (c-toggle-auto-newline t)
+    (c-toggle-auto-newline nil)
     (hs-minor-mode 1)
     (eldoc-mode 1)
     (setq comment-style 'extra-line)

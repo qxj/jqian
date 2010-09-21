@@ -59,6 +59,7 @@
   ("\C-r" . 'find-file-root)
   ("\C-k" . (lambda () (interactive) (kill-buffer (current-buffer))))
   ("\C-_" . 'fit-frame)
+  ("t"    . 'template-expand-template)
   ("m"    . 'message-mail)
   ("c"    . 'ywb-clone-buffer)
   ("{"    . 'ywb-change-window-size)

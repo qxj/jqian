@@ -114,7 +114,7 @@
 (defun my-mode-common-hook ()
   (setq tab-width 4)
   (set (make-local-variable 'tab-stop-list) (number-sequence tab-width 80 tab-width))
-  (abbrev-mode t)
+  ;; (abbrev-mode t)
   (set (make-local-variable 'comment-style) 'indent)
   (setq c-basic-offset tab-width))
 
