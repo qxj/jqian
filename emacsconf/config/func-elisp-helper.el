@@ -19,6 +19,12 @@ of an error, just add the package to a list of missing packages."
      (progn
        (message "Checking for library `%s'... Missing" feature)
        (add-to-list 'missing-packages-list feature 'append))
+     nil)
+    (error
+     (progn
+       (message "Error for library `%s'... Unknown" feature)
+       (add-to-list 'missing-packages-list feature 'append)
+       (sleep-for 1))
      nil)))
 
 
