@@ -205,21 +205,22 @@
     (require 'jde)
     (jde-mode)
     )
-  (defun my-java-mode-hook ()
-    (c-set-style "java");
-    (setq c-basic-offset 4))
-  (add-hook 'java-mode-hook 'my-java-mode-hook))
+  (add-hook 'java-mode-hook
+            (lambda ()
+              (c-set-style "java")
+              (setq c-basic-offset 4)
+              )))
 
+;;; emacs --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
-  (defun my-js2-mode-hook ()
-    (setq forward-sexp-function nil)
-    )
-  (add-hook 'js2-mode-hook 'my-js2-mode-hook))
+  (add-hook 'js2-mode-hook
+            (lambda ()
+              (setq forward-sexp-function nil))))
 
 (deh-section "autoloads"
   ;; (autoload 'gtags-mode "gtags" "Global Tags Mode from GNU." t)
   (autoload 'svn-status "psvn" nil t)
-  (autoload 'js2-mode "js2-mode" "" t)
+  (autoload 'js2-mode "js2" "" t)
   (autoload 'git-status "git" "" t)
   (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
   (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
