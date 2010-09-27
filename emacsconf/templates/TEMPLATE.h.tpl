@@ -1,12 +1,8 @@
-/*
- *bcpyrght
- **********************************************************************************
- * $VRTScprght: Copyright 1993 - 2010 Symantec Corporation, All Rights Reserved $ *
- **********************************************************************************
- *ecpyrght
+/* @(#)TEMPLATE.h.tpl
+ * Time-stamp: <2010-06-11 13:55:18 Friday by jqian>
+ * Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
+ * Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
  */
-
-/* $Id: (>>>FILE<<<),v 1.1.2.11 2010/04/13 17:26:59 $ */
 
 #ifndef _(>>>FILE_UPCASE<<<)_H
 #define _(>>>FILE_UPCASE<<<)_H 1

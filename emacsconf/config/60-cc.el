@@ -49,7 +49,7 @@
     (c-cleanup-list             . (scope-operator
                                    empty-defun-braces
                                    defun-close-semi))
-    ;; Association list of syntactic element symbols and indentation offsets.
+    ;; ;; Association list of syntactic element symbols and indentation offsets.
     (c-offsets-alist            . (
                                    ;; (topmost-intro . 0)
                                    (arglist-close . c-lineup-arglist)
@@ -86,8 +86,8 @@
     (local-set-key "\C-ca" 'sourcepair-load)
     ;; nbbuild
     (if (file-exists-p "Makefile.vs")
-      (set (make-local-variable 'compile-command)
-           "nbbuild --platform=linuxR_x86 --buildhost aleppo all"))
+        (set (make-local-variable 'compile-command)
+             "nbbuild --platform=linuxR_x86 --buildhost aleppo all"))
     )
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 

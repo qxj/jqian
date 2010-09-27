@@ -1,12 +1,10 @@
-/*
- *bcpyrght
- **********************************************************************************
- * $VRTScprght: Copyright 1993 - 2010 Symantec Corporation, All Rights Reserved $ *
- **********************************************************************************
- *ecpyrght
- */
+// @(#)TEMPLATE.cpp.tpl
+// Time-stamp: <2010-06-11 13:56:14 Friday by jqian>
+// Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
+// Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
 
-static char RCSid[] = "@(#) $Source: src/sts/storage_servers/att/Attic/att.c,v $ $Revision: 1.0 $";
-/* REFERENCED */
-static char *RCDid_ptr = RCSid;
+#include "(>>>FILE_SANS<<<).h"
 
+using namespace std;
+
+(>>>POINT<<<)

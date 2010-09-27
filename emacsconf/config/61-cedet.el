@@ -57,10 +57,10 @@
       ;; (global-semantic-idle-tag-highlight-mode 1)
 
       ;; enable support for gnu global
-      ;; (unless (eq window-system 'w32)
-      ;;   (require 'semanticdb-global)
-      ;;   (semanticdb-enable-gnu-global-databases 'c-mode)
-      ;;   (semanticdb-enable-gnu-global-databases 'c++-mode))
+      (unless (eq window-system 'w32)
+        (require 'semanticdb-global)
+        (semanticdb-enable-gnu-global-databases 'c-mode)
+        (semanticdb-enable-gnu-global-databases 'c++-mode))
 
       ;; enable support for exuberent ctags
       (when (and (fboundp 'semantic-ectag-version)
