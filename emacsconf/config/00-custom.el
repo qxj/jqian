@@ -2,7 +2,7 @@
 ;;; customization
 (setq custom-file (expand-file-name "01-my-custom.el" my-config-dir))
 
-(setq debug-on-error t)
+;(setq debug-on-error t)
 
 ;;{{{ Generic Settings
 ;; syntax highlight
