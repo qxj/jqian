@@ -602,8 +602,8 @@
 
   ;; keybind, `ac-complete-map' is deperecated, instead of `ac-menu-map'
   (setq ac-use-menu-map t)
-  (define-key ac-menu-map (kbd "C-n") 'ac-next)
-  (define-key ac-menu-map (kbd "C-p") 'ac-previous)
+  (define-key ac-menu-map (kbd "M-n") 'ac-next)
+  (define-key ac-menu-map (kbd "M-p") 'ac-previous)
   ;; donot use RET for auto complete, only TAB
   (define-key ac-menu-map (kbd "<return>") nil)
   (define-key ac-menu-map (kbd "RET") nil)
