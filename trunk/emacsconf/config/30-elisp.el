@@ -349,6 +349,11 @@
   (global-set-key (kbd "M-p") 'pager-row-up)
   (global-set-key (kbd "<down>") 'pager-row-down)
   (global-set-key (kbd "M-n") 'pager-row-down)
+  ;; Some individual keybinds
+  (add-hook 'Man-mode-hook
+            (lambda ()
+              (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
+              (define-key Man-mode-map (kbd "M-n") 'pager-row-down)))
   )
 ;;}}}
 
@@ -602,8 +607,8 @@
 
   ;; keybind, `ac-complete-map' is deperecated, instead of `ac-menu-map'
   (setq ac-use-menu-map t)
-  (define-key ac-menu-map (kbd "M-n") 'ac-next)
-  (define-key ac-menu-map (kbd "M-p") 'ac-previous)
+  (define-key ac-menu-map (kbd "C-n") nil)
+  (define-key ac-menu-map (kbd "C-p") nil)
   ;; donot use RET for auto complete, only TAB
   (define-key ac-menu-map (kbd "<return>") nil)
   (define-key ac-menu-map (kbd "RET") nil)
