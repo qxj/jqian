@@ -161,7 +161,7 @@
         org-id-locations-file
         (expand-file-name "emacs.ido-locations" my-temp-dir))
   (setq ido-ignore-buffers
-        '("\\` " "^\\*.+\\*$" "_region_" "^TAGS$")
+        '("\\` " "^\\*.+" "_region_" "^TAGS$")
         ido-ignore-directories
         '("^auto/" "^CVS/" "^\\.")
         ido-ignore-files
@@ -648,10 +648,10 @@
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
-        (setq yas/trigger-key "<C-tab>")
+        (setq yas/trigger-key "M-/") ;; `M-/' works in terminal
         ;; (setq yas/trigger-key nil)
-        (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)
-        (define-key yas/keymap (kbd "M-k") 'yas/prev-field)))
+        (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
+        (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
 )
 ;;}}}
 

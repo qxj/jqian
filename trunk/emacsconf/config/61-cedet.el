@@ -1,17 +1,5 @@
 ;; (load "cedet")
 
-;; Q: How to use ede for a project?
-;; A: Create a file named "Project.ede" under the root of this project.
-;; Sample:
-;; (ede-cpp-root-project "cpp-tests"
-;;                       :file "~/projects/lang-exp/cpp/CMakeLists.txt"
-;;                       :system-include-path '("/home/ott/exp/include"
-;;                                              boost-base-directory)
-;;                       :local-variables (list
-;;                                         (cons 'compile-command 'my-compile)
-;;                                         )
-;;                       )
-
 (deh-section "cedet"
   (let ((cedet-path "~/src/cedet-1.0/common/cedet.el"))
     (when (file-exists-p cedet-path)
