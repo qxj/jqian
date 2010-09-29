@@ -242,6 +242,7 @@
   )
 
 (deh-section "auto-mode"
+  (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
   (add-to-list 'auto-mode-alist '("\\.acd$" . acd-mode))

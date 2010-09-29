@@ -79,6 +79,7 @@
     (c-toggle-auto-newline nil)
     (hs-minor-mode 1)
     (eldoc-mode 1)
+    (smart-operator-mode 1)
     (setq comment-style 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
