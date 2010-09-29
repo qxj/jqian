@@ -100,11 +100,11 @@
         (setq ede-project-placeholder-cache-file
               (expand-file-name "ede-project.el" my-temp-dir))
 
-        (defun my-ede-new-cpp (projname
-                               filename
-                               &optional incdir
-                               &optional cmd)
-          "Generate a Project.ede for current cpp project, instead of `ede-new'."
+        (defun my-ede-new (projname
+                           filename
+                           &optional incdir
+                           &optional cmd)
+          "Generate a Project.ede for current project, instead of `ede-new'."
           (interactive
            (list
             (read-string "Project name: ")
@@ -118,12 +118,16 @@
                                   default-directory))))
             (find-file (expand-file-name "Project.ede" current-dir))
             (lisp-interaction-mode)
-            (insert (format "(ede-cpp-root-project \"%s\"
-                      :file \"%s\"" projname filename))
+            (insert (format "(ede-proj-project \"%s\"
+                      :name \"%s\"
+                      :file \"%s\"
+                      :targets 'nil" projname projname filename))
             (if incdir
-                (insert (format "\n                      :system-include-path '(\"%s\")" incdir)))
+                (insert (format "\n
+                      :system-include-path '(\"%s\")" incdir)))
             (if cmd
-                (insert (format "\n                      :local-variables (list
+                (insert (format "\n
+                      :local-variables (list
                                         (cons 'compile-command '(my-gen-compile-string \"%s\")))" cmd)))
             (insert ")")))
 
