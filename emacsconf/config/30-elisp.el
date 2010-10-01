@@ -654,6 +654,7 @@
   (if (fboundp 'auto-complete-mode)
       (progn
         (setq yas/trigger-key "M-/") ;; `M-/' works in terminal
+        (setq yas/trigger-key "<C-tab>")
         ;; (setq yas/trigger-key nil)
         (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
