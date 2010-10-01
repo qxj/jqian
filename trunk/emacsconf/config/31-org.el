@@ -95,28 +95,27 @@
               (tags priority-down category-keep)))
 
       ;;;# export org documents to latex & pdf
-      (require 'org-latex)
-
-      (setq org-latex-to-pdf-process
-            '("xelatex -interaction nonstopmode %s"
-              "xelatex -interaction nonstopmode %s"))
-      ;; org + beamer = owesome slides
-      (setq org-export-latex-default-packages-alist ; for xelatex
-            '(("cm-default" "fontspec" t) ; provides font selecting commands
-              ("" "xunicode" t)      ; provides unicode character macros
-              ("" "xltxtra" t)       ; provides some fixes/extras
-              ("" "indentfirst" t)
-              ("english" "babel" t)
-              ("AUTO" "inputenc" t)
-              ("" "color" t)
-              ;;# donot need unicode option
-              ("" "hyperref" t)
-              ;; ("pdftex" "graphicx" t)
-              ;;# listings for source code exporting
-              ("" "listings" t)
-              ("" "xcolor" t)
-              ("" "fancyvrb" t)
-              "\\lstset{
+      (deh-require 'org-latex
+        (setq org-latex-to-pdf-process
+              '("xelatex -interaction nonstopmode %s"
+                "xelatex -interaction nonstopmode %s"))
+        ;; org + beamer = owesome slides
+        (setq org-export-latex-default-packages-alist ; for xelatex
+              '(("cm-default" "fontspec" t) ; provides font selecting commands
+                ("" "xunicode" t)      ; provides unicode character macros
+                ("" "xltxtra" t)       ; provides some fixes/extras
+                ("" "indentfirst" t)
+                ("english" "babel" t)
+                ("AUTO" "inputenc" t)
+                ("" "color" t)
+                ;;# donot need unicode option
+                ("" "hyperref" t)
+                ;; ("pdftex" "graphicx" t)
+                ;;# listings for source code exporting
+                ("" "listings" t)
+                ("" "xcolor" t)
+                ("" "fancyvrb" t)
+                "\\lstset{
    fancyvrb=true,
    %% language=C++,
    basicstyle=\\ttfamily,
@@ -131,19 +130,20 @@
    frame=single,
    upquote=true
 }"
-              "\\setmainfont{AR PL ShanHeiSun Uni}"
-              "\\setsansfont[BoldFont=AR PL ZenKai Uni]{AR PL ZenKai Uni}"
-              "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
-              "\\defaultfontfeatures{Mapping=tex-text}"
-              "\\XeTeXlinebreaklocale \"zh\""
-              "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
-              "\\tolerance=1000"))
-      ;; Only 2 level headlines will be exported as frames
-      ;; (setq org-export-headline-levels 2)
-      ;; During HTML export, convert latex fragment
-      (setq org-export-with-LaTeX-fragments t)
-      ;; fontify source code with listings
-      (setq org-export-latex-listings t)
+                "\\setmainfont{AR PL ShanHeiSun Uni}"
+                "\\setsansfont[BoldFont=AR PL ZenKai Uni]{AR PL ZenKai Uni}"
+                "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
+                "\\defaultfontfeatures{Mapping=tex-text}"
+                "\\XeTeXlinebreaklocale \"zh\""
+                "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
+                "\\tolerance=1000"))
+        ;; Only 2 level headlines will be exported as frames
+        ;; (setq org-export-headline-levels 2)
+        ;; During HTML export, convert latex fragment
+        (setq org-export-with-LaTeX-fragments t)
+        ;; fontify source code with listings
+        (setq org-export-latex-listings t)
+        )
 
       ;;;# export org documents to html
       (setq org-export-html-inline-images t
