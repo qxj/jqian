@@ -226,11 +226,12 @@
         '(("default"
            ("*buffer*" (name . "\\*.*\\*"))
            ("dired" (mode . dired-mode))
-           ("prog" (or (mode . c++-mode)
-                       (mode . c-mode)
-                       (mode . java-mode)
-                       (mode . python-mode)
-                       (mode . makefile-mode)))
+           ("programming" (or (mode . c++-mode)
+                              (mode . c-mode)
+                              (mode . makefile-mode)))
+           ("script" (or (mode . python-mode)
+                         (mode . sh-mode)
+                         (mode . perl-mode)))
            ("web" (or  (mode . html-mode)
                        (mode . css-mode)
                        (mode . php-mode)
@@ -603,18 +604,16 @@
   (setq ac-disable-faces
         '(font-lock-string-face font-lock-doc-face))
 
+  (add-to-list 'ac-modes 'org-mode)
+
   (ac-config-default)
 
   ;; keybind, `ac-complete-map' is deperecated, instead of `ac-menu-map'
   (setq ac-use-menu-map t)
-  (define-key ac-menu-map (kbd "C-n") nil)
-  (define-key ac-menu-map (kbd "C-p") nil)
   ;; donot use RET for auto complete, only TAB
   (define-key ac-menu-map (kbd "<return>") nil)
   (define-key ac-menu-map (kbd "RET") nil)
-  (define-key ac-menu-map (kbd "M-j") 'ac-complete)
-
-
+  (define-key ac-menu-map (kbd "TAB") 'ac-complete)
 
   ;; c/c++
   ;; hack auto-complete.el (deperated)
@@ -632,8 +631,12 @@
   ;; python
   (defun ac-python-mode-setup ()
     (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
-
   (add-hook 'python-mode-hook 'ac-python-mode-setup)
+
+  ;; Org
+  (defun ac-org-mode-setup ()
+    (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+  (add-hook 'org-mode-hook 'ac-org-mode-setup)
   )
 ;;}}}
 
@@ -653,9 +656,7 @@
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
-        (setq yas/trigger-key "M-/") ;; `M-/' works in terminal
-        (setq yas/trigger-key "<C-tab>")
-        ;; (setq yas/trigger-key nil)
+        ;; (setq yas/trigger-key nil) ; deperecated tweak
         (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
 )
