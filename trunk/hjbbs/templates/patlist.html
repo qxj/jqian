@@ -1,0 +1,28 @@
+$def with (category, patlist)
+
+$for cate in category:
+    <h3>$cate.name</h3>
+    <ul>
+      $for pat in patlist:
+          $if pat['cid'] == cate.cid:
+              <li>
+                <input type="checkbox" value="$pat['pid']" title="delete it" />
+                <span class="pattern">$pat['pattern']</span>
+                <span class="description">$pat['name']</span>
+              </li>
+    </ul>
+
+<script type="text/javascript">
+$$("#pattern-list input").click(
+function(){
+    $$.post(
+    "/pat/del",
+    {
+        pid: $$(this).val()
+    },
+    function(data){
+        $$("#pattern-list").html(data);
+        $$("#pattern-result").html("Deleted a pattern" );
+        });
+    });
+</script>
