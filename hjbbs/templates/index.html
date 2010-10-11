@@ -1,0 +1,70 @@
+$def with (status)
+
+<h1>Subscribe Page</h1>
+
+<script type="text/javascript">
+function set_cookie(c_name,value,expiredays) {
+    var exdate=new Date();
+    exdate.setDate(exdate.getDate()+expiredays);
+    document.cookie=c_name+ "=" +encodeURI(value)+    
+        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+}
+
+
+function get_cookie(c_name) {
+    if (document.cookie.length>0) {
+        c_start=document.cookie.indexOf(c_name + "=");
+        if (c_start!=-1) { 
+            c_start=c_start + c_name.length+1;
+            c_end=document.cookie.indexOf(";",c_start);
+            if (c_end==-1) c_end=document.cookie.length;
+            return decodeURI(document.cookie.substring(c_start,c_end));
+        } 
+    }
+    return "";
+}
+
+function check_email(email) {
+    var filter = /^([a-zA-Z0-9_-])+@symantec.com$$/;
+    if (filter.test(email.toLowerCase())) {
+        return true;
+    }
+    return false;
+}
+</script>
+
+<div id="status">
+  <label for="user-status">Your Email:</label>
+  <input type="text" length="20" size="30" id="email" title="Input your email here to subscribe pages"/>
+  <input type="button" value="Check" id="check-status-btn"/>
+</div>
+
+<div id="subscribe-result" class="result"></div>
+
+<div id="status-result">
+    $:status
+</div>
+
+<script type="text/javascript">
+$$("#email").val(get_cookie("email"));
+$$("#check-status-btn").click(
+function(){
+    vmail = $$("#email").val();
+    if(!check_email(vmail)){
+        $$("#subscribe-result").html("Please provide correct email address, such as xxx@symantec.com");
+        return false;
+    }else{
+        $$("#subscribe-result").html("");
+    }
+    set_cookie("email", vmail, 365)
+    if(vmail)
+    $$.post("/chk",
+    {
+        email: vmail
+    },
+    function(data){
+        $$("#email").val(vmail.toLowerCase());
+        $$("#status-result").html(data);
+    });
+});
+</script>

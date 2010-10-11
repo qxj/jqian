@@ -1,0 +1,27 @@
+$def with (emails)
+
+<h1>Email Management</h1>
+
+<div id="mail-result" class="result"></div>
+
+<div id="mail-list">
+  <ul>
+    $for email in emails:
+        <li><input type="checkbox" name="email" value="$email.email" title="Click to delete it.">
+          $email.email
+        </li>
+  </ul>
+</div>
+
+<script type="text/javascript">
+$$("#mail-list input").click(function(){
+    email = $$(this).val();
+    $$.post("/mail/del",
+        {
+            email: email
+        },function(data){
+            $$("#mail-list").html(data);
+            $$("#mail-result").html("Deleted <em>" + email + "</em>").show(500)
+    });
+});
+</script>
