@@ -128,6 +128,27 @@
         (define-key map (eval `(kbd ,(nth 0 key-pair))) (nth 1 key-pair)))))
 ;;}}}
 
+(defun my-untabify ()
+  "My untabify function as discussed and described at
+ http://www.jwz.org/doc/tabs-vs-spaces.html
+ and improved by Claus Brunzema:
+ - return nil to get `write-contents-hooks' to work correctly
+   (see documentation there)
+ - `make-local-hook' instead of `make-local-variable'
+ - when instead of if
+ Use some lines along the following for getting this to work in the
+ modes you want it to:
+
+ \(add-hook 'some-mode-hook
+           '(lambda ()
+               (make-local-hook 'write-contents-hooks)
+                (add-hook 'write-contents-hooks 'my-untabify nil t)))"
+  (save-excursion
+    (goto-char (point-min))
+    (when (search-forward "\t" nil t)
+      (untabify (1- (point)) (point-max)))
+    nil))
+
 ;; sort line
 (defun ywb-sort-lines-1 (reverse beg end predicate)
   (save-excursion
