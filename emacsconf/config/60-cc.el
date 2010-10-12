@@ -1,27 +1,3 @@
-(deh-require 'xcscope
-  (setq cscope-database-regexps
-        '(
-          ("^/home/jqian/nbusrc"
-           (t)
-           ("/home/jqian/tags/")
-           ("/home/jqian/")
-           t
-           ("/net/code/srt/nb_sync/MAIN/cscope" ("-d")))
-          ("^/home/jqian/projects"
-           (t)
-           ("/home/jqian/projects" ("-d" "-I/usr/local/include")))
-          ))
-  (setq cscope-do-not-update-database t
-        cscope-adjust nil)
-  ;; keybinds
-  (setq cscope-minor-mode-hooks
-        '(lambda ()
-           ;; Instead of `find-tag' & `pop-tag-mark'
-           (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
-           (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
-           ;; Key bind for cscope-minor-mode
-           )))
-
 (deh-require 'which-func
   (which-func-mode 1)
   (setq which-func-unknown "unknown"))

@@ -30,21 +30,17 @@
           (ywb-find-top-directory "TAGS"))))
 ;;}}}
 
-;;{{{ Gtags
+;;{{{ Gtags & Xcscope
 (deh-section "gtags"
   (autoload 'gtags-mode "gtags" "" t)
-
-  ;; (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
-  ;;   (add-hook hook (lambda () (gtags-mode 1))))
-
   (setq gtags-mode-hook
         '(lambda ()
            ;; Instead of `find-tag' & `pop-tag-mark'
-           (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag-from-here)
+           (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag)
            (define-key gtags-mode-map (kbd "M-*") 'gtags-pop-stack)
            ;; Key bind for gtags-mode
            (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
-           (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag)
+           (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag-from-here)
            (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
            (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
            (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
@@ -53,16 +49,63 @@
            (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
            (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
            (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
-           (define-key gtags-mode-map (kbd "C-c g b") 'yp-gtags-append)
+           (define-key gtags-mode-map (kbd "C-c g b") 'my-gtags-append)
            ))
-
-  (defun yp-gtags-append ()
+  (defun my-gtags-append ()
     (interactive)
     (if gtags-mode
         (progn
           (message "start to global -u")
           (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
+  (defun my-gtags-enable ()
+    (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
+      (add-hook hook (lambda () (gtags-mode 1)))))
   )
+
+(deh-require 'xcscope
+  (setq cscope-database-regexps
+        '(
+          ("^/home/jqian/nbusrc"
+           (t)
+           ("/home/jqian/tags/")
+           ("/home/jqian/")
+           t
+           ("/net/code/srt/nb_sync/MAIN/cscope" ("-d")))
+          ("^/home/jqian/projects"
+           (t)
+           ("/home/jqian/projects" ("-d" "-I/usr/local/include")))
+          ))
+  (setq cscope-do-not-update-database t
+        cscope-adjust nil)
+  ;; keybinds
+  (setq cscope-minor-mode-hooks
+        '(lambda ()
+           ;; Instead of `find-tag' & `pop-tag-mark'
+           (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
+           (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
+           ;; Key bind for cscope-minor-mode
+           ))
+  ;; hack `xcscope.el', remove hooks
+  (dolist (hook '(c-mode-hook c++-mode-hook dired-mode-hook))
+    (remove-hook hook (function cscope:hook)))
+  )
+
+(defcustom my-enable-gtags-or-xcscope t
+  "No-nil to enable gtags, or enable xcscope.")
+
+(defun my-toggle-gtags-and-xcscope ()
+  (if my-enable-gtags-or-xcscope
+      (progn
+        (dolist (hook '(c-mode-hook c++-mode-hook))
+          (add-hook hook (lambda () (gtags-mode 1))))
+        (dolist (hook '(c-mode-hook c++-mode-hook))
+          (remove-hook hook (function cscope:hook))))
+    (dolist (hook '(c-mode-hook c++-mode-hook))
+      (remove-hook hook (lambda () (gtags-mode 1))))
+    (dolist (hook '(c-mode-hook c++-mode-hook))
+      (add-hook hook (function cscope:hook)))))
+
+(my-toggle-gtags-and-xcscope)
 ;;}}}
 
 ;;{{{ svn settins
