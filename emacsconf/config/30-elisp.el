@@ -618,6 +618,8 @@
 
   (add-to-list 'ac-modes 'org-mode)
 
+  (setq ac-auto-show-menu t) ;; show menu immediately, avoid RET trouble
+
   (ac-config-default)
 
   ;; keybind, `ac-complete-map' is deperecated, instead of `ac-menu-map'
