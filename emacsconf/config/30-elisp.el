@@ -618,11 +618,10 @@
 
   (add-to-list 'ac-modes 'org-mode)
 
-  (setq ac-auto-show-menu t) ;; show menu immediately, avoid RET trouble
-
   (ac-config-default)
 
-  ;; keybind, `ac-complete-map' is deperecated, instead of `ac-menu-map'
+  (define-key ac-completing-map "\r" nil) ; avoid RET trouble
+  ;; keybind, `ac-menu-map' is recommended
   (setq ac-use-menu-map t)
   ;; donot use RET for auto complete, only TAB
   (define-key ac-menu-map (kbd "<return>") nil)
