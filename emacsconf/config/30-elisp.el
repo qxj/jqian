@@ -566,27 +566,39 @@
 (deh-require 'autopair
   (dolist (hook '(java-mode-hook
                   c-mode-common-hook
+                  python-mode-hook
+                  emacs-lisp-mode-hook
                   html-mode-hook))
     (add-hook hook
               #'(lambda () (autopair-mode))))
 
-  ;; autopair work with paredit when editing emacs lisp
-  (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
-  (dolist (hook '(emacs-lisp-mode-hook
-                  lisp-mode-hook
-                  lisp-interaction-mode-hook))
-    (add-hook hook
-              #'(lambda () (paredit-mode +1)
-                  (local-set-key "\C-cp" 'paredit-mode))))
+  ;; some tricks
+  (add-hook 'c++-mode-hook
+           #'(lambda ()
+                (push ? (getf autopair-dont-pair :comment))
+                (push '(?< . ?>) (getf autopair-extra-pairs :code))
+                ))
+  (add-hook 'emacs-lisp-mode-hook
+            #'(lambda ()
+                (push '(?` . ?') (getf autopair-extra-pairs :comment))
+                (push '(?` . ?') (getf autopair-extra-pairs :string))))
 
-  (defadvice paredit-mode (around disable-autopairs-around (arg))
-    "Disable autopairs mode if paredit-mode is turned on"
-    ad-do-it
-    (if (null ad-return-value)
-        (autopair-mode 1)
-      (autopair-mode 0)))
-
-  (ad-activate 'paredit-mode))
+  ;;; Autopair work with paredit when editing emacs lisp
+  ;; (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
+  ;; (dolist (hook '(emacs-lisp-mode-hook
+  ;;                 lisp-mode-hook
+  ;;                 lisp-interaction-mode-hook))
+  ;;   (add-hook hook
+  ;;             #'(lambda () (paredit-mode +1)
+  ;;                 (local-set-key "\C-cp" 'paredit-mode))))
+  ;; (defadvice paredit-mode (around disable-autopairs-around (arg))
+  ;;   "Disable autopairs mode if paredit-mode is turned on"
+  ;;   ad-do-it
+  ;;   (if (null ad-return-value)
+  ;;       (autopair-mode 1)
+  ;;     (autopair-mode 0)))
+  ;; (ad-activate 'paredit-mode)
+  )
 ;;}}}
 
 ;;{{{ auto-complete
