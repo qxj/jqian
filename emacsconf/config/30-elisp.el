@@ -612,9 +612,9 @@
   (add-to-list 'ac-user-dictionary-files
                (expand-file-name "ac.dict" my-startup-dir))
 
-  ;; enable auto-complete in comments
-  (setq ac-disable-faces
-        '(font-lock-string-face font-lock-doc-face))
+  ;; disable auto-complete in comments
+  ;; (setq ac-disable-faces
+  ;;       '(font-lock-string-face font-lock-doc-face))
 
   (add-to-list 'ac-modes 'org-mode)
 
@@ -1026,8 +1026,14 @@ mouse-3: Toggle minor modes"
         sr-speedbar-max-width 30))
 
 ;; highlight mode
-(deh-require 'highlight-symbol
-  (setq highlight-symbol-idle-delay 0.5)
+(deh-section "highlight"
+  ;; Highlight current line
+  (global-hl-line-mode)
+  (set-face-background 'hl-line "white smoke") ; list-colors-display
+  ;; Highlight symbol
+  (require 'highlight-symbol)
+  (setq highlight-symbol-idle-delay 0.5
+        highlight-symbol-mode nil)
   (dolist (hook '(emacs-lisp-mode-hook
                   lisp-interaction-mode-hook
                   java-mode-hook
@@ -1036,7 +1042,7 @@ mouse-3: Toggle minor modes"
                   html-mode-hook))
     (add-hook
      hook (lambda ()
-            (highlight-symbol-mode 1)
+            ;; (highlight-symbol-mode 1)
             (local-set-key (kbd "C-c l l") 'highlight-symbol-at-point)
             (local-set-key (kbd "C-c l u") 'highlight-symbol-remove-all)
             (local-set-key (kbd "C-c l n") 'highlight-symbol-next)
