@@ -607,6 +607,10 @@
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
 
+  ;; for terminal, works well with `global-hl-line-mode'
+  (if (null window-system)
+      (set-face-background 'ac-completion-face "blue"))
+
   (add-to-list 'ac-dictionary-directories
                (expand-file-name "ac-dict" my-startup-dir))
   (add-to-list 'ac-user-dictionary-files
