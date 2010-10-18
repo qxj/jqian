@@ -125,6 +125,20 @@
           (setq unread-command-events (list char)))
       (message "No bad char found"))))
 
+(defun ywb-find-not-encodable-char ()
+  (interactive)
+  (let* ((from (point-min))
+         (to (point-max))
+         (codings (find-coding-systems-region from to))
+         (unsafe (list buffer-file-coding-system))
+         (rejected nil))
+    (if (member (coding-system-base buffer-file-coding-system)
+                codings)
+        (message "Current coding system is work!")
+      (setq unread-command-events (list ?\^G))
+      (select-safe-coding-system-interactively
+       from to codings unsafe rejected (car codings)))))
+
 ;;;###autoload
 (defun ywb-change-ftp-coding-system (coding)
   (interactive "zCoding: ")
