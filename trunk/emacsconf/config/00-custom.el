@@ -146,6 +146,14 @@
 (put 'erase-buffer 'disabled nil)
 (put 'LaTeX-hide-environment 'disabled nil)
 
+;; Prevent annoying active process message when kill emacs
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+  (flet ((process-list ())) ad-do-it))
+
+;; Recommend hippie-expand
+(eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
+
 (custom-set-variables
  '(confirm-kill-emacs (quote y-or-n-p))
  '(cperl-invalid-face nil)

@@ -606,6 +606,7 @@
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
+  (setq ac-candidate-limit ac-menu-height) ; improve drop menu performance
 
   ;; for terminal, works well with `global-hl-line-mode'
   (if (null window-system)

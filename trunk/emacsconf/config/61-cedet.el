@@ -158,7 +158,12 @@
       (setq semantic-idle-scheduler-max-buffer-size 100000)
 
       ;; hippie-try-expand setting
-      (add-to-list 'hippie-expand-try-functions-list 'semantic-ia-complete-symbol)
+      (dolist (hook (list
+                     c-mode-common-hook
+                     emacs-lisp-mode-hook))
+        (add-to-list 'hippie-expand-try-functions-list
+                     'semantic-ia-complete-symbol))
+
 
       (global-srecode-minor-mode 1)
 
