@@ -754,6 +754,8 @@
   (require 'smart-mark)
   ;; visible-line
   (require 'visible-lines nil t)
+  ;; multi-term, enhanced ansi-term command
+  (require 'multi-term)
   )
 
 ;; browse-kill-ring

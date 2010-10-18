@@ -60,14 +60,13 @@
       ;; (global-semantic-idle-tag-highlight-mode 1)
 
       ;; enable support for gnu global
-      (unless (eq system-type 'windows-nt)
+      (when (my-command-exist-p "global")
         (require 'semanticdb-global)
         (semanticdb-enable-gnu-global-databases 'c-mode)
         (semanticdb-enable-gnu-global-databases 'c++-mode))
 
       ;; enable support for exuberent ctags
-      (when (and (fboundp 'semantic-ectag-version)
-                 (semantic-ectag-version))
+      (when (my-command-exist-p "ctags-exuberant")
         (require 'semanticdb-ectag)
         (semantic-load-enable-primary-exuberent-ctags-support))
 
