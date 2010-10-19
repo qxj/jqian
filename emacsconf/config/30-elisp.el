@@ -173,6 +173,30 @@
     (when (eq ido-exit 'dired)
       (ido-record-work-directory (expand-file-name default-directory))))
   (ad-activate 'ido-file-internal)
+  ;; Replace completing-read wherever possible, unless directed otherwise
+  (defvar ido-enable-replace-completing-read t
+    "If t, use ido-completing-read instead of completing-read if possible.
+
+    Set it to nil using let in around-advice for functions where the
+    original completing-read is required.  For example, if a function
+    foo absolutely must use the original completing-read, define some
+    advice like this:
+
+    (defadvice foo (around original-completing-read-only activate)
+      (let (ido-enable-replace-completing-read) ad-do-it))")
+  (defadvice completing-read
+    (around use-ido-when-possible activate)
+    (if (or (not ido-enable-replace-completing-read) ; Manual override disable ido
+            (boundp 'ido-cur-list)) ; Avoid infinite loop from ido calling this
+        ad-do-it
+      (let ((allcomp (all-completions "" collection predicate)))
+        (if allcomp
+            (setq ad-return-value
+                  (ido-completing-read prompt
+                                       allcomp
+                                       nil require-match initial-input hist def))
+          ad-do-it))))
+
   ;; push the most used directory to `ido-work-directory-list'
   (mapc (lambda (dir)
           (add-to-list 'ido-work-directory-list
@@ -461,6 +485,8 @@
   )
 
 (deh-section "hippie-expand"
+  ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
+  (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
   (setq hippie-expand-try-functions-list
         '(try-expand-line
           try-expand-dabbrev
@@ -475,11 +501,13 @@
           try-complete-lisp-symbol
           try-complete-lisp-symbol-partially
           try-expand-whole-kill)))
+
 (deh-section "doc-view"
   (add-hook 'doc-view-mode-hook
             (lambda ()
               (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
               (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol))))
+
 (deh-section "image"
   (defun image-display-info ()
     (interactive)
@@ -754,8 +782,15 @@
   (require 'smart-mark)
   ;; visible-line
   (require 'visible-lines nil t)
-  ;; multi-term, enhanced ansi-term command
-  (require 'multi-term)
+  )
+
+;; Enhanced ansi-term
+(deh-require 'multi-term
+  ;; compatible with normal terminal keybinds
+  (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+  ;; unbind keys
+  (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
   )
 
 ;; browse-kill-ring
