@@ -151,9 +151,6 @@
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
   (flet ((process-list ())) ad-do-it))
 
-;; Recommend hippie-expand
-(eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
-
 (custom-set-variables
  '(confirm-kill-emacs (quote y-or-n-p))
  '(cperl-invalid-face nil)
