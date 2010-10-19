@@ -248,7 +248,7 @@
   ;; group buffers
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("*buffer*" (name . "\\*.*\\*"))
+           ("*terminal*" (mode . term-mode))
            ("dired" (mode . dired-mode))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
@@ -264,7 +264,8 @@
            ("elisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-interaction-mode)))
            ("tags" (name . "^G?TAGS"))
-           ("erc" (mode . erc-mode)))))
+           ("erc" (mode . erc-mode))
+           ("*buffer*" (name . "\\*.*\\*")))))
   (set 'ibuffer-mode-hook
        (lambda ()
          (ibuffer-switch-to-saved-filter-groups "default")))
