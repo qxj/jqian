@@ -65,6 +65,9 @@
     (if (file-exists-p "Makefile.vs")
         (set (make-local-variable 'compile-command)
              "nbbuild --platform=linuxR_x86 --buildhost aleppo all"))
+    ;; untabify source code
+    (make-local-hook 'write-contents-hooks)
+    (add-hook 'write-contents-hooks 'my-untabify nil t)
     )
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 
