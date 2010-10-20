@@ -174,7 +174,7 @@
       (ido-record-work-directory (expand-file-name default-directory))))
   (ad-activate 'ido-file-internal)
   ;; Replace completing-read wherever possible, unless directed otherwise
-  (defvar ido-enable-replace-completing-read t
+  (defvar ido-enable-replace-completing-read nil
     "If t, use ido-completing-read instead of completing-read if possible.
 
     Set it to nil using let in around-advice for functions where the
@@ -802,6 +802,8 @@
   (require 'smart-mark)
   ;; visible-line
   (require 'visible-lines nil t)
+  ;; info+
+  (require 'info+)
   )
 
 ;; Enhanced ansi-term
@@ -865,8 +867,8 @@
         bmkp-bmenu-state-file
         (expand-file-name "emacs-bmk-bmenu-state.el" my-temp-dir))
   (require 'bookmark+-lit)
-  (setq bmkp-auto-light-when-jump (quote all-in-buffer)
-        bmkp-auto-light-when-set (quote all-in-buffer))
+  (setq bmkp-auto-light-when-jump 'all-in-buffer
+        bmkp-auto-light-when-set 'all-in-buffer)
 	)
 
 (deh-require 'auto-install
