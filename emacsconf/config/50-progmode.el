@@ -1,9 +1,9 @@
 ;; -*- mode: Emacs-Lisp -*-
 
-(deh-require 'imenu-tree
-  (add-hook 'tree-mode-hook
-            (lambda ()
-              (toggle-truncate-lines t))))
+;; (deh-require 'imenu-tree
+;;   (add-hook 'tree-mode-hook
+;;             (lambda ()
+;;               (toggle-truncate-lines t))))
 
 ;; (deh-require 'dirtree) ; instead dirtree with sr-speedbar
 
@@ -19,6 +19,7 @@
       (define-key map "s" 'hs-show-block)
       (define-key map "H" 'hs-hide-all)
       (define-key map "S" 'hs-show-all)
+      (define-key map "t" 'hs-toggle-hiding)
       map)))
 ;;}}}
 

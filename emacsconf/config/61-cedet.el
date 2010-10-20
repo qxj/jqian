@@ -169,16 +169,10 @@
       (if (<= 23 emacs-major-version)
           (cogre-uml-enable-unicode))
 
-      ;; restore imenu original setting rather than semantic-create-imenu-index
-      (dolist (hook (list
-                     c-mode-common-hook
-                     lisp-mode-hook
-                     emacs-lisp-mode-hook
-                     python-mode-hook
-                     java-mode-hook))
-        (add-hook 'hook '(lambda ()
-                           (setq imenu-create-index-function
-                                 'imenu-default-create-index-function))))
+      ;; imenu, expand all functions
+      (setq semantic-imenu-buckets-to-submenu nil
+            semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing
+            semantic-which-function-use-color t)
 
       ;; enable ctags for some languages:
       ;;  Unix Shell, Perl, Pascal, Tcl, Fortran, Asm
