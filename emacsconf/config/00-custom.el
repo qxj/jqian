@@ -151,6 +151,17 @@
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
   (flet ((process-list ())) ad-do-it))
 
+;; Auto indent pasted content
+(dolist (command '(yank yank-pop))
+  (eval
+   `(defadvice ,command (after indent-region activate)
+      (and (not current-prefix-arg)
+           (member major-mode
+                   '(emacs-lisp-mode python-mode c-mode c++-mode latex-mode
+                     js-mode php-mode plain-tex-mode))
+           (let ((mark-even-if-inactive transient-mark-mode))
+             (indent-region (region-beginning) (region-end) nil))))))
+
 (custom-set-variables
  '(confirm-kill-emacs (quote y-or-n-p))
  '(cperl-invalid-face nil)

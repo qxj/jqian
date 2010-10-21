@@ -148,7 +148,8 @@
       ;; semantic cache directory
       (setq semanticdb-default-save-directory my-temp-dir)
 
-      (autoload 'senator-try-expand-semantic "senator")
+      ;; (autoload 'senator-try-expand-semantic "senator")
+
       ;; Time in seconds of idle before scheduling events
       (setq semantic-idle-scheduler-idle-time 5)
       ;; Time in seconds of idle before scheduling big work.
@@ -161,7 +162,7 @@
                      c-mode-common-hook
                      emacs-lisp-mode-hook))
         (add-to-list 'hippie-expand-try-functions-list
-                     'semantic-ia-complete-symbol))
+                     'semantic-ia-complete-symbol t))
 
 
       (global-srecode-minor-mode 1)

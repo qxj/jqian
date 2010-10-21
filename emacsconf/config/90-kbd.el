@@ -36,7 +36,10 @@
   ((kbd "<f8>")  . 'org-agenda)
   ((kbd "<f7>")  . 'calendar)
   ((kbd "C-h j") . 'info-elisp)
-  ((kbd "<C-down-mouse-1>") . 'undefined))
+  ((kbd "<C-mouse-4>") . 'text-scale-increase)
+  ((kbd "<C-mouse-5>") . 'text-scale-decrease)
+  ((kbd "<C-down-mouse-1>") . 'undefined)
+  )
 
 (deh-define-key (lookup-key global-map "\C-c")
   ("$" . 'toggle-truncate-lines)
