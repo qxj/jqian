@@ -25,10 +25,19 @@
 
 ;;{{{ Etags
 (deh-section "etags"
+  (defun my-find-top-directory (file &optional dir)
+    (or dir (setq dir (expand-file-name default-directory)))
+    (let ((thefile (expand-file-name file dir)))
+      (if (file-exists-p thefile)
+          thefile
+        (setq pdir (directory-file-name (file-name-directory dir)))
+        (if (string= pdir dir)
+            nil
+          (my-find-top-directory file pdir)))))
   (setq tags-add-tables nil
         default-tags-table-function
         (lambda nil
-          (ywb-find-top-directory "TAGS"))))
+          (my-find-top-directory "TAGS"))))
 ;;}}}
 
 ;;{{{ Gtags & Xcscope

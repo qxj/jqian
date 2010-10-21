@@ -50,7 +50,7 @@
                  (lambda (a b) (< (string-to-number a)
                                   (string-to-number b)))
                'string<)))
-    (ywb-sort-lines-1 reverse beg end
+    (sort-lines-1 reverse beg end
                       (lambda (pos1 pos2)
                         (let ((dat1 (split-string (buffer-substring-no-properties
                                                    (car pos1) (cdr pos1))

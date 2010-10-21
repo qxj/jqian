@@ -269,10 +269,12 @@
   ;; group buffers
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("*top*" (or (mode . term-mode)
+           ("*concern*" (or (mode . term-mode)
                         (name . "^\\*gud")
-                        (name . "^\\*scratch")))
-           ("dired" (mode . dired-mode))
+                        (name . "^\\*scratch")
+                        (mode . dired-mode)
+                        (name . "^G?TAGS")
+                        (mode . erc-mode)))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
                               (mode . makefile-mode)))
@@ -286,8 +288,6 @@
                        (mode . js2-mode)))
            ("elisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-interaction-mode)))
-           ("tags" (name . "^G?TAGS"))
-           ("erc" (mode . erc-mode))
            ("*buffer*" (name . "\\*.*\\*")))))
   (set 'ibuffer-mode-hook
        (lambda ()
