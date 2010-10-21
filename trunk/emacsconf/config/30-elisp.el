@@ -232,6 +232,14 @@
 ;;{{{ Ibuffer
 (deh-require 'ibuffer
   (require 'ibuf-ext nil t)
+  ;; keybinds
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (define-key ibuffer-mode-map "sf" 'ibuffer-do-sort-by-file-name)
+  (define-key ibuffer-mode-map "sr" 'ibuffer-do-sort-by-recency)
+  (define-key ibuffer-mode-map "r" 'ywb-ibuffer-rename-buffer)
+  (define-key ibuffer-mode-map (kbd "C-x C-f") 'ywb-ibuffer-find-file)
+  (define-key ibuffer-mode-map " " 'scroll-up)
+
   (define-ibuffer-sorter file-name
     "Sort buffers by associated file name"
     (:description "file name")
@@ -240,9 +248,6 @@
                      (with-current-buffer (car buf)
                        (or buffer-file-name default-directory)))
                    (list a b))))
-
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (define-key ibuffer-mode-map "sf" 'ibuffer-do-sort-by-file-name)
   (defun ywb-ibuffer-rename-buffer ()
     (interactive)
     (call-interactively 'ibuffer-update)
@@ -261,13 +266,12 @@
                                      default-directory)
                                  default-directory))))
       (call-interactively 'ido-find-file)))
-  (define-key ibuffer-mode-map "r" 'ywb-ibuffer-rename-buffer)
-  (define-key ibuffer-mode-map (kbd "C-x C-f") 'ywb-ibuffer-find-file)
-  (define-key ibuffer-mode-map " " 'scroll-up)
   ;; group buffers
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("*terminal*" (mode . term-mode))
+           ("*top*" (or (mode . term-mode)
+                        (name . "^\\*gud")
+                        (name . "^\\*scratch")))
            ("dired" (mode . dired-mode))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
@@ -624,7 +628,7 @@
   (add-hook 'c++-mode-hook
            #'(lambda ()
                 (push ? (getf autopair-dont-pair :comment))
-                (push '(?< . ?>) (getf autopair-extra-pairs :code))
+                ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
                 ))
   (add-hook 'emacs-lisp-mode-hook
             #'(lambda ()
@@ -1093,7 +1097,7 @@ mouse-3: Toggle minor modes"
 (deh-section "highlight"
   ;; Highlight current line
   (global-hl-line-mode)
-  (set-face-background 'hl-line "white smoke") ; list-colors-display
+  ;; (set-face-background 'hl-line "white smoke") ; list-colors-display
   ;; Highlight symbol
   (require 'highlight-symbol)
   (setq highlight-symbol-idle-delay 0.5
