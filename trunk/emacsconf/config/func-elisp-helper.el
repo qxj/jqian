@@ -35,18 +35,29 @@ of an error, just add the package to a list of missing packages."
               (throw 'loop t)))
       nil))
 
-(defun ywb-generate-loaddefs ()
-  (interactive)
-  (require 'autoload)
-  (with-temp-buffer
-    (dolist (file
-             (append
-              (directory-files my-config-dir t "func-.*.el$")
-              (directory-files (expand-file-name "contrib" my-site-lisp-dir) t ".*.el$")
-              (directory-files (expand-file-name "goodies" my-site-lisp-dir) t ".*.el$")))
-      (unless (file-directory-p file)
-        (generate-file-autoloads file)))
-    (write-region (point-min) (point-max) "~/.emacs.d/config/100-loaddefs.el")))
+(defun remove-from-list (list key)
+  "reverse to `add-to-list' function"
+  (set list (remove (assoc key (symbol-value list))
+                    (symbol-value list))))
+
+;; sort line
+(defun sort-lines-1 (reverse beg end predicate)
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (sort-subr reverse 'forward-line 'end-of-line nil nil
+                 predicate))))
+
+(defsubst join (separator sequence)
+  (mapconcat 'identity sequence separator))
 
 (defmacro my (&rest args)
   `(mapc 'make-local-variable ',args))
+
+(defalias 'pp* 'cl-prettyprint)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(defalias 'chr 'char-to-string)
+(defalias 'sc 'smart-compile)
+(defalias 'list-ascii 'ascii-table-show)
+
