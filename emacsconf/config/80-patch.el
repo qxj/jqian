@@ -28,6 +28,7 @@
 (defalias 'imenu--completion-buffer 'ido-imenu-completion)
 ;;}}}
 
+;;{{{ woman
 ;; (setq woman-rebuild-exclude-path
 ;;       (remove-if-not (lambda (path) (string-match "^/usr" path))
 ;;                      woman-manpath))
@@ -84,8 +85,10 @@
              ))
          (mapcar 'list files)
          ))))
+;;}}}
 
-'(eval-after-load "filesets"
+;;{{{ filesets-add-buffer
+(eval-after-load "filesets"
   '(progn
      (defun filesets-add-buffer (&optional name buffer)
        "Add BUFFER (or current-buffer) to the fileset called NAME.
@@ -139,7 +142,97 @@ User will be queried, if no fileset name is provided."
                              (cdr (cadr (member set filesets-submenus))))))
          (find-file (cadr (nth 2 (assoc-default (ido-completing-read "file: " set) set))))))
      ))
+;;}}}
 
+;;{{{ sourcepair, auto create paired source code
+(eval-after-load "sourcepair"
+  '(progn
+     (defun sourcepair-load ()
+       "Load the corresponding C/C++ header or source file for the current buffer.
+
+This function can be invoked by \\[sourcepair-load].  It will load the the
+corresponding header or source file for the current buffer.  For example, if
+you are looking at the file FooParser.cpp and press \\[sourcepair-load], the
+file FooParser.h will be loaded.  It also works the other way as well.
+
+There are five global variables that can be used to adjust how the function
+works:
+
+ `sourcepair-source-extensions'
+ `sourcepair-header-extensions'
+ `sourcepair-source-path'
+ `sourcepair-header-path'
+ `sourcepair-recurse-ignore'
+
+See the documentation for these variables for more info.
+"
+       (interactive)
+       (catch 'found-matching-file
+         (let* ((temp (sourcepair-analyze-filename (file-name-nondirectory (buffer-file-name))))
+                (search-path (car temp))
+                (possible-filenames (cdr temp)))
+           (if (= (length possible-filenames) 0)
+               (message "%s is not a recognized source or header file (consider \
+updating sourcepair-source-extensions or sourcepair-header-extensions)"
+                        (buffer-name))
+             (progn
+               (while search-path
+                 (let ((path-to-check (car search-path))
+                       (matching-filename nil))
+                   (if (and (> (length path-to-check) 3)
+                            (equal (substring path-to-check -2) "/*"))
+                       (setq matching-filename (sourcepair-find-one-of (substring path-to-check 0 -2)
+                                                                       possible-filenames
+                                                                       t))
+                     (setq matching-filename
+                           (sourcepair-find-one-of path-to-check possible-filenames nil)))
+
+                   (if (eq matching-filename nil)
+                       (setq search-path (cdr search-path))
+                     (throw 'found-matching-file (find-file matching-filename)))))
+               (if (y-or-n-p "No matching file found. Create one? ")
+                   (find-file (completing-read "file name: " possible-filenames))))))))))
+;;}}}
+
+;;{{{ template-expand-template
+(eval-after-load "template"
+  '(defun template-expand-template (template)
+  "Expand template file TEMPLATE and insert result in current buffer.
+Using a template for inserting some text consists of:
+ (1) Template derivation: suggest a reasonable template file to the user
+     according to `buffer-file-name', see `template-derivation-alist'.
+ (2) Template insertion: insert the template file at point into the
+     current buffer.
+ (3..9) as steps (6..12) of `template-new-file'."
+  (interactive
+   (let* ((use (template-derivation (expand-file-name (or buffer-file-name
+                                                          "NONE"))
+                                    t))
+          (tpl (ido-read-file-name "Insert and expand template: "
+                               (file-name-directory (cdr use))
+                               (file-name-nondirectory (cdr use))
+                               t
+                               (file-name-nondirectory (cdr use)))))
+     (if (string= tpl "")
+         (error "No template file provided"))
+     (list (expand-file-name tpl (file-name-directory (cdr use))))))
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (template-new-file nil template t))))
+;;}}}
+
+;;{{{ shell-cd
+(eval-after-load "shell"
+  '(defun shell-cd (dir)
+     "Do normal `cd' to DIR, and set `list-buffers-directory'."
+     (cd dir)
+     (when shell-dirtrackp
+       (setq list-buffers-directory default-directory)
+       (rename-buffer  (concat "*shell: " default-directory "*") t))))
+;;}}}
+
+
+;;{{{ some advice
 (defadvice occur (around occur-mark-region)
   (save-restriction
     (if (and mark-active transient-mark-mode)
@@ -158,11 +251,5 @@ User will be queried, if no fileset name is provided."
         (setq file (replace-match enc t t file))))
     (setq ad-return-value file)))
 (ad-activate 'browse-url-file-url)
+;;}}}
 
-(eval-after-load "shell"
-  '(defun shell-cd (dir)
-     "Do normal `cd' to DIR, and set `list-buffers-directory'."
-     (cd dir)
-     (when shell-dirtrackp
-       (setq list-buffers-directory default-directory)
-       (rename-buffer  (concat "*shell: " default-directory "*") t))))

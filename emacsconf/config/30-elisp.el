@@ -732,22 +732,25 @@
 )
 ;;}}}
 
+(deh-require 'template-simple
+  (setq template-directory-list (list my-template-dir)))
+
 ;;{{{ Template
-(deh-require 'template
-  (template-initialize)
-  (setq template-default-directories (list my-template-dir))
-  ;; make custom prompts `ENDATE'
-  (add-to-list 'template-default-expansion-alist
-               '("ENDATE"
-                 (let ((system-time-locale "C"))
-                   (insert (format-time-string "%d %b %Y")))))
-  ;; work with `ido-find-file'
-  (dolist (cmd '(ido-select-text ido-magic-forward-char
-                                 ido-exit-minibuffer))
-    (add-to-list 'template-find-file-commands cmd))
-  ;; WORKAROUND: avoid to auto update buffer `.ido-last'
-  (setq template-header-lines 2)
-  )
+;; (deh-require 'template
+;;   (template-initialize)
+;;   (setq template-default-directories (list my-template-dir))
+;;   ;; make custom prompts `ENDATE'
+;;   (add-to-list 'template-default-expansion-alist
+;;                '("ENDATE"
+;;                  (let ((system-time-locale "C"))
+;;                    (insert (format-time-string "%d %b %Y")))))
+;;   ;; work with `ido-find-file'
+;;   (dolist (cmd '(ido-select-text ido-magic-forward-char
+;;                                  ido-exit-minibuffer))
+;;     (add-to-list 'template-find-file-commands cmd))
+;;   ;; WORKAROUND: avoid to auto update buffer `.ido-last'
+;;   (setq template-header-lines 2)
+;;   )
 ;;}}}
 
 ;;{{{ autoloads non-std libraries
@@ -817,6 +820,7 @@
   (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
   (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
   (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
+  (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
   ;; unbind keys
   (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
   )
