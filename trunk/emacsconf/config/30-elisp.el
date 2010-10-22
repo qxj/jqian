@@ -815,6 +815,8 @@
   ;; compatible with normal terminal keybinds
   (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
   (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+  (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
+  (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
   ;; unbind keys
   (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
   )
