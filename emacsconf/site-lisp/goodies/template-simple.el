@@ -5,7 +5,8 @@
 ;; Author: Ye Wenbin <wenbinye@gmail.com>
 ;; Maintainer: Ye Wenbin <wenbinye@gmail.com>
 ;; Created: 21 Dec 2007
-;; Version: 0.01
+;; Update: 22 Oct 2010 by Julian Qian <junist@gmail.com>
+;; Version: 0.02
 ;; Keywords: tools, convenience
 ;;
 ;; This file is part of PDE (Perl Development Environment).
@@ -25,6 +26,14 @@
 ;; along with GNU Emacs; see the file COPYING.  If not, write to
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
+
+;;; Updates:
+;; * Use `ido-completing-read' to select templates.
+;; * Only match suffix, templates files won't need more prefix 'TEMPLATE'.
+;; Add functions:
+;; 1) `template-simple-buffer-suffix'
+;; 2) `template-simple-find-templates'
+;; 3) `template-simple-derivation'
 
 ;;; Commentary:
 
@@ -305,25 +314,29 @@ template is translated by `template-expansion'"
   (or (file-name-extension buffer-file-name)
       (file-name-nondirectory buffer-file-name)))
 
+(defun template-simple-find-templates (directory regexp)
+  "Return matched files in a directory."
+  (let (results)
+    (dolist (file (directory-files directory nil nil t))
+      (let ((fullname (expand-file-name file directory)))
+        (when (file-readable-p fullname)
+          (if (string-match regexp file)
+              (if results
+                  (add-to-list 'results fullname)
+                (setq results (list fullname)))))))
+    results))
+
 (defun template-simple-derivation ()
   "Return a list contained matched template absolute path."
   (when buffer-file-name
     (let ((ext (template-simple-buffer-suffix)))
-      (message ext)
       ;; (find-lisp-find-files my-template-dir ".*tpl$")
       (apply 'append
              (mapcar (lambda (dir)
-                       (find-lisp-find-files dir (concat ext "\.tpl$")))
-                     (list my-template-dir)))
-      )))
-
-;;; Exported commands
-(defun template-derive-template ()
-  "Derive which template file should use for current buffer."
-  (when buffer-file-name
-    (let ((ext (template-simple-buffer-suffix)))
-      (locate-file "TEMPLATE." template-directory-list
-                   (list ext (concat ext ".tpl"))))))
+                       (template-simple-find-templates
+                        dir
+                        (concat  "^\\(\\w+\\.\\)?" ext "\\.tpl$")))
+                     (list my-template-dir))))))
 
 ;; (defun template-include (name)
 ;;   (let ((file (locate-file name template-directory-list)))
@@ -347,7 +360,7 @@ Use `template-expand-function' to expand the parsed template."
              (if def
                  (format "Insert template(default %s): " def)
                "Insert template: ")
-             cak nil t nil nil def))
+             cak nil nil nil nil def))
       (locate-file file template-directory-list))))
   (let ((template-expand-function template-expand-function))
     (template-simple-expand
@@ -362,7 +375,8 @@ Parse the template to parsed templates with `template-compile'.
 Use `template-expand-function' to expand the parsed template."
   ;; in case the template-expand-function is overide in template
   (let ((template-file-name (or buffer-file-name
-                                (concat (file-name-as-directory default-directory)
+                                (concat (file-name-as-directory
+                                         default-directory)
                                         (buffer-name))))
         (template-expand-function template-expand-function)
         err)
@@ -410,7 +424,7 @@ Use `template-expand-function' to expand the parsed template."
   (and (not buffer-read-only)
        (or (eq this-command 'template-auto-insert)
            (and (bobp) (eobp)))
-       (let ((file (template-derive-template)))
+       (let ((file (car (template-simple-derivation))))
          (when file
            (switch-to-buffer (current-buffer))
            (if (or (null template-query)
