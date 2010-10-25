@@ -269,12 +269,13 @@
   ;; group buffers
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("*concern*" (or (mode . term-mode)
-                        (name . "^\\*gud")
-                        (name . "^\\*scratch")
-                        (mode . dired-mode)
-                        (name . "^G?TAGS")
-                        (mode . erc-mode)))
+           ("*buffers*" (or (mode . term-mode)
+                            (mode . dired-mode)
+                            (mode . w3m-mode)
+                            (mode . erc-mode)
+                            (name . "^\\*gud")
+                            (name . "^\\*scratch")
+                            (name . "^G?TAGS")))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
                               (mode . makefile-mode)))
@@ -288,7 +289,7 @@
                        (mode . js2-mode)))
            ("elisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-interaction-mode)))
-           ("*buffer*" (name . "\\*.*\\*")))))
+           ("*others*" (name . "\\*.*\\*")))))
   (set 'ibuffer-mode-hook
        (lambda ()
          (ibuffer-switch-to-saved-filter-groups "default")))
@@ -403,6 +404,10 @@
             (lambda ()
               (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
               (define-key Man-mode-map (kbd "M-n") 'pager-row-down)))
+  (add-hook 'Info-mode-hook
+            (lambda ()
+              (define-key Info-mode-map (kbd "M-p") 'pager-row-up)
+              (define-key Info-mode-map (kbd "M-n") 'pager-row-down)))
   )
 ;;}}}
 
@@ -512,16 +517,16 @@
   ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
   (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
   (setq hippie-expand-try-functions-list
-        '(try-expand-line
-          try-expand-dabbrev
-          try-expand-line-all-buffers
-          try-expand-list
-          try-expand-list-all-buffers
+        '(try-expand-dabbrev
           try-expand-dabbrev-visible
+          try-expand-list
+          try-expand-line
           try-expand-dabbrev-all-buffers
           try-expand-dabbrev-from-kill
-          try-complete-file-name
+          try-expand-list-all-buffers
+          try-expand-line-all-buffers
           try-complete-file-name-partially
+          try-complete-file-name
           try-complete-lisp-symbol
           try-complete-lisp-symbol-partially
           try-expand-whole-kill)))
@@ -843,22 +848,20 @@
 
   (defun recentf-open-files-compl ()
     (interactive)
-    (let* ((all-files recentf-list)
-           (tocpl (mapcar (function
-                           (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
-           (tokey (mapcar (function
-                           (lambda (x) (file-name-nondirectory x))) all-files))
+    (let* ((alist (remq nil (mapcar
+                             '(lambda (el)
+                                (unless (string-match "/$" el) ; skip dired
+                                  (cons (file-name-nondirectory el) el)))
+                             recentf-list)))
            ;; use `ido-completing-read' instead of `completing-read'
-           (fname (ido-completing-read "Open file: " tokey nil t)))
-
-      (find-file (cdr (assoc-string fname tocpl)))))
+           (filename (ido-completing-read "Open file: "
+                                          (mapcar 'car alist))))
+      (find-file (cdr (assoc filename alist)))))
   (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
 
   ;; Also store recent opened directories besides files
-  (defun recentf-add-dir ()
-    "Add directory name to recentf file list."
-    (recentf-add-file dired-directory))
-  (add-hook 'dired-mode-hook 'recentf-add-dir))
+  (add-hook 'dired-mode-hook
+            (lambda () (recentf-add-file dired-directory))))
 
 ;; fold content
 ;; (deh-require 'fold

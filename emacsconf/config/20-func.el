@@ -242,13 +242,6 @@
   (switch-to-buffer (other-buffer)))
 ;;}}}
 
-;;{{{ kill current buffer
-(defun my-kill-buffer ()
-  "Kill current buffer."
-  (interactive)
-  (kill-buffer (current-buffer)))
-;;}}}
-
 ;;{{{ Copy current buffer's full file name
 (defun my-copy-full-file-name ()
   "Copy full file name of current-buffer."
