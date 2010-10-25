@@ -59,17 +59,14 @@
            (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
            (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
            (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
-           (define-key gtags-mode-map (kbd "C-c g b") 'my-gtags-append)
+           (define-key gtags-mode-map (kbd "C-c g b") 'my-gtags-append-tags)
            ))
-  (defun my-gtags-append ()
+  (defun my-gtags-append-tags ()
     (interactive)
     (if gtags-mode
         (progn
           (message "start to global -u")
           (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
-  (defun my-gtags-enable ()
-    (dolist (hook '(c-mode-hook c++-mode-hook java-mode-hook))
-      (add-hook hook (lambda () (gtags-mode 1)))))
   )
 
 (deh-require 'xcscope
@@ -100,11 +97,12 @@
     (remove-hook hook (function cscope:hook)))
   )
 
-(defcustom my-enable-gtags-or-xcscope t
+(defcustom my-toggle-gtags-or-xcscope-option t
   "No-nil to enable gtags, or enable xcscope.")
 
 (defun my-toggle-gtags-and-xcscope ()
-  (if my-enable-gtags-or-xcscope
+  (interactive)
+  (if my-toggle-gtags-or-xcscope-option
       (progn
         (dolist (hook '(c-mode-hook c++-mode-hook))
           (add-hook hook (lambda () (gtags-mode 1))))
@@ -250,6 +248,23 @@
             (lambda ()
               (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof))))
 
+;; graphviz
+(deh-section "graphviz"
+  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
+  (add-hook 'graphviz-dot-mode-hook
+            (lambda ()
+              (local-unset-key "\C-cc") ; it's prefix key
+              (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action)
+              ))
+  (defun graphviz-dot-tab-action ()
+    "If cursor at one word end, try complete it. Otherwise,
+indent line."
+    (interactive)
+    (if (looking-at "\\>")
+        (graphviz-dot-complete-word)
+      (indent-for-tab-command))))
+
+;; java
 (deh-section "java"
   (add-to-list 'load-path "/usr/local/jdee/lisp/")
   (defun jde-init ()
@@ -284,7 +299,6 @@
   (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'python-mode "python" "Python editing mode." t)
   (autoload 'php-mode "php-mode" "php mode" t)
-  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
   (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
   ;; (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
   (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
@@ -300,28 +314,21 @@
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
   (add-to-list 'auto-mode-alist '("\\.acd$" . acd-mode))
   (add-to-list 'auto-mode-alist '("\\.po\\'\\|\\.po\\." . po-mode))
-  (add-to-list 'auto-mode-alist '("\\.i\\'" . swig-mode))
   (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
   (add-to-list 'auto-mode-alist '("\\.cls$" . LaTeX-mode))
   (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
   (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(hla\\|hhf\\)$" . hla-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(imc\\|pir\\)\\'" . pir-mode))
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
   (add-to-list 'auto-mode-alist '("Makefile" . makefile-mode))
-  (add-to-list 'auto-mode-alist '("\\.fa\\|\\.gb\\|\\.embl$" . dna-mode))
   (add-to-list 'auto-mode-alist '("\.schemas" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.pod$" . pod-mode))
-  (add-to-list 'auto-mode-alist '("\\.pir$" . pir-mode))
-  (add-to-list 'auto-mode-alist '("\\.xs$" . xs-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.muse$" . muse-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.twiki$" . oddmuse-mode))
+  (add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
   )
 
 (deh-section "php"
