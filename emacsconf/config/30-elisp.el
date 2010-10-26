@@ -168,11 +168,13 @@
         '("\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\|vrb\\)$"
           "^\\(CVS\\|TAGS\\|GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"
           "_region_" "^[.#]"))
+
   ;; visit with dired also push the diretory to `ido-work-directory-list'
   (defadvice ido-file-internal (after ido-dired-add-work-directory)
     (when (eq ido-exit 'dired)
       (ido-record-work-directory (expand-file-name default-directory))))
   (ad-activate 'ido-file-internal)
+
   ;; Replace completing-read wherever possible, unless directed otherwise
   (defvar ido-enable-replace-completing-read nil
     "If t, use ido-completing-read instead of completing-read if possible.
@@ -200,17 +202,28 @@
   ;; Sort ido filelist by mtime instead of alphabetically
   (add-hook 'ido-make-file-list-hook 'ido-sort-mtime)
   (add-hook 'ido-make-dir-list-hook 'ido-sort-mtime)
+  (add-hook 'ido-make-buffer-list-hook 'ido-sort-mtime)
   (defun ido-sort-mtime ()
     (setq ido-temp-list
           (sort ido-temp-list
-                (lambda (a b)
-                  (let ((ta (nth 5 (file-attributes
-                                    (concat ido-current-directory a))))
-                        (tb (nth 5 (file-attributes
-                                    (concat ido-current-directory b)))))
-                    (if (= (nth 0 ta) (nth 0 tb))
-                        (> (nth 1 ta) (nth 1 tb))
-                      (> (nth 0 ta) (nth 0 tb)))))))
+                (lambda (a b)           ; avoid tramp
+                  (cond ((and (string-match "[:\\*]$" a) (not (string-match "[:\\*]$" b)))
+                         nil)
+                        ((and (string-match "[:\\*]$" b) (not (string-match "[:\\*]$" a)))
+                         t)
+                        ((and (string-match "[:\\*]$" a) (string-match "[:\\*]$" b))
+                         nil)
+                        (t
+                         (let ((ta (nth 5 (file-attributes
+                                           (concat ido-current-directory a))))
+                               (tb (nth 5 (file-attributes
+                                           (concat ido-current-directory b)))))
+                           (cond ((and (null ta) tb) nil) ; avoid temporary buffers
+                                 ((and ta (null tb)) t)
+                                 ((and (null ta) (null tb)) nil)
+                                 (t (if (= (nth 0 ta) (nth 0 tb))
+                                        (> (nth 1 ta) (nth 1 tb))
+                                      (> (nth 0 ta) (nth 0 tb)))))))))))
     (ido-to-end  ;; move . files to end (again)
      (delq nil (mapcar
                 (lambda (x) (if (string-equal (substring x 0 1) ".") x))
@@ -325,6 +338,13 @@
                     (mode . LaTeX-mode))))
           ("*" ((name . "*")))))
   )
+;;}}}
+
+;;{{{ tramp
+(deh-section "tramp"
+  (setq tramp-mode nil                  ; disable tramp
+        tramp-auto-save-directory my-temp-dir
+        tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)))
 ;;}}}
 
 ;;{{{ session management

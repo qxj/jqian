@@ -162,9 +162,6 @@
            (let ((mark-even-if-inactive transient-mark-mode))
              (indent-region (region-beginning) (region-end) nil))))))
 
-;; Workaround. Indeed, I wanna disable tramp!
-(setq tramp-default-method "ftp")
-
 (custom-set-variables
  '(confirm-kill-emacs (quote y-or-n-p))
  '(cperl-invalid-face nil)
