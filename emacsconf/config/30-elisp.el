@@ -710,6 +710,18 @@
   (define-key ac-menu-map (kbd "RET") nil)
   (define-key ac-menu-map (kbd "TAB") 'ac-complete)
 
+  ;; <TAB> for `auto-complete'
+  (add-hook 'auto-complete-mode-hook
+            (lambda ()
+              (local-set-key (kbd "TAB") 'auto-complete-tab-action)))
+  (defun auto-complete-tab-action ()
+    "If cursor at one word end, try auto complete it. Otherwise,
+indent line."
+    (interactive)
+    (if (looking-at "\\>")
+        (auto-complete)
+      (indent-for-tab-command)))
+
   ;; c/c++
   ;; hack auto-complete.el (deperated)
   ;; add ac-prefix "->" to function `ac-prefix-c-dot'
