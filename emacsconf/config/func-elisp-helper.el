@@ -29,7 +29,7 @@ of an error, just add the package to a list of missing packages."
 
 (defun my-command-exist-p (cmd)
   "Check whether command exists in `exec-path'."
-  ;; TODO: learn `locate-file'
+  ;; TODO: learn `locate-file' and `executable-find' :(
   (catch 'loop
     (dolist (path exec-path)
       (if (file-exists-p (expand-file-name cmd path))
