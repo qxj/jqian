@@ -29,7 +29,7 @@
        ( "j"    . 'ywb-dired-jump-to-file)
        ( "J"    . 'woman-dired-find-file)
        ( " "    . 'ywb-dired-count-dir-size)
-       ( "r"    . 'wdired-change-to-wdired-mode)
+       ( "r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
        ( "W"    . 'ywb-dired-copy-fullname-as-kill)
        ( "a"    . 'ywb-add-description)
        ( "\C-q" . 'ywb-dired-quickview)
@@ -768,6 +768,9 @@ indent line."
         ;; (setq yas/trigger-key nil) ; deperecated tweak
         (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
+
+  ;; List all snippets for current mode
+  (define-key yas/minor-mode-map (kbd "C-c y") 'yas/insert-snippet)
 )
 ;;}}}
 

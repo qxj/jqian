@@ -1,4 +1,4 @@
-%%% TEMPLATE.sty.tpl --- (>>>COMMENT<<<)
+%%% (>>>FILE<<<) --- (>>>COMMENT<<<)
 
 %% Author: (>>>AUTHOR<<<)
 %% Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
