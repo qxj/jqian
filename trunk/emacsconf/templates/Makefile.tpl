@@ -1,5 +1,5 @@
-### TEMPLATE.Makefile.tpl --- 
-## Time-stamp: <Julian Qian 2010-08-24 18:42:25>
+### (>>>FILE<<<) ---
+## Time-stamp: <Julian Qian 2010-10-28 12:40:22>
 ## Author: (>>>AUTHOR<<<)
 ## Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
 ## Keywords: (>>>1<<<)

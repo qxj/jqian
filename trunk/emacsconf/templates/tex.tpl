@@ -1,4 +1,4 @@
-%%% TEMPLATE.tex.tpl -- -*- coding: utf-8 -*-
+%%% (>>>FILE<<<) -- -*- coding: utf-8 -*-
 %% Author: (>>>AUTHOR<<<)
 %% Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp$
 

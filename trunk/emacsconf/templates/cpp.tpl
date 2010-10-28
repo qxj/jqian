@@ -1,5 +1,5 @@
-// @(#)TEMPLATE.cpp.tpl
-// Time-stamp: <2010-06-11 13:56:14 Friday by jqian>
+// @(#)(>>>FILE<<<)
+// Time-stamp: <Julian Qian 2010-10-28 12:40:43>
 // Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
 // Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
 

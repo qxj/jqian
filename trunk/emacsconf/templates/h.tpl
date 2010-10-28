@@ -1,5 +1,5 @@
-/* @(#)TEMPLATE.h.tpl
- * Time-stamp: <2010-06-11 13:55:18 Friday by jqian>
+/* @(#)(>>>FILE<<<)
+ * Time-stamp: <Julian Qian 2010-10-28 12:41:07>
  * Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
  * Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
  */
