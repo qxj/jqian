@@ -47,7 +47,6 @@
        ("n" . '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches "")))))
      ))
 
-
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
     (setq dired-listing-switches "-alvh"))
@@ -283,6 +282,7 @@
   (setq ibuffer-saved-filter-groups
         '(("default"
            ("*buffers*" (or (mode . term-mode)
+                            (mode . twittering-mode)
                             (mode . dired-mode)
                             (mode . w3m-mode)
                             (mode . erc-mode)
@@ -294,7 +294,9 @@
                               (mode . makefile-mode)))
            ("script" (or (mode . python-mode)
                          (mode . sh-mode)
-                         (mode . perl-mode)))
+                         (mode . perl-mode)
+                         (mode . org-mode)
+                         (mode . LaTeX-mode)))
            ("web" (or  (mode . html-mode)
                        (mode . css-mode)
                        (mode . php-mode)
@@ -404,10 +406,6 @@
     (setq session-save-file-coding-system 'utf-8-unix)
     (add-to-list 'session-globals-exclude 'org-mark-ring)
     (add-hook 'after-init-hook 'session-initialize))
-  (deh-require 'winsav
-    ;; (winsav-save-mode 1)
-    (setq winsav-dirname my-temp-dir
-          winsav-base-file-name (expand-file-name "emacs.winsav" my-temp-dir)))
   )
 ;;}}}
 
@@ -431,6 +429,18 @@
   )
 ;;}}}
 
+;;{{{ ffap
+(deh-section "ffap"
+  (autoload 'ffap "ffap" "Alias of find-file-at-point")
+  ;; for windows path recognize
+  (setq ffap-string-at-point-mode-alist
+        '((file "--{}:\\\\$+<>@-Z_a-z~*?\x100-\xffff" "<@" "@>;.,!:")
+          (url "--:=&?$+@-Z_a-z~#,%;*" "^A-Za-z0-9" ":;.,!?")
+          (nocolon "--9$+<>@-Z_a-z~" "<@" "@>;.,!?")
+          (machine "-a-zA-Z0-9." "" ".")
+          (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:"))))
+;;}}}
+
 ;;{{{ standard libraries and settings
 (deh-section "std-lib"
   (partial-completion-mode 1)
@@ -451,16 +461,6 @@
   (setq time-stamp-warn-inactive t)
 
   (add-hook 'occur-mode-hook (lambda () (setq truncate-lines t)))
-
-  ;; ffap
-  (require 'ffap)
-  ;; for windows path recognize
-  (setq ffap-string-at-point-mode-alist
-        '((file "--:\\\\$+<>@-Z_a-z~*?" "<@" "@>;.,!:")
-          (url "--:=&?$+@-Z_a-z~#,%;*" "^A-Za-z0-9" ":;.,!?")
-          (nocolon "--9$+<>@-Z_a-z~" "<@" "@>;.,!?")
-          (machine "-a-zA-Z0-9." "" ".")
-          (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
 
   ;; tetris game
   ;; (setq tetris-update-speed-function (lambda (shapes rows) (/ 10.0 (+ 80.0 rows))))
@@ -527,7 +527,7 @@
   ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
   (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
 
-;; uniquify
+;; unique buffers' name
 (deh-require 'uniquify
   (setq uniquify-buffer-name-style 'forward)
   ;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
@@ -641,40 +641,20 @@
 
 ;;{{{ autopair, like skeleton
 (deh-require 'autopair
-  (dolist (hook '(java-mode-hook
-                  c-mode-common-hook
-                  python-mode-hook
-                  emacs-lisp-mode-hook
-                  html-mode-hook))
-    (add-hook hook
-              #'(lambda () (autopair-mode))))
-
+  (deh-add-hooks '(java-mode-hook
+                   c-mode-common-hook
+                   python-mode-hook
+                   emacs-lisp-mode-hook
+                   html-mode-hook)
+    (autopair-mode))
   ;; some tricks
-  (add-hook 'c++-mode-hook
-           #'(lambda ()
-                (push ? (getf autopair-dont-pair :comment))
-                ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
-                ))
-  (add-hook 'emacs-lisp-mode-hook
-            #'(lambda ()
-                (push '(?` . ?') (getf autopair-extra-pairs :comment))
-                (push '(?` . ?') (getf autopair-extra-pairs :string))))
-
-  ;;; Autopair work with paredit when editing emacs lisp
-  ;; (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
-  ;; (dolist (hook '(emacs-lisp-mode-hook
-  ;;                 lisp-mode-hook
-  ;;                 lisp-interaction-mode-hook))
-  ;;   (add-hook hook
-  ;;             #'(lambda () (paredit-mode +1)
-  ;;                 (local-set-key "\C-cp" 'paredit-mode))))
-  ;; (defadvice paredit-mode (around disable-autopairs-around (arg))
-  ;;   "Disable autopairs mode if paredit-mode is turned on"
-  ;;   ad-do-it
-  ;;   (if (null ad-return-value)
-  ;;       (autopair-mode 1)
-  ;;     (autopair-mode 0)))
-  ;; (ad-activate 'paredit-mode)
+  (deh-add-hook 'c++-mode-hook
+    (push ? (getf autopair-dont-pair :comment))
+    ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
+    )
+  (deh-add-hook 'emacs-lisp-mode-hook
+    (push '(?` . ?') (getf autopair-extra-pairs :comment))
+    (push '(?` . ?') (getf autopair-extra-pairs :string)))
   )
 ;;}}}
 
@@ -774,25 +754,9 @@ indent line."
 )
 ;;}}}
 
+;;{{{ a simple template
 (deh-require 'template-simple
   (setq template-directory-list (list my-template-dir)))
-
-;;{{{ Template
-;; (deh-require 'template
-;;   (template-initialize)
-;;   (setq template-default-directories (list my-template-dir))
-;;   ;; make custom prompts `ENDATE'
-;;   (add-to-list 'template-default-expansion-alist
-;;                '("ENDATE"
-;;                  (let ((system-time-locale "C"))
-;;                    (insert (format-time-string "%d %b %Y")))))
-;;   ;; work with `ido-find-file'
-;;   (dolist (cmd '(ido-select-text ido-magic-forward-char
-;;                                  ido-exit-minibuffer))
-;;     (add-to-list 'template-find-file-commands cmd))
-;;   ;; WORKAROUND: avoid to auto update buffer `.ido-last'
-;;   (setq template-header-lines 2)
-;;   )
 ;;}}}
 
 ;;{{{ autoloads non-std libraries
@@ -853,6 +817,8 @@ indent line."
   (require 'visible-lines nil t)
   ;; info+
   (require 'info+)
+  ;; for normal term
+  ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
   )
 
 ;; Enhanced ansi-term
@@ -1145,7 +1111,6 @@ mouse-3: Toggle minor modes"
   (global-hl-line-mode)
   ;; (set-face-background 'hl-line "white smoke") ; list-colors-display
   ;; Highlight symbol
-  (require 'highlight-symbol)
   (setq highlight-symbol-idle-delay 0.5
         highlight-symbol-mode nil)
   (dolist (hook '(emacs-lisp-mode-hook
@@ -1164,7 +1129,8 @@ mouse-3: Toggle minor modes"
             (local-set-key (kbd "C-c l q") 'highlight-symbol-query-replace)
             (local-set-key (kbd "C-c l N") 'highlight-symbol-next-in-defun)
             (local-set-key (kbd "C-c l P") 'highlight-symbol-prev-in-defun)
-            ))))
+            )))
+  )
 
 ;; shell
 (deh-section "shell"

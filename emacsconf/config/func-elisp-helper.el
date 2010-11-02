@@ -27,6 +27,16 @@ of an error, just add the package to a list of missing packages."
        (sleep-for 1))
      nil)))
 
+(defun kill-buffer-when-shell-command-exit ()
+  "Close current buffer when `shell-command' exit."
+  (let ((process (ignore-errors (get-buffer-process (current-buffer)))))
+    (when process
+      (set-process-sentinel
+       process
+       (lambda (proc change)
+         (when (string-match "\\(finished\\|exited\\)" change)
+           (kill-buffer (process-buffer proc))))))))
+
 (defun my-command-exist-p (cmd)
   "Check whether command exists in `exec-path'."
   ;; TODO: learn `locate-file' and `executable-find' :(
