@@ -1,12 +1,5 @@
 ;; -*- mode: Emacs-Lisp -*-
 
-;; (deh-require 'imenu-tree
-;;   (add-hook 'tree-mode-hook
-;;             (lambda ()
-;;               (toggle-truncate-lines t))))
-
-;; (deh-require 'dirtree) ; instead dirtree with sr-speedbar
-
 ;;{{{ Rebinding keys for hideshow
 (deh-require 'hideshow
   (define-key hs-minor-mode-map "\C-ch"
@@ -69,33 +62,34 @@
           (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
   )
 
-(deh-require 'xcscope
-  (setq cscope-database-regexps
-        '(
-          ("^/home/jqian/nbusrc"
-           (t)
-           ("/home/jqian/tags/")
-           ("/home/jqian/")
-           t
-           ("/net/code/srt/nb_sync/MAIN/cscope" ("-d")))
-          ("^/home/jqian/projects"
-           (t)
-           ("/home/jqian/projects" ("-d" "-I/usr/local/include")))
-          ))
-  (setq cscope-do-not-update-database t
-        cscope-adjust nil)
-  ;; keybinds
-  (setq cscope-minor-mode-hooks
-        '(lambda ()
-           ;; Instead of `find-tag' & `pop-tag-mark'
-           (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
-           (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
-           ;; Key bind for cscope-minor-mode
-           ))
-  ;; hack `xcscope.el', remove hooks
-  (dolist (hook '(c-mode-hook c++-mode-hook dired-mode-hook))
-    (remove-hook hook (function cscope:hook)))
-  )
+(deh-section "xcscope"
+  (eval-after-load "xcscope"
+    '(progn
+       (setq cscope-database-regexps
+             '(
+               ("^/home/jqian/nbusrc"
+                (t)
+                ("/home/jqian/tags/")
+                ("/home/jqian/")
+                t
+                ("/net/code/srt/nb_sync/MAIN/cscope" ("-d")))
+               ("^/home/jqian/projects"
+                (t)
+                ("/home/jqian/projects" ("-d" "-I/usr/local/include")))
+               ))
+       (setq cscope-do-not-update-database t
+             cscope-adjust nil)
+       ;; keybinds
+       (setq cscope-minor-mode-hooks
+             '(lambda ()
+                ;; Instead of `find-tag' & `pop-tag-mark'
+                (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
+                (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
+                ;; Key bind for cscope-minor-mode
+                ))
+       ;; hack `xcscope.el', remove hooks
+       (dolist (hook '(c-mode-hook c++-mode-hook dired-mode-hook))
+         (remove-hook hook (function cscope:hook))))))
 
 (defcustom my-toggle-gtags-or-xcscope-option t
   "No-nil to enable gtags, or enable xcscope.")
@@ -108,6 +102,7 @@
           (add-hook hook (lambda () (gtags-mode 1))))
         (dolist (hook '(c-mode-hook c++-mode-hook))
           (remove-hook hook (function cscope:hook))))
+    (require 'xcscope)
     (dolist (hook '(c-mode-hook c++-mode-hook))
       (remove-hook hook (lambda () (gtags-mode 1))))
     (dolist (hook '(c-mode-hook c++-mode-hook))
@@ -142,23 +137,25 @@
   (dolist (hook '(c-mode-common-hook python-mode-hook))
     (add-hook hook (lambda () (flyspell-prog-mode)))))
 
-(deh-require 'flymake
-  (setq flymake-gui-warnings-enabled nil)
+(deh-section "flymake"
+  (eval-after-load "flymake"
+    '(progn
+       (setq flymake-gui-warnings-enabled nil)
 
-  (dolist (hook '(c-mode-common-hook makefile-mode-hook))
-    (add-hook
-     hook
-     (lambda ()
-       ;; (flymake-mode t)
-       ;; (setq flymake-log-level 1)
-       (local-set-key (kbd "C-c C-v") 'flymake-goto-next-error))))
+       (dolist (hook '(c-mode-common-hook makefile-mode-hook))
+         (add-hook
+          hook
+          (lambda ()
+            ;; (flymake-mode t)
+            ;; (setq flymake-log-level 1)
+            (local-set-key (kbd "C-c C-v") 'flymake-goto-next-error))))
 
-  (defun my-flymake-find-file-hook ()
-    (condition-case nil
-        (flymake-find-file-hook)
-      (error nil)))
-  ;; (add-hook 'find-file-hooks 'my-flymake-find-file-hook t)
-  )
+       (defun my-flymake-find-file-hook ()
+         (condition-case nil
+             (flymake-find-file-hook)
+           (error nil)))
+       ;; (add-hook 'find-file-hooks 'my-flymake-find-file-hook t)
+       )))
 ;;}}}
 
 ;; Setting for common hook

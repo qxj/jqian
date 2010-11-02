@@ -43,14 +43,6 @@
                  "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
     (modify-syntax-entry char "." (standard-syntax-table))))
 
-(deh-section "ffap"
-  (setq ffap-string-at-point-mode-alist
-        '((file "--{}:\\\\$+<>@-Z_a-z~*?\x100-\xffff" "<@" "@>;.,!:")
-          (url "--:=&?$+@-Z_a-z~#,%;*" "^A-Za-z0-9" ":;.,!?")
-          (nocolon "--9$+<>@-Z_a-z~" "<@" "@>;.,!?")
-          (machine "-a-zA-Z0-9." "" ".")
-          (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:"))))
-
 (deh-section "PATH"
   ;; add more directory to environment variable PATH
   (let ((path (split-string (getenv "PATH") path-separator)))

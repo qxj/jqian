@@ -4,7 +4,7 @@
 ;;
 ;; Author: wenbinye@gmail.com
 ;; Version: $Id: dot-emacs-helper.el,v 0.0 2007/12/07 05:14:41 ywb Exp $
-;; Keywords: 
+;; Keywords:
 ;; X-URL: not distributed yet
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -46,12 +46,12 @@
 ;;         `(progn ,@forms)))
 ;;
 ;;  And rewrite you .emacs as:
-;;  
+;;
 ;;    (deh-require 'feature-name
 ;;      configuration-for-the-feature)
 ;;    (deh-section "section-name"
 ;;      some-configuration)
-;;  
+;;
 ;;  And when you want edit some configuration, use M-x
 ;;  `deh-customize-inplace' or M-x `deh-customize' to make changes. It
 ;;  knows where you put the configuration. The former maybe more
@@ -259,7 +259,7 @@ With prefix argument sort section by file."
               (write-region (point-min) (point-max) deh-custom-file t)
               (setq installed t
                     file deh-custom-file)
-              ;; update deh-information for succeed 
+              ;; update deh-information for succeed
               (save-excursion
                 (goto-char (point-min))
                 (when (re-search-forward (concat "(\\s-*"
@@ -291,7 +291,7 @@ With prefix argument sort section by file."
 (defun deh-enable (feature)
   "Eval the form in `deh-enable-list'."
   (interactive
-   (list (completing-read "Enable feature: " deh-enable-list 
+   (list (completing-read "Enable feature: " deh-enable-list
                           nil t)))
   (eval (cons 'progn
               (assoc-default feature deh-enable-list))))
@@ -309,6 +309,29 @@ Example:
         (mapcar (lambda (pair)
                   `(define-key ,map ,(car pair) ,(cdr pair)))
                 keypairs)))
+
+(defmacro deh-add-hook (hook &rest forms)
+  "Apply some functions for a hook.
+
+Example:
+  (deh-add-hooks 'c-mode-common-hook
+    (flyspell-prog-mode)
+    (flymake-minor-mode 1))
+"
+  (declare (indent 1))
+  `(add-hook ,hook (lambda () ,@forms)))
+
+(defmacro deh-add-hooks (hooks &rest forms)
+  "Apply some functions for a list of hooks.
+
+Example:
+  (deh-add-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
+    (flyspell-prog-mode)
+    (flymake-minor-mode 1))
+"
+  (declare (indent 1))
+  `(dolist (hook ,hooks)
+     (add-hook hook (lambda () ,@forms))))
 
 (provide 'dot-emacs-helper)
 ;;; dot-emacs-helper.el ends here

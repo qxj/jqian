@@ -1,6 +1,9 @@
-(deh-require 'which-func
-  (which-func-mode 1)
-  (setq which-func-unknown "unknown"))
+(deh-section "which-func"
+  (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (which-func-mode 1)
+                (setq which-func-unknown "unknown")))))
 
 (deh-section "ebrowse"
    (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
@@ -48,7 +51,6 @@
     (c-add-style "Personal" my-c-style t)
     ;; (c-set-style "Personal")
     (setq c-basic-offset tab-width)
-    (set (make-local-variable 'comment-style) 'indent)
     (local-set-key "*" 'self-insert-command)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
@@ -56,7 +58,7 @@
     (hs-minor-mode 1)
     (eldoc-mode 1)
     ;; (smart-operator-mode 1)
-    (setq comment-style 'extra-line)
+    (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
     (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
@@ -74,6 +76,7 @@
 (deh-section "c++-mode"
   (defun my-c++-mode-hook ()
     (my-c-mode-common-hook)
+    (setq local-abbrev-table c-mode-abbrev-table)
     (add-to-list 'c-style-alist
                  '("mine"
                    (c-basic-offset . 4)
@@ -90,15 +93,14 @@
                     (inline-open . 0))))
     (c-set-style "mine"))
   ;; (c-add-style "Personal" my-c-style t)
-  (add-hook 'c++-mode-hook 'my-c++-mode-hook)
-  (add-hook 'c++-mode-hook
-            (lambda ()
-              (setq local-abbrev-table c-mode-abbrev-table))))
+  (add-hook 'c++-mode-hook 'my-c++-mode-hook))
 
 (deh-section "gud"
   (add-hook 'gud-mode-hook
             (lambda ()
               (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
-              (set (make-local-variable 'paragraph-separate) "\\'"))))
+              (set (make-local-variable 'paragraph-separate) "\\'")
+              (kill-buffer-when-shell-command-exit)
+              )))
 
 

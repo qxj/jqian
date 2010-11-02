@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; my functions ;;;;;;;;;;;;;;;;;;;;
-;; Most useful function and commands
+;; Most useful interactive function and commands for keybinds
 
 (dolist (func '("func-dired-ext"
                 "func-elisp-helper"
@@ -266,9 +266,15 @@
   (with-temp-buffer
     (dolist (file
              (append
-              (directory-files my-config-dir t "func-.*.el$")
-              (directory-files (expand-file-name "contrib" my-site-lisp-dir) t ".*.el$")
-              (directory-files (expand-file-name "goodies" my-site-lisp-dir) t ".*.el$")))
+              (directory-files my-config-dir t "func-.*\\.el$")
+              (let (files)
+                (mapc (lambda (dir)
+                        (if (file-directory-p dir)
+                            (setq files
+                                  (append
+                                   (directory-files dir t ".*\\.el$")))))
+                      (directory-files my-site-lisp-dir t))
+                files)))
       (unless (file-directory-p file)
         (generate-file-autoloads file)))
     (write-region (point-min) (point-max) "~/.emacs.d/config/100-loaddefs.el")))
