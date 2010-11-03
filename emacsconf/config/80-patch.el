@@ -232,24 +232,4 @@ Using a template for inserting some text consists of:
 ;;}}}
 
 
-;;{{{ some advice
-(defadvice occur (around occur-mark-region)
-  (save-restriction
-    (if (and mark-active transient-mark-mode)
-        (narrow-to-region (region-beginning) (region-end)))
-    ad-do-it))
-(ad-activate 'occur)
-
-;; (defadvice browse-url-generic (before ywb-browse-url-generic)
-;;   (setq url (replace-regexp-in-string "\\cC" 'url-hexify-string url)))
-;; (ad-activate 'browse-url-generic)
-
-(defadvice browse-url-file-url (after ywb-url-han)
-  (let ((file ad-return-value))
-    (while (string-match "[\x7f-\xff]" file)
-      (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
-        (setq file (replace-match enc t t file))))
-    (setq ad-return-value file)))
-(ad-activate 'browse-url-file-url)
-;;}}}
 
