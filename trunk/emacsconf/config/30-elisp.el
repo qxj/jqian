@@ -985,7 +985,7 @@ defadvice to prevent an infinite loop when there are no matches."
        (define-key anything-map "\M-n" 'anything-next-source)
        (define-key anything-map "\M-p" 'anything-previous-source)))
 
-  (try-require 'anything-config)
+  (deh-try-require 'anything-config)
 
   (setq anything-c-adaptive-history-file
         (expand-file-name "anything-c-adaptive-history" my-temp-dir)

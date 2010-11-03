@@ -79,13 +79,39 @@
 
 (defvar deh-information nil)
 
+(defvar deh-missing-packages-list nil
+  "List of packages that `deh-try-require', `deh-require-maybe'
+and `deh-section-if' can't find.")
+
+(defun deh-try-require (feature)
+  "Attempt to load a library or module. Return `t' if the library
+given as argument is successfully loaded. If not, instead of an
+error, just add the package to a list of missing packages and
+return `nil'."
+  (condition-case err
+      (progn                            ; protected form
+        (if (stringp feature)
+            (load-library feature)
+          (require feature))
+        t)
+    (file-error                         ; load-library error
+     (progn
+       (add-to-list 'deh-missing-packages-list feature 'append))
+     nil)
+    (error                              ; require error
+     (progn
+       (add-to-list 'deh-missing-packages-list feature 'append)
+       (sleep-for 1))
+     nil)))
+
 (defmacro deh-require-maybe (feature &rest forms)
   (declare (indent 1))
   `(progn
      (if ,load-file-name
          (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-     (when (require ,feature nil t)
-       ,@forms)))
+     (if (require ,feature nil t)
+         (progn ,@forms)
+       (add-to-list 'deh-missing-packages-list ,feature 'append))))
 (defalias 'deh-require 'deh-require-maybe)
 (put 'deh-require 'lisp-indent-function 1)
 
@@ -265,7 +291,8 @@ With prefix argument sort section by file."
                 (when (re-search-forward (concat "(\\s-*"
                                                  (regexp-opt '("deh-require-maybe"
                                                                "deh-require"
-                                                               "deh-section") t)
+                                                               "deh-section"
+                                                               "deh-section-if") t)
                                                  "\\s-+['\"]") nil t)
                   (backward-char 1)
                   (let ((sec (read (buffer-substring (point) (scan-sexps (point) 1)))))
@@ -320,7 +347,8 @@ Example:
     (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))"
   (declare (indent 1))
   `(let ((deh-this-path ,path))
-     (when (file-exists-p deh-this-path)
+     (if (not (file-exists-p deh-this-path))
+         (add-to-list 'deh-missing-packages-list deh-this-path 'append)
        (if (file-directory-p deh-this-path)
            (add-to-list 'load-path deh-this-path))
        (deh-section ,section ,@forms))))
