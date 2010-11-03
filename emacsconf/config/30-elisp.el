@@ -641,18 +641,18 @@
 
 ;;{{{ autopair, like skeleton
 (deh-require 'autopair
-  (deh-add-hooks '(java-mode-hook
-                   c-mode-common-hook
-                   python-mode-hook
-                   emacs-lisp-mode-hook
-                   html-mode-hook)
+  (deh-add-hooks (java-mode-hook
+                  c-mode-common-hook
+                  python-mode-hook
+                  emacs-lisp-mode-hook
+                  html-mode-hook)
     (autopair-mode))
   ;; some tricks
-  (deh-add-hook 'c++-mode-hook
+  (deh-add-hook c++-mode-hook
     (push ? (getf autopair-dont-pair :comment))
     ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
     )
-  (deh-add-hook 'emacs-lisp-mode-hook
+  (deh-add-hook emacs-lisp-mode-hook
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string)))
   )
@@ -691,9 +691,8 @@
   (define-key ac-menu-map (kbd "TAB") 'ac-complete)
 
   ;; <TAB> for `auto-complete'
-  (add-hook 'auto-complete-mode-hook
-            (lambda ()
-              (local-set-key (kbd "TAB") 'auto-complete-tab-action)))
+  (deh-local-set-key auto-complete-mode-hook
+    ((kbd "TAB") . 'auto-complete-tab-action))
   (defun auto-complete-tab-action ()
     "If cursor at one word end, try auto complete it. Otherwise,
 indent line."
@@ -1113,24 +1112,22 @@ mouse-3: Toggle minor modes"
   ;; Highlight symbol
   (setq highlight-symbol-idle-delay 0.5
         highlight-symbol-mode nil)
-  (dolist (hook '(emacs-lisp-mode-hook
-                  lisp-interaction-mode-hook
-                  java-mode-hook
-                  c-mode-common-hook
-                  text-mode-hook
-                  html-mode-hook))
-    (add-hook
-     hook (lambda ()
-            ;; (highlight-symbol-mode 1)
-            (local-set-key (kbd "C-c l l") 'highlight-symbol-at-point)
-            (local-set-key (kbd "C-c l u") 'highlight-symbol-remove-all)
-            (local-set-key (kbd "C-c l n") 'highlight-symbol-next)
-            (local-set-key (kbd "C-c l p") 'highlight-symbol-prev)
-            (local-set-key (kbd "C-c l q") 'highlight-symbol-query-replace)
-            (local-set-key (kbd "C-c l N") 'highlight-symbol-next-in-defun)
-            (local-set-key (kbd "C-c l P") 'highlight-symbol-prev-in-defun)
-            )))
-  )
+  ;; (highlight-symbol-mode 1)
+  (deh-local-set-keys
+   (emacs-lisp-mode-hook
+    lisp-interaction-mode-hook
+    java-mode-hook
+    c-mode-common-hook
+    text-mode-hook
+    html-mode-hook)
+   ((kbd "C-c l l") . 'highlight-symbol-at-point)
+   ((kbd "C-c l u") . 'highlight-symbol-remove-all)
+   ((kbd "C-c l n") . 'highlight-symbol-next)
+   ((kbd "C-c l p") . 'highlight-symbol-prev)
+   ((kbd "C-c l q") . 'highlight-symbol-query-replace)
+   ((kbd "C-c l N") . 'highlight-symbol-next-in-defun)
+   ((kbd "C-c l P") . 'highlight-symbol-prev-in-defun)
+   ))
 
 ;; shell
 (deh-section "shell"
@@ -1227,15 +1224,13 @@ If the flag is set, only complete with local files."
        (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde)
        ))
     ;; for XeLaTeX
-    (add-hook
-     'LaTeX-mode-hook
-     (lambda()
-       (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-       (TeX-PDF-mode t)
-       (setq TeX-command-default "XeLaTeX")
-       (setq TeX-save-query nil )
-       (setq TeX-show-compilation t)
-       ))
+    (deh-add-hook LaTeX-mode-hook
+      (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+      (TeX-PDF-mode t)
+      (setq TeX-command-default "XeLaTeX")
+      (setq TeX-save-query nil )
+      (setq TeX-show-compilation t)
+       )
     )
    ))
 

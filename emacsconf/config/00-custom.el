@@ -163,7 +163,7 @@
              (indent-region (region-beginning) (region-end) nil))))))
 
 (custom-set-variables
- '(confirm-kill-emacs (quote y-or-n-p))
+ ;; '(confirm-kill-emacs (quote y-or-n-p))
  '(cperl-invalid-face nil)
  '(desktop-globals-to-save (quote (sql-mysql-schema bibus-formats desktop-missing-file-warning search-ring regexp-search-ring register-alist windata-named-winconf)))
  '(folding-folding-on-startup nil)

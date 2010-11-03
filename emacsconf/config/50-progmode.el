@@ -2,18 +2,12 @@
 
 ;;{{{ Rebinding keys for hideshow
 (deh-require 'hideshow
-  (define-key hs-minor-mode-map "\C-ch"
-    (let ((map (lookup-key hs-minor-mode-map "\C-c@")))
-      ;; C-h is help to remind me key binding
-      (define-key map "\C-h" 'describe-prefix-bindings)
-      (define-key map "\C-q" 'hs-toggle-hiding)
-      ;; compatible with outline
-      (define-key map "h" 'hs-hide-block)
-      (define-key map "s" 'hs-show-block)
-      (define-key map "H" 'hs-hide-all)
-      (define-key map "S" 'hs-show-all)
-      (define-key map "t" 'hs-toggle-hiding)
-      map)))
+  (deh-define-key hs-minor-mode-map
+    ("\C-chh" . 'hs-hide-block)
+    ("\C-chs" . 'hs-show-block)
+    ("\C-chH" . 'hs-hide-all)
+    ("\C-chS" . 'hs-show-all)
+    ("\C-cht" . 'hs-toggle-hiding)))
 ;;}}}
 
 ;;{{{ Etags
@@ -36,31 +30,29 @@
 ;;{{{ Gtags & Xcscope
 (deh-section "gtags"
   (autoload 'gtags-mode "gtags" "" t)
-  (setq gtags-mode-hook
-        '(lambda ()
-           ;; Instead of `find-tag' & `pop-tag-mark'
-           (define-key gtags-mode-map (kbd "M-.") 'gtags-find-tag)
-           (define-key gtags-mode-map (kbd "M-*") 'gtags-pop-stack)
-           ;; Key bind for gtags-mode
-           (define-key gtags-mode-map (kbd "C-c g v") 'gtags-visit-rootdir)
-           (define-key gtags-mode-map (kbd "C-c g t") 'gtags-find-tag-from-here)
-           (define-key gtags-mode-map (kbd "C-c g o") 'gtags-find-tag-other-window)
-           (define-key gtags-mode-map (kbd "C-c g r") 'gtags-find-rtag)
-           (define-key gtags-mode-map (kbd "C-c g s") 'gtags-find-symbol)
-           (define-key gtags-mode-map (kbd "C-c g p") 'gtags-find-pattern)
-           (define-key gtags-mode-map (kbd "C-c g g") 'gtags-find-with-grep)
-           (define-key gtags-mode-map (kbd "C-c g i") 'gtags-find-with-idutils)
-           (define-key gtags-mode-map (kbd "C-c g f") 'gtags-find-file)
-           (define-key gtags-mode-map (kbd "C-c g a") 'gtags-parse-file)
-           (define-key gtags-mode-map (kbd "C-c g b") 'my-gtags-append-tags)
-           ))
+  (eval-after-load "gtags"
+    '(deh-define-key gtags-mode-map
+       ;; Instead of `find-tag' & `pop-tag-mark'
+       ((kbd "M-.")     . 'gtags-find-tag)
+       ((kbd "M-*")     . 'gtags-pop-stack)
+       ;; other key binds
+       ((kbd "C-c g v") . 'gtags-visit-rootdir)
+       ((kbd "C-c g t") . 'gtags-find-tag-from-here)
+       ((kbd "C-c g o") . 'gtags-find-tag-other-window)
+       ((kbd "C-c g r") . 'gtags-find-rtag)
+       ((kbd "C-c g s") . 'gtags-find-symbol)
+       ((kbd "C-c g p") . 'gtags-find-pattern)
+       ((kbd "C-c g g") . 'gtags-find-with-grep)
+       ((kbd "C-c g i") . 'gtags-find-with-idutils)
+       ((kbd "C-c g f") . 'gtags-find-file)
+       ((kbd "C-c g a") . 'gtags-parse-file)
+       ((kbd "C-c g b") . 'my-gtags-append-tags)))
   (defun my-gtags-append-tags ()
     (interactive)
     (if gtags-mode
         (progn
           (message "start to global -u")
-          (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
-  )
+          (start-process "gtags-name" "*gtags-var*" "global" "-u")))))
 
 (deh-section "xcscope"
   (eval-after-load "xcscope"
@@ -83,13 +75,14 @@
        (setq cscope-minor-mode-hooks
              '(lambda ()
                 ;; Instead of `find-tag' & `pop-tag-mark'
-                (define-key cscope:map (kbd "M-.") 'cscope-find-this-symbol)
-                (define-key cscope:map (kbd "M-*") 'cscope-pop-mark)
+                (deh-define-key cscope:map
+                  ((kbd "M-.") . 'cscope-find-this-symbol)
+                  ((kbd "M-*") 'cscope-pop-mark))
                 ;; Key bind for cscope-minor-mode
                 ))
        ;; hack `xcscope.el', remove hooks
-       (dolist (hook '(c-mode-hook c++-mode-hook dired-mode-hook))
-         (remove-hook hook (function cscope:hook))))))
+       (deh-remove-hooks (c-mode-hook c++-mode-hook dired-mode-hook)
+         (function cscope:hook)))))
 
 (defcustom my-toggle-gtags-or-xcscope-option t
   "No-nil to enable gtags, or enable xcscope.")
@@ -98,15 +91,11 @@
   (interactive)
   (if my-toggle-gtags-or-xcscope-option
       (progn
-        (dolist (hook '(c-mode-hook c++-mode-hook))
-          (add-hook hook (lambda () (gtags-mode 1))))
-        (dolist (hook '(c-mode-hook c++-mode-hook))
-          (remove-hook hook (function cscope:hook))))
+        (deh-add-hooks (c-mode-hook c++-mode-hook) (gtags-mode 1))
+        (deh-remove-hooks (c-mode-hook c++-mode-hook) (function cscope:hook)))
     (require 'xcscope)
-    (dolist (hook '(c-mode-hook c++-mode-hook))
-      (remove-hook hook (lambda () (gtags-mode 1))))
-    (dolist (hook '(c-mode-hook c++-mode-hook))
-      (add-hook hook (function cscope:hook)))))
+    (deh-remove-hooks (c-mode-hook c++-mode-hook) (gtags-mode 1))
+    (deh-add-hooks (c-mode-hook c++-mode-hook) (function cscope:hook))))
 
 (my-toggle-gtags-and-xcscope)
 ;;}}}
@@ -130,25 +119,19 @@
 (deh-section "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
-  (dolist (hook '(text-mode-hook org-mode-hook))
-    (add-hook hook (lambda () (flyspell-mode 1))))
-  (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
-    (add-hook hook (lambda () (flyspell-mode -1))))
-  (dolist (hook '(c-mode-common-hook python-mode-hook))
-    (add-hook hook (lambda () (flyspell-prog-mode)))))
+  (deh-add-hooks (text-mode-hook org-mode-hook) (flyspell-mode 1))
+  (deh-add-hooks (change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
+  (deh-add-hooks (c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
 
 (deh-section "flymake"
   (eval-after-load "flymake"
     '(progn
        (setq flymake-gui-warnings-enabled nil)
+       (deh-add-hooks (c-mode-common-hook makefile-mode-hook)
+            ((kbd "C-c C-v") . 'flymake-goto-next-error))
 
-       (dolist (hook '(c-mode-common-hook makefile-mode-hook))
-         (add-hook
-          hook
-          (lambda ()
-            ;; (flymake-mode t)
-            ;; (setq flymake-log-level 1)
-            (local-set-key (kbd "C-c C-v") 'flymake-goto-next-error))))
+       ;; (flymake-mode t)
+       ;; (setq flymake-log-level 1)
 
        (defun my-flymake-find-file-hook ()
          (condition-case nil
@@ -222,18 +205,6 @@
         (load-file nxhtml-init-file)))
   )
 
-;; sh-mode
-(deh-section "sh-mode"
-  (add-hook 'sh-mode-hook
-            (lambda ()
-              ;; (when buffer-file-name
-              ;;   (executable-set-magic "bash" nil t t))
-              (deh-require 'inf-sh-mode)))
-  (add-hook 'sh-set-inferior-hook
-            (lambda ()
-              (keep-end-watch-this
-               (buffer-name sh-inferior-buffer)))))
-
 ;; gnuplot
 (deh-section "gnuplot"
   (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
@@ -248,14 +219,11 @@
 ;; graphviz
 (deh-section "graphviz"
   (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
-  (add-hook 'graphviz-dot-mode-hook
-            (lambda ()
-              (local-unset-key "\C-cc") ; it's prefix key
-              (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action)
-              ))
+  (deh-add-hook graphviz-dot-mode-hook
+    (local-unset-key "\C-cc") ; it's prefix key
+    (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
   (defun graphviz-dot-tab-action ()
-    "If cursor at one word end, try complete it. Otherwise,
-indent line."
+    "If cursor at one word end, try complete it. Otherwise, indent line."
     (interactive)
     (if (looking-at "\\>")
         (graphviz-dot-complete-word)
@@ -268,19 +236,15 @@ indent line."
     (interactive)
     (require 'cedet)
     (require 'jde)
-    (jde-mode)
-    )
-  (add-hook 'java-mode-hook
-            (lambda ()
-              (c-set-style "java")
-              (setq c-basic-offset 4)
-              )))
+    (jde-mode))
+  (deh-add-hook java-mode-hook
+    (c-set-style "java")
+    (setq c-basic-offset 4)))
 
 ;;; emacs --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
-  (add-hook 'js2-mode-hook
-            (lambda ()
-              (setq forward-sexp-function nil))))
+  (deh-add-hook js2-mode-hook
+    (setq forward-sexp-function nil)))
 
 (deh-section "autoloads"
   ;; (autoload 'gtags-mode "gtags" "Global Tags Mode from GNU." t)
