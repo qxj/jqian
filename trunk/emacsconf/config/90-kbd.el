@@ -14,7 +14,6 @@
   ((kbd "C-a")   . 'my-beginning-of-line)
   ((kbd "C-e")   . 'my-end-of-line)
   ((kbd "C-o")   . 'vi-open-next-line)
-  ((kbd "C-s")   . 'isearch-word-at-point)
   ((kbd "C-'")   . 'redo)
   ((kbd "C-\\")  . 'my-comment-or-uncomment-region)
   ((kbd "M-5")   . 'my-display-buffer-file-name)

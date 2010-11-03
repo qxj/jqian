@@ -766,9 +766,11 @@ indent line."
     ("\M->" . 'isearch-end-of-buffer)
     ("\M-i" . 'isearch-query-replace-current)
     ("\C-u" . 'isearch-clean)
+    ("\C-y" . 'isearch-yank-symbol) ; instead of `isearch-yank-line'
     ;; Remind other useful keybinds
     ;; ("\M-e" . 'isearch-edit-string)
     ;; ("\M-y" . 'isearch-yank-kill)
+    ;; ("\M-r" . 'isearch-toggle-regexp)
     )
 
   (defun isearch-beginning-of-buffer ()
@@ -807,6 +809,18 @@ indent line."
                (if isearch-regexp 'isearch-forward-regexp 'isearch-forward)
              (if isearch-regexp 'isearch-backward-regexp 'isearch-backward))))
       (call-interactively isearch-command)))
+  (defun isearch-yank-symbol ()
+    "Put symbol at current point into search string."
+    (interactive)
+    (let ((sym (symbol-at-point)))
+      (if sym
+          (progn
+            (setq isearch-regexp t
+                  isearch-string (concat "\\_<" (regexp-quote (symbol-name sym)) "\\_>")
+                  isearch-message (mapconcat 'isearch-text-char-description isearch-string "")
+                  isearch-yank-flag t))
+        (ding)))
+    (isearch-search-and-update))
 
   ;; Search word at point
   (defun isearch-word-at-point ()
