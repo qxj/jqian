@@ -264,18 +264,16 @@
   (interactive)
   (require 'autoload)
   (with-temp-buffer
-    (dolist (file
-             (append
-              (directory-files my-config-dir t "func-.*\\.el$")
-              (let (files)
-                (mapc (lambda (dir)
-                        (if (file-directory-p dir)
-                            (setq files
-                                  (append
-                                   (directory-files dir t ".*\\.el$")))))
-                      (directory-files my-site-lisp-dir t))
-                files)))
-      (unless (file-directory-p file)
-        (generate-file-autoloads file)))
-    (write-region (point-min) (point-max) "~/.emacs.d/config/100-loaddefs.el")))
+    (let (files)
+      (setq files (directory-files my-config-dir t "func-.*\\.el$"))
+      (dolist (dir '("contrib" "goodies"))
+        (setq files (append files
+                            (directory-files
+                             (expand-file-name dir my-site-lisp-dir)
+                             t ".*\\.el$"))))
+      (dolist (file files)
+        (unless (file-directory-p file)
+          (generate-file-autoloads file)))
+      (write-region (point-min) (point-max)
+                    "~/.emacs.d/config/100-loaddefs.el"))))
 ;;}}}

@@ -310,28 +310,99 @@ Example:
                   `(define-key ,map ,(car pair) ,(cdr pair)))
                 keypairs)))
 
+;;; added by julian
+(defmacro deh-section-if (section path &rest forms)
+  "If path exists, call `deh-section'. One internal variable `deh-this-path'
+indicates the argument path, which you can use in forms.
+
+Example:
+  (deh-section-if \"org\" \"~/src/org--7.01h\"
+    (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))"
+  (declare (indent 1))
+  `(let ((deh-this-path ,path))
+     (when (file-exists-p deh-this-path)
+       (if (file-directory-p deh-this-path)
+           (add-to-list 'load-path deh-this-path))
+       (deh-section ,section ,@forms))))
+
+(defmacro deh-local-set-key (hook &rest keypairs)
+  "Set a batch of local keys for a hook.
+
+Example:
+  (deh-local-set-keys text-mode-hook
+    (\"\\C-m\"        . 'newline-and-indent)
+    (\"\\C-j\"        . 'newline))
+"
+  (declare (indent 1))
+  (list 'add-hook (list 'quote hook)
+        (cons 'lambda
+              (cons 'nil (mapcar
+                          (lambda (pair)
+                            `(local-set-key ,(car pair) ,(cdr pair)))
+                          keypairs)))))
+
+(defmacro deh-local-set-keys (hooks &rest keypairs)
+  "Set a batch of local keys for a list of hooks.
+
+Example:
+  (deh-local-set-keys (text-mode-hook org-mode-hook)
+    (\"\\C-m\"        . 'newline-and-indent)
+    (\"\\C-j\"        . 'newline))
+"
+  (declare (indent 1))
+  (list 'dolist (list 'hook (list 'quote hooks))
+        (list 'add-hook 'hook
+              (cons 'lambda
+                    (cons 'nil (mapcar
+                                (lambda (pair)
+                                  `(local-set-key ,(car pair) ,(cdr pair)))
+                                keypairs))))))
+
 (defmacro deh-add-hook (hook &rest forms)
   "Apply some functions for a hook.
 
 Example:
-  (deh-add-hooks 'c-mode-common-hook
+  (deh-add-hooks c-mode-common-hook
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
   (declare (indent 1))
-  `(add-hook ,hook (lambda () ,@forms)))
+  `(add-hook ',hook (lambda () ,@forms)))
+
+(defmacro deh-remove-hook (hook &rest forms)
+  "Remove some functions for a hook.
+
+Example:
+  (deh-remove-hooks c-mode-common-hook
+    (flyspell-prog-mode)
+    (flymake-minor-mode 1))
+"
+  (declare (indent 1))
+  `(remove-hook ',hook (lambda () ,@forms)))
 
 (defmacro deh-add-hooks (hooks &rest forms)
   "Apply some functions for a list of hooks.
 
 Example:
-  (deh-add-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
+  (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook)
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
   (declare (indent 1))
-  `(dolist (hook ,hooks)
+  `(dolist (hook ',hooks)
      (add-hook hook (lambda () ,@forms))))
+
+(defmacro deh-remove-hooks (hooks &rest forms)
+  "Remove some functions for a list of hooks.
+
+Example:
+  (deh-remove-hooks (c-mode-common-hook emacs-lisp-mode-hook)
+    (flyspell-prog-mode)
+    (flymake-minor-mode 1))
+"
+  (declare (indent 1))
+  `(dolist (hook ',hooks)
+     (remove-hook hook (lambda () ,@forms))))
 
 (provide 'dot-emacs-helper)
 ;;; dot-emacs-helper.el ends here
