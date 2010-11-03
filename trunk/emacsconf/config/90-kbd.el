@@ -1,11 +1,10 @@
 ;;; key setting
-(define-prefix-command 'ctl-cc-map)
-(define-prefix-command 'ctl-co-map)     ; org-mode-map-prefix
-(define-prefix-command 'ctl-z-map)
+(define-prefix-command 'ctrl-cc-map)
+(define-prefix-command 'ctrl-z-map)
 
 ;; global key binding
 (deh-define-key global-map
-  ((kbd "C-z")   . 'ctl-z-map)
+  ((kbd "C-z")   . 'ctrl-z-map)
   ((kbd "C-d")   . 'delete-char-or-region)
   ((kbd "<C-delete>")   . 'delete-char-or-region)
   ((kbd "C-1")   . 'smart-mark-whole-sexp)
@@ -15,6 +14,7 @@
   ((kbd "C-a")   . 'my-beginning-of-line)
   ((kbd "C-e")   . 'my-end-of-line)
   ((kbd "C-o")   . 'vi-open-next-line)
+  ((kbd "C-s")   . 'isearch-word-at-point)
   ((kbd "C-'")   . 'redo)
   ((kbd "C-\\")  . 'my-comment-or-uncomment-region)
   ((kbd "M-5")   . 'my-display-buffer-file-name)
@@ -33,13 +33,15 @@
   ((kbd "<f7>")  . 'calendar)
   ((kbd "C-h j") . (lambda () (interactive) (info "elisp")))
   ((kbd "<C-mouse-4>") . 'text-scale-increase)
+  ((kbd "C-+") . 'text-scale-increase)
   ((kbd "<C-mouse-5>") . 'text-scale-decrease)
+  ((kbd "C--") . 'text-scale-decrease)
   ((kbd "<C-down-mouse-1>") . 'undefined)
   )
 
 (deh-define-key (lookup-key global-map "\C-c")
+  ("c" . 'ctrl-cc-map)
   ("$" . 'toggle-truncate-lines)
-  ("c" . 'ctl-cc-map)
   ;; ("f" . 'comint-dynamic-complete)
   ;; ("g" . 'fold-dwim-hide-all)
   ("i" . 'imenu)
@@ -63,7 +65,7 @@
   ("c"    . 'ywb-clone-buffer)
   )
 
-(deh-define-key ctl-cc-map
+(deh-define-key ctrl-cc-map
   ("a" . 'org-agenda)
   ("b" . 'org-iswitchb)
   ("c" . 'ywb-create/switch-scratch)
@@ -81,7 +83,7 @@
   )
 
 
-(deh-define-key ctl-z-map
+(deh-define-key ctrl-z-map
   ("\C-z" . (if (eq window-system 'x) 'suspend-frame 'suspend-emacs)))
 
 (windmove-default-keybindings)

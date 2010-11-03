@@ -758,6 +758,91 @@ indent line."
   (setq template-directory-list (list my-template-dir)))
 ;;}}}
 
+;;{{{ isearch tweaks
+(deh-section "isearch"
+  (deh-define-key isearch-mode-map
+    ("\t" . 'isearch-complete)
+    ("\M-<" . 'isearch-beginning-of-buffer)
+    ("\M->" . 'isearch-end-of-buffer)
+    ("\M-i" . 'isearch-query-replace-current)
+    ("\C-u" . 'isearch-clean)
+    ;; Remind other useful keybinds
+    ;; ("\M-e" . 'isearch-edit-string)
+    ;; ("\M-y" . 'isearch-yank-kill)
+    )
+
+  (defun isearch-beginning-of-buffer ()
+    "Move isearch point to the beginning of the buffer."
+    (interactive)
+    (goto-char (point-min))
+    (isearch-repeat-forward))
+  (defun isearch-end-of-buffer ()
+    "Move isearch point to the end of the buffer."
+    (interactive)
+    (goto-char (point-max))
+    (isearch-repeat-backward))
+  (defun isearch-query-replace-current ()
+    "Replace current searching string."
+    (interactive)
+    (let ((case-fold-search isearch-case-fold-search)
+          (from-string isearch-string))
+      (if (string= from-string "") (isearch-update)
+        (if (not isearch-success)
+            (progn (message "Search string not found")
+                   (sleep-for 0.5) (isearch-update))
+          (progn (isearch-done)
+                 (goto-char (min (point) isearch-other-end)))
+          (perform-replace
+           from-string
+           (read-from-minibuffer
+            (format "Query replace %s with: " from-string)
+            "" nil nil query-replace-to-history-variable from-string t)
+           t isearch-regexp nil)))))
+  (defun isearch-clean ()
+    "Clean string in `iserch-mode'."
+    (interactive)
+    (goto-char isearch-opoint)
+    (let ((isearch-command
+           (if isearch-forward
+               (if isearch-regexp 'isearch-forward-regexp 'isearch-forward)
+             (if isearch-regexp 'isearch-backward-regexp 'isearch-backward))))
+      (call-interactively isearch-command)))
+
+  ;; Search word at point
+  (defun isearch-word-at-point ()
+    (interactive)
+    (call-interactively 'isearch-forward-regexp))
+  (defun isearch-yank-word-hook ()
+    (when (equal this-command 'isearch-word-at-point)
+      (let ((string (concat "\\<"
+                            (buffer-substring-no-properties
+                             (progn (skip-syntax-backward "w_") (point))
+                             (progn (skip-syntax-forward "w_") (point)))
+                            "\\>")))
+        (if (and isearch-case-fold-search
+                 (eq 'not-yanks search-upper-case))
+            (setq string (downcase string)))
+        (setq isearch-string string
+              isearch-message
+              (concat isearch-message
+                      (mapconcat 'isearch-text-char-description
+                                 string ""))
+              isearch-yank-flag t)
+        (isearch-search-and-update))))
+  (add-hook 'isearch-mode-hook 'isearch-yank-word-hook)
+
+  (defadvice isearch-repeat (after isearch-no-fail activate)
+    "When Isearch fails, it immediately tries again with
+wrapping. Note that it is important to temporarily disable this
+defadvice to prevent an infinite loop when there are no matches."
+    (unless isearch-success
+      (ad-disable-advice 'isearch-repeat 'after 'isearch-no-fail)
+      (ad-activate 'isearch-repeat)
+      (isearch-repeat (if isearch-forward 'forward))
+      (ad-enable-advice 'isearch-repeat 'after 'isearch-no-fail)
+      (ad-activate 'isearch-repeat))))
+;;}}}
+
 ;;{{{ autoloads non-std libraries
 (deh-section "non-std-lib"
   ;; wb-line
@@ -815,7 +900,8 @@ indent line."
   ;; visible-line
   (require 'visible-lines nil t)
   ;; info+
-  (require 'info+)
+  (eval-after-load "info"
+    '(require 'info+))
   ;; for normal term
   ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
   )
@@ -838,8 +924,8 @@ indent line."
 
 ;; recent-jump
 (deh-require 'recent-jump
-  (global-set-key (kbd "M-o") 'recent-jump-jump-backward)
-  (global-set-key (kbd "M-i") 'recent-jump-jump-forward))
+  (global-set-key (kbd "M-[") 'recent-jump-jump-backward)
+  (global-set-key (kbd "M-]") 'recent-jump-jump-forward))
 
 ;; recent opened files
 (deh-require 'recentf
