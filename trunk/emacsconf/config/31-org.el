@@ -37,11 +37,11 @@
     ;; ((kbd "C-c C-a") . 'org-attach)
     )
 
-  (deh-local-set-key outline-minor-mode-hook
-    ((kbd "C-c o s") . 'show-entry)
-    ((kbd "C-c o S") . 'show-all)
-    ((kbd "C-c o h") . 'hide-entry)
-    ((kbd "C-c o H") . 'hide-body))
+  ;; (deh-local-set-key outline-minor-mode-hook
+  ;;   ((kbd "C-c o s") . 'show-entry)
+  ;;   ((kbd "C-c o S") . 'show-all)
+  ;;   ((kbd "C-c o h") . 'hide-entry)
+  ;;   ((kbd "C-c o H") . 'hide-body))
 
   ;; (setq org-agenda-include-diary t) ; contain calendar
   ;; (setq org-log-done t)

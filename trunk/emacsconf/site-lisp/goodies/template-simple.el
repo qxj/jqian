@@ -3,11 +3,8 @@
 ;; Copyright (C) 2007  Ye Wenbin
 
 ;; Author: Ye Wenbin <wenbinye@gmail.com>
-;; Maintainer: Ye Wenbin <wenbinye@gmail.com>
-;; Created: 21 Dec 2007
 ;; Update: 22 Oct 2010 by Julian Qian <junist@gmail.com>
 ;; Version: 0.02
-;; Keywords: tools, convenience
 ;;
 ;; This file is part of PDE (Perl Development Environment).
 ;; But it is useful for generic programming.

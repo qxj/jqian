@@ -3,9 +3,8 @@
 ;; Copyright 2007 Ye Wenbin
 ;;
 ;; Author: wenbinye@gmail.com
-;; Version: $Id: dot-emacs-helper.el,v 0.0 2007/12/07 05:14:41 ywb Exp $
-;; Keywords:
-;; X-URL: not distributed yet
+;; Update: Nov 3, 2010 by Julian Qian <junist@gmail.com>
+;; Version: 0.02
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -226,7 +225,7 @@ With prefix argument sort section by file."
 
 (defun deh-regexp (name)
   (if (stringp name)
-      (concat "(\\s-*deh-section\\s-+\"" (regexp-quote name))
+      (concat "(\\s-*deh-section\\(-if\\)?\\s-+\"" (regexp-quote name))
     (concat "(\\s-*deh-require\\(-maybe\\)?\\s-+'"
             (regexp-quote (symbol-name name)))))
 
