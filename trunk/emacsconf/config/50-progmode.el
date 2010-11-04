@@ -14,10 +14,20 @@
 (deh-section "outline"
   (setq outline-minor-mode-prefix (kbd "C-c C-o"))
   (deh-define-key outline-minor-mode-map
-    ("\C-c\C-os" . 'show-entry)
+    ("\C-c\C-os" . 'show-subtree)
     ("\C-c\C-oS" . 'show-all)
-    ("\C-c\C-oh" . 'hide-entry)
+    ("\C-c\C-oh" . 'hide-subtree)
     ("\C-c\C-oH" . 'hide-body)
+    ;; shortcuts
+    ((kbd "<right>") . 'show-subtree)
+    ((kbd "<M-right>") . 'show-all)
+    ((kbd "<left>") . 'hide-subtree)
+    ((kbd "<M-left>") . 'hide-body)
+    ((kbd "<up>") . 'outline-previous-heading)
+    ((kbd "<down>") . 'outline-next-heading)
+    ((kbd "<M-up>") . 'outline-previous-visible-heading)
+    ((kbd "<M-down>") . 'outline-next-visible-heading)
+    ;; xwl keybinds
     ("\C-c\C-on" . 'xwl-narrow-to-outline-level)
     ("\C-c\C-ou" . 'xwl-outline-toggle-enter-exit)
     ("\C-c\C-oq" . 'xwl-outline-toggle-show-hide))
