@@ -937,8 +937,9 @@ defadvice to prevent an infinite loop when there are no matches."
 
 ;; recent-jump
 (deh-require 'recent-jump
-  (global-set-key (kbd "M-[") 'recent-jump-jump-backward)
-  (global-set-key (kbd "M-]") 'recent-jump-jump-forward))
+  (deh-define-key global-map
+    ((kbd "M-[") . 'recent-jump-jump-backward)
+    ((kbd "M-]") . 'recent-jump-jump-forward)))
 
 ;; recent opened files
 (deh-require 'recentf
@@ -975,15 +976,30 @@ defadvice to prevent an infinite loop when there are no matches."
 ;;                              (propertize " " 'face 'fringe)))
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
 
-(deh-require 'bookmark+
-  (setq bmkp-bmenu-commands-file
-        (expand-file-name "emacs-bmk-bmenu-commands.el" my-temp-dir)
-        bmkp-bmenu-state-file
-        (expand-file-name "emacs-bmk-bmenu-state.el" my-temp-dir))
-  (require 'bookmark+-lit)
-  (setq bmkp-auto-light-when-jump 'all-in-buffer
-        bmkp-auto-light-when-set 'all-in-buffer)
-	)
+(deh-require 'bm
+  (deh-define-key (lookup-key global-map "\C-c")
+    ("\C-b" . 'bm-toggle)
+    ("\C-n" . 'bm-next)
+    ("\C-p" . 'bm-previous)
+    ("\C-s" . 'bm-show)
+    ("\C-a" . 'bm-show-all))
+
+  (setq-default bm-buffer-persistence t)
+  (setq bm-repository-file
+        (expand-file-name "emacs.bm-repository" my-temp-dir))
+  ;; For persistent bookmarks
+  (add-hook' after-init-hook 'bm-repository-load)
+  (add-hook 'find-file-hooks 'bm-buffer-restore)
+  (add-hook 'kill-buffer-hook 'bm-buffer-save)
+  (add-hook 'kill-emacs-hook '(lambda nil
+                                (bm-buffer-save-all)
+                                (bm-repository-save)))
+  ;; Sync bookmarks
+  (add-hook 'after-save-hook 'bm-buffer-save)
+  (add-hook 'after-revert-hook 'bm-buffer-restore)
+  ;; make sure bookmarks is saved before check-in (and revert-buffer)
+  (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
+  )
 
 (deh-require 'auto-install
   ;; (auto-install-update-emacswiki-package-name t)
