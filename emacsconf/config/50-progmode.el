@@ -10,6 +10,82 @@
     ("\C-cht" . 'hs-toggle-hiding)))
 ;;}}}
 
+;;{{{ Outline minor mode
+(deh-section "outline"
+  (setq outline-minor-mode-prefix (kbd "C-c C-o"))
+  (deh-define-key outline-minor-mode-map
+    ("\C-c\C-os" . 'show-entry)
+    ("\C-c\C-oS" . 'show-all)
+    ("\C-c\C-oh" . 'hide-entry)
+    ("\C-c\C-oH" . 'hide-body)
+    ("\C-c\C-on" . 'xwl-narrow-to-outline-level)
+    ("\C-c\C-ou" . 'xwl-outline-toggle-enter-exit)
+    ("\C-c\C-oq" . 'xwl-outline-toggle-show-hide))
+
+  (defadvice outline-mode (after hide-sublevels)
+    "Enter overview after start up `outline-mode'."
+    (hide-sublevels 1))
+
+  (defadvice outline-minor-mode (after hide-sublevels)
+    "Enter overview after start up `outline-minor-mode'."
+    (hide-sublevels 2))
+
+  (setq outline-font-lock-keywords
+        '((eval list
+                (concat "^\\(?:" outline-regexp "\\).+")
+                0
+                '(outline-font-lock-face)
+                nil t)))
+
+  (eval-after-load "outline" '(require 'foldout))
+
+  ;; keys
+  (defun xwl-hide-body ()
+    "Make `hide-body' take effects at any moment."
+    (interactive)
+    (show-all)
+    (hide-body))
+
+  (defun xwl-outline-invisible-p ()
+    "Are we inside a outline fold?"
+    (interactive)
+    (let ((overlays (overlays-at (line-end-position))))
+      (and overlays
+           (eq (overlay-get (car overlays) 'invisible)
+               'outline))))
+
+  (defun xwl-foldout-exit-fold ()
+    "Goto current folded line."
+    (interactive)
+    (call-interactively 'foldout-exit-fold) ; FIX ME
+    (previous-line 1)
+    (next-line 1))
+
+  (defun xwl-outline-toggle-enter-exit ()
+    "Toggle entering and exiting fold."
+    (interactive)
+    (if (xwl-outline-invisible-p)
+        (foldout-zoom-subtree)
+      (xwl-foldout-exit-fold)))
+
+  (defun xwl-outline-toggle-show-hide ()
+    "Toggle showing or hiding contents."
+    (interactive)
+    (if (xwl-outline-invisible-p)
+        (show-subtree)
+      (hide-subtree)))
+
+  (defun xwl-narrow-to-outline-level ()
+    "Narrow to current outline level."
+    (interactive)
+    (save-excursion
+      (call-interactively 'outline-next-visible-heading)
+      (let ((end (point)))
+        (call-interactively 'outline-previous-visible-heading)
+        (narrow-to-region (point) end))))
+  )
+;;}}}
+
 ;;{{{ Etags
 (deh-section "etags"
   (defun my-find-top-directory (file &optional dir)
