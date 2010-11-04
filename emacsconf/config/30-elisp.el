@@ -754,7 +754,8 @@ indent line."
 
 ;;{{{ a simple template
 (deh-require 'template-simple
-  (setq template-directory-list (list my-template-dir)))
+  (setq template-directory-list (list my-template-dir)
+        template-skip-directory-list (list my-temp-dir)))
 ;;}}}
 
 ;;{{{ isearch tweaks

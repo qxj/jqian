@@ -90,6 +90,13 @@
   :type '(repeat directory)
   :group 'template-simple)
 
+(defcustom template-skip-directory-list
+  nil
+  "*Files in matched directories will be skipped and its header
+will not be updated."
+  :type '(repeat directory)
+  :group 'template-simple)
+
 (defcustom template-default-alist
   '(("dir" (file-name-directory template-file-name))
     ("file" (file-name-nondirectory template-file-name))
@@ -393,29 +400,32 @@ Use `template-expand-function' to expand the parsed template."
 ;;; Provide addtional command in template.el
 (defun template-simple-update-header ()
   (interactive)
-  (when buffer-file-name
-    (save-excursion
-      (goto-char (point-min))
-      (let ((end (progn (forward-line 3) (point)))
-                                        ; check only first 3 lines
-            (alist template-header-regexp)
-            (fn (file-name-sans-versions
-                 (file-name-nondirectory buffer-file-name)))
-            case-fold-search)
-        (while alist
-          (goto-char (point-min))
-          (if (re-search-forward (caar alist) end t)
-              (progn
-                (when (not (string= (match-string (cdar alist)) fn))
-                  (if (or (null template-query)
-                          (y-or-n-p (format "Update file header %s to %s? "
-                                            (match-string (cdar alist))
-                                            fn)))
-                      (replace-match fn nil t nil (cdar alist))))
-                (setq alist nil))
-            (setq alist (cdr alist)))))))
-  ;; return nil for calling other functions
-  nil)
+  (if buffer-file-name
+      (let* ((path buffer-file-name)
+             (skip (string-match (regexp-opt template-skip-directory-list) path)))
+        (when (null skip)
+          (save-excursion
+            (goto-char (point-min))
+            (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
+                  (alist template-header-regexp)
+                  (fn (file-name-sans-versions
+                       (file-name-nondirectory buffer-file-name)))
+                  case-fold-search)
+              (while alist
+                (goto-char (point-min))
+                (if (re-search-forward (caar alist) end t)
+                    (progn
+                      (when (not (string= (match-string (cdar alist)) fn))
+                        (if (or (null template-query)
+                                (y-or-n-p (format "Update file header %s to %s? "
+                                                  (match-string (cdar alist))
+                                                  fn)))
+                            (replace-match fn nil t nil (cdar alist))))
+                      (setq alist nil))
+                  (setq alist (cdr alist)))))))
+        ;; return nil for calling other functions
+        nil)))
+
 ;; Hope auto-insert can add a test for template-derive-template
 (defun template-auto-insert ()
   (and (not buffer-read-only)
