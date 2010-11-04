@@ -292,6 +292,7 @@ With prefix argument sort section by file."
                                                                "deh-require"
                                                                "deh-section"
                                                                "deh-section-if"
+                                                               "deh-section-after"
                                                                "deh-section-reserved") t)
                                                  "\\s-+['\"]") nil t)
                   (backward-char 1)
@@ -344,7 +345,7 @@ Example:
 forms.
 
 Example:
-  (deh-section-if \"org\" \"~/src/org--7.01h\"
+  (deh-section-if \"org\" \"~/src/org-7.01h\"
     (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))
 "
   (declare (indent 1))
@@ -354,6 +355,20 @@ Example:
        (if (file-directory-p deh-this-path)
            (add-to-list 'load-path deh-this-path))
        (deh-section ,section ,@forms))))
+
+(defmacro deh-section-after (section &rest forms)
+  "Eval forms after section file is loaded.
+
+Example:
+  (deh-section-after \"outline\"
+    (setq outline-minor-mode-prefix (kbd \"C-c C-o\")))
+"
+  (declare (indent 1))
+  `(progn
+     (if ,load-file-name
+         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
+     (eval-after-load ,section
+       '(progn ,@forms))))
 
 (defmacro deh-section-reserved (section &rest forms)
   "Put some elisp into `deh-enable-list' and reserved. You can

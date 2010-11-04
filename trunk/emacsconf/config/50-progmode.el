@@ -11,7 +11,7 @@
 ;;}}}
 
 ;;{{{ Outline minor mode
-(deh-section "outline"
+(deh-section-after "outline"
   (setq outline-minor-mode-prefix (kbd "C-c C-o"))
   (deh-define-key outline-minor-mode-map
     ("\C-c\C-os" . 'show-subtree)
