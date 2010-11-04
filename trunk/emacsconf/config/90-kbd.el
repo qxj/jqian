@@ -16,7 +16,7 @@
   ((kbd "C-o")   . 'vi-open-next-line)
   ((kbd "C-'")   . 'redo)
   ((kbd "C-\\")  . 'my-comment-or-uncomment-region)
-  ((kbd "M-5")   . 'my-display-buffer-file-name)
+  ((kbd "M-5")   . 'my-display-buffer-path)
   ((kbd "M-0")   . 'other-window)
   ((kbd "C-M-0")   . 'sr-speedbar-select-window)
   ((kbd "M-1")   . 'sdcv-search)

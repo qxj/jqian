@@ -213,12 +213,15 @@
 ;;;}}}
 
 ;;{{{ display current buffer path
-(defun my-display-buffer-file-name ()
-  "Display current buffer file name in mini-buffer."
-  (interactive)
-  (let ((bpath (buffer-file-name (current-buffer))))
-    (kill-new bpath)
-    (message bpath)))
+(defun my-display-buffer-path (&optional copy)
+  "Display the absolute path of current buffer in mini-buffer. If
+you call this function by prefix `C-u', the path will be store
+into `kill-ring'."
+  (interactive
+   (list current-prefix-arg))
+  (let ((f (buffer-file-name (current-buffer))))
+    (if copy (kill-new f))
+    (message f)))
 ;;}}}
 
 ;;{{{ revert buffer
