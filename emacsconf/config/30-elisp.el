@@ -287,8 +287,7 @@
                             (mode . w3m-mode)
                             (mode . erc-mode)
                             (name . "^\\*gud")
-                            (name . "^\\*scratch")
-                            (name . "^G?TAGS")))
+                            (name . "^\\*scratch")))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
                               (mode . makefile-mode)))
@@ -1276,61 +1275,56 @@ mouse-3: Toggle minor modes"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Extra library ;;;;;;;;;;;;;;;;;;
 ;; Tricks to load feature when needed
-(setq
- deh-enable-list
- '(
-   ("latex"
-    (load "preview-latex.el" t t t)
-    (load "auctex.el" t t t)
-    (autoload 'CJK-insert-space "cjkspace"
-      "Insert tildes appropriately in CJK document." t)
-    (defun cjk-toggle-space-tilde (arg)
-      (interactive "P")
-      (setq CJK-space-after-space
-            (if (null arg)
-                (not CJK-space-after-space)
-              (> (prefix-numeric-value arg) 0)))
-      (message "Now SPC will insert %s" (if CJK-space-after-space "SPC" "~")))
-    (setq TeX-electric-escape t)
-    (add-hook
-     'TeX-mode-hook
-     (lambda ()
-       (auto-fill-mode 1)
-       (defun TeX-arg-input-file (optionel &optional prompt local)
-         "Prompt for a tex or sty file.
+(deh-section-reserved "latex"
+  (load "preview-latex.el" t t t)
+  (load "auctex.el" t t t)
+  (autoload 'CJK-insert-space "cjkspace"
+    "Insert tildes appropriately in CJK document." t)
+  (defun cjk-toggle-space-tilde (arg)
+    (interactive "P")
+    (setq CJK-space-after-space
+          (if (null arg)
+              (not CJK-space-after-space)
+            (> (prefix-numeric-value arg) 0)))
+    (message "Now SPC will insert %s" (if CJK-space-after-space "SPC" "~")))
+  (setq TeX-electric-escape t)
+  (add-hook
+   'TeX-mode-hook
+   (lambda ()
+     (auto-fill-mode 1)
+     (defun TeX-arg-input-file (optionel &optional prompt local)
+       "Prompt for a tex or sty file.
 
 First optional argument is the prompt, the second is a flag.
 If the flag is set, only complete with local files."
-         (unless (or TeX-global-input-files local)
-           (message "Searching for files...")
-           (setq TeX-global-input-files
-                 (mapcar 'list (TeX-search-files (append TeX-macro-private
-                                                         TeX-macro-global)
-                                                 TeX-file-extensions t t))))
-         (let ((file (if TeX-check-path
-                         (completing-read
-                          (TeX-argument-prompt optionel prompt "File")
-                          (unless local
-                            TeX-global-input-files))
-                       (read-file-name
-                        (TeX-argument-prompt optionel prompt "File")))))
-           (if (null file)
-               (setq file ""))
-           (if (not (string-equal "" file))
-               (TeX-run-style-hooks file))
-           (TeX-argument-insert file optionel)))
-       (my-turn-on-pair-insert '((?$ _ ?$)))
-       (define-key LaTeX-mode-map " " 'CJK-insert-space)
-       (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde)
-       ))
-    ;; for XeLaTeX
-    (deh-add-hook LaTeX-mode-hook
-      (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-      (TeX-PDF-mode t)
-      (setq TeX-command-default "XeLaTeX")
-      (setq TeX-save-query nil )
-      (setq TeX-show-compilation t)
-       )
-    )
-   ))
+       (unless (or TeX-global-input-files local)
+         (message "Searching for files...")
+         (setq TeX-global-input-files
+               (mapcar 'list (TeX-search-files (append TeX-macro-private
+                                                       TeX-macro-global)
+                                               TeX-file-extensions t t))))
+       (let ((file (if TeX-check-path
+                       (completing-read
+                        (TeX-argument-prompt optionel prompt "File")
+                        (unless local
+                          TeX-global-input-files))
+                     (read-file-name
+                      (TeX-argument-prompt optionel prompt "File")))))
+         (if (null file)
+             (setq file ""))
+         (if (not (string-equal "" file))
+             (TeX-run-style-hooks file))
+         (TeX-argument-insert file optionel)))
+     (my-turn-on-pair-insert '((?$ _ ?$)))
+     (define-key LaTeX-mode-map " " 'CJK-insert-space)
+     (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde)
+     ))
+  ;; for XeLaTeX
+  (deh-add-hook LaTeX-mode-hook
+    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+    (TeX-PDF-mode t)
+    (setq TeX-command-default "XeLaTeX")
+    (setq TeX-save-query nil )
+    (setq TeX-show-compilation t)
+    ))
 

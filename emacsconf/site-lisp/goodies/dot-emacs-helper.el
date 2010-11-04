@@ -225,8 +225,8 @@ With prefix argument sort section by file."
 
 (defun deh-regexp (name)
   (if (stringp name)
-      (concat "(\\s-*deh-section\\(-if\\)?\\s-+\"" (regexp-quote name))
-    (concat "(\\s-*deh-require\\(-maybe\\)?\\s-+'"
+      (concat "(\\s-*deh-section\\(-\\w+\\)?\\s-+\"" (regexp-quote name))
+    (concat "(\\s-*deh-require\\(-\\w+\\)?\\s-+'"
             (regexp-quote (symbol-name name)))))
 
 (defun deh-get-configuration (section)
@@ -291,7 +291,8 @@ With prefix argument sort section by file."
                                                  (regexp-opt '("deh-require-maybe"
                                                                "deh-require"
                                                                "deh-section"
-                                                               "deh-section-if") t)
+                                                               "deh-section-if"
+                                                               "deh-section-reserved") t)
                                                  "\\s-+['\"]") nil t)
                   (backward-char 1)
                   (let ((sec (read (buffer-substring (point) (scan-sexps (point) 1)))))
@@ -338,12 +339,14 @@ Example:
 
 ;;; added by julian
 (defmacro deh-section-if (section path &rest forms)
-  "If path exists, call `deh-section'. One internal variable `deh-this-path'
-indicates the argument path, which you can use in forms.
+  "If path exists, call `deh-section'. One internal variable
+`deh-this-path' indicates the argument path, which you can use in
+forms.
 
 Example:
   (deh-section-if \"org\" \"~/src/org--7.01h\"
-    (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))"
+    (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))
+"
   (declare (indent 1))
   `(let ((deh-this-path ,path))
      (if (not (file-exists-p deh-this-path))
@@ -351,6 +354,21 @@ Example:
        (if (file-directory-p deh-this-path)
            (add-to-list 'load-path deh-this-path))
        (deh-section ,section ,@forms))))
+
+(defmacro deh-section-reserved (section &rest forms)
+  "Put some elisp into `deh-enable-list' and reserved. You can
+use `deh-enable' to active these elisp.
+
+Example:
+  (deh-section-reserved \"latex\"
+    (load \"preview-latex.el\" t t t)
+    (load \"auctex.el\" t t t))
+"
+  (declare (indent 1))
+  `(progn
+     (if ,load-file-name
+         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
+     (add-to-list 'deh-enable-list '(,section ,@forms))))
 
 (defmacro deh-local-set-key (hook &rest keypairs)
   "Set a batch of local keys for a hook.

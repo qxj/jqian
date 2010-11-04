@@ -1,6 +1,6 @@
 ;;; key setting
-(define-prefix-command 'ctrl-cc-map)
-(define-prefix-command 'ctrl-z-map)
+(define-prefix-command 'ctrl-cc-map nil "Command prefix: C-c c")
+(define-prefix-command 'ctrl-z-map nil "Command prefix: C-z")
 
 ;; global key binding
 (deh-define-key global-map
