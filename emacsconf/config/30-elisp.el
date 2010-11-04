@@ -977,12 +977,14 @@ defadvice to prevent an infinite loop when there are no matches."
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
 
 (deh-require 'bm
-  (deh-define-key (lookup-key global-map "\C-c")
-    ("\C-b" . 'bm-toggle)
-    ("\C-n" . 'bm-next)
-    ("\C-p" . 'bm-previous)
-    ("\C-s" . 'bm-show)
-    ("\C-a" . 'bm-show-all))
+  (define-prefix-command 'bm-map-prefix nil "Bm prefix: C-c b")
+  (global-set-key (kbd "C-c b") 'bm-map-prefix)
+  (deh-define-key bm-map-prefix
+    ("b" . 'bm-toggle)
+    ("n" . 'bm-next)
+    ("p" . 'bm-previous)
+    ("s" . 'bm-show)
+    ("a" . 'bm-show-all))
 
   (setq-default bm-buffer-persistence t)
   (setq bm-repository-file
