@@ -928,9 +928,16 @@ defadvice to prevent an infinite loop when there are no matches."
   (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
   (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
   (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
+  ;; Only close dedicated window
+  (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
   ;; unbind keys
   (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
-  )
+
+  (defun multi-term-dedicated-open-select ()
+    (interactive)
+    (unless (multi-term-dedicated-exist-p)
+      (multi-term-dedicated-open))
+      (multi-term-dedicated-select)))
 
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
