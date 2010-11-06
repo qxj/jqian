@@ -416,6 +416,11 @@
     ("s" . 'bm-show)
     ("a" . 'bm-show-all))
 
+  (deh-define-key bm-show-mode-map
+    ("n" . 'bm-show-next)
+    ("p" . 'bm-show-prev)
+    ("d" . 'bm-show-remove-bookmark))
+
   (setq-default bm-buffer-persistence t)
   (setq bm-repository-file
         (expand-file-name "emacs.bm-repository" my-temp-dir))
@@ -431,6 +436,18 @@
   (add-hook 'after-revert-hook 'bm-buffer-restore)
   ;; make sure bookmarks is saved before check-in (and revert-buffer)
   (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
+
+  ;; remove bookmark in bm-show
+  (defun bm-show-remove-bookmark nil
+    "Remove the bookmark on current line in the `bm-show-buffer-name' buffer."
+    (interactive)
+    (let ((buffer-name (get-text-property (point) 'bm-buffer))
+          (bookmark (get-text-property (point) 'bm-bookmark)))
+      (if (null buffer-name)
+          (message "No bookmark at this line.")
+        (bm-bookmark-remove bookmark)
+        ;; TODO: refresh bookmark show
+        )))
 
   ;; hack bm.el
   (defvar bm-previous-window-conf nil
