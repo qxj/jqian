@@ -220,8 +220,20 @@ into `kill-ring'."
   (interactive
    (list current-prefix-arg))
   (let ((f (buffer-file-name (current-buffer))))
-    (if copy (kill-new f))
-    (message f)))
+    (case copy
+      ((nil)
+       (message "Buffer path: %s" f))
+      (1                                ; store only path
+       (let ((d (file-name-directory f)))
+         (kill-new d)
+         (message "Copy directory: %s" d)))
+      (2                                ; store only file name
+       (let ((d (file-name-nondirectory f)))
+         (kill-new d)
+         (message "Copy filename: %s" d)))
+      (t                                ; store absolute file path
+       (kill-new f)
+       (message "Copy path: %s" f)))))
 ;;}}}
 
 ;;{{{ revert buffer
