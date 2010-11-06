@@ -134,7 +134,8 @@
        ((kbd "C-c g a") . 'gtags-parse-file)
        ((kbd "C-c g b") . 'gtags-append-tags)
        ((kbd "C-c g d") . 'gtags-display-tag)
-       ("q" . 'gtags-display-tag-quit)
+       ((kbd "C-c g q") . 'gtags-display-tag-quit)
+       ("q"             . 'gtags-display-tag-quit)
        ))
   (defun gtags-append-tags ()
     (interactive)
@@ -215,7 +216,8 @@
         (progn
           (bury-buffer)
           (set-window-configuration gtags-previous-window-conf)
-          (setq gtags-previous-window-conf nil))))
+          (setq gtags-previous-window-conf nil))
+      (self-insert-command 1)))
   )
 
 (deh-section "xcscope"
