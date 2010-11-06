@@ -199,7 +199,7 @@ clipboard/external selection to the kill ring"
  '(cperl-invalid-face nil)
  '(desktop-globals-to-save (quote (sql-mysql-schema bibus-formats desktop-missing-file-warning search-ring regexp-search-ring register-alist windata-named-winconf)))
  '(folding-folding-on-startup nil)
- '(outline-minor-mode-prefix "")
+ '(help-window-select t)
  '(tooltip-use-echo-area nil)
  '(view-read-only t)
  '(woman-cache-filename "~/.wmncach.el")

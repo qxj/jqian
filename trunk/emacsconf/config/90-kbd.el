@@ -47,7 +47,6 @@
   ("j" . 'ffap)
   ("k" . 'auto-fill-mode)
   ("q" . 'refill-mode)
-  ("t" . 'multi-term-dedicated-open-select)
   ;; ("u" . 'revert-buffer)
   ;; ("v" . 'imenu-tree)
   ;; ("w" . 'ywb-favorite-window-config)

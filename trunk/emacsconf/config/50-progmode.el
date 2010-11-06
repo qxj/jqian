@@ -132,13 +132,91 @@
        ((kbd "C-c g i") . 'gtags-find-with-idutils)
        ((kbd "C-c g f") . 'gtags-find-file)
        ((kbd "C-c g a") . 'gtags-parse-file)
-       ((kbd "C-c g b") . 'my-gtags-append-tags)))
-  (defun my-gtags-append-tags ()
+       ((kbd "C-c g b") . 'gtags-append-tags)
+       ((kbd "C-c g d") . 'gtags-display-tag)
+       ("q" . 'gtags-display-tag-quit)
+       ))
+  (defun gtags-append-tags ()
     (interactive)
     (if gtags-mode
         (progn
           (message "start to global -u")
-          (start-process "gtags-name" "*gtags-var*" "global" "-u")))))
+          (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
+
+  ;; Only display tags in another window, hacked by julian
+  (defvar gtags-previous-window-conf nil
+    "Window configuration before switching to sdcv buffer.")
+  (defun gtags-display-tag ()
+    "Input tag name and move to the definition."
+    (interactive)
+    (let (tagname prompt input)
+      (setq tagname (gtags-current-token))
+      (if tagname
+          (setq prompt (concat "Find tag: (default " tagname ") "))
+        (setq prompt "Find tag: "))
+      (setq input (completing-read prompt 'gtags-completing-gtags
+                                   nil nil nil gtags-history-list))
+      (if (not (equal "" input)) (setq tagname input))
+      (if (and (boundp 'gtags-select-buffer-single) ; >= v5.9.0
+               gtags-select-buffer-single)
+          (progn
+            (let ((now-buffer-list (buffer-list)) now-buffer)
+              (while now-buffer-list
+                (setq now-buffer (car now-buffer-list))
+                (if (string-match "*GTAGS SELECT*" (buffer-name now-buffer))
+                    (kill-buffer now-buffer))
+                (setq now-buffer-list (cdr now-buffer-list))))))
+
+      ;; save windows configuration
+      (setq gtags-previous-window-conf (current-window-configuration))
+
+      (let* ((option "-x")
+             (save (current-buffer))
+             (prefix "(D)")
+             (buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
+             context
+             lines)
+        ;; (set-buffer buffer)
+        (pop-to-buffer buffer)
+
+        (cond
+         ((equal gtags-path-style 'absolute)
+          (setq option (concat option "a")))
+         ((equal gtags-path-style 'root)
+          (let (rootdir)
+            (if gtags-rootdir
+                (setq rootdir gtags-rootdir)
+              (setq rootdir (gtags-get-rootpath)))
+            (if rootdir (cd rootdir)))))
+        (message "Searching %s ..." tagname)
+        (if (not (= 0 (call-process "global" nil t nil option tagname)))
+        ;; (if (not (= 0 (call-process "global" nil t nil option "--encode-path=\" \t\"" tagname)))
+            (message (buffer-substring (point-min)(1- (point-max))))
+          ;; else goto line
+          (goto-char (point-min))
+          (setq lines (count-lines (point-min) (point-max)))
+          (cond
+           ((= 0 lines)
+            (message "%s: tag not found" tagname)
+            (kill-buffer buffer)
+            ;; restore window config?
+            )
+           ((= 1 lines)
+            (message "Searching %s ... Done" tagname)
+            (gtags-select-it t nil)
+            (recenter))
+           (t
+            (switch-to-buffer buffer)
+            (gtags-select-mode)))))))
+  (defun gtags-display-tag-quit ()
+    "Quit gtags display buffer."
+    (interactive)
+    (if (window-configuration-p gtags-previous-window-conf)
+        (progn
+          (bury-buffer)
+          (set-window-configuration gtags-previous-window-conf)
+          (setq gtags-previous-window-conf nil))))
+  )
 
 (deh-section "xcscope"
   (eval-after-load "xcscope"
@@ -202,7 +280,7 @@
 ;;}}}
 
 ;;{{{ flymake & flyspell
-(deh-section "flyspell"
+(deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
   (deh-add-hooks (text-mode-hook org-mode-hook) (flyspell-mode 1))
@@ -233,7 +311,18 @@
   (set (make-local-variable 'tab-stop-list) (number-sequence tab-width 80 tab-width))
   ;; (abbrev-mode t)
   (set (make-local-variable 'comment-style) 'indent)
-  (setq c-basic-offset tab-width))
+  (setq c-basic-offset tab-width)
+  ;; comment new line and indent, as VIM acts.
+  (defun my-cursor-on-comment-p (&optional point)
+    (memq (get-text-property (or point (point)) 'face)
+          '(font-lock-comment-face)))
+  (local-set-key (kbd "RET")
+                 (lambda () (interactive)
+                   (if (my-cursor-on-comment-p)
+                       (comment-indent-new-line)
+                     (if (boundp 'autopair-newline)
+                         (autopair-newline)
+                       (newline-and-indent))))))
 
 ;;{{{ elisp
 (deh-section "elisp"
@@ -284,23 +373,17 @@
                                   ,@sgml-tag-alist))))))
 
 ;; nxhtml: javascript + php + html + css
-(deh-section "nxhtml"
-  ;;; nxhtml mode
-  (let ((nxhtml-init-file "~/src/nxhtml/autostart.el"))
-    (if (file-exists-p nxhtml-init-file)
-        (load-file nxhtml-init-file)))
-  )
+(deh-section-if "nxhtml" "~/src/nxhtml/autostart.el" (load-file deh-this-path))
 
 ;; gnuplot
 (deh-section "gnuplot"
   (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
   (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-  (add-hook 'gnuplot-after-plot-hook
-            (lambda ()
-              (select-window (get-buffer-window gnuplot-comint-recent-buffer))))
-  (add-hook 'gnuplot-comint-setup-hook
-            (lambda ()
-              (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof))))
+  (deh-add-hook gnuplot-after-plot-hook
+    (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
+  (deh-add-hook gnuplot-comint-setup-hook
+    (deh-define-key comint-mode-map
+      ("\C-d" . 'comint-delchar-or-maybe-eof))))
 
 ;; graphviz
 (deh-section "graphviz"

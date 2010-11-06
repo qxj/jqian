@@ -343,69 +343,158 @@
 
 ;;{{{ tramp
 (deh-section "tramp"
-  (setq tramp-mode nil                  ; disable tramp
-        tramp-auto-save-directory my-temp-dir
+  ;; (setq tramp-mode nil)                  ; disable tramp
+  (setq tramp-auto-save-directory my-temp-dir
         tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)))
 ;;}}}
 
 ;;{{{ session management
-(deh-section "session-management"
-  (deh-require 'desktop
-    (setq desktop-globals-to-save
-          (delq 'tags-table-list desktop-globals-to-save)
-          ;; Do not save to desktop
-          desktop-buffers-not-to-save
-          (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
+(deh-require 'desktop
+  (setq desktop-globals-to-save
+        (delq 'tags-table-list desktop-globals-to-save)
+        ;; Do not save to desktop
+        desktop-buffers-not-to-save
+        (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
-    (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
-          desktop-path (list my-temp-dir)
-          history-length 100)
+  (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
+        desktop-path (list my-temp-dir)
+        history-length 100)
 
-    (add-to-list 'desktop-globals-to-save 'file-name-history)
+  (add-to-list 'desktop-globals-to-save 'file-name-history)
 
-    (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-    (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-    (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-    (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
-    ;; if error occurred, no matter it!
-    ;; (condition-case nil
-    ;;     (desktop-read)
-    ;;   (error nil))
-    (desktop-save-mode 1)
-    ;; for multiple desktops
-    ;; (require 'desktop-menu)
-    ;; (setq desktop-menu-directory my-temp-dir
-    ;;       desktop-menu-base-filename desktop-base-file-name
-    ;;       desktop-menu-list-file "emacs.desktops")
+  (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+  (add-to-list 'desktop-modes-not-to-save 'Info-mode)
+  (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+  (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+  ;; if error occurred, no matter it!
+  ;; (condition-case nil
+  ;;     (desktop-read)
+  ;;   (error nil))
+  (desktop-save-mode 1)
+  ;; for multiple desktops
+  ;; (require 'desktop-menu)
+  ;; (setq desktop-menu-directory my-temp-dir
+  ;;       desktop-menu-base-filename desktop-base-file-name
+  ;;       desktop-menu-list-file "emacs.desktops")
 
-    (defun my-save-desktop (file)
-      (interactive
-       (list (let ((default-directory "~"))
-               (read-file-name "Save desktop: "))))
-      (let ((desktop-base-file-name (file-name-nondirectory file)))
-        (desktop-save (file-name-directory file))))
-    (defun my-load-desktop (file)
-      (interactive
-       (list (let ((default-directory "~"))
-               (read-file-name "Load desktop: "))))
-      (if (y-or-n-p "kill all buffer")
-          (mapc (lambda (buf)
-                  (let ((name (buffer-name buf))
-                        (file (buffer-file-name buf)))
-                    (unless (or (and (string= (substring name 0 1) " ") (null file))
-                                (string-match "^\\*.*\\*" (buffer-name buf)))
-                      (kill-buffer buf))))
-                (buffer-list)))
-      (let ((desktop-base-file-name (file-name-nondirectory file)))
-        (desktop-read (file-name-directory file))))
+  (defun my-save-desktop (file)
+    (interactive
+     (list (let ((default-directory "~"))
+             (read-file-name "Save desktop: "))))
+    (let ((desktop-base-file-name (file-name-nondirectory file)))
+      (desktop-save (file-name-directory file))))
+  (defun my-load-desktop (file)
+    (interactive
+     (list (let ((default-directory "~"))
+             (read-file-name "Load desktop: "))))
+    (if (y-or-n-p "kill all buffer")
+        (mapc (lambda (buf)
+                (let ((name (buffer-name buf))
+                      (file (buffer-file-name buf)))
+                  (unless (or (and (string= (substring name 0 1) " ") (null file))
+                              (string-match "^\\*.*\\*" (buffer-name buf)))
+                    (kill-buffer buf))))
+              (buffer-list)))
+    (let ((desktop-base-file-name (file-name-nondirectory file)))
+      (desktop-read (file-name-directory file))))
 
-    )
-  (deh-require 'session
-    (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
-    (setq session-save-file-coding-system 'utf-8-unix)
-    (add-to-list 'session-globals-exclude 'org-mark-ring)
-    (add-hook 'after-init-hook 'session-initialize))
   )
+
+(deh-require 'session
+  (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
+  (setq session-save-file-coding-system 'utf-8-unix)
+  (add-to-list 'session-globals-exclude 'org-mark-ring)
+  (add-hook 'after-init-hook 'session-initialize))
+
+(deh-require 'bm
+  (define-prefix-command 'bm-map-prefix nil "Bm prefix: C-c b")
+  (global-set-key (kbd "C-c b") 'bm-map-prefix)
+  (deh-define-key bm-map-prefix
+    ("b" . 'bm-toggle)
+    ("n" . 'bm-next)
+    ("p" . 'bm-previous)
+    ("s" . 'bm-show)
+    ("a" . 'bm-show-all))
+
+  (setq-default bm-buffer-persistence t)
+  (setq bm-repository-file
+        (expand-file-name "emacs.bm-repository" my-temp-dir))
+  ;; For persistent bookmarks
+  (add-hook' after-init-hook 'bm-repository-load)
+  (add-hook 'find-file-hooks 'bm-buffer-restore)
+  (add-hook 'kill-buffer-hook 'bm-buffer-save)
+  (add-hook 'kill-emacs-hook '(lambda nil
+                                (bm-buffer-save-all)
+                                (bm-repository-save)))
+  ;; Sync bookmarks
+  (add-hook 'after-save-hook 'bm-buffer-save)
+  (add-hook 'after-revert-hook 'bm-buffer-restore)
+  ;; make sure bookmarks is saved before check-in (and revert-buffer)
+  (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
+
+  ;; hack bm.el
+  (defvar bm-previous-window-conf nil
+    "Window configuration before switching to buffer.")
+  (defun bm-show-goto-bookmark nil
+    "Goto the bookmark on current line in the `bm-show-buffer-name' buffer."
+    (interactive)
+    (let ((buffer-name (get-text-property (point) 'bm-buffer))
+          (bookmark (get-text-property (point) 'bm-bookmark)))
+      (if (null buffer-name)
+          (message "No bookmark at this line.")
+        (pop-to-buffer (get-buffer buffer-name))
+        (bm-goto bookmark)
+        (when bm-electric-show
+          (bm-show-quit-window)
+          (set-window-configuration bm-previous-window-conf)
+          (setq bm-previous-window-conf nil)))))
+  (defun bm-show-all nil
+    "Show bookmarked lines in all buffers."
+    (interactive)
+    (let ((lines
+           (save-excursion
+             (mapconcat '(lambda (buffer)
+                           (set-buffer buffer)
+                           (bm-show-extract-bookmarks))
+                        (buffer-list) ""))))
+      (setq bm-previous-window-conf (current-window-configuration))
+      (bm-show-display-lines lines)))
+  (defun bm-show nil
+    "Show bookmarked lines in current buffer."
+    (interactive)
+    (setq bm-previous-window-conf (current-window-configuration))
+    (bm-show-display-lines (bm-show-extract-bookmarks)))
+  )
+
+;; recent-jump
+(deh-require 'recent-jump
+  (deh-define-key global-map
+    ((kbd "M-[") . 'recent-jump-jump-backward)
+    ((kbd "M-]") . 'recent-jump-jump-forward)))
+
+;; recent opened files
+(deh-require 'recentf
+  ;; recent finded buffers
+  (setq recentf-max-saved-items nil)
+  (setq recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir))
+  (recentf-mode t)
+
+  (defun recentf-open-files-compl ()
+    (interactive)
+    (let* ((alist (remq nil (mapcar
+                             '(lambda (el)
+                                (unless (string-match "/$" el) ; skip dired
+                                  (cons (file-name-nondirectory el) el)))
+                             recentf-list)))
+           ;; use `ido-completing-read' instead of `completing-read'
+           (filename (ido-completing-read "Open file: "
+                                          (mapcar 'car alist))))
+      (find-file (cdr (assoc filename alist)))))
+  (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
+
+  ;; Also store recent opened directories besides files
+  (add-hook 'dired-mode-hook
+            (lambda () (recentf-add-file dired-directory))))
 ;;}}}
 
 ;;{{{ pager
@@ -447,12 +536,12 @@
   (winner-mode 1)
   ;; (auto-insert-mode 1)
   ;; view
-  (setq view-mode-hook
-        '((lambda ()
-            (define-key view-mode-map "h" 'backward-char)
-            (define-key view-mode-map "l" 'forward-char)
-            (define-key view-mode-map "j" 'next-line)
-            (define-key view-mode-map "k" 'previous-line))))
+  (deh-define-key view-mode-map
+    ("q" . 'View-exit)
+    ("h" . 'backward-char)
+    ("l" . 'forward-char)
+    ("j" . 'next-line)
+    ("k" . 'previous-line))
 
   ;; TimeStamp
   (add-hook 'before-save-hook 'time-stamp)
@@ -471,15 +560,14 @@
   (autoload 'woman-decode-buffer "woman")
 
   ;; change-log
-  (add-hook 'change-log-mode-hook
-            (lambda ()
-              (auto-fill-mode t)
-              (add-to-list 'change-log-font-lock-keywords
-                           '("^[0-9-]+:? +\\|^\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\) [A-z][a-z][a-z] [0-9:+ ]+"
-                             (0 'change-log-date-face)
-                             ("\\([^<(]+?\\)[   ]*[(<]\\([A-Za-z0-9_.+-]+@[A-Za-z0-9_.-]+\\)[>)]" nil nil
-                              (1 'change-log-name)
-                              (2 'change-log-email))))))
+  (deh-add-hook change-log-mode-hook
+    (auto-fill-mode t)
+    (add-to-list 'change-log-font-lock-keywords
+                 '("^[0-9-]+:? +\\|^\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\) [A-z][a-z][a-z] [0-9:+ ]+"
+                   (0 'change-log-date-face)
+                   ("\\([^<(]+?\\)[   ]*[(<]\\([A-Za-z0-9_.+-]+@[A-Za-z0-9_.-]+\\)[>)]" nil nil
+                    (1 'change-log-name)
+                    (2 'change-log-email)))))
 
   ;; generic-x
   (require 'generic-x)
@@ -487,25 +575,23 @@
   ;; autosave bookmark into the diskete
   (setq bookmark-save-flag 1)
   (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
-  (add-hook 'bookmark-bmenu-mode-hook
-            (lambda ()
-              (font-lock-add-keywords
-               nil
-               '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
-                  (1 (let ((file (split-string (buffer-substring-no-properties
-                                                (line-beginning-position)
-                                                (line-end-position)) " \\{2,\\}")))
-                       (if (and (not (file-remote-p (nth 2 file)))
-                                (file-directory-p (nth 2 file)))
-                           font-lock-function-name-face
-                         nil))))
-                 ("^>.*" . font-lock-warning-face)
-                 ("^D.*" . font-lock-type-face)))))
+  (deh-add-hook bookmark-bmenu-mode-hook
+    (font-lock-add-keywords
+     nil
+     '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
+        (1 (let ((file (split-string (buffer-substring-no-properties
+                                      (line-beginning-position)
+                                      (line-end-position)) " \\{2,\\}")))
+             (if (and (not (file-remote-p (nth 2 file)))
+                      (file-directory-p (nth 2 file)))
+                 font-lock-function-name-face
+               nil))))
+       ("^>.*" . font-lock-warning-face)
+       ("^D.*" . font-lock-type-face))))
 
-  (add-hook 'Info-mode-hook
-            (lambda ()
-              (define-key Info-mode-map "j" 'next-line)
-              (define-key Info-mode-map "k" 'previous-line)))
+  (deh-define-key Info-mode-map
+    ("j" . 'next-line)
+    ("k" . 'previous-line))
   ;; (filesets-init)
   (defalias 'default-generic-mode 'conf-mode)
   )
@@ -933,6 +1019,15 @@ defadvice to prevent an infinite loop when there are no matches."
   ;; unbind keys
   (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
 
+  (define-prefix-command 'multi-term-prefix nil "Multi-term prefix: C-c t")
+  (global-set-key (kbd "C-c t") 'multi-term-prefix)
+  (deh-define-key multi-term-prefix
+    ("c" . 'multi-term)
+    ("t" . 'multi-term-dedicated-open-select)
+    ("q" . 'multi-term-dedicated-close)
+    ("s" . 'multi-term-dedicated-select)
+    ("g" . 'multi-term-dedicated-toggle))
+
   (defun multi-term-dedicated-open-select ()
     (interactive)
     (unless (multi-term-dedicated-exist-p)
@@ -942,36 +1037,6 @@ defadvice to prevent an infinite loop when there are no matches."
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
   (browse-kill-ring-default-keybindings))
-
-;; recent-jump
-(deh-require 'recent-jump
-  (deh-define-key global-map
-    ((kbd "M-[") . 'recent-jump-jump-backward)
-    ((kbd "M-]") . 'recent-jump-jump-forward)))
-
-;; recent opened files
-(deh-require 'recentf
-  ;; recent finded buffers
-  (setq recentf-max-saved-items nil)
-  (setq recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir))
-  (recentf-mode t)
-
-  (defun recentf-open-files-compl ()
-    (interactive)
-    (let* ((alist (remq nil (mapcar
-                             '(lambda (el)
-                                (unless (string-match "/$" el) ; skip dired
-                                  (cons (file-name-nondirectory el) el)))
-                             recentf-list)))
-           ;; use `ido-completing-read' instead of `completing-read'
-           (filename (ido-completing-read "Open file: "
-                                          (mapcar 'car alist))))
-      (find-file (cdr (assoc filename alist)))))
-  (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
-
-  ;; Also store recent opened directories besides files
-  (add-hook 'dired-mode-hook
-            (lambda () (recentf-add-file dired-directory))))
 
 ;; fold content
 ;; (deh-require 'fold
@@ -983,33 +1048,6 @@ defadvice to prevent an infinite loop when there are no matches."
 ;;   (setq linum-format (concat (propertize "%6d " 'face 'default)
 ;;                              (propertize " " 'face 'fringe)))
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
-
-(deh-require 'bm
-  (define-prefix-command 'bm-map-prefix nil "Bm prefix: C-c b")
-  (global-set-key (kbd "C-c b") 'bm-map-prefix)
-  (deh-define-key bm-map-prefix
-    ("b" . 'bm-toggle)
-    ("n" . 'bm-next)
-    ("p" . 'bm-previous)
-    ("s" . 'bm-show)
-    ("a" . 'bm-show-all))
-
-  (setq-default bm-buffer-persistence t)
-  (setq bm-repository-file
-        (expand-file-name "emacs.bm-repository" my-temp-dir))
-  ;; For persistent bookmarks
-  (add-hook' after-init-hook 'bm-repository-load)
-  (add-hook 'find-file-hooks 'bm-buffer-restore)
-  (add-hook 'kill-buffer-hook 'bm-buffer-save)
-  (add-hook 'kill-emacs-hook '(lambda nil
-                                (bm-buffer-save-all)
-                                (bm-repository-save)))
-  ;; Sync bookmarks
-  (add-hook 'after-save-hook 'bm-buffer-save)
-  (add-hook 'after-revert-hook 'bm-buffer-restore)
-  ;; make sure bookmarks is saved before check-in (and revert-buffer)
-  (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
-  )
 
 (deh-require 'auto-install
   ;; (auto-install-update-emacswiki-package-name t)
