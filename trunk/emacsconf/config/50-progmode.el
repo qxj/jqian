@@ -178,7 +178,7 @@
              context
              lines)
         ;; (set-buffer buffer)
-        (pop-to-buffer buffer)
+        (pop-to-buffer buffer nil t)    ; keep pop buffer in the same window
 
         (cond
          ((equal gtags-path-style 'absolute)
@@ -264,6 +264,57 @@
     (deh-add-hooks (c-mode-hook c++-mode-hook) (function cscope:hook))))
 
 (my-toggle-gtags-and-xcscope)
+;;}}}
+
+;;{{{ tag view history
+(deh-require 'tags-view
+  (deh-define-key tags-history-mode-map
+    ("q" . 'tv-view-history-quit))
+
+  (defvar tv-previous-window-conf nil
+    "Window configuration before switching to sdcv buffer.")
+  (defun tv-view-history ()
+    "The main entry point; pops open a buffer with the list of
+locations on the tag stack that can then optionally be operated
+on (eg, jumping to that location, deleting it from the list,
+etc).  The following options will be available:
+
+\\{tags-history-mode-map}"
+    (interactive)
+    ;; save windows configuration
+    (setq gtags-previous-window-conf (current-window-configuration))
+    (let* ((buf (get-buffer-create "*tags history*"))
+           (backend (tv-determine-backend))
+           (tag-items (tv-get-tags-list backend)))
+      (pop-to-buffer buf nil t)
+      (setq buffer-read-only nil)
+      (let ((inhibit-read-only t))
+        (erase-buffer))
+      (tags-history-mode)
+      (set (make-local-variable 'tv-tags-backend) backend)
+      (tv-insert-items tag-items)
+      (setq buffer-read-only t)
+      (goto-char 0)))
+  (defun tv-jump-to-tag-and-quit (location)
+    "Jump to tag location and quit tags view history."
+    (interactive "d")
+    (with-tag-info location (buf posn stack)
+      (switch-to-buffer buf)
+      (goto-char posn)
+      (if (window-configuration-p gtags-previous-window-conf)
+          (progn
+            (bury-buffer)
+            (set-window-configuration gtags-previous-window-conf)
+            (setq gtags-previous-window-conf nil)))))
+  (defun tv-view-history-quit ()
+    "Quit tags view history buffer."
+    (interactive)
+    (if (window-configuration-p gtags-previous-window-conf)
+        (progn
+          (bury-buffer)
+          (set-window-configuration gtags-previous-window-conf)
+          (setq gtags-previous-window-conf nil))))
+  )
 ;;}}}
 
 ;;{{{ svn settins

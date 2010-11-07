@@ -1,10 +1,10 @@
 ;;; key setting
-(define-prefix-command 'ctrl-cc-map nil "Command prefix: C-c c")
-(define-prefix-command 'ctrl-z-map nil "Command prefix: C-z")
+(define-prefix-command 'ctl-cc-map nil "Command prefix: C-c c")
+(define-prefix-command 'ctl-z-map nil "Command prefix: C-z")
 
 ;; global key binding
 (deh-define-key global-map
-  ((kbd "C-z")   . 'ctrl-z-map)
+  ((kbd "C-z")   . 'ctl-z-map)
   ((kbd "C-d")   . 'delete-char-or-region)
   ((kbd "<C-delete>")   . 'delete-char-or-region)
   ((kbd "C-1")   . 'smart-mark-whole-sexp)
@@ -39,7 +39,7 @@
   )
 
 (deh-define-key (lookup-key global-map "\C-c")
-  ("c" . 'ctrl-cc-map)
+  ("c" . 'ctl-cc-map)
   ("$" . 'toggle-truncate-lines)
   ;; ("f" . 'comint-dynamic-complete)
   ;; ("g" . 'fold-dwim-hide-all)
@@ -51,6 +51,7 @@
   ;; ("v" . 'imenu-tree)
   ;; ("w" . 'ywb-favorite-window-config)
   ("\C-o" . 'browse-url-at-point)
+  ("\C-t" . 'tv-view-history)
   )
 
 (deh-define-key (lookup-key global-map "\C-x")
@@ -64,7 +65,7 @@
   ("c"    . 'ywb-clone-buffer)
   )
 
-(deh-define-key ctrl-cc-map
+(deh-define-key ctl-cc-map
   ("a" . 'org-agenda)
   ("b" . 'org-iswitchb)
   ("c" . 'ywb-create/switch-scratch)
@@ -81,7 +82,7 @@
   )
 
 
-(deh-define-key ctrl-z-map
+(deh-define-key ctl-z-map
   ("\C-z" . (if (eq window-system 'x) 'suspend-frame 'suspend-emacs)))
 
 (windmove-default-keybindings)
