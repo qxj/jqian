@@ -114,7 +114,7 @@
 ;;}}}
 
 ;;{{{ Gtags & Xcscope
-(deh-section "gtags"
+(deh-section-if "gtags" (executable-find "global")
   (autoload 'gtags-mode "gtags" "" t)
   (eval-after-load "gtags"
     '(deh-define-key gtags-mode-map
@@ -219,50 +219,33 @@
       (self-insert-command 1)))
   )
 
-(deh-section "xcscope"
-  (eval-after-load "xcscope"
-    '(progn
-       (setq cscope-database-regexps
-             '(
-               ("^/home/jqian/nbusrc"
-                (t)
-                ("/home/jqian/tags/")
-                ("/home/jqian/")
-                t
-                ("/net/code/srt/nb_sync/MAIN/cscope" ("-d")))
-               ("^/home/jqian/projects"
-                (t)
-                ("/home/jqian/projects" ("-d" "-I/usr/local/include")))
-               ))
-       (setq cscope-do-not-update-database t
-             cscope-adjust nil)
-       ;; keybinds
-       (setq cscope-minor-mode-hooks
-             '(lambda ()
-                ;; Instead of `find-tag' & `pop-tag-mark'
-                (deh-define-key cscope:map
-                  ((kbd "M-.") . 'cscope-find-this-symbol)
-                  ((kbd "M-*") 'cscope-pop-mark))
-                ;; Key bind for cscope-minor-mode
-                ))
-       ;; hack `xcscope.el', remove hooks
-       (deh-remove-hooks (c-mode-hook c++-mode-hook dired-mode-hook)
-         (function cscope:hook)))))
-
-(defcustom my-toggle-gtags-or-xcscope-option t
-  "No-nil to enable gtags, or enable xcscope.")
-
-(defun my-toggle-gtags-and-xcscope ()
-  (interactive)
-  (if my-toggle-gtags-or-xcscope-option
-      (progn
-        (deh-add-hooks (c-mode-hook c++-mode-hook) (gtags-mode 1))
-        (deh-remove-hooks (c-mode-hook c++-mode-hook) (function cscope:hook)))
-    (require 'xcscope)
-    (deh-remove-hooks (c-mode-hook c++-mode-hook) (gtags-mode 1))
-    (deh-add-hooks (c-mode-hook c++-mode-hook) (function cscope:hook))))
-
-(my-toggle-gtags-and-xcscope)
+(deh-require-reserved 'xcscope
+  (setq cscope-database-regexps
+        '(
+          ("^/home/jqian/nbusrc"
+           (t)
+           ("/home/jqian/tags/")
+           ("/home/jqian/")
+           t
+           ("/net/code/srt/nb_sync/MAIN/cscope" ("-d")))
+          ("^/home/jqian/projects"
+           (t)
+           ("/home/jqian/projects" ("-d" "-I/usr/local/include")))
+          ))
+  (setq cscope-do-not-update-database t
+        cscope-adjust nil)
+  ;; keybinds
+  (setq cscope-minor-mode-hooks
+        '(lambda ()
+           ;; Instead of `find-tag' & `pop-tag-mark'
+           (deh-define-key cscope:map
+             ((kbd "M-.") . 'cscope-find-this-symbol)
+             ((kbd "M-*") 'cscope-pop-mark))
+           ;; Key bind for cscope-minor-mode
+           ))
+  ;; hack `xcscope.el', remove hooks
+  (deh-remove-hooks (c-mode-hook c++-mode-hook dired-mode-hook)
+    (function cscope:hook)))
 ;;}}}
 
 ;;{{{ tag view history
@@ -424,7 +407,7 @@ etc).  The following options will be available:
                                   ,@sgml-tag-alist))))))
 
 ;; nxhtml: javascript + php + html + css
-(deh-section-if "nxhtml" "~/src/nxhtml/autostart.el" (load-file deh-this-path))
+(deh-section-path "nxhtml" "~/src/nxhtml/autostart.el" (load-file deh-this-path))
 
 ;; gnuplot
 (deh-section "gnuplot"

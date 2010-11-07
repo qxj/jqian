@@ -700,33 +700,31 @@
 
 ;;; recommend
 ;;{{{  w3m
-(deh-require 'w3m-load
+(deh-require-if 'w3m-load (executable-find "w3m")
   (setq w3m-verbose t)                  ; log in *Messages*
-  (add-hook 'w3m-mode-hook
-            (lambda ()
-              (defun ywb-w3m-goto-url (url)
-                (if (and url (stringp url))
-                    (w3m-goto-url url)))
-              (local-unset-key "\C-xb")
-              (local-unset-key (kbd "S-SPC"))
-              (define-key w3m-mode-map "n" (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
-              (define-key w3m-mode-map "p" (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
-              (define-key w3m-mode-map "t" (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url)))
-              ))
+  (deh-add-hook w3m-mode-hook
+    (local-unset-key "\C-xb")
+    (local-unset-key (kbd "S-SPC"))
+    (deh-define-key w3m-mode-map
+      ("n" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
+      ("p" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
+      ("t" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url)))))
+  (deh-add-hook w3m-load-hook
+    (add-to-list
+     'w3m-relationship-estimate-rules
+     `(w3m-relationship-simple-estimate
+       ""
+       ,(concat "<a\\s-+href=" w3m-html-string-regexp
+                "\\s-*>.\\{,25\\}\\(?:next\\|后\\|下\\)")
+       ,(concat "<a\\s-+href=" w3m-html-string-regexp
+                "\\s-*>.\\{,25\\}\\(?:prev\\|前\\|上\\)")
+       nil
+       ,(concat "<a\\s-+href=" w3m-html-string-regexp
+                "\\s-*>.\\{,25\\}\\(?:index\\|目录\\)"))))
 
-  (add-hook 'w3m-load-hook
-            (lambda ()
-              (add-to-list 'w3m-relationship-estimate-rules
-                           `(w3m-relationship-simple-estimate
-                             ""
-                             ,(concat "<a\\s-+href=" w3m-html-string-regexp
-                                      "\\s-*>.\\{,25\\}\\(?:next\\|后\\|下\\)")
-                             ,(concat "<a\\s-+href=" w3m-html-string-regexp
-                                      "\\s-*>.\\{,25\\}\\(?:prev\\|前\\|上\\)")
-                             nil
-                             ,(concat "<a\\s-+href=" w3m-html-string-regexp
-                                      "\\s-*>.\\{,25\\}\\(?:index\\|目录\\)")
-                             ))))
+  (defun ywb-w3m-goto-url (url)
+    (if (and url (stringp url))
+        (w3m-goto-url url)))
   (defun my-toggle-w3m ()
     "Switch to a w3m buffer or return to the previous buffer."
     (interactive)
@@ -746,8 +744,7 @@
                 (setq list nil))
             (setq list (cdr list))))
         (unless (derived-mode-p 'w3m-mode)
-          (call-interactively 'w3m)))))
-  )
+          (call-interactively 'w3m))))))
 ;;}}}
 
 ;;{{{ autopair, like skeleton
@@ -1088,7 +1085,7 @@ defadvice to prevent an infinite loop when there are no matches."
        (define-key anything-map "\M-n" 'anything-next-source)
        (define-key anything-map "\M-p" 'anything-previous-source)))
 
-  (deh-try-require 'anything-config
+  (deh-require-if 'anything-config (executable-find "w3m")
     (setq anything-c-adaptive-history-file
           (expand-file-name "anything-c-adaptive-history" my-temp-dir)
           anything-c-yaoddmuse-cache-file
