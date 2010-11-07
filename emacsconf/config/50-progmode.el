@@ -314,17 +314,16 @@
   ;; (abbrev-mode t)
   (set (make-local-variable 'comment-style) 'indent)
   (setq c-basic-offset tab-width)
-  ;; comment new line and indent, as VIM acts.
+  ;; comment new line and indent `M-j', as VIM acts.
   (defun my-cursor-on-comment-p (&optional point)
     (memq (get-text-property (or point (point)) 'face)
           '(font-lock-comment-face)))
-  (local-set-key (kbd "RET")
-                 (lambda () (interactive)
-                   (if (my-cursor-on-comment-p)
-                       (comment-indent-new-line)
-                     (if (boundp 'autopair-newline)
-                         (autopair-newline)
-                       (newline-and-indent))))))
+  ;; (local-set-key (kbd "RET")
+  ;;                (lambda () (interactive)
+  ;;                  (if (my-cursor-on-comment-p) (comment-indent-new-line)
+  ;;                    (if (boundp 'autopair-newline) (autopair-newline)
+  ;;                      (newline-and-indent)))))
+  )
 
 ;;{{{ elisp
 (deh-section "elisp"
