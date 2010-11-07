@@ -1,6 +1,6 @@
 ;; (load "cedet")
 
-(deh-section-if "cedet"
+(deh-section-path "cedet"
   "~/src/cedet-1.0/common/cedet.el"
   (load-file deh-this-path)
 

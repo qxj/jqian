@@ -1,4 +1,4 @@
-(deh-section-if "org"
+(deh-section-path "org"
   "~/src/org-7.01h"
   ;; load-path
   (add-to-list 'load-path (expand-file-name "lisp" deh-this-path))

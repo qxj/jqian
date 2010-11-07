@@ -175,3 +175,8 @@
       (load (expand-file-name "my-fontset.el" my-config-dir))
       (load (expand-file-name "my-theme.el" my-config-dir)))
     ))
+
+;; WORKAROUND: miss define-fringe-bitmap under terminal
+(unless (boundp 'define-fringe-bitmap)
+  (defun define-fringe-bitmap (bitmap bits &optional height width align)
+    ))
