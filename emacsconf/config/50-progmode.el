@@ -12,12 +12,12 @@
 
 ;;{{{ Outline minor mode
 (deh-section-after "outline"
-  (setq outline-minor-mode-prefix (kbd "C-c C-o"))
+  (setq outline-minor-mode-prefix (kbd "C-c o"))
   (deh-define-key outline-minor-mode-map
-    ("\C-c\C-os" . 'show-subtree)
-    ("\C-c\C-oS" . 'show-all)
-    ("\C-c\C-oh" . 'hide-subtree)
-    ("\C-c\C-oH" . 'hide-body)
+    ("\C-cos" . 'show-subtree)
+    ("\C-coS" . 'show-all)
+    ("\C-coh" . 'hide-subtree)
+    ("\C-coH" . 'hide-body)
     ;; shortcuts
     ((kbd "<right>") . 'show-subtree)
     ((kbd "<M-right>") . 'show-all)
@@ -28,9 +28,9 @@
     ((kbd "<M-up>") . 'outline-previous-visible-heading)
     ((kbd "<M-down>") . 'outline-next-visible-heading)
     ;; xwl keybinds
-    ("\C-c\C-on" . 'xwl-narrow-to-outline-level)
-    ("\C-c\C-ou" . 'xwl-outline-toggle-enter-exit)
-    ("\C-c\C-oq" . 'xwl-outline-toggle-show-hide))
+    ("\C-con" . 'xwl-narrow-to-outline-level)
+    ("\C-cou" . 'xwl-outline-toggle-enter-exit)
+    ("\C-coq" . 'xwl-outline-toggle-show-hide))
 
   (defadvice outline-mode (after hide-sublevels)
     "Enter overview after start up `outline-mode'."
@@ -119,24 +119,23 @@
   (eval-after-load "gtags"
     '(deh-define-key gtags-mode-map
        ;; Instead of `find-tag' & `pop-tag-mark'
-       ((kbd "M-.")     . 'gtags-find-tag)
-       ((kbd "M-*")     . 'gtags-pop-stack)
+       ((kbd "M-.") . 'gtags-find-tag)
+       ((kbd "M-*") . 'gtags-pop-stack)
        ;; other key binds
-       ((kbd "C-c g v") . 'gtags-visit-rootdir)
-       ((kbd "C-c g t") . 'gtags-find-tag-from-here)
-       ((kbd "C-c g o") . 'gtags-find-tag-other-window)
-       ((kbd "C-c g r") . 'gtags-find-rtag)
-       ((kbd "C-c g s") . 'gtags-find-symbol)
-       ((kbd "C-c g p") . 'gtags-find-pattern)
-       ((kbd "C-c g g") . 'gtags-find-with-grep)
-       ((kbd "C-c g i") . 'gtags-find-with-idutils)
-       ((kbd "C-c g f") . 'gtags-find-file)
-       ((kbd "C-c g a") . 'gtags-parse-file)
-       ((kbd "C-c g b") . 'gtags-append-tags)
-       ((kbd "C-c g d") . 'gtags-display-tag)
-       ((kbd "C-c g q") . 'gtags-display-tag-quit)
-       ("q"             . 'gtags-display-tag-quit)
-       ))
+       ("\C-cgv" . 'gtags-visit-rootdir)
+       ("\C-cgt" . 'gtags-find-tag-from-here)
+       ("\C-cgo" . 'gtags-find-tag-other-window)
+       ("\C-cgr" . 'gtags-find-rtag)
+       ("\C-cgs" . 'gtags-find-symbol)
+       ("\C-cgp" . 'gtags-find-pattern)
+       ("\C-cgg" . 'gtags-find-with-grep)
+       ("\C-cgi" . 'gtags-find-with-idutils)
+       ("\C-cgf" . 'gtags-find-file)
+       ("\C-cga" . 'gtags-parse-file)
+       ("\C-cgb" . 'gtags-append-tags)
+       ("\C-cgd" . 'gtags-display-tag)
+       ("\C-cgq" . 'gtags-display-tag-quit)
+       ("q"      . 'gtags-display-tag-quit)))
   (defun gtags-append-tags ()
     (interactive)
     (if gtags-mode
@@ -517,11 +516,17 @@ etc).  The following options will be available:
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
     (deh-local-set-key php-mode-hook
-      ("\t"    . 'php-doc-complete-function)
-      ("\C-ch" . 'php-doc))
+      ("\t"       . 'php-doc-complete-function)
+      ("\C-cd" . 'php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
          'php-doc-eldoc-function)
-    (eldoc-mode 1))
+    (eldoc-mode 1)
+    ;; hack php-doc.el, in order to select php doc buffer automatically.
+    (defun php-doc-w3m (url &rest ignore)
+      (let ((buf (get-buffer-create "*php doc*")))
+        (pop-to-buffer buf nil t)
+        (w3m-goto-url url)))
+    )
   (deh-try-require 'geben
     (defun my-geben-open-file (file)
       (interactive
