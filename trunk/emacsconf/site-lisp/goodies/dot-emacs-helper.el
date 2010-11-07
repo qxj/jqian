@@ -82,35 +82,19 @@
   "List of packages that `deh-try-require', `deh-require-maybe'
 and `deh-section-if' can't find.")
 
-(defun deh-try-require (feature)
-  "Attempt to load a library or module. Return `t' if the library
-given as argument is successfully loaded. If not, instead of an
-error, just add the package to a list of missing packages and
-return `nil'."
-  (condition-case err
-      (progn                            ; protected form
-        (if (stringp feature)
-            (load-library feature)
-          (require feature))
-        t)
-    (file-error                         ; load-library error
-     (progn
-       (add-to-list 'deh-missing-packages-list feature 'append))
-     nil)
-    (error                              ; require error
-     (progn
-       (add-to-list 'deh-missing-packages-list feature 'append)
-       (sleep-for 1))
-     nil)))
+(defmacro deh-try-require (feature &rest forms)
+  (declare (indent 1))
+  `(progn
+     (if (require ,feature nil t)
+         (progn ,@forms)
+       (add-to-list 'deh-missing-packages-list ,feature 'append))))
 
 (defmacro deh-require-maybe (feature &rest forms)
   (declare (indent 1))
   `(progn
      (if ,load-file-name
          (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-     (if (require ,feature nil t)
-         (progn ,@forms)
-       (add-to-list 'deh-missing-packages-list ,feature 'append))))
+     (deh-try-require ,feature ,@forms)))
 (defalias 'deh-require 'deh-require-maybe)
 (put 'deh-require 'lisp-indent-function 1)
 

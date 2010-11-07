@@ -494,8 +494,6 @@ etc).  The following options will be available:
   (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
-  (add-to-list 'auto-mode-alist '("\\.acd$" . acd-mode))
-  (add-to-list 'auto-mode-alist '("\\.po\\'\\|\\.po\\." . po-mode))
   (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
   (add-to-list 'auto-mode-alist '("\\.cls$" . LaTeX-mode))
   (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
@@ -505,63 +503,66 @@ etc).  The following options will be available:
   (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
-  (add-to-list 'auto-mode-alist '("Makefile" . makefile-mode))
+  (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\)" . makefile-mode))
   (add-to-list 'auto-mode-alist '("\.schemas" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.pod$" . pod-mode))
   (add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
   )
 
-(deh-section "php"
-  ;; (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
-  ;; (add-to-list 'interpreter-mode-alist '("php" . php-mode))
-  (autoload 'geben "geben" "" t)
-  (defun my-geben-open-file (file)
-    (interactive
-     (list
-      (let ((source-file
-             (replace-regexp-in-string "^file://" ""
-                                       (geben-session-source-fileuri geben-current-session (buffer-file-name)))))
-        (read-file-name "Open file: " (file-name-directory source-file)))))
-    (geben-open-file (concat "file://" file)))
-  (add-hook 'geben-context-mode-hook
-            (lambda ()
-              (define-key geben-mode-map "f" 'my-geben-open-file)))
-;;  (deh-require 'php-doc)
-  (deh-require 'simpletest)
-  (setq simpletest-create-test-function 'simpletest-create-test-template)
-  (setq php-imenu-generic-expression
-        '(
-          ("Private Methods"
-           "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?private\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-          ("Protected Methods"
-           "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?protected\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-          ("Public Methods"
-           "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?public\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-          ("Classes"
-           "^\\s-*class\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*" 1)
-          (nil
-           "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-          ))
-  (defun my-php-mode-hook ()
+(deh-section-reserved "php"
+  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
+  (add-to-list 'interpreter-mode-alist '("php" . php-mode))
+  (deh-try-require 'php-doc
+    (setq php-doc-directory "~/src/php_manual/html"
+          php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
+    (deh-local-set-key php-mode-hook
+      ("\t"    . 'php-doc-complete-function)
+      ("\C-ch" . 'php-doc))
+    (set (make-local-variable 'eldoc-documentation-function)
+         'php-doc-eldoc-function)
+    (eldoc-mode 1))
+  (deh-try-require 'geben
+    (defun my-geben-open-file (file)
+      (interactive
+       (list
+        (let ((source-file
+               (replace-regexp-in-string
+                "^file://" ""
+                (geben-session-source-fileuri geben-current-session
+                                              (buffer-file-name)))))
+          (read-file-name "Open file: " (file-name-directory source-file)))))
+      (geben-open-file (concat "file://" file)))
+    (deh-define-key geben-mode-map
+      ("f" . 'my-geben-open-file)))
+  (deh-try-require 'simpletest
+    (simpletest-mode 1)
+    (setq simpletest-create-test-function 'simpletest-create-test-template)
+    (deh-define-key simpletest-mode-map
+      ("\C-ctb" . 'simpletest-switch)
+      ("\C-ctc" . 'simpletest-create-test)
+      ("\C-ctr" . 'simpletest-run-test)))
+  (deh-add-hook php-mode-hook
     ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
     (setq php-beginning-of-defun-regexp "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(")
-    (when (featurep 'php-doc)
-      (local-set-key "\t" 'php-doc-complete-function)
-      (set (make-local-variable 'eldoc-documentation-function)
-           'php-doc-eldoc-function)
-      (eldoc-mode 1))
-    (when (featurep 'simpletest)
-      (simpletest-mode 1)
-      (define-key simpletest-mode-map "\C-ctb" 'simpletest-switch)
-      (define-key simpletest-mode-map "\C-ctc" 'simpletest-create-test)
-      (define-key simpletest-mode-map "\C-ctr" 'simpletest-run-test))
+    (setq php-imenu-generic-expression
+          '(
+            ("Private Methods"
+             "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?private\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
+            ("Protected Methods"
+             "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?protected\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
+            ("Public Methods"
+             "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?public\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
+            ("Classes"
+             "^\\s-*class\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*" 1)
+            (nil
+             "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
+            ))
     (local-set-key (kbd "C-M-a") 'beginning-of-defun)
     (local-set-key (kbd "C-M-e") 'end-of-defun)
     )
-  (add-hook 'php-mode-hook 'my-php-mode-hook)
+  ;; ffap settings
   (defvar ffap-php-path
     (let ((include-path
            (shell-command-to-string "php -r 'echo get_include_path();'")))
@@ -573,7 +574,6 @@ etc).  The following options will be available:
         (ffap-locate-file (replace-regexp-in-string "_" "/" name) '(".class.php" ".php") ffap-php-path)
       (ffap-locate-file name t ffap-php-path)))
   (if (featurep 'ffap)
-      (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate)))
-)
+      (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
 
 
