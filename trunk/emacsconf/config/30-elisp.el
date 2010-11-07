@@ -546,29 +546,36 @@
           (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:"))))
 ;;}}}
 
+;;{{{ View
+(deh-section-after "view"
+  (deh-define-key view-mode-map
+    ("h" . 'backward-char)
+    ("l" . 'forward-char)
+    ("j" . 'View-scroll-line-forward)
+    ("k" . 'View-scroll-page-backward)
+    ("G" . 'View-goto-line-last)
+    ("b" . 'View-scroll-page-backward)
+    ("f" . 'View-scroll-page-forward)
+    ("?" . 'View-search-regexp-backward)))
+;;}}}
+
 ;;{{{ standard libraries and settings
 (deh-section "std-lib"
   (partial-completion-mode 1)
   (icomplete-mode 1)
   (winner-mode 1)
   ;; (auto-insert-mode 1)
-  ;; view
-  (deh-define-key view-mode-map
-    ("q" . 'View-exit)
-    ("h" . 'backward-char)
-    ("l" . 'forward-char)
-    ("j" . 'next-line)
-    ("k" . 'previous-line))
 
   ;; TimeStamp
   (add-hook 'before-save-hook 'time-stamp)
   (setq time-stamp-active t)
   (setq time-stamp-warn-inactive t)
 
-  (add-hook 'occur-mode-hook (lambda () (setq truncate-lines t)))
+  (deh-add-hook occur-mode-hook (setq truncate-lines t))
 
   ;; tetris game
   ;; (setq tetris-update-speed-function (lambda (shapes rows) (/ 10.0 (+ 80.0 rows))))
+
   ;; woman
   (setq woman-use-own-frame nil)
   (setq woman-fontify t)                ; dump emacs need this
