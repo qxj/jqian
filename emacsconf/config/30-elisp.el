@@ -459,7 +459,7 @@
           (bookmark (get-text-property (point) 'bm-bookmark)))
       (if (null buffer-name)
           (message "No bookmark at this line.")
-        (pop-to-buffer (get-buffer buffer-name))
+        (pop-to-buffer (get-buffer buffer-name) nil t) ; keep pop buffer in the same window
         (bm-goto bookmark)
         (when bm-electric-show
           (bm-show-quit-window)
