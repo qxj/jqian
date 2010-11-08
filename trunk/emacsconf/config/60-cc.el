@@ -67,6 +67,9 @@
     (if (file-exists-p "Makefile.vs")
         (set (make-local-variable 'compile-command)
              "nbbuild --platform=linuxR_x86 --buildhost aleppo all"))
+    (if (file-exists-p "Build")
+        (set (make-local-variable 'compile-command)
+             "/home/jqian/cloudstore/nbbuild/nbbuild.pl --plat linuxR_x86 --buildhost pinky all"))
     ;; untabify source code
     (make-local-hook 'write-contents-hooks)
     (add-hook 'write-contents-hooks 'my-untabify nil t)
@@ -103,4 +106,11 @@
               (kill-buffer-when-shell-command-exit)
               )))
 
+(deh-section "compile"
+  (setq compilation-finish-functions
+        (lambda (buf str)
+          (when (and (string= (buffer-name buf) "*compilation*")
+                     (not (string-match "exited abnormally" str)))
+            (run-at-time 0.5 nil 'delete-windows-on buf))))
+  )
 

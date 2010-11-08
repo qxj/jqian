@@ -116,6 +116,10 @@
 ;;{{{ Gtags & Xcscope
 (deh-section-if "gtags" (executable-find "global")
   (autoload 'gtags-mode "gtags" "" t)
+
+  (deh-add-hooks (c-mode-common-hook)
+    (gtags-mode t))
+
   (eval-after-load "gtags"
     '(deh-define-key gtags-mode-map
        ;; Instead of `find-tag' & `pop-tag-mark'
