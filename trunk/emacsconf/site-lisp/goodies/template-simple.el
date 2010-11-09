@@ -431,12 +431,11 @@ Use `template-expand-function' to expand the parsed template."
   (and (not buffer-read-only)
        (or (eq this-command 'template-auto-insert)
            (and (bobp) (eobp)))
-       (let ((file (car (template-simple-derivation))))
-         (when file
-           (switch-to-buffer (current-buffer))
-           (if (or (null template-query)
-                   (y-or-n-p (format "Use template %s? " file)))
-               (template-simple-expand-template file)))))
+       (when (car (template-simple-derivation))
+         (switch-to-buffer (current-buffer))
+         (if (or (null template-query)
+                 (y-or-n-p (format "Use template? ")))
+             (call-interactively 'template-simple-expand-template))))
   nil)
 
 (if (boundp 'write-file-functions)
