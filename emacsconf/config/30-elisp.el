@@ -199,9 +199,9 @@
           ad-do-it))))
 
   ;; Sort ido filelist by mtime instead of alphabetically
-  (add-hook 'ido-make-file-list-hook 'ido-sort-mtime)
-  (add-hook 'ido-make-dir-list-hook 'ido-sort-mtime)
-  (add-hook 'ido-make-buffer-list-hook 'ido-sort-mtime)
+  ;; (add-hook 'ido-make-file-list-hook 'ido-sort-mtime)
+  ;; (add-hook 'ido-make-dir-list-hook 'ido-sort-mtime)
+  ;; (add-hook 'ido-make-buffer-list-hook 'ido-sort-mtime)
   (defun ido-sort-mtime ()
     (setq ido-temp-list
           (sort ido-temp-list
