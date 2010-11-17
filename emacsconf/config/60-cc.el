@@ -62,6 +62,7 @@
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
     (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
+    (local-unset-key "\C-c\C-o")        ; trigger for `c-set-offset'
     (local-set-key "\C-ca" 'sourcepair-load)
     ;; nbbuild
     (if (file-exists-p "Makefile.vs")
