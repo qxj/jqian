@@ -767,7 +767,7 @@
 ;;}}}
 
 ;;{{{ auto-complete
-(deh-section "auto-complete"
+(deh-section-reserved "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
@@ -820,9 +820,12 @@ indent line."
     (setq ac-sources (append '(ac-source-yasnippet
                                ac-source-gtags
                                ac-source-semantic
-                               ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
-                               ;; ac-source-clang
-                               ac-source-imenu) ac-sources)))
+                               ac-source-imenu) ac-sources))
+    ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
+    (when (executable-find "clang")
+      (require 'auto-complete-clang)
+      (add-to-list 'ac-sources 'ac-source-clang))
+    )
 
   ;; python
   (defun ac-python-mode-setup ()
