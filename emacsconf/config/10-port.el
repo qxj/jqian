@@ -177,6 +177,6 @@
     ))
 
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
-(unless (boundp 'define-fringe-bitmap)
-  (defun define-fringe-bitmap (bitmap bits &optional height width align)
-    ))
+(when (null window-system)
+  (unless (boundp 'define-fringe-bitmap)
+    (defun define-fringe-bitmap (bitmap bits &optional height width align))))
