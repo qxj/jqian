@@ -163,6 +163,6 @@
 (deh-require 'color-theme
   (eval-after-load "color-theme"
     '(progn
-       (color-theme-blackboard)
-       (color-theme-wombat)
+       ;; (color-theme-blackboard)
+       ;; (color-theme-wombat)
        )))
