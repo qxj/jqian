@@ -151,8 +151,8 @@
   (setq ido-enable-regexp t
         ido-enable-tramp-completion nil
         ido-use-faces t
-        ido-use-filename-at-point 'guess
-        ido-use-url-at-point t
+        ;; ido-use-filename-at-point 'guess
+        ;; ido-use-url-at-point t
         ido-auto-merge-work-directories-length -1)
 
   (setq ido-save-directory-list-file
@@ -767,11 +767,13 @@
 ;;}}}
 
 ;;{{{ auto-complete
-(deh-section-reserved "auto-complete"
+(deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
-  (setq ac-candidate-limit ac-menu-height) ; improve drop menu performance
+  (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
+        ac-auto-start 2                   ; start after typed 2 chars
+        ac-dwim t)
 
   ;; for terminal, works well with `global-hl-line-mode'
   (if (null window-system)
@@ -794,11 +796,12 @@
   ;; keybind, `ac-menu-map' is recommended
   (setq ac-use-menu-map t)
   ;; donot use RET for auto complete, only TAB
-  (define-key ac-menu-map (kbd "<return>") nil)
-  (define-key ac-menu-map (kbd "RET") nil)
-  (define-key ac-menu-map (kbd "TAB") 'ac-complete)
+  (deh-define-key ac-menu-map
+    ((kbd "<return>") . nil)
+    ((kbd "RET") . nil)
+    ((kbd "TAB") . 'ac-complete))
 
-  ;; <TAB> for `auto-complete'
+  ;; press <TAB> to active `auto-complete'
   (deh-local-set-key auto-complete-mode-hook
     ((kbd "TAB") . 'auto-complete-tab-action))
   (defun auto-complete-tab-action ()
