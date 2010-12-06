@@ -116,6 +116,59 @@
     nil))
 ;;}}}
 
+;;{{{ move and duplicate lines
+(defun my-move-line-up (p)
+  "move current line up"
+  (interactive "p")
+  (let ((c (current-column)))
+    (beginning-of-line)
+    (kill-line 1)
+    (previous-line p)
+    (beginning-of-line)
+    (yank)
+    (previous-line 1)
+    (move-to-column c)))
+
+(defun my-move-line-down (p)
+  "move current line down"
+  (interactive "p")
+  (let ((c (current-column)))
+    (beginning-of-line)
+    (kill-line 1)
+    (next-line p)
+    (beginning-of-line)
+    (yank)
+    (previous-line 1)
+    (move-to-column c)))
+
+(defun my-dup-line-down ()
+  "duplicate this line at next line"
+  (interactive)
+  (let ((c (current-column))
+        (p (point))
+        (n next-line-add-newlines))
+    (beginning-of-line)
+    (setq next-line-add-newlines t)
+    (next-line 1)
+    (setq next-line-add-newlines n)
+    (kill-new (buffer-substring p (point)))
+    (beginning-of-line)
+    (yank)
+    (previous-line 1)
+    (move-to-column c)))
+
+(defun my-dup-line-down-continued ()
+  "Put continued multiple lines into `kill-ring'."
+  (interactive)
+  (let ((kill-func (if (eq last-command 'ue-select-line-down-continued)
+                       (lambda (s) (kill-append s nil))
+                     (lambda (s) (kill-new s nil)))))
+    (let ((oldpoint (point))
+          (next-line-add-newlines))
+      (next-line 1)
+      (funcall kill-func (buffer-substring oldpoint (point))))))
+;;}}}
+
 ;;{{{ clone-buffer, bind to `C-x c'
 (defun ywb-clone-buffer (non-indirect)
   "If with prefix argument, clone buffer, other wise, clone indirect buffer"
