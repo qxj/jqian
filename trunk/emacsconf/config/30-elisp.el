@@ -772,7 +772,11 @@
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
   (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
-        ac-auto-start 2                   ; start after typed 2 chars
+        ac-auto-start nil
+        ac-ignore-case nil
+        ;; ac-show-menu-immediately-on-auto-complete nil
+        ;; ac-expand-on-auto-complete nil
+        ;; ac-trigger-key nil
         ac-dwim t)
 
   ;; for terminal, works well with `global-hl-line-mode'
@@ -858,7 +862,7 @@ indent line."
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
-        ;; (setq yas/trigger-key nil) ; deperecated tweak
+        (setq yas/trigger-key nil) ; deperecated tweak
         (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
 
@@ -870,7 +874,7 @@ indent line."
 ;;{{{ a simple template
 (deh-require 'template-simple
   (setq template-directory-list (list my-template-dir)
-        template-skip-directory-list (list my-temp-dir)))
+        template-skip-directory-list (list my-temp-dir my-template-dir)))
 ;;}}}
 
 ;;{{{ isearch tweaks
@@ -1296,7 +1300,7 @@ mouse-3: Toggle minor modes"
 ;; highlight mode
 (deh-section "highlight"
   ;; Highlight current line
-  (global-hl-line-mode)
+  ;; (global-hl-line-mode)
   ;; (set-face-background 'hl-line "white smoke") ; list-colors-display
   ;; Highlight symbol
   (setq highlight-symbol-idle-delay 0.5

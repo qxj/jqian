@@ -1,5 +1,5 @@
-/* @(#)(>>>FILE<<<)
- * Time-stamp: <Julian Qian 2010-12-01 22:26:40>
+/* @(#)(>>>FILE<<<) -*- mode: c++ -*-
+ * Time-stamp: <Julian Qian 2010-12-04 18:46:51>
  * Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
  * Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
  */
@@ -10,4 +10,3 @@
 (>>>POINT<<<)
 
 #endif /* _(>>>FILE_UPCASE<<<)_H */
-
