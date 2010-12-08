@@ -125,8 +125,8 @@
    frame=single,
    upquote=true
 }"
-            "\\setmainfont{AR PL ShanHeiSun Uni}"
-            "\\setsansfont[BoldFont=AR PL ZenKai Uni]{AR PL ZenKai Uni}"
+            "\\setmainfont[BoldFont=DejaVu Serif]{DejaVu Serif}"
+            "\\setsansfont[BoldFont=DejaVu Sans]{DejaVu Sans}"
             "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
             "\\defaultfontfeatures{Mapping=tex-text}"
             "\\XeTeXlinebreaklocale \"zh\""
