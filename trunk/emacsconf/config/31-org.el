@@ -16,6 +16,7 @@
     (add-to-list 'org-link-frame-setup
                  '(file . my-find-file-function)))
   (deh-add-hook org-mode-hook
+    (local-unset-key "\C-c\C-o")        ; trigger for `org-open-at-point'
     (org-set-local 'comment-start "#+COMMENT:")
     (toggle-truncate-lines nil)
     (auto-fill-mode 1)

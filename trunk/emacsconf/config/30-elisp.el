@@ -1322,6 +1322,11 @@ mouse-3: Toggle minor modes"
    ((kbd "C-c l P") . 'highlight-symbol-prev-in-defun)
    ))
 
+(deh-section "sh-mode"
+  (deh-add-hook sh-mode-hook
+    (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
+    ))
+
 ;; shell
 (deh-section "shell"
   (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
