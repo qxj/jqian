@@ -771,8 +771,8 @@
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
-  (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
-        ac-auto-start nil
+  (setq ; ac-candidate-limit ac-menu-height ; improve drop menu performance
+        ac-auto-start t
         ac-ignore-case nil
         ;; ac-show-menu-immediately-on-auto-complete nil
         ;; ac-expand-on-auto-complete nil
