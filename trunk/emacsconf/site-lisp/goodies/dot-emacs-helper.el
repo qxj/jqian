@@ -433,7 +433,7 @@ Example:
   "Apply some functions for a hook.
 
 Example:
-  (deh-add-hooks c-mode-common-hook
+  (deh-add-hook c-mode-common-hook
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
@@ -444,7 +444,7 @@ Example:
   "Remove some functions for a hook.
 
 Example:
-  (deh-remove-hooks c-mode-common-hook
+  (deh-remove-hook c-mode-common-hook
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
