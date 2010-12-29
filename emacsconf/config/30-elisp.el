@@ -791,6 +791,7 @@
   ;; disable auto-complete in comments
   ;; (setq ac-disable-faces
   ;;       '(font-lock-string-face font-lock-doc-face))
+  (setq ac-disable-faces nil)
 
   (add-to-list 'ac-modes 'org-mode)
 
@@ -1429,11 +1430,14 @@ If the flag is set, only complete with local files."
 
 (deh-require-if 'evernote-mode
   (executable-find "enclient.rb")
-  (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
+  ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
   (global-set-key "\C-cec" 'evernote-create-note)
   (global-set-key "\C-ceo" 'evernote-open-note)
   (global-set-key "\C-ces" 'evernote-search-notes)
   (global-set-key "\C-ceS" 'evernote-do-saved-search)
   (global-set-key "\C-cew" 'evernote-write-note)
   (global-set-key "\C-cep" 'evernote-post-region)
-  (global-set-key "\C-ceb" 'evernote-browser))
+  (global-set-key "\C-ceb" 'evernote-browser)
+  (setq evernote-mode-hook
+        '(lambda () (outline-minor-mode t)))
+  )
