@@ -1,12 +1,10 @@
 (deh-section "which-func"
-  (dolist (hook '(c-mode-common-hook emacs-lisp-mode-hook))
-    (add-hook hook
-              (lambda ()
-                (which-func-mode 1)
-                (setq which-func-unknown "unknown")))))
+  (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook)
+    (which-func-mode 1)
+    (setq which-func-unknown "unknown")))
 
 (deh-section "ebrowse"
-   (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
+  (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
   (setq ebrowse-global-prefix-key "\C-z"))
 
 (defconst my-c-style
@@ -130,8 +128,10 @@ the directories in the INCLUDE environment variable."
             (lambda ()
               (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
               (set (make-local-variable 'paragraph-separate) "\\'")
-              (kill-buffer-when-shell-command-exit)
-              )))
+              ))
+
+  (gud-tooltip-mode 1)
+  (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
 (deh-section "compile"
   (setq compilation-finish-functions

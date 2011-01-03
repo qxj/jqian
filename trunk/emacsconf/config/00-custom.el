@@ -28,6 +28,8 @@
 (setq ring-bell-function 'ignore)
 ;; (setq visible-bell t)
 
+(setq system-time-locale "C")
+
 (setq truncate-partial-width-windows nil)
 
 ;; highlight trailing whitespace
@@ -83,6 +85,13 @@
       read-file-name-completion-ignore-case t)
 ;; use clipboard
 (setq x-select-enable-clipboard t)
+
+;; show arrow in fringe to indicate boundary of current buffer
+(setq-default indicate-buffer-boundaries 'left)
+
+(setq kill-do-not-save-duplicates t)
+
+(setq tab-always-indent 'complete)
 
 (deh-section "ediff"
   (setq diff-switches "-ubB"
@@ -144,6 +153,7 @@
 (put 'downcase-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'erase-buffer 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
 (put 'LaTeX-hide-environment 'disabled nil)
 
 (deh-section "defadvice"
