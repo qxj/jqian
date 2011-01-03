@@ -11,8 +11,30 @@
                (other-window 1))
       (find-tag default))))
 
-;; close paren
+(defun ywb-indent-accoding-to-paren ()
+  "Indent code blocks according to ([]{}())."
+  (interactive)
+  (let ((prev-char (char-to-string (preceding-char)))
+        (next-char (char-to-string (following-char)))
+        (pos (point)))
+    (save-excursion
+      (cond ((string-match "[[{(<]" next-char)
+             (indent-region pos (progn (forward-sexp 1) (point)) nil))
+            ((string-match "[\]})>]" prev-char)
+             (indent-region (progn (backward-sexp 1) (point)) pos nil))))))
+
+;;;###autoload
+(defun goto-paren ()
+  "Jump to matched parenthes."
+  (interactive)
+  (cond
+   ((looking-at "[ \t]*[[\"({]") (forward-sexp) (backward-char))
+   ((or (looking-at "[]\")}]") (looking-back "[]\")}][ \t]*")) (if (< (point) (point-max)) (forward-char)) (backward-sexp))
+   (t (message "Can find matched parenthes"))))
+
+;;;###autoload
 (defun ywb-insert-paren ()
+  "Auto close matched parentheses."
   (interactive)
   (condition-case nil
       (progn

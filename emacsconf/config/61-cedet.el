@@ -1,95 +1,85 @@
 ;; (load "cedet")
 
-(deh-section-path "cedet"
-  "~/src/cedet-1.0/common/cedet.el"
-  (load-file deh-this-path)
+(defvar cedet-enable nil)
 
-  (setq semantic-load-turn-useful-things-on t)
+(let ((path "~/src/cedet-1.0/common/cedet.el"))
+  (when (file-exists-p path)
+    (load-file path)
+    (setq cedet-enable t)))
 
-  ;; (semantic-load-enable-excessive-code-helpers)
-  (semantic-load-enable-code-helpers)
+(when (boundp 'semantic-mode)
+  (locate-library "semantic-ctxt") ; offical cedet
+  (require 'cedet nil 'noerror)
+  (setq cedet-enable t))
+
+(deh-section-if "cedet"
+  cedet-enable
+
   ;; (semantic-load-enable-minimum-features)
+  (semantic-load-enable-code-helpers)
+  ;; (semantic-load-enable-gaudy-code-helpers)
+  ;; (semantic-load-enable-excessive-code-helpers)
   (semantic-load-enable-semantic-debugging-helpers)
 
-  (require 'semantic-decorate-include)
+  (global-semantic-decoration-mode 1)
 
-  ;; gcc setup
-  (require 'semantic-gcc)
+  ;; semantic cache directory
+  (setq semanticdb-default-save-directory my-temp-dir
+        semantic-idle-scheduler-idle-time 5
+        semantic-idle-scheduler-work-idle-time 10
+        semantic-idle-scheduler-max-buffer-size 100000)
 
-  ;; smart complitions
-  (require 'semantic-ia)
+  (require 'semantic-decorate-include nil 'noerror)
+  (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
+  (if window-system
+      (semantic-load-enable-semantic-debugging-helpers)
+    (progn (global-semantic-show-unmatched-syntax-mode 1)
+           (global-semantic-show-parser-state-mode 1)))
 
-  (setq-mode-local c-mode semanticdb-find-default-throttle
-                   '(project unloaded system recursive))
-  (setq-mode-local c++-mode semanticdb-find-default-throttle
-                   '(project unloaded system recursive))
+  ;; exuberent ctags
+  (ignore-errors (semantic-load-enable-primary-exuberent-ctags-support))
 
-
-  ;; keybind
-  (global-set-key (kbd "M-?") 'semantic-ia-complete-symbol-menu)
-
-  ;; eassit
-  (require 'eassist)
-
-  (deh-local-set-keys (c-mode-common-hook
-                       python-mode-hook
-                       emacs-lisp-mode-hook)
-    ((kbd "C-c , l") . 'eassist-list-methods)
-    ((kbd "C-c , G") . 'semantic-symref)
-    ((kbd "<C-return>") . 'semantic-ia-complete-symbol-menu)
-    ((kbd "C-c , c") . 'semantic-ia-complete-symbol)
-    ((kbd "C-c , =") . 'semantic-decoration-include-visit)
-    ((kbd "C-c , j") . 'semantic-ia-fast-jump)
-    ((kbd "C-c , q") . 'semantic-ia-show-doc)
-    ((kbd "C-c , s") . 'semantic-ia-show-summary)
-    ((kbd "C-c , p") . 'semantic-analyze-proto-impl-toggle)
-    ((kbd "C-c , h") . 'senator-fold-tag-toggle))
-
-  ;; customization
-  (custom-set-variables
-   '(semantic-self-insert-show-completion-function
-     (lambda nil (semantic-ia-complete-symbol-menu (point)))))
-
-  (when window-system
-    ;; (global-semantic-folding-mode 1)
-    (global-semantic-tag-folding-mode 1))
-
-  ;; (global-semantic-idle-tag-highlight-mode -1)
-
-  ;; enable support for gnu global
+  ;; global gtags
   (when (executable-find "global")
-    (require 'semanticdb-global)
     (semanticdb-enable-gnu-global-databases 'c-mode)
     (semanticdb-enable-gnu-global-databases 'c++-mode))
 
-  ;; enable support for exuberent ctags
-  (when (executable-find "ctags-exuberant")
-    (require 'semanticdb-ectag)
-    (semantic-load-enable-primary-exuberent-ctags-support))
 
-  ;; Semantic search scope
-  ;; (setq semanticdb-project-roots (list (expand-file-name "/")))
-  (defconst cedet-user-include-dirs
-    (list ".." "../include" "../inc" "../common" "../public"
-          "../.." "../../include" "../../inc" "../../common" "../../public"))
-  (defconst cedet-win32-include-dirs
-    (list "C:/Cygwin/include"
-          "C:/Cygwin/include/c++/3.4.5"
-          "C:/Cygwin/include/c++/3.4.5/mingw32"
-          "C:/Cygwin/include/c++/3.4.5/backward"
-          "C:/Cygwin/lib/gcc/mingw32/3.4.5/include"
-          "C:/Program Files/Microsoft Visual Studio/VC98/MFC/Include"))
+  (deh-section "cedet-hippie"
+    ;; hippie-try-expand setting
+    (autoload 'senator-try-expand-semantic "senator")
+    (dolist (hook (list
+                   c-mode-common-hook
+                   emacs-lisp-mode-hook))
+      (add-to-list 'hippie-expand-try-functions-list
+                   'senator-try-expand-semantic
+                   'semantic-ia-complete-symbol))
+    )
 
-  (require 'semantic-c nil 'noerror)
-  (let ((include-dirs cedet-user-include-dirs))
-    (when (eq system-type 'windows-nt)
-      (setq include-dirs (append include-dirs cedet-win32-include-dirs)))
-    (mapc (lambda (dir)
-            (dolist (mode '(c-mode c++-mode))
-              (semantic-add-system-include dir mode)))
-          include-dirs))
+  (deh-section "semantic-imenu"
+    ;; imenu, expand all functions
+    (setq semantic-imenu-buckets-to-submenu nil
+          semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing
+          semantic-which-function-use-color t)
 
-  (deh-section "ede"
+    (defvar ywb-semantic-imenu-function (symbol-function 'semantic-create-imenu-index))
+    (defun ywb-toggle-semantic-imenu ()
+      (interactive)
+      (if (eq (symbol-function 'semantic-create-imenu-index)
+              (symbol-function 'imenu-default-create-index-function))
+          (progn
+            (fset 'semantic-create-imenu-index ywb-semantic-imenu-function)
+            (message "Using semantic-create-imenu-index"))
+        (fset 'semantic-create-imenu-index
+              (symbol-function 'imenu-default-create-index-function))
+        (message "Using imemu default"))))
+
+  (deh-require 'ede
+    ;; (setq semantic-c-obey-conditional-section-parsing-flag nil) ; ignore #if
+    (setq ede-locate-setup-options
+          '(ede-locate-global
+            ede-locate-base))
+
     ;; Ede project support
     ;; M-x `ede-new' to generate Project.ede to project root directory.
     (global-ede-mode t)
@@ -139,52 +129,141 @@
         (concat "cd " root-dir ";" compile-cmd)))
     ) ;- ede end
 
-  ;; Enable visual bookmarks, similar to native bookmarks and bm.el
-  (enable-visual-studio-bookmarks)
+  (deh-section "viss-bookmark"
+    (enable-visual-studio-bookmarks)
+    (deh-define-key global-map
+      ((kbd "<f2>") . 'viss-bookmark-toggle)
+      ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
+      ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
+      ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer))
+    )
 
-  ;; semantic cache directory
-  (setq semanticdb-default-save-directory my-temp-dir)
+  ;; enable support for gnu global
+  (deh-require-if 'semanticdb-global
+    (executable-find "global")
+    (semanticdb-enable-gnu-global-databases 'c-mode)
+    (semanticdb-enable-gnu-global-databases 'c++-mode))
 
-  ;; Time in seconds of idle before scheduling events
-  (setq semantic-idle-scheduler-idle-time 5)
-  ;; Time in seconds of idle before scheduling big work.
-  (setq semantic-idle-scheduler-work-idle-time 10)
-  ;; Maximum size in bytes of buffers automatically reparsed
-  (setq semantic-idle-scheduler-max-buffer-size 100000)
+  (deh-require 'semantic-c
 
-  ;; hippie-try-expand setting
-  (autoload 'senator-try-expand-semantic "senator")
-  (dolist (hook (list
-                 c-mode-common-hook
-                 emacs-lisp-mode-hook))
-    (add-to-list 'hippie-expand-try-functions-list
-                 'senator-try-expand-semantic
-                 'semantic-ia-complete-symbol))
+    ;;{{{ Semantic search scope of header files
+    ;; (setq semanticdb-project-roots (list (expand-file-name "/")))
+    (defconst cedet-user-include-dirs
+      (list ".." "../include" "../inc" "../common" "../public" "../hdr"
+            "../.." "../../include" "../../inc" "../../common" "../../public"
+            "../../hdr"))
+    (defconst cedet-win32-include-dirs
+      (list "C:/Cygwin/include"
+            "C:/Cygwin/include/c++/3.4.5"
+            "C:/Cygwin/include/c++/3.4.5/mingw32"
+            "C:/Cygwin/include/c++/3.4.5/backward"
+            "C:/Cygwin/lib/gcc/mingw32/3.4.5/include"
+            "C:/Program Files/Microsoft Visual Studio/VC98/MFC/Include"))
+    (let ((include-dirs cedet-user-include-dirs))
+      (when (eq system-type 'windows-nt)
+        (setq include-dirs (append include-dirs cedet-win32-include-dirs)))
+      (mapc (lambda (dir)
+              (dolist (mode '(c-mode c++-mode))
+                (semantic-add-system-include dir mode)))
+            include-dirs))
+    ;;}}}
 
-  (global-srecode-minor-mode 1)
+    (when (executable-find "gcc")
+      (semantic-gcc-setup))
 
-  (if (<= 23 emacs-major-version)
-      (cogre-uml-enable-unicode))
+    (deh-define-key c-mode-base-map
+      ((kbd "C-c , G") . 'semantic-symref)
+      ((kbd "<C-return>") . 'semantic-ia-complete-symbol-menu)
+      ((kbd "C-c , c") . 'semantic-ia-complete-symbol)
+      ((kbd "C-c , =") . 'semantic-decoration-include-visit)
+      ((kbd "C-c , j") . 'semantic-ia-fast-jump)
+      ((kbd "C-c , J") . 'semantic-complete-jump)
+      ((kbd "C-c , q") . 'semantic-ia-show-doc)
+      ((kbd "C-c , s") . 'semantic-ia-show-summary)
+      ((kbd "C-c , p") . 'semantic-analyze-proto-impl-toggle)
+      ((kbd "C-c , b") . 'semantic-ia-fast-jump-or-back)
+      ((kbd "C-c , B") . 'semantic-ia-fast-jump-back))
 
-  ;; imenu, expand all functions
-  (setq semantic-imenu-buckets-to-submenu nil
-        semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing
-        semantic-which-function-use-color t)
+    (defun semantic-ia-fast-jump-back ()
+      (interactive)
+      (if (ring-empty-p (oref semantic-mru-bookmark-ring ring))
+          (error "Semantic Bookmark ring is currently empty"))
+      (let* ((ring (oref semantic-mru-bookmark-ring ring))
+             (alist (semantic-mrub-ring-to-assoc-list ring))
+             (first (cdr (car alist))))
+        ;; (if (semantic-equivalent-tag-p (oref first tag) (semantic-current-tag))
+        ;;     (setq first (cdr (car (cdr alist)))))
+        (semantic-mrub-visit first)
+        (ring-remove ring 0)))
+    (defun semantic-ia-fast-jump-or-back (&optional back)
+      (interactive "P")
+      (if back
+          (semantic-ia-fast-jump-back)
+        (semantic-ia-fast-jump (point)))))
 
-  ;; enable ctags for some languages:
-  ;;  Unix Shell, Perl, Pascal, Tcl, Fortran, Asm
-  ;; (when (semantic-ectag-version)
-  ;;   (semantic-load-enable-primary-exuberent-ctags-support))
+  (deh-require 'pulse
+    (pulse-toggle-integration-advice (if window-system 1 -1))
+    (defadvice my-switch-recent-buffer (after pulse-advice activate)
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice ibuffer-visit-buffer (after pulse-advice activate)
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice joc-dired-single-buffer (after pulse-advice activate)
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice exchange-point-and-mark-nomark (after pulse-advice activate)
+      "Cause the line that is `goto'd to pulse when the cursor gets there."
+      (when (and pulse-command-advice-flag (interactive-p)
+                 (> (abs (- (point) (mark))) 400))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice cua-exchange-point-and-mark (after pulse-advice activate)
+      "Cause the line that is `goto'd to pulse when the cursor gets there."
+      (when (and pulse-command-advice-flag (interactive-p)
+                 (> (abs (- (point) (mark))) 400))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice switch-to-buffer (after pulse-advice activate)
+      "After switch-to-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice previous-buffer (after pulse-advice activate)
+      "After previous-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice next-buffer (after pulse-advice activate)
+      "After next-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice ido-switch-buffer (after pulse-advice activate)
+      "After ido-switch-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice beginning-of-buffer (after pulse-advice activate)
+      "After beginning-of-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice viss-bookmark-next-buffer (after pulse-advice activate)
+      "After viss-bookmark-next-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice viss-bookmark-prev-buffer (after pulse-advice activate)
+      "After viss-bookmark-prev-buffer, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point)))))
 
-  (defvar ywb-semantic-imenu-function (symbol-function 'semantic-create-imenu-index))
-  (defun ywb-toggle-semantic-imenu ()
-    (interactive)
-    (if (eq (symbol-function 'semantic-create-imenu-index)
-            (symbol-function 'imenu-default-create-index-function))
-        (progn
-          (fset 'semantic-create-imenu-index ywb-semantic-imenu-function)
-          (message "Using semantic-create-imenu-index"))
-      (fset 'semantic-create-imenu-index
-            (symbol-function 'imenu-default-create-index-function))
-      (message "Using imemu default")))
-  )
+  (deh-require 'semantic-tag-folding
+    (global-semantic-tag-folding-mode 1)
+    (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
+    (deh-define-key semantic-tag-folding-mode-map
+      ((kbd "C-c , -") . 'semantic-tag-folding-fold-block)
+      ((kbd "C-c , +") . 'semantic-tag-folding-show-block)
+      ((kbd "C-_")     . 'semantic-tag-folding-fold-all)
+      ((kbd "C-+")     . 'semantic-tag-folding-show-all)))
+
+  (deh-require 'eassist
+    (deh-define-key c-mode-base-map
+      ((kbd "C-c a")   . 'eassist-switch-h-cpp)
+      ((kbd "C-c , l") . 'eassist-list-methods))
+    ;; (define-key python-mode-map (kbd "C-c . l") 'eassist-list-methods)
+    (define-key lisp-mode-shared-map (kbd "C-c , l") 'eassist-list-methods))
+    )

@@ -141,9 +141,9 @@
      ;; highlight too long lines
      ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
      ;; highlight parentheses
-     ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
+     ;; ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
      ;; hightlight numbers
-     ("\\<[0-9]*\\.?[0-9]+\\>" . font-lock-constant-face))))
+     ("\\<\-?[0-9]*\\.?[0-9]+\\>" . font-lock-constant-face))))
 ;;}}}
 
 ;; Turn on the features disabled default
@@ -156,53 +156,6 @@
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'LaTeX-hide-environment 'disabled nil)
 
-(deh-section "defadvice"
-  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-    "Prevent annoying \"Active processes exist\" query when you
-quit Emacs."
-    (flet ((process-list ())) ad-do-it))
-
-  (defadvice kill-new (before kill-new-push-xselection-on-kill-ring activate)
-    "Before putting new kill onto the kill-ring, add the
-clipboard/external selection to the kill ring"
-    (let ((have-paste (and interprogram-paste-function
-                           (funcall interprogram-paste-function))))
-      (when have-paste (push have-paste kill-ring))))
-
-  ;; Auto indent pasted content
-  (dolist (command '(yank yank-pop))
-    (eval
-     `(defadvice ,command (after indent-region activate)
-        (and (not current-prefix-arg)
-             (member major-mode
-                     '(emacs-lisp-mode
-                       python-mode
-                       c-mode c++-mode
-                       latex-mode
-                       js-mode
-                       php-mode
-                       plain-tex-mode))
-             (let ((mark-even-if-inactive transient-mark-mode))
-               (indent-region (region-beginning) (region-end) nil))))))
-
-  (defadvice occur (around occur-mark-region)
-    (save-restriction
-      (if (and mark-active transient-mark-mode)
-          (narrow-to-region (region-beginning) (region-end)))
-      ad-do-it))
-  (ad-activate 'occur)
-
-  ;; (defadvice browse-url-generic (before ywb-browse-url-generic)
-  ;;   (setq url (replace-regexp-in-string "\\cC" 'url-hexify-string url)))
-  ;; (ad-activate 'browse-url-generic)
-
-  (defadvice browse-url-file-url (after ywb-url-han)
-    (let ((file ad-return-value))
-      (while (string-match "[\x7f-\xff]" file)
-        (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
-          (setq file (replace-match enc t t file))))
-      (setq ad-return-value file)))
-  (ad-activate 'browse-url-file-url))
 
 (custom-set-variables
  ;; '(confirm-kill-emacs (quote y-or-n-p))
