@@ -6,8 +6,10 @@
 
   (setq semantic-load-turn-useful-things-on t)
 
+  ;; (semantic-load-enable-excessive-code-helpers)
   (semantic-load-enable-code-helpers)
   ;; (semantic-load-enable-minimum-features)
+  (semantic-load-enable-semantic-debugging-helpers)
 
   (require 'semantic-decorate-include)
 
@@ -29,35 +31,30 @@
   ;; eassit
   (require 'eassist)
 
-  (dolist (hook '(c-mode-common-hook
-                  python-mode-hook
-                  emacs-lisp-mode-hook))
-    (add-hook
-     hook
-     '(lambda ()
-        (local-set-key (kbd "C-c , l") 'eassist-list-methods)
-        (local-set-key (kbd "C-c , G") 'semantic-symref)
-        (local-set-key (kbd "<C-return>") 'semantic-ia-complete-symbol-menu)
-        (local-set-key (kbd "C-c , c") 'semantic-ia-complete-symbol)
-        (local-set-key (kbd "C-c , =") 'semantic-decoration-include-visit)
-        (local-set-key (kbd "C-c , j") 'semantic-ia-fast-jump)
-        (local-set-key (kbd "C-c , q") 'semantic-ia-show-doc)
-        (local-set-key (kbd "C-c , s") 'semantic-ia-show-summary)
-        (local-set-key (kbd "C-c , p") 'semantic-analyze-proto-impl-toggle)
-        (local-set-key (kbd "C-c , h") 'senator-fold-tag-toggle)
-        ))
-    )
+  (deh-local-set-keys (c-mode-common-hook
+                       python-mode-hook
+                       emacs-lisp-mode-hook)
+    ((kbd "C-c , l") . 'eassist-list-methods)
+    ((kbd "C-c , G") . 'semantic-symref)
+    ((kbd "<C-return>") . 'semantic-ia-complete-symbol-menu)
+    ((kbd "C-c , c") . 'semantic-ia-complete-symbol)
+    ((kbd "C-c , =") . 'semantic-decoration-include-visit)
+    ((kbd "C-c , j") . 'semantic-ia-fast-jump)
+    ((kbd "C-c , q") . 'semantic-ia-show-doc)
+    ((kbd "C-c , s") . 'semantic-ia-show-summary)
+    ((kbd "C-c , p") . 'semantic-analyze-proto-impl-toggle)
+    ((kbd "C-c , h") . 'senator-fold-tag-toggle))
 
   ;; customization
   (custom-set-variables
    '(semantic-self-insert-show-completion-function
      (lambda nil (semantic-ia-complete-symbol-menu (point)))))
 
-  ;; (when window-system
-  ;;   (global-semantic-folding-mode 1)
-  ;;   (global-semantic-tag-folding-mode 1))
+  (when window-system
+    ;; (global-semantic-folding-mode 1)
+    (global-semantic-tag-folding-mode 1))
 
-  ;; (global-semantic-idle-tag-highlight-mode 1)
+  ;; (global-semantic-idle-tag-highlight-mode -1)
 
   ;; enable support for gnu global
   (when (executable-find "global")

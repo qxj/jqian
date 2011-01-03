@@ -658,6 +658,8 @@ Use CREATE-TEMP-F for creating temp copy."
   (autoload 'sourcepair-load "sourcepair" nil t)
   (autoload 'compile-dwim-compile "compile-dwim" nil t)
   (autoload 'compile-dwim-run "compile-dwim" nil t)
+  ;; emacs lock
+  (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
   )
 
 (deh-section "auto-mode"

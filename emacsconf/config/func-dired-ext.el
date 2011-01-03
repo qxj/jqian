@@ -28,6 +28,7 @@
 ;; quickview
 (defvar ywb-dired-quickview-buffer nil)
 (defun ywb-dired-quickview ()
+  "Quick view file in another buffer, acts as `C-q' in TC."
   (interactive)
   (if (buffer-live-p ywb-dired-quickview-buffer)
       (kill-buffer ywb-dired-quickview-buffer))
@@ -104,7 +105,7 @@
       (with-current-buffer (get-buffer-create "*Shell Command Output*")
         (setq default-directory "~/")
         (erase-buffer)
-        (setq proc        
+        (setq proc
               (start-process-shell-command "dirsize" (current-buffer)
                                            ;; "/home/ywb/bin/dirsize"
                                            "du" "-h"
@@ -242,7 +243,7 @@
                                  (match-string 1) ""))
                           (error "The %s is not a description file! Please rename it."
                                  ywb-description-file)))
-                    ;; if file not exits create it 
+                    ;; if file not exits create it
                     (with-current-buffer (find-file-noselect ywb-description-file)
                       (insert
                        "<html>
@@ -292,7 +293,7 @@
    nil))
 ;; convmv
 (defun ywb-dired-convmv (from to &optional arg)
-  "Convert file name coding system on all marked (or next arg) files. 
+  "Convert file name coding system on all marked (or next arg) files.
 
 For example, a file with name encoded by gbk, use
 M-x ywb-dired-convmv RET gbk RET RET, then the file will display with

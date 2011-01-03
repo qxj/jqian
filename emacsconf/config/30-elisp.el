@@ -19,22 +19,22 @@
      ;; Keybind for dired
      ;; (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
      (deh-define-key dired-mode-map
-       ( [return] . 'joc-dired-single-buffer)
-       ( [mouse-1] . 'joc-dired-single-buffer-mouse)
-       ( "^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-       ( "\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-       ( "z"    . 'ywb-dired-compress-dir)
-       ( "b"    . 'ywb-list-directory-recursive)
-       ( "E"    . 'ywb-dired-w3m-visit)
-       ( "j"    . 'ywb-dired-jump-to-file)
-       ( "J"    . 'woman-dired-find-file)
-       ( " "    . 'ywb-dired-count-dir-size)
-       ( "r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
-       ( "W"    . 'ywb-dired-copy-fullname-as-kill)
-       ( "a"    . 'ywb-add-description)
-       ( "\C-q" . 'ywb-dired-quickview)
-       ( "/r"   . 'ywb-dired-filter-regexp)
-       ( "/."   . 'ywb-dired-filter-extension)
+       ([return] . 'joc-dired-single-buffer)
+       ([mouse-1] . 'joc-dired-single-buffer-mouse)
+       ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ("z"    . 'ywb-dired-compress-dir)
+       ("b"    . 'ywb-list-directory-recursive)
+       ("E"    . 'ywb-dired-w3m-visit)
+       ("j"    . 'ywb-dired-jump-to-file)
+       ("J"    . 'woman-dired-find-file)
+       (" "    . 'ywb-dired-count-dir-size)
+       ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
+       ("W"    . 'ywb-dired-copy-fullname-as-kill)
+       ("a"    . 'ywb-add-description)
+       ("\C-q" . 'ywb-dired-quickview)
+       ("/r"   . 'ywb-dired-filter-regexp)
+       ("/."   . 'ywb-dired-filter-extension)
        )
      ;; Sort something, prefix key `s'
      (make-local-variable  'dired-sort-map)
@@ -654,8 +654,8 @@
           try-expand-line
           try-expand-dabbrev-all-buffers
           try-expand-dabbrev-from-kill
-          try-expand-list-all-buffers
-          try-expand-line-all-buffers
+          ;; try-expand-list-all-buffers
+          ;; try-expand-line-all-buffers
           try-complete-file-name-partially
           try-complete-file-name
           try-complete-lisp-symbol
@@ -771,13 +771,19 @@
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
-  (setq ; ac-candidate-limit ac-menu-height ; improve drop menu performance
+  (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
         ac-auto-start t
         ac-ignore-case nil
         ;; ac-show-menu-immediately-on-auto-complete nil
         ;; ac-expand-on-auto-complete nil
         ;; ac-trigger-key nil
+        ac-quick-help-delay .5
+        ac-disable-faces nil
         ac-dwim t)
+
+  ;; disable auto-complete in comments
+  ;; (setq ac-disable-faces
+  ;;       '(font-lock-string-face font-lock-doc-face))
 
   ;; for terminal, works well with `global-hl-line-mode'
   (if (null window-system)
@@ -787,11 +793,6 @@
                (expand-file-name "ac-dict" my-startup-dir))
   (add-to-list 'ac-user-dictionary-files
                (expand-file-name "ac.dict" my-startup-dir))
-
-  ;; disable auto-complete in comments
-  ;; (setq ac-disable-faces
-  ;;       '(font-lock-string-face font-lock-doc-face))
-  (setq ac-disable-faces nil)
 
   (add-to-list 'ac-modes 'org-mode)
 
@@ -826,8 +827,8 @@ indent line."
                        c-electric-backspace-kill))
       (add-to-list 'ac-trigger-commands-on-completing command))
     (setq ac-sources (append '(ac-source-yasnippet
-                               ac-source-gtags
-                               ac-source-semantic
+                               ;; ac-source-gtags
+                               ac-source-semantic-raw
                                ac-source-imenu) ac-sources))
     ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
     (when (executable-find "clang")
@@ -844,14 +845,39 @@ indent line."
   (defun ac-org-mode-setup ()
     (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
   (add-hook 'org-mode-hook 'ac-org-mode-setup)
+
+  ;; for autopair
+  (defun ac-settings-4-autopair ()
+    "`auto-complete' settings for `autopair'."
+    (defun ac-trigger-command-p (command)
+      "Return non-nil if `this-command' is a trigger command."
+      (or
+       (and
+        (symbolp command)
+        (or (memq command ac-trigger-commands)
+            (string-match "self-insert-command" (symbol-name command))
+            (string-match "electric" (symbol-name command))
+            (let* ((autopair-emulation-alist nil)
+                   (key (this-single-command-keys))
+                   (beyond-autopair (or (key-binding key)
+                                        (key-binding (lookup-key local-function-key-map key)))))
+              (or
+               (memq beyond-autopair ac-trigger-commands)
+               (and ac-completing
+                    (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
+  (eval-after-load "autopair"
+    '(ac-settings-4-autopair))
   )
+
 ;;}}}
 
 ;;{{{ Yet Another Snippet -  pluskid@newsmth
 (deh-require 'yasnippet
   (setq yas/root-directory my-snippet-dir)
   (yas/load-directory yas/root-directory)
-  (yas/initialize)     ;; enable yas/minor-mode globally
+  ;; (yas/initialize)     ;; enable yas/minor-mode globally
+  (yas/global-mode 1)
+
   (require 'dropdown-list)
   (setq yas/prompt-functions '(yas/dropdown-prompt
                                yas/ido-prompt
@@ -863,12 +889,23 @@ indent line."
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
-        (setq yas/trigger-key nil) ; deperecated tweak
+        ;; (setq yas/trigger-key nil) ; deperecated tweak
+        (let ((key yas/trigger-key))
+          (setq yas/trigger-key nil)
+          (yas/trigger-key-reload key))
+
         (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
 
   ;; List all snippets for current mode
   (define-key yas/minor-mode-map (kbd "C-c y") 'yas/insert-snippet)
+
+;;;###autoload
+  (defun yasnippet-reload-after-save ()
+    (let* ((bfn (expand-file-name (buffer-file-name)))
+           (root (expand-file-name yas/root-directory)))
+      (when (string-match (concat "^" root) bfn)
+        (yas/load-snippet-buffer))))
 )
 ;;}}}
 
@@ -1039,6 +1076,17 @@ defadvice to prevent an infinite loop when there are no matches."
   ;; for normal term
   ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
   )
+
+(deh-require 'midnight
+  (setq midnight-mode t
+        clean-buffer-list-delay-general 2 ; delete after two days
+        ;; clean-buffer-list-kill-never-buffer-names '("*scratch*"
+        ;;                                             "*Messages*"
+        ;;                                             "*server*")
+        clean-buffer-list-kill-never-regexps '("^ \\*Minibuf-.*\\*$"
+                                               "^ \\*MULTI-TERM-.*")
+        clean-buffer-list-kill-regexps '("^ \\*Customize.*")
+        ))
 
 ;; Enhanced ansi-term
 (deh-require 'multi-term
@@ -1307,21 +1355,25 @@ mouse-3: Toggle minor modes"
   (setq highlight-symbol-idle-delay 0.5
         highlight-symbol-mode nil)
   ;; (highlight-symbol-mode 1)
-  (deh-local-set-keys
-   (emacs-lisp-mode-hook
-    lisp-interaction-mode-hook
-    java-mode-hook
-    c-mode-common-hook
-    text-mode-hook
-    html-mode-hook)
-   ((kbd "C-c l l") . 'highlight-symbol-at-point)
-   ((kbd "C-c l u") . 'highlight-symbol-remove-all)
-   ((kbd "C-c l n") . 'highlight-symbol-next)
-   ((kbd "C-c l p") . 'highlight-symbol-prev)
-   ((kbd "C-c l q") . 'highlight-symbol-query-replace)
-   ((kbd "C-c l N") . 'highlight-symbol-next-in-defun)
-   ((kbd "C-c l P") . 'highlight-symbol-prev-in-defun)
-   ))
+  (deh-add-hooks (emacs-lisp-mode-hook
+                  java-mode-hook
+                  c-mode-common-hook)
+    (if window-system
+        (highlight-symbol-mode 1)))
+  (deh-local-set-keys (emacs-lisp-mode-hook
+                       java-mode-hook
+                       c-mode-common-hook
+                       text-mode-hook
+                       html-mode-hook)
+    ((kbd "C-c l l") . 'highlight-symbol-at-point)
+    ((kbd "C-c l u") . 'highlight-symbol-remove-all)
+    ((kbd "C-c l n") . 'highlight-symbol-next)
+    ((kbd "C-c l p") . 'highlight-symbol-prev)
+    ((kbd "C-c l q") . 'highlight-symbol-query-replace)
+    ((kbd "C-c l N") . 'highlight-symbol-next-in-defun)
+    ((kbd "C-c l P") . 'highlight-symbol-prev-in-defun)
+    )
+  )
 
 (deh-section "sh-mode"
   (deh-add-hook sh-mode-hook
