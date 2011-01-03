@@ -46,7 +46,7 @@
 (deh-section "PATH"
   ;; add more directory to environment variable PATH
   (let ((path (split-string (getenv "PATH") path-separator)))
-    (mapcar (lambda (p)
+    (mapc (lambda (p)
               (setq p (convert-standard-filename
                        (expand-file-name p)))
               (add-to-list 'exec-path p)

@@ -9,9 +9,8 @@
 
 
 
-;;{{{ hack comment-or-uncomment-region
 (defun my-comment-or-uncomment-region (&optional line)
-  "This function is to comment or uncomment a line or a region"
+  "Comment or uncomment a line or a region."
   (interactive "P")
   (unless (or line (and mark-active (not (equal (mark) (point)))))
     (setq line 1))
@@ -25,64 +24,33 @@
            (end-of-line)
            (point))))
     (call-interactively 'comment-or-uncomment-region)))
-;;}}}
-
-;;{{{ hack kill-line
-(defadvice kill-line (before check-position activate)
-  "killing the newline between indented lines and remove extra spaces."
-  (if (member major-mode
-              '(emacs-lisp-mode scheme-mode lisp-mode
-                                c-mode c++-mode objc-mode python-mode
-                                latex-mode plain-tex-mode))
-      (if (and (eolp) (not (bolp)))
-          (progn (forward-char 1)
-                 (just-one-space 0)
-                 (backward-char 1)))))
-;;}}}
-
-;;{{{ similar to dd & yy in VIM
-(defadvice kill-ring-save (before slickcopy activate compile)
-  "When called interactively with no active region, copy the current single line to `kill-ring' instead."
-  (interactive
-   (if mark-active (list (region-beginning) (region-end))
-     (list (line-beginning-position)
-                   (line-beginning-position 2)))))
-
-(defadvice kill-region (before slickcut activate compile)
-  "When called interactively with no active region, kill the current single line instead."
-  (interactive
-   (if mark-active (list (region-beginning) (region-end))
-     (list (line-beginning-position)
-                   (line-beginning-position 2)))))
-;;}}}
 
 ;;{{{ polish beginning-of-line & end-of-line (`C-a'/`C-e')
 (defun my-end-of-line ()
+  "Hack `end-of-line'."
   (interactive)
   (if (eq (point) (line-end-position))
       (skip-chars-backward " \t")
     (move-end-of-line 1)))
 
 (defun my-beginning-of-line ()
+  "Hack `beginning-of-line'."
   (interactive)
   (if (eq (point) (line-beginning-position))
       (skip-chars-forward " \t")
     (beginning-of-line)))
 ;;}}}
 
-;;{{{ rebind `C-o', auto open next line and indent as in VIM
 (defun vi-open-next-line (arg)
- "Move to the next line (like vi) and then opens a line."
+ "Move to the next line (like vi) and then open a new line."
  (interactive "p")
  (end-of-line)
  (open-line arg)
- (next-line 1)
+ (forward-line 1)
  (indent-according-to-mode))
-;;}}}
 
-;;{{{ redo command, bind to `C-''
 (defmacro def-redo-command (fun-name redo undo)
-  "Make redo command."
+  "Make redo command, bind to C-'."
   `(defun ,fun-name ()
      (interactive)
      (if (equal last-command ,redo)
@@ -91,9 +59,7 @@
      (call-interactively ,undo)
      (setq this-command ,redo)))
 (def-redo-command redo 'redo 'undo)
-;;}}}
 
-;;{{{ untabify
 (defun my-untabify ()
   "My untabify function as discussed and described at
  http://www.jwz.org/doc/tabs-vs-spaces.html
@@ -114,41 +80,40 @@
     (when (search-forward "\t" nil t)
       (untabify (1- (point)) (point-max)))
     nil))
-;;}}}
 
 ;;{{{ move and duplicate lines
 (defun my-move-line-up (p)
-  "move current line up"
+  "Move current line up."
   (interactive "p")
   (let ((c (current-column)))
     (beginning-of-line)
     (kill-line 1)
-    (previous-line p)
+    (forward-line (- p))
     (beginning-of-line)
     (yank)
-    (previous-line 1)
+    (forward-line -1)
     (move-to-column c)))
 
 (defun my-move-line-down (p)
-  "move current line down"
+  "Move current line down."
   (interactive "p")
   (let ((c (current-column)))
     (beginning-of-line)
     (kill-line 1)
-    (next-line p)
+    (forward-line p)
     (beginning-of-line)
     (yank)
-    (previous-line 1)
+    (forward-line -1)
     (move-to-column c)))
 
 (defun my-dup-line-down ()
-  "duplicate this line at next line"
+  "Duplicate this line at next line."
   (interactive)
   (let ((c (current-column)))
     (kill-new (buffer-substring (line-beginning-position) (line-end-position)))
     (end-of-line)
     (open-line 1)
-    (next-line 1)
+    (forward-line 1)
     (beginning-of-line)
     (yank)
     (move-to-column c)))
@@ -161,13 +126,14 @@
                      (lambda (s) (kill-new s nil)))))
     (let ((oldpoint (point))
           (next-line-add-newlines))
-      (next-line 1)
+      (forward-line 1)
       (funcall kill-func (buffer-substring oldpoint (point))))))
 ;;}}}
 
 ;;{{{ clone-buffer, bind to `C-x c'
 (defun ywb-clone-buffer (non-indirect)
-  "If with prefix argument, clone buffer, other wise, clone indirect buffer"
+  "If with prefix argument, clone buffer, other wise, clone
+indirect buffer"
   (interactive "P")
   (if non-indirect
       (call-interactively 'clone-buffer)
@@ -203,25 +169,26 @@
           (t (goto-char (if (> fw 0) (point-max) (point-min)))))))
 
 (defun ywb-camelcase-forward-word (arg)
+  "Camelcase forward word, rebind to `M-f'."
   (interactive "p")
   (let ((fw (signum arg)))
     (dotimes (i (abs arg))
       (ywb-camelcase-move-word fw))))
 
 (defun ywb-camelcase-backward-word (arg)
+  "Camelcase backward word, rebind to `M-b'."
   (interactive "p")
   (ywb-camelcase-forward-word (- arg)))
 ;;}}}
 
-;;{{{ sort and uniq region
 (defun ywb-uniq-region (beg end)
+  "Apply `sort | uniq' to selected region."
   (interactive "r")
   (shell-command-on-region beg end "sort | uniq" nil t))
-;;}}}
 
-;;{{{ create/switch-scratch, bind to `C-c c c'
 (defvar ywb-scratch-buffer "*scratch*")
 (defun ywb-create/switch-scratch (arg)
+  "create/switch-scratch, bind to `C-c c c'"
   (interactive "P")
   (when arg
     (setq ywb-scratch-buffer (read-buffer "Set scratch to: " (buffer-name))))
@@ -235,19 +202,17 @@
           (switch-to-buffer ywb-scratch-buffer)
           (lisp-interaction-mode))
       (switch-to-buffer ywb-scratch-buffer))))
-;;}}}
 
-;;{{{ delete char or region, skip kill ring, rebind `C-d'
 (defun delete-char-or-region ()
+  "Delete char or region, skip kill ring, rebind `C-d'."
   (interactive)
   (if (and mark-active transient-mark-mode)
       (delete-region (region-beginning) (region-end))
     (call-interactively 'delete-char)))
-;;}}}
 
-;;{{{ switch major mode
 (defvar switch-major-mode-history nil)
 (defun switch-major-mode (mode)
+  "Switch major mode"
   (interactive
    (list
     (intern
@@ -259,9 +224,7 @@
   (setq switch-major-mode-history
         (cons (symbol-name major-mode) switch-major-mode-history))
   (funcall mode))
-;;;}}}
 
-;;{{{ display current buffer path
 (defun my-display-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
 you call this function by prefix `C-u', the path will be store
@@ -284,48 +247,37 @@ into `kill-ring'."
           (t                                ; store absolute file path
            (kill-new f)
            (message "Copy path: %s" f))))))
-;;}}}
 
-;;{{{ revert buffer
 (defun my-revert-buffer ()
   "Revert buffer without prompt."
   (interactive)
   (revert-buffer nil t nil))
-;;}}}
 
-;;{{{ toggle sr speedbar window
 (defun my-toggle-sr-speedbar ()
-  "Toggle sr speedbar."
+  "Toggle sr speedbar window."
   (interactive)
   (sr-speedbar-toggle) (sr-speedbar-select-window))
-;;}}}
 
-;;{{{ switch other buffer
 (defun my-switch-recent-buffer ()
   "Swith to the recent visited buffer."
   (interactive)
   (switch-to-buffer (other-buffer)))
-;;}}}
 
-;;{{{ Copy current buffer's full file name
 (defun my-copy-full-file-name ()
   "Copy full file name of current-buffer."
   (interactive)
   (let ((file (expand-file-name buffer-file-name)))
     (kill-new file)
     (message "File `%s' copied." file)))
-;;}}}
 
-;;{{{ disable indent when paste
 (defun ywb-set-paste ()
   "Avoid content indent when paste from clipboard."
   (interactive)
   (fundamental-mode)
   (setq indent-line-function 'ignore))
-;;}}}
 
-;;{{{ auto generate autoloads
 (defun ywb-generate-loaddefs ()
+  "Auto generate autoloads into '100-loaddefs.el'."
   (interactive)
   (require 'autoload)
   (with-temp-buffer
@@ -340,5 +292,108 @@ into `kill-ring'."
         (unless (file-directory-p file)
           (generate-file-autoloads file)))
       (write-region (point-min) (point-max)
-                    "~/.emacs.d/config/100-loaddefs.el"))))
+                    (expand-file-name "100-loaddefs.el" my-config-dir)))))
+
+(defun find-subdirs-containing (dir pattern)
+  "Return a list of all deep subdirectories of DIR that contain
+files that match PATTERN."
+  (let* ((ret nil)
+         (files (directory-files dir))
+         (max-lisp-eval-depth 3000))
+    (while files
+      (let* ((file (car files))
+             (path (expand-file-name file dir)))
+        (if (and (file-directory-p path)
+                 (not (string-match "^\\.+" file)))
+            (setq ret (append ret (find-subdirs-containing path pattern)))
+          (if (string-match pattern file)
+              (add-to-list 'ret dir))))
+      (setq files (cdr files)))
+    ret))
+
+(defun my-byte-recompile-startup-dir ()
+  "Recompile all the .el files under my-startup-dir, if they're
+not up to date. This can be run from the command line with: $
+emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
+  (interactive)
+  (dolist (dir (find-subdirs-containing my-startup-dir "\\.el$"))
+    (byte-recompile-directory dir 0)))
+
+;;{{{ defadvice
+(deh-section "defadvice"
+  (defadvice kill-line (before check-position activate)
+    "killing the newline between indented lines and remove extra
+spaces."
+    (if (member major-mode
+                '(emacs-lisp-mode scheme-mode lisp-mode
+                                  c-mode c++-mode objc-mode python-mode
+                                  latex-mode plain-tex-mode))
+        (if (and (eolp) (not (bolp)))
+            (progn (forward-char 1)
+                   (just-one-space 0)
+                   (backward-char 1)))))
+
+  (defadvice kill-ring-save (before slickcopy activate compile)
+    "When called interactively with no active region, copy the
+current single line to `kill-ring' instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+
+  (defadvice kill-region (before slickcut activate compile)
+    "When called interactively with no active region, kill the
+current single line instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+
+  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+    "Prevent annoying \"Active processes exist\" query when you
+quit Emacs."
+    (flet ((process-list ())) ad-do-it))
+
+  (defadvice kill-new (before kill-new-push-xselection-on-kill-ring activate)
+    "Before putting new kill onto the kill-ring, add the
+clipboard/external selection to the kill ring"
+    (let ((have-paste (and interprogram-paste-function
+                           (funcall interprogram-paste-function))))
+      (when have-paste (push have-paste kill-ring))))
+
+  ;; Auto indent pasted content
+  (dolist (command '(yank yank-pop))
+    (eval
+     `(defadvice ,command (after indent-region activate)
+        (and (not current-prefix-arg)
+             (member major-mode
+                     '(emacs-lisp-mode
+                       python-mode
+                       c-mode c++-mode
+                       latex-mode
+                       js-mode
+                       php-mode
+                       plain-tex-mode))
+             (let ((mark-even-if-inactive transient-mark-mode))
+               (indent-region (region-beginning) (region-end) nil))))))
+
+  (defadvice occur (around occur-mark-region)
+    (save-restriction
+      (if (and mark-active transient-mark-mode)
+          (narrow-to-region (region-beginning) (region-end)))
+      ad-do-it))
+  (ad-activate 'occur)
+
+  ;; (defadvice browse-url-generic (before ywb-browse-url-generic)
+  ;;   (setq url (replace-regexp-in-string "\\cC" 'url-hexify-string url)))
+  ;; (ad-activate 'browse-url-generic)
+
+  (defadvice browse-url-file-url (after ywb-url-han)
+    (let ((file ad-return-value))
+      (while (string-match "[\x7f-\xff]" file)
+        (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
+          (setq file (replace-match enc t t file))))
+      (setq ad-return-value file)))
+  (ad-activate 'browse-url-file-url))
 ;;}}}
+

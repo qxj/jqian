@@ -772,12 +772,12 @@
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
   (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
-        ac-auto-start t
+        ac-auto-start 3
         ac-ignore-case nil
         ;; ac-show-menu-immediately-on-auto-complete nil
         ;; ac-expand-on-auto-complete nil
         ;; ac-trigger-key nil
-        ac-quick-help-delay .5
+        ac-quick-help-delay 1.5
         ac-disable-faces nil
         ac-dwim t)
 
@@ -798,18 +798,24 @@
 
   (ac-config-default)
 
-  (define-key ac-completing-map "\r" nil) ; avoid RET trouble
-  ;; keybind, `ac-menu-map' is recommended
-  (setq ac-use-menu-map t)
   ;; donot use RET for auto complete, only TAB
-  (deh-define-key ac-menu-map
+  (deh-define-key ac-completing-map
     ((kbd "<return>") . nil)
     ((kbd "RET") . nil)
-    ((kbd "TAB") . 'ac-complete))
+    ((kbd "TAB") . 'ac-complete)
+    ;; ((kbd "M-/") . 'ac-stop)
+    )
+  ;; when completion menu is displayed
+  (setq ac-use-menu-map t)
+  (deh-define-key ac-menu-map
+    ("\C-n" . 'ac-next)
+    ("\C-p" . 'ac-previous))
+
+  (ac-set-trigger-key "TAB")
 
   ;; press <TAB> to active `auto-complete'
-  (deh-local-set-key auto-complete-mode-hook
-    ((kbd "TAB") . 'auto-complete-tab-action))
+  ;; (deh-local-set-key auto-complete-mode-hook
+  ;;   ((kbd "TAB") . 'auto-complete-tab-action))
   (defun auto-complete-tab-action ()
     "If cursor at one word end, try auto complete it. Otherwise,
 indent line."
@@ -890,10 +896,6 @@ indent line."
   (if (fboundp 'auto-complete-mode)
       (progn
         ;; (setq yas/trigger-key nil) ; deperecated tweak
-        (let ((key yas/trigger-key))
-          (setq yas/trigger-key nil)
-          (yas/trigger-key-reload key))
-
         (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
 
@@ -1226,8 +1228,8 @@ defadvice to prevent an infinite loop when there are no matches."
             anything-c-source-emacs-process))
     (unless (eq window-system 'w32)
       (add-to-list 'anything-sources 'anything-c-source-surfraw t)))
-
   )
+
 (deh-section "mode-line"
   (defun get-lines-4-mode-line ()
     (let ((lines (count-lines (point-min) (point-max))))
@@ -1346,20 +1348,27 @@ mouse-3: Toggle minor modes"
         sr-speedbar-width-x 22
         sr-speedbar-max-width 30))
 
-;; highlight mode
-(deh-section "highlight"
-  ;; Highlight current line
-  ;; (global-hl-line-mode)
-  ;; (set-face-background 'hl-line "white smoke") ; list-colors-display
-  ;; Highlight symbol
-  (setq highlight-symbol-idle-delay 0.5
-        highlight-symbol-mode nil)
-  ;; (highlight-symbol-mode 1)
+(deh-require 'highlight-parentheses
+  (setq hl-paren-colors '("red" "yellow" "cyan" "magenta" "green" "red"))
   (deh-add-hooks (emacs-lisp-mode-hook
                   java-mode-hook
                   c-mode-common-hook)
-    (if window-system
-        (highlight-symbol-mode 1)))
+    (highlight-parentheses-mode 1))
+  )
+
+;; Highlight current line
+;; (global-hl-line-mode)
+;; (set-face-background 'hl-line "white smoke") ; list-colors-display
+
+(deh-require 'highlight-symbol
+  (deh-add-hooks (emacs-lisp-mode-hook
+                  java-mode-hook
+                  c-mode-common-hook)
+    (when window-system
+      (highlight-symbol-mode 1)
+      (setq highlight-symbol-idle-delay 0.5
+            highlight-symbol-mode nil)))
+
   (deh-local-set-keys (emacs-lisp-mode-hook
                        java-mode-hook
                        c-mode-common-hook
