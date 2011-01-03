@@ -145,7 +145,6 @@
     (semanticdb-enable-gnu-global-databases 'c++-mode))
 
   (deh-require 'semantic-c
-
     ;;{{{ Semantic search scope of header files
     ;; (setq semanticdb-project-roots (list (expand-file-name "/")))
     (defconst cedet-user-include-dirs
@@ -199,7 +198,17 @@
       (interactive "P")
       (if back
           (semantic-ia-fast-jump-back)
-        (semantic-ia-fast-jump (point)))))
+        (semantic-ia-fast-jump (point))))
+
+    (defadvice push-mark (around semantic-mru-bookmark activate)
+      "Push a mark at LOCATION with NOMSG and ACTIVATE passed to `push-mark'.
+If `semantic-mru-bookmark-mode' is active, also push a tag onto
+the mru bookmark stack."
+      (semantic-mrub-push semantic-mru-bookmark-ring
+                          (point)
+                          'mark)
+      ad-do-it)
+    )
 
   (deh-require 'pulse
     (pulse-toggle-integration-advice (if window-system 1 -1))
