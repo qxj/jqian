@@ -1348,6 +1348,13 @@ mouse-3: Toggle minor modes"
         sr-speedbar-width-x 22
         sr-speedbar-max-width 30))
 
+
+(deh-section "ediff"
+  ;; (global-set-key "\C-cd" 'ediff-show-registry)
+  (setq diff-switches "-ubB"
+        ediff-split-window-function 'split-window-horizontally
+        ediff-window-setup-function 'ediff-setup-windows-plain))
+
 (deh-require 'highlight-parentheses
   (setq hl-paren-colors '("red" "yellow" "cyan" "magenta" "green" "red"))
   (deh-add-hooks (emacs-lisp-mode-hook

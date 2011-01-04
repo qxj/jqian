@@ -660,6 +660,9 @@ Use CREATE-TEMP-F for creating temp copy."
   (autoload 'compile-dwim-run "compile-dwim" nil t)
   ;; emacs lock
   (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
+  ;; iimage
+  (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+  (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
   )
 
 (deh-section "auto-mode"
