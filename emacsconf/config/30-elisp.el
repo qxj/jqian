@@ -168,6 +168,32 @@
           "^\\(CVS\\|TAGS\\|GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"
           "_region_" "^[.#]"))
 
+  (add-hook 'ido-setup-hook 'ido-my-keys)
+  (defun ido-my-keys ()
+    "Add my keybindings for ido."
+    (deh-define-key ido-completion-map
+      ((kbd "C-n")   . 'ido-next-match-dir)
+      ((kbd "C-p")   . 'ido-prev-match-dir)
+      ((kbd "M-u")   . 'ido-up-directory)
+      ((kbd "C-M-h") . 'ido-goto-home)
+      ((kbd "C-u")   . 'ido-clean-text)
+      ((kbd "C-w")   . 'ido-delete-backward-word-updir)
+      ))
+
+  (defun ido-clean-text ()
+    "Clean `ido-text'."
+    (interactive)
+    (if (= (minibuffer-prompt-end) (point))
+        (ido-up-directory t)
+      (delete-region (minibuffer-prompt-end) (point-max))))
+
+  (defun ido-goto-home ()
+    (interactive)
+    "Go to home directory when use `ido-find-file'."
+    (ido-set-current-home)
+    (setq ido-exit 'refresh)
+    (exit-minibuffer))
+
   ;; visit with dired also push the diretory to `ido-work-directory-list'
   (defadvice ido-file-internal (after ido-dired-add-work-directory)
     (when (eq ido-exit 'dired)
@@ -198,37 +224,7 @@
                                        nil require-match initial-input hist def))
           ad-do-it))))
 
-  ;; Sort ido filelist by mtime instead of alphabetically
-  ;; (add-hook 'ido-make-file-list-hook 'ido-sort-mtime)
-  ;; (add-hook 'ido-make-dir-list-hook 'ido-sort-mtime)
-  ;; (add-hook 'ido-make-buffer-list-hook 'ido-sort-mtime)
-  (defun ido-sort-mtime ()
-    (setq ido-temp-list
-          (sort ido-temp-list
-                (lambda (a b)           ; avoid tramp
-                  (cond ((and (string-match "[:\\*]$" a) (not (string-match "[:\\*]$" b)))
-                         nil)
-                        ((and (string-match "[:\\*]$" b) (not (string-match "[:\\*]$" a)))
-                         t)
-                        ((and (string-match "[:\\*]$" a) (string-match "[:\\*]$" b))
-                         nil)
-                        (t
-                         (let ((ta (nth 5 (file-attributes
-                                           (concat ido-current-directory a))))
-                               (tb (nth 5 (file-attributes
-                                           (concat ido-current-directory b)))))
-                           (cond ((and (null ta) tb) nil) ; avoid temporary buffers
-                                 ((and ta (null tb)) t)
-                                 ((and (null ta) (null tb)) nil)
-                                 (t (if (= (nth 0 ta) (nth 0 tb))
-                                        (> (nth 1 ta) (nth 1 tb))
-                                      (> (nth 0 ta) (nth 0 tb)))))))))))
-    (ido-to-end  ;; move . files to end (again)
-     (delq nil (mapcar
-                (lambda (x) (if (string-equal (substring x 0 1) ".") x))
-                ido-temp-list))))
-
-  ;; push the most used directory to `ido-work-directory-list'
+ ;; push the most used directory to `ido-work-directory-list'
   (mapc (lambda (dir)
           (add-to-list 'ido-work-directory-list
                        (expand-file-name dir)))

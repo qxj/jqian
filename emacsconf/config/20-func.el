@@ -203,12 +203,50 @@ indirect buffer"
           (lisp-interaction-mode))
       (switch-to-buffer ywb-scratch-buffer))))
 
+;;{{{ Redefine basic operation, non-kill versions
 (defun delete-char-or-region ()
   "Delete char or region, skip kill ring, rebind `C-d'."
   (interactive)
   (if (and mark-active transient-mark-mode)
       (delete-region (region-beginning) (region-end))
     (call-interactively 'delete-char)))
+
+;; Source: http://xahlee.org/emacs/emacs_kill-ring.html
+(defun my-delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument, do this that many times.
+
+This command does not push erased text to `kill-ring'."
+  (interactive "p")
+  (delete-region (point) (progn (forward-word arg) (point))))
+
+(defun my-backward-delete-word (arg)
+  "Delete characters backward until encountering the beginning of a word.
+With argument, do this that many times.
+
+This command does not push erased text to `kill-ring'."
+  (interactive "p")
+  (my-delete-word (- arg)))
+
+(defun my-delete-line ()
+  "Delete text from current position to end of line char."
+  (interactive)
+  (delete-region
+   (point)
+   (save-excursion (move-end-of-line 1) (point)))
+  (delete-char 1)
+  )
+
+(defun my-delete-line-backward ()
+  "Delete text between the beginning of the line to the cursor
+position."
+  (interactive)
+  (let (x1 x2)
+    (setq x1 (point))
+    (move-beginning-of-line 1)
+    (setq x2 (point))
+    (delete-region x1 x2)))
+;;}}}
 
 (defvar switch-major-mode-history nil)
 (defun switch-major-mode (mode)
