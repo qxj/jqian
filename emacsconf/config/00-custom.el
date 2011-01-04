@@ -93,17 +93,12 @@
 
 (setq tab-always-indent 'complete)
 
-(deh-section "ediff"
-  (setq diff-switches "-ubB"
-        ediff-split-window-function 'split-window-horizontally
-        ediff-window-setup-function 'ediff-setup-windows-plain))
-
 ;; diary, todo, calendar
 (deh-section "calendar"
-  (setq diary-file "~/.emacs.d/diary")
-  (setq todo-file-do "~/.emacs.d/todo-do")
-  (setq todo-file-done "~/.emacs.d/todone-done")
-  (setq todo-file-top "~/.emacs.d/todone-top")
+  (setq diary-file (expand-file-name "diary" my-org-dir)
+        todo-file-do (expand-file-name "todo-do" my-org-dir)
+        todo-file-done (expand-file-name "todo-done" my-org-dir)
+        todo-file-top (expand-file-name "todo-top" my-org-dir))
   (add-hook 'initial-calendar-window-hook (lambda () (toggle-truncate-lines 1)))
   ;; calendar
   ;; for calendar-sunrise-sunset
@@ -113,7 +108,7 @@
 
 ;; set my file register
 (deh-section "register"
-  (set-register ?. '(file . "~/.emacs.d/config/"))
+  (set-register ?. '(file . my-config-dir))
   (set-register ?t '(file . "~/temp/"))
   (set-register ?p '(file . "~/projects/"))
   (set-register ?d '(file . "~/Downloads/")))
