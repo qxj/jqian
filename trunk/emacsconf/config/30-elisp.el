@@ -178,6 +178,12 @@
       ((kbd "C-M-h") . 'ido-goto-home)
       ((kbd "C-u")   . 'ido-clean-text)
       ((kbd "C-w")   . 'ido-delete-backward-word-updir)
+      ;; Remind keybinds
+      ;; ((kbd "C-a") . 'ido-toggle-ignore)
+      ((kbd "C-S-p") . 'ido-toggle-prefix)
+      ;; ((kbd "C-t") . 'ido-enable-regexp)
+      ;; ((kbd "M-n") . 'ido-next-work-directory)
+      ;; ((kbd "M-p") . 'ido-prev-work-directory)
       ))
 
   (defun ido-clean-text ()
