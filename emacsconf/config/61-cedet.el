@@ -15,35 +15,35 @@
 (deh-section-if "cedet"
   cedet-enable
 
+  ;;# Enable cedet modes
   ;; (semantic-load-enable-minimum-features)
   (semantic-load-enable-code-helpers)
   ;; (semantic-load-enable-gaudy-code-helpers)
   ;; (semantic-load-enable-excessive-code-helpers)
-  (semantic-load-enable-semantic-debugging-helpers)
-
-  (global-semantic-decoration-mode 1)
-
-  ;; semantic cache directory
-  (setq semanticdb-default-save-directory my-temp-dir
-        semantic-idle-scheduler-idle-time 5
-        semantic-idle-scheduler-work-idle-time 10
-        semantic-idle-scheduler-max-buffer-size 100000)
-
-  (require 'semantic-decorate-include nil 'noerror)
-  (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
   (if window-system
       (semantic-load-enable-semantic-debugging-helpers)
     (progn (global-semantic-show-unmatched-syntax-mode 1)
            (global-semantic-show-parser-state-mode 1)))
 
-  ;; exuberent ctags
-  (ignore-errors (semantic-load-enable-primary-exuberent-ctags-support))
+  ;; semantic cache directory
+  (setq semanticdb-default-save-directory my-temp-dir)
 
-  ;; global gtags
-  (when (executable-find "global")
-    (semanticdb-enable-gnu-global-databases 'c-mode)
-    (semanticdb-enable-gnu-global-databases 'c++-mode))
+  (setq semantic-idle-scheduler-idle-time 5
+        semantic-idle-scheduler-work-idle-time 10
+        semantic-idle-scheduler-max-buffer-size 100000)
 
+  (require 'semantic-decorate-include nil 'noerror)
+  (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
+  (global-semantic-decoration-mode 1)
+
+  (deh-section "semantic-tags"
+    ;; exuberent ctags
+    (ignore-errors (semantic-load-enable-primary-exuberent-ctags-support))
+
+    ;; global gtags
+    (when (executable-find "global")
+      (semanticdb-enable-gnu-global-databases 'c-mode)
+      (semanticdb-enable-gnu-global-databases 'c++-mode)))
 
   (deh-section "cedet-hippie"
     ;; hippie-try-expand setting
@@ -138,15 +138,8 @@
       ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer))
     )
 
-  ;; enable support for gnu global
-  (deh-require-if 'semanticdb-global
-    (executable-find "global")
-    (semanticdb-enable-gnu-global-databases 'c-mode)
-    (semanticdb-enable-gnu-global-databases 'c++-mode))
-
   (deh-require 'semantic-c
-    ;;{{{ Semantic search scope of header files
-    ;; (setq semanticdb-project-roots (list (expand-file-name "/")))
+    ;;# Semantic search scope of header files
     (defconst cedet-user-include-dirs
       (list ".." "../include" "../inc" "../common" "../public" "../hdr"
             "../.." "../../include" "../../inc" "../../common" "../../public"
@@ -165,7 +158,7 @@
               (dolist (mode '(c-mode c++-mode))
                 (semantic-add-system-include dir mode)))
             include-dirs))
-    ;;}}}
+    ;; (setq semanticdb-project-roots (list (expand-file-name "/")))
 
     (when (executable-find "gcc")
       (semantic-gcc-setup))
@@ -260,7 +253,8 @@ the mru bookmark stack."
       (when (and pulse-command-advice-flag (interactive-p))
         (pulse-momentary-highlight-one-line (point)))))
 
-  (deh-require 'semantic-tag-folding
+  (deh-require-if 'semantic-tag-folding
+    window-system
     (global-semantic-tag-folding-mode 1)
     (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
     (deh-define-key semantic-tag-folding-mode-map
@@ -271,8 +265,9 @@ the mru bookmark stack."
 
   (deh-require 'eassist
     (deh-define-key c-mode-base-map
-      ((kbd "C-c a")   . 'eassist-switch-h-cpp)
-      ((kbd "C-c , l") . 'eassist-list-methods))
-    ;; (define-key python-mode-map (kbd "C-c . l") 'eassist-list-methods)
-    (define-key lisp-mode-shared-map (kbd "C-c , l") 'eassist-list-methods))
+      ((kbd "C-c a")   . 'eassist-switch-h-cpp))
+    (deh-local-set-keys (c-mode-common-hook
+                         python-mode-hook
+                         emacs-lisp-mode-hook)
+      ((kbd "C-c , l") . 'eassist-list-methods)))
     )
