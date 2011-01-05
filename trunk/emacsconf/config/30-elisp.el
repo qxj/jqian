@@ -1000,16 +1000,17 @@ indent line."
         (isearch-search-and-update))))
   (add-hook 'isearch-mode-hook 'isearch-yank-word-hook)
 
-  (defadvice isearch-repeat (after isearch-no-fail activate)
-    "When Isearch fails, it immediately tries again with
-wrapping. Note that it is important to temporarily disable this
-defadvice to prevent an infinite loop when there are no matches."
-    (unless isearch-success
-      (ad-disable-advice 'isearch-repeat 'after 'isearch-no-fail)
-      (ad-activate 'isearch-repeat)
-      (isearch-repeat (if isearch-forward 'forward))
-      (ad-enable-advice 'isearch-repeat 'after 'isearch-no-fail)
-      (ad-activate 'isearch-repeat))))
+;;   (defadvice isearch-repeat (after isearch-no-fail activate)
+;;     "When Isearch fails, it immediately tries again with
+;; wrapping. Note that it is important to temporarily disable this
+;; defadvice to prevent an infinite loop when there are no matches."
+;;     (unless isearch-success
+;;       (ad-disable-advice 'isearch-repeat 'after 'isearch-no-fail)
+;;       (ad-activate 'isearch-repeat)
+;;       (isearch-repeat (if isearch-forward 'forward))
+;;       (ad-enable-advice 'isearch-repeat 'after 'isearch-no-fail)
+;;       (ad-activate 'isearch-repeat)))
+  )
 ;;}}}
 
 ;;{{{ autoloads non-std libraries

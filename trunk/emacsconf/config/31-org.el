@@ -65,18 +65,27 @@
 
     (setq org-export-html-style
           "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">"))
+
+  ;;(require 'org-export-freemind-install)
   )
 
 (deh-require 'org
   (setq org-CUA-compatible t)
+
+  ;; Single keys to execute commands at the beginning of a headline
+  (setq org-use-speed-commands t
+        org-export-with-sub-superscripts nil
+        org-file-apps-defaults-gnu '((t . emacs)))
+
+  (deh-add-hook org-load-hook
+    (add-to-list 'org-link-frame-setup
+                 '(file . my-find-file-function)))
   (defun my-find-file-function (file)
     "find file according to the file extension."
     (funcall (or (assoc-default file ywb-dired-guess-command-alist
                                 'string-match)
                  'find-file) file))
-  (deh-add-hook org-load-hook
-    (add-to-list 'org-link-frame-setup
-                 '(file . my-find-file-function)))
+
   (deh-add-hook org-mode-hook
     (local-unset-key "\C-c\C-o")        ; trigger for `org-open-at-point'
     (org-set-local 'comment-start "#+COMMENT:")
@@ -89,7 +98,6 @@
     ((kbd "C-c o l") . 'org-store-link)
     ((kbd "C-c o a") . 'org-agenda)
     ((kbd "C-c o b") . 'org-iswitchb)
-    ((kbd "C-c o r") . 'org-remember)
     ("\M-\C-l" . 'org-table-sort-lines)
     ("\M-\C-w" . 'org-table-copy-region)
     ("\M-\C-y" . 'org-table-paste-rectangle)
@@ -134,13 +142,15 @@
   (setq org-todo-keywords
         '((sequence  "TODO(t)"  "WAIT(w@/!)" "START(s!)" "|" "CANCEL(c@/!)" "DONE(d!)")))
 
-  ;; Single keys to execute commands at the beginning of a headline
-  (setq org-use-speed-commands t
-        org-export-with-sub-superscripts nil
-        org-file-apps-defaults-gnu '((t . emacs)))
+  (setq org-agenda-sorting-strategy
+        '((agenda priority-down time-up)
+          (todo priority-down category-keep)
+          (tags priority-down category-keep))))
 
-  ;; Remember Settings
+(deh-require 'org-remember
+  (global-set-key (kbd "C-c r") 'org-remember)
   ;; (org-remember-insinuate)
+
   (setq org-directory my-org-dir
         org-default-notes-file (concat my-org-dir "Notes.org")
         org-remember-templates
@@ -158,14 +168,7 @@
   ;; If missing the function org-remember-insinuate, try the following
   (setq remember-annotation-functions '(org-remember-annotation)
         remember-handler-functions '(org-remember-handler))
-  (add-hook 'remember-mode-hook 'org-remember-apply-template)
-
-  ;;(require 'org-export-freemind-install)
-
-  (setq org-agenda-sorting-strategy
-        '((agenda priority-down time-up)
-          (todo priority-down category-keep)
-          (tags priority-down category-keep))))
+  (add-hook 'remember-mode-hook 'org-remember-apply-template))
 
 (deh-section "rst"
   (add-hook 'rst-adjust-hook 'rst-toc-update)
