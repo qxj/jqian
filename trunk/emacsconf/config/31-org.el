@@ -10,8 +10,8 @@
   ;;# export org documents to latex & pdf
   (deh-require 'org-latex
     (setq org-latex-to-pdf-process
-          '("xelatex -interaction nonstopmode %s"
-            "xelatex -interaction nonstopmode %s"))
+          '("xelatex -interaction=nonstopmode -output-directory=%o %f"
+            "xelatex -interaction=nonstopmode -output-directory=%o %f"))
     ;; org + beamer = owesome slides
     (setq org-export-latex-default-packages-alist ; for xelatex
           '(("cm-default" "fontspec" t) ; provides font selecting commands
@@ -54,8 +54,13 @@
     ;; (setq org-export-headline-levels 2)
     ;; During HTML export, convert latex fragment
     (setq org-export-with-LaTeX-fragments t)
-    ;; fontify source code with listings
+
+    ;; (setq org-export-run-in-background t) ; buggy
+
+    ;;# fontify source code with listings
     (setq org-export-latex-listings t)
+    ;; (add-to-list 'org-export-latex-packages-alist '(\"\" \"minted\"))
+    ;; (setq org-export-latex-listings 'minted)
     )
 
   ;;# export org documents to html
@@ -74,6 +79,8 @@
 
   ;; Single keys to execute commands at the beginning of a headline
   (setq org-use-speed-commands t
+        org-special-ctrl-k t
+        org-special-ctrl-a/e 'reserved
         org-export-with-sub-superscripts nil
         org-file-apps-defaults-gnu '((t . emacs)))
 
@@ -98,6 +105,7 @@
     ((kbd "C-c o l") . 'org-store-link)
     ((kbd "C-c o a") . 'org-agenda)
     ((kbd "C-c o b") . 'org-iswitchb)
+    ((kbd "C-c o o") . 'org-open-at-point)
     ("\M-\C-l" . 'org-table-sort-lines)
     ("\M-\C-w" . 'org-table-copy-region)
     ("\M-\C-y" . 'org-table-paste-rectangle)
