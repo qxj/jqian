@@ -775,8 +775,9 @@
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
   (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
         ac-auto-start 3
+        ac-auto-show-menu 1.5
         ac-ignore-case nil
-        ;; ac-show-menu-immediately-on-auto-complete nil
+        ac-show-menu-immediately-on-auto-complete nil
         ;; ac-expand-on-auto-complete nil
         ;; ac-trigger-key nil
         ac-quick-help-delay 1.5
