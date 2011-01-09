@@ -93,6 +93,9 @@
 
 (setq tab-always-indent 'complete)
 
+(eval-after-load "grep"
+  '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
+
 ;; diary, todo, calendar
 (deh-section "calendar"
   (setq diary-file (expand-file-name "diary" my-org-dir)
