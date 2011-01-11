@@ -360,6 +360,7 @@
 
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-path (list my-temp-dir)
+        desktop-restore-eager 8        ; firstly restore 8 buffers
         history-length 100)
 
   (add-to-list 'desktop-globals-to-save 'file-name-history)
@@ -511,7 +512,7 @@
            (filename (ido-completing-read "Open file: "
                                           (mapcar 'car alist))))
       (find-file (cdr (assoc filename alist)))))
-  (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
+  ;; (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
 
   ;; Also store recent opened directories besides files
   (add-hook 'dired-mode-hook

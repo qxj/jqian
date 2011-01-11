@@ -83,6 +83,7 @@
   ("f" . 'find-library)
   ("i" . 'ispell-word)
   ("l" . 'org-store-link)
+  ("o" . 'recentf-open-files-compl)
   ("r" . 'compile-dwim-run)
   ("s" . 'compile-dwim-compile)
   ("v" . 'view-mode)
@@ -90,7 +91,6 @@
   ("z" . 'decr-dwim)
   ("\t" . 'ispell-complete-word)
   )
-
 
 (deh-define-key ctl-z-map
   ("\C-z" . (if (eq window-system 'x) 'suspend-frame 'suspend-emacs)))
@@ -101,4 +101,3 @@
   ("\t" . 'comint-dynamic-complete))
 (deh-define-key read-expression-map
   ("\t" . 'PC-lisp-complete-symbol))
-

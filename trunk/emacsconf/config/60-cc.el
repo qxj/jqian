@@ -151,6 +151,9 @@ the directories in the INCLUDE environment variable."
 
   (deh-add-hook gud-mode-hook
     (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
+    (define-key gud-mode-map (kbd "C-u") '(lambda nil
+                                            (move-beginning-of-line 1)
+                                            (my-delete-line)))
     (set (make-local-variable 'paragraph-separate) "\\'"))
 
   (eval-after-load "gud"
