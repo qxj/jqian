@@ -229,22 +229,27 @@ This command does not push erased text to `kill-ring'."
   (my-delete-word (- arg)))
 
 (defun my-delete-line ()
-  "Delete text from current position to end of line char."
+  "Delete text from current position to end of line char.
+
+If cursor at beginning of a line, also delete the last RET."
   (interactive)
   (delete-region
    (point)
    (save-excursion (move-end-of-line 1) (point)))
-  (delete-char 1))
+  (if (or (bolp) (eolp))
+      (delete-char 1)))
 
 (defun my-delete-line-backward ()
   "Delete text between the beginning of the line to the cursor
-position."
+position.
+
+If cursor at end of a line, also delete the previous RET."
   (interactive)
-  (let (x1 x2)
-    (setq x1 (point))
-    (move-beginning-of-line 1)
-    (setq x2 (point))
-    (delete-region x1 x2)))
+  (delete-region
+   (point)
+   (save-excursion (move-beginning-of-line 1) (point)))
+  (if (eolp)
+      (delete-char -1)))
 ;;}}}
 
 (defvar switch-major-mode-history nil)

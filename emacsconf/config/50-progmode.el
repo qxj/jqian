@@ -120,6 +120,18 @@
   (deh-add-hooks (c-mode-common-hook)
     (gtags-mode t))
 
+  (setq gtags-mode-hook
+    '(lambda ()
+       (setq gtags-pop-delete t)
+       (setq gtags-path-style 'absolute)
+  ))
+
+  (setq gtags-select-mode-hook
+    '(lambda ()
+       (setq hl-line-face 'underline)
+       (hl-line-mode 1)
+  ))
+
   (eval-after-load "gtags"
     '(deh-define-key gtags-mode-map
        ;; Instead of `find-tag' & `pop-tag-mark'
