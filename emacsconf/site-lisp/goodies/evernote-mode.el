@@ -1281,9 +1281,11 @@
 
 (defun enh-command-login ()
   "Issue login command"
-  (let* ((user (read-string "Evernote user name:"))
-         (passwd (read-passwd "Passwd:")))
-    (enh-command-issue nil "login" user passwd)))
+  (if (and enh-login-user enh-login-passwd)
+      (enh-command-issue nil "login" enh-login-user enh-login-passwd)
+    (let* ((user (read-string "Evernote user name:"))
+           (passwd (read-passwd "Passwd:")))
+      (enh-command-issue nil "login" user passwd))))
 
 
 (defun enh-command-get-tag-attrs ()
