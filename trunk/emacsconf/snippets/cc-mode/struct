@@ -1,3 +1,4 @@
+# -*- mode: snippet -*-
 #name : struct ... { ... }
 # --
 struct ${1:name} {

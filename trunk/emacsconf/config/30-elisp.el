@@ -888,6 +888,8 @@ indent line."
   ;; (yas/initialize)     ;; enable yas/minor-mode globally
   (yas/global-mode 1)
 
+  (setq yas/wrap-around-region t)
+
   (require 'dropdown-list)
   (setq yas/prompt-functions '(yas/dropdown-prompt
                                yas/ido-prompt
