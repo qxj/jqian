@@ -351,7 +351,8 @@
 ;;}}}
 
 ;;{{{ session management
-(deh-require 'desktop
+(deh-require-if 'desktop
+  (not (emacs-process-exists-p))
   (setq desktop-globals-to-save
         (delq 'tags-table-list desktop-globals-to-save)
         ;; Do not save to desktop
@@ -627,9 +628,6 @@
 
 ;; formats and timestamp
 (deh-section "formats"
-  (setq display-time-format "%m月%d日 星期%a %R")
-
-  ;; emacs frame title
   (setq frame-title-format
         '((:eval
            (let ((login-name (getenv-internal "LOGNAME")))
@@ -638,6 +636,7 @@
           ":"
           (:eval (or (buffer-file-name) (buffer-name)))))
 
+  ;; (setq display-time-format "%m月%d日 星期%a %R")
   ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
   (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
 

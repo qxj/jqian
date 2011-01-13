@@ -63,6 +63,11 @@
     (local-unset-key "\C-c\C-o")        ; trigger for `c-set-offset'
     (local-unset-key "\C-d")            ; trigger for `c-electric-delete-forward'
     (local-set-key "\C-ca" 'sourcepair-load)
+    ;;# keybinds remind
+    ;; C-M-a 'c-beginning-of-defun
+    ;; C-M-e 'c-end-of-defun
+    ;; M-a   'c-beginning-of-statement
+    ;; M-e   'c-end-of-statement
     ;; nbbuild
     (if (file-exists-p "Makefile.vs")
         (set (make-local-variable 'compile-command)
