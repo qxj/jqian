@@ -151,14 +151,14 @@ the directories in the INCLUDE environment variable."
   )
 
 (deh-section "gud"
-  (setq gdb-many-windows t
+  (setq gdb-many-windows nil            ; no need many windows
         gdb-use-separate-io-buffer t)
 
   (deh-add-hook gud-mode-hook
     (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
-    (define-key gud-mode-map (kbd "C-u") '(lambda nil
-                                            (move-beginning-of-line 1)
-                                            (my-delete-line)))
+    (define-key gud-mode-map (kbd "C-u") 'comint-kill-input)
+    ;;# keybinds remind
+    ;; M-r 'comint-history-isearch-backward-regexp
     (set (make-local-variable 'paragraph-separate) "\\'"))
 
   (eval-after-load "gud"
