@@ -383,6 +383,9 @@
   ;;       desktop-menu-base-filename desktop-base-file-name
   ;;       desktop-menu-list-file "emacs.desktops")
 
+  ;;# persist desktop into file every 30 mins
+  (run-with-idle-timer 1800 1800 'desktop-save-in-desktop-dir)
+
   (defun my-save-desktop (file)
     (interactive
      (list (let ((default-directory "~"))
