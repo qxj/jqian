@@ -1101,7 +1101,10 @@ indent line."
 ;; Enhanced ansi-term
 (deh-require 'multi-term
   ;; compatible with normal terminal keybinds
-  (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
+  (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
+  (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
   (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
   (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
   (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
@@ -1124,7 +1127,7 @@ indent line."
     (interactive)
     (unless (multi-term-dedicated-exist-p)
       (multi-term-dedicated-open))
-      (multi-term-dedicated-select)))
+    (multi-term-dedicated-select)))
 
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
