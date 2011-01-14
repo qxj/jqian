@@ -180,3 +180,11 @@
 (when (null window-system)
   (unless (boundp 'define-fringe-bitmap)
     (defun define-fringe-bitmap (bitmap bits &optional height width align))))
+
+;; WORKAROUND: skip existed server-name
+(eval-after-load "server"
+  '(let ((file (expand-file-name server-name (if server-use-tcp
+                                                 server-auth-dir
+                                               server-socket-dir))))
+     (if (file-exists-p file)
+         (setq server-name (format "%s.%d" server-name (emacs-pid))))))

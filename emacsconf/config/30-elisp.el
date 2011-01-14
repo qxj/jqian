@@ -352,7 +352,7 @@
 
 ;;{{{ session management
 (deh-require-if 'desktop
-  (not (emacs-process-exists-p))
+  (not (emacs-process-duplicated-p))
   (setq desktop-globals-to-save
         (delq 'tags-table-list desktop-globals-to-save)
         ;; Do not save to desktop
@@ -406,7 +406,6 @@
               (buffer-list)))
     (let ((desktop-base-file-name (file-name-nondirectory file)))
       (desktop-read (file-name-directory file))))
-
   )
 
 (deh-require 'session
