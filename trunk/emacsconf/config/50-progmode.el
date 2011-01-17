@@ -338,7 +338,7 @@ etc).  The following options will be available:
   (deh-add-hooks (change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
   (deh-add-hooks (c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
 
-(deh-section "flymake"
+(deh-section-reserved "flymake"
   (eval-after-load "flymake"
     '(progn
        (autoload 'flymake-find-file-hook "flymake" "" t)
@@ -607,7 +607,11 @@ Use CREATE-TEMP-F for creating temp copy."
                                   ,@sgml-tag-alist))))))
 
 ;; nxhtml: javascript + php + html + css
-(deh-section-path "nxhtml" "~/src/nxhtml/autostart.el" (load-file deh-this-path))
+(deh-section-path "nxhtml"
+  "~/src/nxhtml/autostart.el"
+  (load-file deh-this-path)
+  (deh-add-hook nxhtml-mode-hook
+    (local-unset-key (kbd "C-c C-o"))))
 
 ;; gnuplot
 (deh-section "gnuplot"
