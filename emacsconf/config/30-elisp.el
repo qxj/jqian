@@ -1131,7 +1131,8 @@ indent line."
 
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
-  (browse-kill-ring-default-keybindings))
+  (browse-kill-ring-default-keybindings)
+  (setq browse-kill-ring-highlight-current-entry t))
 
 ;; fold content
 ;; (deh-require 'fold
