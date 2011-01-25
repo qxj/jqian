@@ -610,6 +610,7 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-section-path "nxhtml"
   "~/src/nxhtml/autostart.el"
   (load-file deh-this-path)
+  (setq mumamo-chunk-coloring 5)        ; disable background colors
   (deh-add-hook nxhtml-mode-hook
     (local-unset-key (kbd "C-c C-o"))))
 

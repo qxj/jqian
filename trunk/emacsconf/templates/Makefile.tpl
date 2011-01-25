@@ -1,5 +1,5 @@
 ### (>>>FILE<<<) ---
-## Time-stamp: <Julian Qian 2010-10-28 12:40:22>
+## Time-stamp: <Julian Qian 2011-01-21 11:50:33>
 ## Author: (>>>AUTHOR<<<)
 ## Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
 ## Keywords: (>>>1<<<)
@@ -10,8 +10,8 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-O -DUNIX -DDEBUG -std=c99 -DTRACE_FILE='"./trace"' -D__PATH__='"$(PWD)/"'
-CXXFLAGS=-O -DUNIX -DDEBUG -std=c99 -DTRACE_FILE='"./trace"' -D__PATH__='"$(PWD)/"'
+CFLAGS=-g -O0 -DUNIX -DDEBUG -std=c99
+CXXFLAGS=-g -O0 -DUNIX -DDEBUG -std=c99
 
 EDF=
 
