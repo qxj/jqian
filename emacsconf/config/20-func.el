@@ -25,7 +25,7 @@
            (point))))
     (call-interactively 'comment-or-uncomment-region)))
 
-;;{{{ polish beginning-of-line & end-of-line (`C-a'/`C-e')
+;;{{{ polish beginning-of-line & end-of-line (C-a/C-e)
 (defun my-end-of-line ()
   "Hack `end-of-line'."
   (interactive)
@@ -42,7 +42,8 @@
 ;;}}}
 
 (defun vi-open-next-line (arg)
- "Move to the next line (like vi) and then open a new line."
+ "Move to the next line (like vi) and then open a new line, bind
+to \\[vi-open-next-line]."
  (interactive "p")
  (end-of-line)
  (open-line arg)
@@ -50,7 +51,7 @@
  (indent-according-to-mode))
 
 (defmacro def-redo-command (fun-name redo undo)
-  "Make redo command, bind to C-'."
+  "Make redo command, bind to \\[redo]."
   `(defun ,fun-name ()
      (interactive)
      (if (equal last-command ,redo)
@@ -130,10 +131,10 @@
       (funcall kill-func (buffer-substring oldpoint (point))))))
 ;;}}}
 
-;;{{{ clone-buffer, bind to `C-x c'
+;;{{{ clone-buffer, bind to "C-x c"
 (defun ywb-clone-buffer (non-indirect)
   "If with prefix argument, clone buffer, other wise, clone
-indirect buffer"
+indirect buffer. bind to \\[ywb-clone-buffer]."
   (interactive "P")
   (if non-indirect
       (call-interactively 'clone-buffer)
@@ -148,7 +149,7 @@ indirect buffer"
           (call-interactively 'clone-indirect-buffer-other-window))))))
 ;;}}}
 
-;;{{{ camelcase move, rebind `M-f/M-b'
+;;{{{ camelcase move, rebind "M-f/M-b"
 (defun ywb-camelcase-move-word (fw)
   (let ((case-fold-search nil)
         wordpos casepos)
@@ -169,14 +170,14 @@ indirect buffer"
           (t (goto-char (if (> fw 0) (point-max) (point-min)))))))
 
 (defun ywb-camelcase-forward-word (arg)
-  "Camelcase forward word, rebind to `M-f'."
+  "Camelcase forward word, rebind to \\[ywb-camelcase-forward-word]."
   (interactive "p")
   (let ((fw (signum arg)))
     (dotimes (i (abs arg))
       (ywb-camelcase-move-word fw))))
 
 (defun ywb-camelcase-backward-word (arg)
-  "Camelcase backward word, rebind to `M-b'."
+  "Camelcase backward word, rebind to \\[ywb-camelcase-move-word]."
   (interactive "p")
   (ywb-camelcase-forward-word (- arg)))
 ;;}}}
@@ -186,26 +187,14 @@ indirect buffer"
   (interactive "r")
   (shell-command-on-region beg end "sort | uniq" nil t))
 
-(defvar ywb-scratch-buffer "*scratch*")
-(defun ywb-create/switch-scratch (arg)
-  "create/switch-scratch, bind to `C-c c c'"
-  (interactive "P")
-  (when arg
-    (setq ywb-scratch-buffer (read-buffer "Set scratch to: " (buffer-name))))
-  (let ((buf (get-buffer ywb-scratch-buffer)))
-    (if (null buf)
-        (progn
-          (or arg
-              (setq ywb-scratch-buffer (if (y-or-n-p "The buffer no exists! Create *scratch*? ")
-                                           "*scratch*"
-                                         (read-buffer "Set scratch to: " (buffer-name)))))
-          (switch-to-buffer ywb-scratch-buffer)
-          (lisp-interaction-mode))
-      (switch-to-buffer ywb-scratch-buffer))))
+(defun my-switch-scratch ()
+  "switch to *scratch* buffer, bind to \\[my-switch-scratch]."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
 
 ;;{{{ Redefine basic operation, non-kill versions
 (defun delete-char-or-region ()
-  "Delete char or region, skip kill ring, rebind `C-d'."
+  "hack `delete-char', delete char or region, skip kill ring."
   (interactive)
   (if (and mark-active transient-mark-mode)
       (delete-region (region-beginning) (region-end))
@@ -269,7 +258,7 @@ If cursor at beginning or end of a line, delete the previous RET."
 
 (defun my-display-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
-you call this function by prefix `C-u', the path will be store
+you call this function by prefix 'C-u', the path will be store
 into `kill-ring'."
   (interactive
    (list current-prefix-arg))

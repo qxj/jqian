@@ -53,7 +53,7 @@
   ("i" . 'imenu)
   ("j" . 'ffap)
   ("k" . 'auto-fill-mode)
-  ("q" . 'refill-mode)
+  ;; ("q" . 'refill-mode)
   ;; ("u" . 'revert-buffer)
   ;; ("v" . 'imenu-tree)
   ;; ("w" . 'ywb-favorite-window-config)
@@ -77,7 +77,7 @@
 (deh-define-key ctl-cc-map
   ("a" . 'org-agenda)
   ("b" . 'org-iswitchb)
-  ("c" . 'ywb-create/switch-scratch)
+  ("c" . 'my-switch-scratch)
   ("d" . 'deh-customize-inplace)
   ("f" . 'find-library)
   ("i" . 'ispell-word)
