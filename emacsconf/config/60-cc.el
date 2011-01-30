@@ -46,8 +46,7 @@
 (deh-section "c-mode"
   (defun my-c-mode-common-hook ()
     (my-mode-common-hook)
-    (c-add-style "Personal" my-c-style t)
-    ;; (c-set-style "Personal")
+    ;; (c-add-style "Personal" my-c-style t)
     (setq c-basic-offset tab-width)
     (local-set-key "*" 'self-insert-command)
     (c-toggle-auto-hungry-state 1)
@@ -85,22 +84,7 @@
   (defun my-c++-mode-hook ()
     (my-c-mode-common-hook)
     (setq local-abbrev-table c-mode-abbrev-table)
-    (add-to-list 'c-style-alist
-                 '("mine"
-                   (c-basic-offset . 4)
-                   (c-comment-only-line-offset . 0)
-                   (c-hanging-braces-alist
-                    (substatement-open after))
-                   (c-offsets-alist
-                    ;; (topmost-intro . 0)
-                    (substatement . +)
-                    (substatement-open . 0)
-                    (case-label . +)
-                    (access-label . -)
-                    (inclass . +)
-                    (inline-open . 0))))
-    (c-set-style "mine"))
-  ;; (c-add-style "Personal" my-c-style t)
+    )
   (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 
   ;; Unfortunately many standard c++ header files have no file
