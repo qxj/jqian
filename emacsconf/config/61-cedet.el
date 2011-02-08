@@ -87,7 +87,7 @@ the mru bookmark stack."
     (semantic-mrub-push semantic-mru-bookmark-ring
                         (point)
                         'mark)
-    ad-do-it)))
+    ad-do-it))
 
 (deh-section-if "cedet"
   cedet-enable
@@ -293,7 +293,7 @@ the mru bookmark stack."
     (defadvice viss-bookmark-prev-buffer (after pulse-advice activate)
       "After viss-bookmark-prev-buffer, pulse the line the cursor lands on."
       (when (and pulse-command-advice-flag (interactive-p))
-        (pulse-momentary-highlight-one-line (point)))))
+        (pulse-momentary-highlight-one-line (point))))))
 
   (deh-require-if 'semantic-tag-folding
     window-system
