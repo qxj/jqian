@@ -2,26 +2,95 @@
 
 (defvar cedet-enable nil)
 
+;; try to load external cedet
 (let ((path "~/src/cedet-1.0/common/cedet.el"))
   (when (file-exists-p path)
     (load-file path)
-    (setq cedet-enable t)))
+    (setq cedet-enable t)
 
-(when (boundp 'semantic-mode)
-  (locate-library "semantic-ctxt") ; offical cedet
+    ;;# Enable cedet modes
+    ;; (semantic-load-enable-minimum-features)
+    (semantic-load-enable-code-helpers)
+    ;; (semantic-load-enable-gaudy-code-helpers)
+    ;; (semantic-load-enable-excessive-code-helpers)
+    (semantic-load-enable-semantic-debugging-helpers)
+    (global-semantic-show-unmatched-syntax-mode -1)
+
+    (require 'semantic-decorate-include nil 'noerror)
+    (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
+    (global-semantic-decoration-mode 1)
+
+    ;;# vss is useful
+    (deh-section "viss-bookmark"
+      (enable-visual-studio-bookmarks)
+      (deh-define-key global-map
+        ((kbd "<f2>") . 'viss-bookmark-toggle)
+        ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
+        ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
+        ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer))
+      )
+
+    ;;# turn on pulse
+    (pulse-toggle-integration-advice (if window-system 1 -1))))
+
+;; try to load internal offical cedet
+(when (and (boundp 'semantic-mode) (null cedet-enable))
+  (locate-library "semantic-ctxt")
   (require 'cedet nil 'noerror)
-  (setq cedet-enable t))
+  (setq cedet-enable t)
+
+  (setq semantic-default-submodes '(global-semantic-idle-scheduler-mode
+                                    global-semanticdb-minor-mode
+                                    global-semantic-idle-summary-mode
+                                    global-semantic-mru-bookmark-mode
+                                    global-semantic-highlight-edits-mode
+                                    global-semantic-show-parser-state-mode))
+  (semantic-mode 1)
+
+  ;;# pulse
+  (setq pulse-command-advice-flag (if window-system 1 nil))
+  (defadvice goto-line (after pulse-advice activate)
+    "Cause the line that is `goto'd to pulse when the cursor gets there."
+    (when (and pulse-command-advice-flag (interactive-p))
+      (pulse-momentary-highlight-one-line (point))))
+  (defadvice exchange-point-and-mark (after pulse-advice activate)
+    "Cause the line that is `goto'd to pulse when the cursor gets there."
+    (when (and pulse-command-advice-flag (interactive-p)
+               (> (abs (- (point) (mark))) 400))
+      (pulse-momentary-highlight-one-line (point))))
+  (defadvice find-tag (after pulse-advice activate)
+    "After going to a tag, pulse the line the cursor lands on."
+    (when (and pulse-command-advice-flag (interactive-p))
+      (pulse-momentary-highlight-one-line (point))))
+  (defadvice tags-search (after pulse-advice activate)
+    "After going to a hit, pulse the line the cursor lands on."
+    (when (and pulse-command-advice-flag (interactive-p))
+      (pulse-momentary-highlight-one-line (point))))
+  (defadvice tags-loop-continue (after pulse-advice activate)
+    "After going to a hit, pulse the line the cursor lands on."
+    (when (and pulse-command-advice-flag (interactive-p))
+      (pulse-momentary-highlight-one-line (point))))
+  (defadvice pop-tag-mark (after pulse-advice activate)
+    "After going to a hit, pulse the line the cursor lands on."
+    (when (and pulse-command-advice-flag (interactive-p))
+      (pulse-momentary-highlight-one-line (point))))
+  (defadvice imenu-default-goto-function (after pulse-advice activate)
+    "After going to a tag, pulse the line the cursor lands on."
+    (when pulse-command-advice-flag
+      (pulse-momentary-highlight-one-line (point))))
+
+  ;; fix `semantic-mrub-switch-tags' to jump back
+  (defadvice push-mark (around semantic-mru-bookmark activate)
+    "Push a mark at LOCATION with NOMSG and ACTIVATE passed to `push-mark'.
+If `semantic-mru-bookmark-mode' is active, also push a tag onto
+the mru bookmark stack."
+    (semantic-mrub-push semantic-mru-bookmark-ring
+                        (point)
+                        'mark)
+    ad-do-it)))
 
 (deh-section-if "cedet"
   cedet-enable
-
-  ;;# Enable cedet modes
-  ;; (semantic-load-enable-minimum-features)
-  (semantic-load-enable-code-helpers)
-  ;; (semantic-load-enable-gaudy-code-helpers)
-  ;; (semantic-load-enable-excessive-code-helpers)
-  (semantic-load-enable-semantic-debugging-helpers)
-  (global-semantic-show-unmatched-syntax-mode -1)
 
   ;; semantic cache directory
   (setq semanticdb-default-save-directory my-temp-dir)
@@ -29,10 +98,6 @@
   (setq semantic-idle-scheduler-idle-time 5
         semantic-idle-scheduler-work-idle-time 10
         semantic-idle-scheduler-max-buffer-size 100000)
-
-  (require 'semantic-decorate-include nil 'noerror)
-  (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
-  (global-semantic-decoration-mode 1)
 
   (deh-section "semantic-tags"
     ;; exuberent ctags
@@ -51,8 +116,7 @@
                    emacs-lisp-mode-hook))
       (add-to-list 'hippie-expand-try-functions-list
                    'senator-try-expand-semantic
-                   'semantic-ia-complete-symbol))
-    )
+                   'semantic-ia-complete-symbol)))
 
   (deh-section "semantic-imenu"
     ;; imenu, expand all functions
@@ -127,15 +191,6 @@
         (concat "cd " root-dir ";" compile-cmd)))
     ) ;- ede end
 
-  (deh-section "viss-bookmark"
-    (enable-visual-studio-bookmarks)
-    (deh-define-key global-map
-      ((kbd "<f2>") . 'viss-bookmark-toggle)
-      ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
-      ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
-      ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer))
-    )
-
   (deh-require 'semantic-c
     ;;# Semantic search scope of header files
     (defconst cedet-user-include-dirs
@@ -191,18 +246,7 @@
           (semantic-ia-fast-jump-back)
         (semantic-ia-fast-jump (point))))
 
-    (defadvice push-mark (around semantic-mru-bookmark activate)
-      "Push a mark at LOCATION with NOMSG and ACTIVATE passed to `push-mark'.
-If `semantic-mru-bookmark-mode' is active, also push a tag onto
-the mru bookmark stack."
-      (semantic-mrub-push semantic-mru-bookmark-ring
-                          (point)
-                          'mark)
-      ad-do-it)
-    )
-
   (deh-require 'pulse
-    (pulse-toggle-integration-advice (if window-system 1 -1))
     (defadvice my-switch-recent-buffer (after pulse-advice activate)
       (when (and pulse-command-advice-flag (interactive-p))
         (pulse-momentary-highlight-one-line (point))))
