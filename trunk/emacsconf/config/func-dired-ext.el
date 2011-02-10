@@ -1,3 +1,13 @@
+(defun wcy-w32-shell-execute (filename)
+  "open file in dired mode"
+  (interactive
+   (list
+    (or (and (eq major-mode 'dired-mode)
+             (condition-case nil
+                 (dired-get-filename nil t)))
+        (read-file-name "Open File:"))))
+  (w32-shell-execute 'open (file-truename filename)))
+
 ;; w3m-visit
 (defun ywb-dired-w3m-visit (file)
   (interactive (list (dired-get-filename nil t)))
