@@ -36,6 +36,9 @@
        ("/r"   . 'ywb-dired-filter-regexp)
        ("/."   . 'ywb-dired-filter-extension)
        )
+     (if (eq system-type 'windows-nt)
+         (deh-define-key dired-mode-map
+           ("X"    . 'wcy-w32-shell-execute)))
      ;; Sort something, prefix key `s'
      (make-local-variable  'dired-sort-map)
      (setq dired-sort-map (make-sparse-keymap))
