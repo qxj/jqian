@@ -227,10 +227,12 @@ the directories in the INCLUDE environment variable."
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
 (deh-section "compile"
-  (setq compilation-finish-functions
-        (lambda (buf str)
-          (when (and (string= (buffer-name buf) "*compilation*")
-                     (not (string-match "exited abnormally" str)))
-            (run-at-time 0.5 nil 'delete-windows-on buf))))
+  (setq compilation-auto-jump-to-first-error t)
+  ;;# Close complication buffer if succeed to compile
+  ;; (setq compilation-finish-functions
+  ;;       (lambda (buf str)
+  ;;         (when (and (string= (buffer-name buf) "*compilation*")
+  ;;                    (not (string-match "exited abnormally" str)))
+  ;;           (run-at-time 0.5 nil 'delete-windows-on buf))))
   )
 
