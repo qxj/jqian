@@ -21,8 +21,9 @@
      (deh-define-key dired-mode-map
        ([return] . 'joc-dired-single-buffer)
        ([mouse-1] . 'joc-dired-single-buffer-mouse)
-       ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-       ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ;; ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ;; ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
        ("z"    . 'ywb-dired-compress-dir)
        ("b"    . 'ywb-list-directory-recursive)
        ("E"    . 'ywb-dired-w3m-visit)
@@ -411,7 +412,7 @@
       (desktop-read (file-name-directory file))))
   )
 
-(deh-require 'session
+(deh-require-reserved 'session
   (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
   (setq session-save-file-coding-system 'utf-8-unix)
   (add-to-list 'session-globals-exclude 'org-mark-ring)
