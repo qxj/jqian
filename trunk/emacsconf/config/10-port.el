@@ -188,3 +188,7 @@
                                                server-socket-dir))))
      (if (file-exists-p file)
          (setq server-name (format "%s.%d" server-name (emacs-pid))))))
+
+;; WORKAROUND: avoid eieio error in ede.el
+(eval-after-load "ede"
+  '(defun ede-customize-forms-menu (menu-def) ()))

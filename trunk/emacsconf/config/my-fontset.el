@@ -83,3 +83,11 @@
 (set-frame-font "Consolas:pixelsize=12")  ; set-default-font has been obsoleted
 (set-fontset-font (frame-parameter nil 'font)
                   'han '("Microsoft YaHei" . "unicode-bmp"))
+
+;; For `emacsclient -c xxx`
+(add-hook
+ 'after-make-frame-functions
+ (lambda (frame)
+   (when window-system
+     (set-face-attribute 'default nil :height 100 :width 'normal
+                         :family "Consolas"))))
