@@ -1,10 +1,10 @@
 #!/bin/sh
-# linkdir.sh --- Time-stamp: <Julian Qian 2010-12-15 16:49:21>
+# linkdir.sh --- Time-stamp: <Julian Qian 2010-12-15 16:57:02>
 # Copyright 2010 Julian Qian
 # Author: jqian@julian-desktop
 # Version: $Id: linkdir.sh,v 0.0 2010/12/15 08:34:59 jqian Exp $
 
-set -x
+# set -x
 
 
 SDIR="$1"

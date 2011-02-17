@@ -289,7 +289,6 @@
         '(("default"
            ("*buffers*" (or (mode . term-mode)
                             (mode . twittering-mode)
-                            (mode . dired-mode)
                             (mode . w3m-mode)
                             (mode . erc-mode)
                             (name . "^\\*gud")
@@ -309,6 +308,7 @@
                        (mode . js2-mode)))
            ("elisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-interaction-mode)))
+           ("dired" (mode . dired-mode))
            ("*others*" (name . "\\*.*\\*")))))
   (set 'ibuffer-mode-hook
        (lambda ()
