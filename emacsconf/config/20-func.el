@@ -350,7 +350,6 @@ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
   (dolist (dir (find-subdirs-containing my-startup-dir "\\.el$"))
     (byte-recompile-directory dir 0)))
 
-;;{{{ defadvice
 (deh-section "defadvice"
   (defadvice kill-line (before check-position activate)
     "killing the newline between indented lines and remove extra
@@ -426,5 +425,27 @@ clipboard/external selection to the kill ring"
           (setq file (replace-match enc t t file))))
       (setq ad-return-value file)))
   (ad-activate 'browse-url-file-url))
-;;}}}
 
+(deh-section "hooks"
+  ;;# chmod executable files automatically
+  (add-hook
+   'after-save-hook
+   #'(lambda ()
+       (and (save-excursion
+              (save-restriction
+                (widen)
+                (goto-char (point-min))
+                (save-match-data
+                  (looking-at "^#!"))))
+            (not (file-executable-p buffer-file-name))
+            (shell-command (concat "chmod u+x " buffer-file-name))
+            (message
+             (concat "Saved as script: " buffer-file-name)))))
+  ;;# convert some .h to c++-mode automatically
+  (add-hook
+   'c-mode-hook
+   #'(lambda ()
+       (if (save-excursion
+            (goto-char (point-min))
+            (search-forward-regexp "^class" nil t))
+           (c++-mode)))))

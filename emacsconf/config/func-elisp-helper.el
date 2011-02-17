@@ -35,6 +35,15 @@ pgrep, so.. make sure pgrep is already installed in your system."
           (kill-buffer buffer)
           (> process-number 1)))))
 
+(defun indent-marked-files ()
+  "Firstly mark files in `dired-mode', then indent them."
+  (interactive)
+  (dolist (file (dired-get-marked-files))
+    (find-file file)
+    (indent-region (point-min) (point-max))
+    (save-buffer)
+    (kill-buffer nil)))
+
 (defun remove-from-list (list key)
   "reverse to `add-to-list' function"
   (set list (remove (assoc key (symbol-value list))
