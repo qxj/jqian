@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Singleton.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	SingletonÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Singletonæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef SINGLETON_H
@@ -16,14 +16,14 @@ public:
 	Singleton(){};
 	~Singleton(){};
 
-	// ¾²Ì¬³ÉÔ±º¯Êı,Ìá¹©È«¾Ö·ÃÎÊµÄ½Ó¿Ú
+	// é™æ€æˆå‘˜å‡½æ•°,æä¾›å…¨å±€è®¿é—®çš„æ¥å£
 	static Singleton* GetInstancePtr();
 	static Singleton  GetInstance();
 
 	void Test();
 
 private:
-	// ¾²Ì¬³ÉÔ±±äÁ¿,Ìá¹©È«¾ÖÎ©Ò»µÄÒ»¸öÊµÀı
+	// é™æ€æˆå‘˜å˜é‡,æä¾›å…¨å±€æƒŸä¸€çš„ä¸€ä¸ªå®ä¾‹
 	static Singleton* m_pStatic;
 };
 

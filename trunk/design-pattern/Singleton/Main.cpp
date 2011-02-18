@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Main.cpp
-	author:		Àî´´
+	author:		æŽåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	SingletonÄ£Ê½µÄ²âÊÔ´úÂë
+	purpose:	Singletonæ¨¡å¼çš„æµ‹è¯•ä»£ç 
 *********************************************************************/
 
 #include "Singleton.h"
@@ -12,7 +12,7 @@
 
 int main()
 {
-	// ²»ÓÃ³õÊ¼»¯Àà¶ÔÏó¾Í¿ÉÒÔ·ÃÎÊÁË
+	// ä¸ç”¨åˆå§‹åŒ–ç±»å¯¹è±¡å°±å¯ä»¥è®¿é—®äº†
 	Singleton::GetInstancePtr()->Test();
 	Singleton::GetInstance().Test();
 

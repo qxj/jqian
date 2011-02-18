@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/06/30
 	filename: 	Main.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	²âÊÔFactoryÄ£Ê½µÄ´úÂë
+	purpose:	æµ‹è¯•Factoryæ¨¡å¼çš„ä»£ç 
 *********************************************************************/
 
 #include "Factory.h"

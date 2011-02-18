@@ -1,16 +1,16 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Prototype.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	PrototypeÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Prototypeæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef PROTOTYPE_H
 #define PROTOTYPE_H
 
-// ĞéÄâ»ùÀà,ËùÓĞÔ­ĞÍµÄ»ùÀà,Ìá¹©Clone½Ó¿Úº¯Êı
+// è™šæ‹ŸåŸºç±»,æ‰€æœ‰åŸå‹çš„åŸºç±»,æä¾›Cloneæ¥å£å‡½æ•°
 class Prototype
 {
 public:
@@ -20,7 +20,7 @@ public:
 	virtual Prototype* Clone() = 0;
 };
 
-// ÅÉÉú×ÔPrototype,ÊµÏÖClone·½·¨
+// æ´¾ç”Ÿè‡ªPrototype,å®ç°Cloneæ–¹æ³•
 class ConcreatePrototype1
 	: public Prototype
 {
@@ -32,7 +32,7 @@ public:
 	virtual Prototype* Clone();
 };
 
-// ÅÉÉú×ÔPrototype,ÊµÏÖClone·½·¨
+// æ´¾ç”Ÿè‡ªPrototype,å®ç°Cloneæ–¹æ³•
 class ConcreatePrototype2
 	: public Prototype
 {

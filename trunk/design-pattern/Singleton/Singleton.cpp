@@ -1,16 +1,16 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Singleton.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	SingletonÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Singletonæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "Singleton.h"
 #include <iostream>
 
-// ÀàµÄ¾²Ì¬³ÉÔ±±äÁ¿ÒªÔÚÀàÌåÍâ½øĞĞ¶¨Òå
+// ç±»çš„é™æ€æˆå‘˜å˜é‡è¦åœ¨ç±»ä½“å¤–è¿›è¡Œå®šä¹‰
 Singleton* Singleton::m_pStatic = NULL;
 
 Singleton* Singleton::GetInstancePtr()

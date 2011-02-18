@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Main.cpp
-	author:		Àî´´
+	author:		æŽåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	DecoratorÄ£Ê½µÄ²âÊÔ´úÂë
+	purpose:	Decoratoræ¨¡å¼çš„æµ‹è¯•ä»£ç 
 *********************************************************************/
 
 #include "Decorator.h"
@@ -12,10 +12,10 @@
 
 int main()
 {
-	// ³õÊ¼»¯Ò»¸öComponent¶ÔÏó
+	// åˆå§‹åŒ–ä¸€ä¸ªComponentå¯¹è±¡
 	Component* pComponent = new ConcreateComponent();
-	// ²ÉÓÃÕâ¸öComponent¶ÔÏóÈ¥³õÊ¼»¯Ò»¸öDecorator¶ÔÏó,
-	// ÕâÑù¾Í¿ÉÒÔÎªÕâ¸öComponent¶ÔÏó¶¯Ì¬Ìí¼ÓÖ°Ôð
+	// é‡‡ç”¨è¿™ä¸ªComponentå¯¹è±¡åŽ»åˆå§‹åŒ–ä¸€ä¸ªDecoratorå¯¹è±¡,
+	// è¿™æ ·å°±å¯ä»¥ä¸ºè¿™ä¸ªComponentå¯¹è±¡åŠ¨æ€æ·»åŠ èŒè´£
 	Decorator* pDecorator = new ConcreateDecorator(pComponent);
 
 	pDecorator->Operation();

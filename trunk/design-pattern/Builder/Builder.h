@@ -1,29 +1,29 @@
 /********************************************************************
 	created:	2006/07/19
 	filename: 	Builder.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	BuilderÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Builderæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef BUILDER_H
 #define BUILDER_H
 
-// ĞéÄâ»ùÀà,ÊÇËùÓĞBuilderµÄ»ùÀà,Ìá¹©²»Í¬²¿·ÖµÄ¹¹½¨½Ó¿Úº¯Êı
+// è™šæ‹ŸåŸºç±»,æ˜¯æ‰€æœ‰Builderçš„åŸºç±»,æä¾›ä¸åŒéƒ¨åˆ†çš„æ„å»ºæ¥å£å‡½æ•°
 class Builder
 {
 public:
 	Builder(){};
 	virtual ~Builder(){}
 
-	// ´¿Ğéº¯Êı,Ìá¹©¹¹½¨²»Í¬²¿·ÖµÄ¹¹½¨½Ó¿Úº¯Êı
+	// çº¯è™šå‡½æ•°,æä¾›æ„å»ºä¸åŒéƒ¨åˆ†çš„æ„å»ºæ¥å£å‡½æ•°
 	virtual void BuilderPartA() = 0;
 	virtual void BuilderPartB() = 0;
 };
 
-// Ê¹ÓÃBuilder¹¹½¨²úÆ·,¹¹½¨²úÆ·µÄ¹ı³Ì¶¼Ò»ÖÂ,µ«ÊÇ²»Í¬µÄbuilderÓĞ²»Í¬µÄÊµÏÖ
-// Õâ¸ö²»Í¬µÄÊµÏÖÍ¨¹ı²»Í¬µÄBuilderÅÉÉúÀàÀ´ÊµÏÖ,´æÓĞÒ»¸öBuilderµÄÖ¸Õë,Í¨¹ıÕâ¸öÀ´ÊµÏÖ¶àÌ¬µ÷ÓÃ
+// ä½¿ç”¨Builderæ„å»ºäº§å“,æ„å»ºäº§å“çš„è¿‡ç¨‹éƒ½ä¸€è‡´,ä½†æ˜¯ä¸åŒçš„builderæœ‰ä¸åŒçš„å®ç°
+// è¿™ä¸ªä¸åŒçš„å®ç°é€šè¿‡ä¸åŒçš„Builderæ´¾ç”Ÿç±»æ¥å®ç°,å­˜æœ‰ä¸€ä¸ªBuilderçš„æŒ‡é’ˆ,é€šè¿‡è¿™ä¸ªæ¥å®ç°å¤šæ€è°ƒç”¨
 class Director
 {
 public:
@@ -36,7 +36,7 @@ private:
 	Builder* m_pBuilder;
 };
 
-// BuilderµÄÅÉÉúÀà,ÊµÏÖBuilderPartAºÍBuilderPartB½Ó¿Úº¯Êı
+// Builderçš„æ´¾ç”Ÿç±»,å®ç°BuilderPartAå’ŒBuilderPartBæ¥å£å‡½æ•°
 class ConcreateBuilder1
 	: public Builder
 {
@@ -48,7 +48,7 @@ public:
 	virtual void BuilderPartB();
 };
 
-// BuilderµÄÅÉÉúÀà,ÊµÏÖBuilderPartAºÍBuilderPartB½Ó¿Úº¯Êı
+// Builderçš„æ´¾ç”Ÿç±»,å®ç°BuilderPartAå’ŒBuilderPartBæ¥å£å‡½æ•°
 class ConcreateBuilder2
 	: public Builder
 {

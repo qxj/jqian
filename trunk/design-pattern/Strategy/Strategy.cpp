@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/06
 	filename: 	Strategy.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	StrategyÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Strategyæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include <iostream>

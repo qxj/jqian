@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/06
 	filename: 	Main.cpp
-	author:		�
+	author:		李创
                 http://www.cppblog.com/converse/
 
-	purpose:	Strategyģʽ�Ĳ��Դ���
+	purpose:	Strategy模式的测试代码
 *********************************************************************/
 
 #include "Strategy.h"

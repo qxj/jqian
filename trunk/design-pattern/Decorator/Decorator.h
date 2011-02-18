@@ -1,27 +1,27 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Decorator.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	DecoratorÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Decoratoræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef DECORATOR_H
 #define DECORATOR_H
 
-// ³éÏó»ùÀà,¶¨ÒåÒ»¸ö¶ÔÏó½Ó¿Ú,¿ÉÒÔÎªÕâ¸ö½Ó¿Ú¶¯Ì¬µÄÌí¼ÓÖ°Ôğ.
+// æŠ½è±¡åŸºç±»,å®šä¹‰ä¸€ä¸ªå¯¹è±¡æ¥å£,å¯ä»¥ä¸ºè¿™ä¸ªæ¥å£åŠ¨æ€çš„æ·»åŠ èŒè´£.
 class Component
 {
 public:
 	Component(){}
 	virtual ~Component(){}
 
-	// ´¿Ğéº¯Êı,ÓÉÅÉÉúÀàÊµÏÖ
+	// çº¯è™šå‡½æ•°,ç”±æ´¾ç”Ÿç±»å®ç°
 	virtual void Operation() = 0;
 };
 
-// ³éÏó»ùÀà,Î¬»¤Ò»¸öÖ¸ÏòComponent¶ÔÏóµÄÖ¸Õë
+// æŠ½è±¡åŸºç±»,ç»´æŠ¤ä¸€ä¸ªæŒ‡å‘Componentå¯¹è±¡çš„æŒ‡é’ˆ
 class Decorator
 	: public Component
 {
@@ -33,7 +33,7 @@ protected:
 	Component* m_pComponent;
 };
 
-// ÅÉÉú×ÔComponent,ÔÚÕâÀï±íÊ¾ĞèÒª¸øËü¶¯Ì¬Ìí¼ÓÖ°ÔğµÄÀà
+// æ´¾ç”Ÿè‡ªComponent,åœ¨è¿™é‡Œè¡¨ç¤ºéœ€è¦ç»™å®ƒåŠ¨æ€æ·»åŠ èŒè´£çš„ç±»
 class ConcreateComponent
 	: public Component
 {
@@ -44,7 +44,7 @@ public:
 	virtual void Operation();
 };
 
-// ÅÉÉú×ÔDecorator,ÕâÀï´ú±íÎªConcreateComponent¶¯Ì¬Ìí¼ÓÖ°ÔğµÄÀà
+// æ´¾ç”Ÿè‡ªDecorator,è¿™é‡Œä»£è¡¨ä¸ºConcreateComponentåŠ¨æ€æ·»åŠ èŒè´£çš„ç±»
 class ConcreateDecorator
 	: public Decorator
 {

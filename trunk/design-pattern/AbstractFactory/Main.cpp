@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/19
 	filename: 	Main.cpp
-	author:		Àî´´
+	author:		æŽåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	AbstractFactoryµÄ²âÊÔ´úÂë
+	purpose:	AbstractFactoryçš„æµ‹è¯•ä»£ç 
 *********************************************************************/
 
 #include "AbstractFactory.h"
@@ -12,11 +12,11 @@
 
 int main()
 {
-	// Éú²ú²úÆ·AµÄµÚÒ»ÖÖÊµÏÖ
+	// ç”Ÿäº§äº§å“Açš„ç¬¬ä¸€ç§å®žçŽ°
 	ConcreateFactory1 *pFactory1 = new ConcreateFactory1;
 	AbstractProductA *pProductA = pFactory1->CreateProductA();
 
-	// Éú²ú²úÆ·BµÄµÚ¶þÖÖÊµÏÖ
+	// ç”Ÿäº§äº§å“Bçš„ç¬¬äºŒç§å®žçŽ°
 	ConcreateFactory2 *pFactory2 = new ConcreateFactory2;
 	AbstractProductB *pProductB = pFactory2->CreateProductB();
 

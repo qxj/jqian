@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Main.cpp
-	author:		�
+	author:		李创
                 http://www.cppblog.com/converse/
 
-	purpose:	Builderģʽ�Ĳ��Դ���
+	purpose:	Builder模式的测试代码
 *********************************************************************/
 
 #include "Builder.h"

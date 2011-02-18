@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/04
 	filename: 	Iterator.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	IteratorÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Iteratoræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include <iostream>

@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	ChainOfResponsibility.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	ChainOfResponsibilityÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	ChainOfResponsibilityæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef CHAINOFRESPONSIBILITY_H
@@ -12,14 +12,14 @@
 
 #include <stdio.h>
 
-// ³éÏó»ùÀà,¶¨ÒåÒ»¸ö´¦ÀíÇëÇóµÄ½Ó¿Ú
+// æŠ½è±¡åŸºç±»,å®šä¹‰ä¸€ä¸ªå¤„ç†è¯·æ±‚çš„æ¥å£
 class Handler
 {
 public:
 	Handler(Handler *pSuccessor = NULL);
 	virtual ~Handler();
 
-	// ´¿Ğéº¯Êı,ÓÉÅÉÉúÀàÊµÏÖ
+	// çº¯è™šå‡½æ•°,ç”±æ´¾ç”Ÿç±»å®ç°
 	virtual void HandleRequset() = 0;
 
 protected:

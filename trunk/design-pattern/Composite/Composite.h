@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Composite.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	CompositeÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Compositeæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef COMPOSITE_H
@@ -12,23 +12,23 @@
 
 #include <list>
 
-// ×éºÏÖĞµÄ³éÏó»ùÀà
+// ç»„åˆä¸­çš„æŠ½è±¡åŸºç±»
 class Component
 {
 public:
 	Component(){}
 	virtual ~Component(){}
 
-	// ´¿Ğéº¯Êı,Ö»Ìá¹©½Ó¿Ú,Ã»ÓĞÄ¬ÈÏµÄÊµÏÖ
+	// çº¯è™šå‡½æ•°,åªæä¾›æ¥å£,æ²¡æœ‰é»˜è®¤çš„å®ç°
 	virtual void Operation() = 0;
 
-	// Ğéº¯Êı,Ìá¹©½Ó¿Ú,ÓĞÄ¬ÈÏµÄÊµÏÖ¾ÍÊÇÊ²Ã´¶¼²»×ö
+	// è™šå‡½æ•°,æä¾›æ¥å£,æœ‰é»˜è®¤çš„å®ç°å°±æ˜¯ä»€ä¹ˆéƒ½ä¸åš
 	virtual void Add(Component* pChild);
 	virtual void Remove(Component* pChild);
 	virtual Component* GetChild(int nIndex);
 };
 
-// ÅÉÉú×ÔComponent,ÊÇÆäÖĞµÄÒ¶×Ó×é¼şµÄ»ùÀà
+// æ´¾ç”Ÿè‡ªComponent,æ˜¯å…¶ä¸­çš„å¶å­ç»„ä»¶çš„åŸºç±»
 class Leaf
 	: public Component
 {
@@ -39,7 +39,7 @@ public:
 	virtual void Operation();
 };
 
-// ÅÉÉú×ÔComponent,ÊÇÆäÖĞµÄº¬ÓĞ×Ó¼şµÄ×é¼şµÄ»ùÀà
+// æ´¾ç”Ÿè‡ªComponent,æ˜¯å…¶ä¸­çš„å«æœ‰å­ä»¶çš„ç»„ä»¶çš„åŸºç±»
 class Composite
 	: public Component
 {
@@ -54,7 +54,7 @@ public:
 	virtual Component* GetChild(int nIndex);
 
 private:
-	// ²ÉÓÃlistÈİÆ÷È¥±£´æ×Ó×é¼ş
+	// é‡‡ç”¨listå®¹å™¨å»ä¿å­˜å­ç»„ä»¶
 	std::list<Component*>	m_ListOfComponent;
 };
 

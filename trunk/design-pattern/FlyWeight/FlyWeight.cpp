@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/26
 	filename: 	FlyWeight.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	FlyWeightÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	FlyWeightæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "FlyWeight.h"

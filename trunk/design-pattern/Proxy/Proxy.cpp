@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/26
 	filename: 	Proxy.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	ProxyÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Proxyæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "Proxy.h"
@@ -34,7 +34,7 @@ Proxy::~Proxy()
 
 void Proxy::Request()
 {
-	// ĞèÒªÊ¹ÓÃRealSubjectµÄÊ±ºò²ÅÈ¥³õÊ¼»¯
+	// éœ€è¦ä½¿ç”¨RealSubjectçš„æ—¶å€™æ‰å»åˆå§‹åŒ–
 	if (NULL == m_pRealSubject)
 	{
 		std::cout << "Request By Proxy\n";

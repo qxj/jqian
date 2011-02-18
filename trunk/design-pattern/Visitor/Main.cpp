@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/09
 	filename: 	Main.cpp
-	author:		�
+	author:		李创
                 http://www.cppblog.com/converse/
 
-	purpose:	Visitorģʽ�Ĳ��Դ���
+	purpose:	Visitor模式的测试代码
 *********************************************************************/
 
 #include "Visitor.h"
