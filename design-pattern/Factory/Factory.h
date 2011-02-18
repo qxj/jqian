@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/06/30
 	filename: 	Factory.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	FactoryÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Factoryæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef FACTORY_H

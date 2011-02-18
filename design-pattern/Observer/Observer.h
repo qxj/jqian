@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Observer.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	ObserverÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Observeræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef OBSERVER_H
@@ -16,42 +16,42 @@ typedef int STATE;
 
 class Observer;
 
-// Subject³éÏó»ùÀà,Ö»ĞèÒªÖªµÀObserver»ùÀàµÄÉùÃ÷¾Í¿ÉÒÔÁË
+// SubjectæŠ½è±¡åŸºç±»,åªéœ€è¦çŸ¥é“ObserveråŸºç±»çš„å£°æ˜å°±å¯ä»¥äº†
 class Subject
 {
 public:
 	Subject() : m_nSubjectState(-1){}
 	virtual ~Subject();
 
-	void Notify();							// Í¨Öª¶ÔÏó¸Ä±ä×´Ì¬
-	void Attach(Observer *pObserver);		// ĞÂÔö¶ÔÏó
-	void Detach(Observer *pObserver);		// É¾³ı¶ÔÏó
+	void Notify();							// é€šçŸ¥å¯¹è±¡æ”¹å˜çŠ¶æ€
+	void Attach(Observer *pObserver);		// æ–°å¢å¯¹è±¡
+	void Detach(Observer *pObserver);		// åˆ é™¤å¯¹è±¡
 
-	// Ğéº¯Êı,Ìá¹©Ä¬ÈÏµÄÊµÏÖ,ÅÉÉúÀà¿ÉÒÔ×Ô¼ºÊµÏÖÀ´¸²¸Ç»ùÀàµÄÊµÏÖ
-	virtual void	SetState(STATE nState);	// ÉèÖÃ×´Ì¬
-	virtual STATE	GetState();		// µÃµ½×´Ì¬
+	// è™šå‡½æ•°,æä¾›é»˜è®¤çš„å®ç°,æ´¾ç”Ÿç±»å¯ä»¥è‡ªå·±å®ç°æ¥è¦†ç›–åŸºç±»çš„å®ç°
+	virtual void	SetState(STATE nState);	// è®¾ç½®çŠ¶æ€
+	virtual STATE	GetState();		// å¾—åˆ°çŠ¶æ€
 
 protected:
-	STATE m_nSubjectState;					// Ä£Äâ±£´æSubject×´Ì¬µÄ±äÁ¿
-	std::list<Observer*>	m_ListObserver;	// ±£´æObserverÖ¸ÕëµÄÁ´±í
+	STATE m_nSubjectState;					// æ¨¡æ‹Ÿä¿å­˜SubjectçŠ¶æ€çš„å˜é‡
+	std::list<Observer*>	m_ListObserver;	// ä¿å­˜ObserveræŒ‡é’ˆçš„é“¾è¡¨
 };
 
-// Observer³éÏó»ùÀà
+// ObserveræŠ½è±¡åŸºç±»
 class Observer
 {
 public:
 	Observer() : m_nObserverState(-1){}
 	virtual ~Observer(){}
 
-	// ´¿Ğéº¯Êı,¸÷¸öÅÉÉúÀà¿ÉÄÜÓĞ²»Í¬µÄÊµÏÖ
-	// Í¨ÖªObserver×´Ì¬·¢ÉúÁË±ä»¯
+	// çº¯è™šå‡½æ•°,å„ä¸ªæ´¾ç”Ÿç±»å¯èƒ½æœ‰ä¸åŒçš„å®ç°
+	// é€šçŸ¥ObserverçŠ¶æ€å‘ç”Ÿäº†å˜åŒ–
 	virtual void Update(Subject* pSubject) = 0;
 
 protected:
-	STATE m_nObserverState;					// Ä£Äâ±£´æObserver×´Ì¬µÄ±äÁ¿
+	STATE m_nObserverState;					// æ¨¡æ‹Ÿä¿å­˜ObserverçŠ¶æ€çš„å˜é‡
 };
 
-// ConcreateSubjectÀà,ÅÉÉúÔÚSubjectÀà
+// ConcreateSubjectç±»,æ´¾ç”Ÿåœ¨Subjectç±»
 class ConcreateSubject
 	: public Subject
 {
@@ -59,13 +59,13 @@ public:
 	ConcreateSubject() : Subject(){}
 	virtual ~ConcreateSubject(){}
 
-	// ÅÉÉúÀà×Ô¼ºÊµÏÖÀ´¸²¸Ç»ùÀàµÄÊµÏÖ
-	virtual void	SetState(STATE nState);	// ÉèÖÃ×´Ì¬
-	virtual STATE	GetState();		// µÃµ½×´Ì¬
+	// æ´¾ç”Ÿç±»è‡ªå·±å®ç°æ¥è¦†ç›–åŸºç±»çš„å®ç°
+	virtual void	SetState(STATE nState);	// è®¾ç½®çŠ¶æ€
+	virtual STATE	GetState();		// å¾—åˆ°çŠ¶æ€
 
 };
 
-// ConcreateObserverÀàÅÉÉú×ÔObserver
+// ConcreateObserverç±»æ´¾ç”Ÿè‡ªObserver
 class ConcreateObserver
 	: public Observer
 {
@@ -73,7 +73,7 @@ public:
 	ConcreateObserver() : Observer(){}
 	virtual ~ConcreateObserver(){}
 
-	// Ğéº¯Êı,ÊµÏÖ»ùÀàÌá¹©µÄ½Ó¿Ú
+	// è™šå‡½æ•°,å®ç°åŸºç±»æä¾›çš„æ¥å£
 	virtual void Update(Subject* pSubject);
 };
 

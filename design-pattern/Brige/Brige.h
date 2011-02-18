@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Brige.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	BrigeÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Brigeæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef BRIDEG_H
@@ -12,7 +12,7 @@
 
 class Implementor;
 
-// Î¬»¤Ò»¸öImplementorÀàµÄÖ¸Õë
+// ç»´æŠ¤ä¸€ä¸ªImplementorç±»çš„æŒ‡é’ˆ
 class Abstraction
 {
 public:
@@ -25,7 +25,7 @@ protected:
 	Implementor* m_pImplementor;
 };
 
-// ÎªÊµÏÖAbstraction¶¨ÒåµÄ³éÏó»ùÀà,¶¨ÒåÁËÊµÏÖµÄ½Ó¿Úº¯Êı
+// ä¸ºå®ç°Abstractionå®šä¹‰çš„æŠ½è±¡åŸºç±»,å®šä¹‰äº†å®ç°çš„æ¥å£å‡½æ•°
 class Implementor
 {
 public:
@@ -35,7 +35,7 @@ public:
 	virtual void OperationImpl() = 0;
 };
 
-// ¼Ì³Ğ×ÔImplementor,ÊÇImplementorµÄ²»Í¬ÊµÏÖÖ®Ò»
+// ç»§æ‰¿è‡ªImplementor,æ˜¯Implementorçš„ä¸åŒå®ç°ä¹‹ä¸€
 class ConcreateImplementorA
 	: public Implementor
 {
@@ -46,7 +46,7 @@ public:
 	virtual void OperationImpl();
 };
 
-// ¼Ì³Ğ×ÔImplementor,ÊÇImplementorµÄ²»Í¬ÊµÏÖÖ®Ò»
+// ç»§æ‰¿è‡ªImplementor,æ˜¯Implementorçš„ä¸åŒå®ç°ä¹‹ä¸€
 class ConcreateImplementorB
 	: public Implementor
 {

@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/09
 	filename: 	Visitor.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	VisitorÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Visitoræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef VISITOR_H

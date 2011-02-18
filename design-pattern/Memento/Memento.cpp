@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/09
 	filename: 	Memento.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	MementoÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Mementoæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "Memento.h"

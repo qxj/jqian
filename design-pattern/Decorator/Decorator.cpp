@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Decorator.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	DecoratorÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Decoratoræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "Decorator.h"

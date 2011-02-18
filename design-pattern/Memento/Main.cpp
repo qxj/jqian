@@ -1,28 +1,28 @@
 /********************************************************************
 	created:	2006/08/09
 	filename: 	Main.cpp
-	author:		Àî´´
+	author:		æŽåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	MementoÄ£Ê½µÄ²âÊÔ´úÂë
+	purpose:	Mementoæ¨¡å¼çš„æµ‹è¯•ä»£ç 
 *********************************************************************/
 
 #include "Memento.h"
 
 int main()
 {
-	// ´´½¨Ò»¸öÔ­·¢Æ÷
+	// åˆ›å»ºä¸€ä¸ªåŽŸå‘å™¨
 	Originator* pOriginator = new Originator("old state");
 	pOriginator->PrintState();
 
-	// ´´½¨Ò»¸ö±¸ÍüÂ¼´æ·ÅÕâ¸öÔ­·¢Æ÷µÄ×´Ì¬
+	// åˆ›å»ºä¸€ä¸ªå¤‡å¿˜å½•å­˜æ”¾è¿™ä¸ªåŽŸå‘å™¨çš„çŠ¶æ€
 	Memento *pMemento = pOriginator->CreateMemento();
 	
-	// ¸ü¸ÄÔ­·¢Æ÷µÄ×´Ì¬
+	// æ›´æ”¹åŽŸå‘å™¨çš„çŠ¶æ€
 	pOriginator->SetState("new state");
 	pOriginator->PrintState();
 
-	// Í¨¹ý±¸ÍüÂ¼°ÑÔ­·¢Æ÷µÄ×´Ì¬»¹Ô­µ½Ö®Ç°µÄ×´Ì¬
+	// é€šè¿‡å¤‡å¿˜å½•æŠŠåŽŸå‘å™¨çš„çŠ¶æ€è¿˜åŽŸåˆ°ä¹‹å‰çš„çŠ¶æ€
 	pOriginator->RestoreState(pMemento);
 	pOriginator->PrintState();
 

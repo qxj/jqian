@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/05
 	filename: 	State.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	StateÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Stateæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "State.h"

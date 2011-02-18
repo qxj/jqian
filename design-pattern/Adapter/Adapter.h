@@ -1,16 +1,16 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	Adapter.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	AdapterÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Adapteræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef ADAPTER_H
 #define ADAPTER_H
 
-// ĞèÒª±»AdaptµÄÀà
+// éœ€è¦è¢«Adaptçš„ç±»
 class Target
 {
 public:
@@ -20,7 +20,7 @@ public:
 	virtual void Request() = 0;
 };
 
-// Óë±»Adapt¶ÔÏóÌá¹©²»¼æÈİ½Ó¿ÚµÄÀà
+// ä¸è¢«Adaptå¯¹è±¡æä¾›ä¸å…¼å®¹æ¥å£çš„ç±»
 class Adaptee
 {
 public:
@@ -29,7 +29,7 @@ public:
 	void SpecialRequest();
 };
 
-// ½øĞĞAdaptµÄÀà,²ÉÓÃ¾ÛºÏÔ­ÓĞ½Ó¿ÚÀàµÄ·½Ê½
+// è¿›è¡ŒAdaptçš„ç±»,é‡‡ç”¨èšåˆåŸæœ‰æ¥å£ç±»çš„æ–¹å¼
 class Adapter
 	: public Target
 {

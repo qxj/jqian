@@ -1,16 +1,16 @@
 /********************************************************************
 	created:	2006/07/19
 	filename: 	AbstractFactory.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	AbstractFactoryµÄÑİÊ¾´úÂë
+	purpose:	AbstractFactoryçš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef ABSTRACTFACTORY_H
 #define ABSTRACTFACTORY_H
 
-// ³éÏó»ùÀàAbstractProductA,´ú±í²úÆ·AµÄ³éÏó
+// æŠ½è±¡åŸºç±»AbstractProductA,ä»£è¡¨äº§å“Açš„æŠ½è±¡
 class AbstractProductA
 {
 public:
@@ -18,7 +18,7 @@ public:
 	virtual ~AbstractProductA(){};
 };
 
-// ÅÉÉúÀàConcreateProductA1,¼Ì³Ğ×ÔAbstractProductA,´ú±í²úÆ·AµÄµÚÒ»ÖÖÊµÏÖ
+// æ´¾ç”Ÿç±»ConcreateProductA1,ç»§æ‰¿è‡ªAbstractProductA,ä»£è¡¨äº§å“Açš„ç¬¬ä¸€ç§å®ç°
 class ConcreateProductA1
 	: public AbstractProductA
 {
@@ -27,7 +27,7 @@ public:
 	virtual ~ConcreateProductA1();
 };
 
-// ÅÉÉúÀàConcreateProductA2,¼Ì³Ğ×ÔAbstractProductA,´ú±í²úÆ·AµÄµÚ¶şÖÖÊµÏÖ
+// æ´¾ç”Ÿç±»ConcreateProductA2,ç»§æ‰¿è‡ªAbstractProductA,ä»£è¡¨äº§å“Açš„ç¬¬äºŒç§å®ç°
 class ConcreateProductA2
 	: public AbstractProductA
 {
@@ -36,7 +36,7 @@ public:
 	virtual ~ConcreateProductA2();
 };
 
-// ³éÏó»ùÀàAbstractProductB,´ú±í²úÆ·BµÄ³éÏó
+// æŠ½è±¡åŸºç±»AbstractProductB,ä»£è¡¨äº§å“Bçš„æŠ½è±¡
 class AbstractProductB
 {
 public:
@@ -44,7 +44,7 @@ public:
 	virtual ~AbstractProductB(){};
 };
 
-// ÅÉÉúÀàConcreateProductB1,¼Ì³Ğ×ÔAbstractProductB,´ú±í²úÆ·BµÄµÚÒ»ÖÖÊµÏÖ
+// æ´¾ç”Ÿç±»ConcreateProductB1,ç»§æ‰¿è‡ªAbstractProductB,ä»£è¡¨äº§å“Bçš„ç¬¬ä¸€ç§å®ç°
 class ConcreateProductB1
 	: public AbstractProductB
 {
@@ -53,7 +53,7 @@ public:
 	virtual ~ConcreateProductB1();
 };
 
-// ÅÉÉúÀàConcreateProductB2,¼Ì³Ğ×ÔAbstractProductB,´ú±í²úÆ·BµÄµÚ¶şÖÖÊµÏÖ
+// æ´¾ç”Ÿç±»ConcreateProductB2,ç»§æ‰¿è‡ªAbstractProductB,ä»£è¡¨äº§å“Bçš„ç¬¬äºŒç§å®ç°
 class ConcreateProductB2
 	: public AbstractProductB
 {
@@ -62,7 +62,7 @@ public:
 	virtual ~ConcreateProductB2();
 };
 
-// ³éÏó»ùÀàAbstractFactory,¹¤³§µÄ³éÏóÀà,Éú²ú²úÆ·AºÍ²úÆ·B
+// æŠ½è±¡åŸºç±»AbstractFactory,å·¥å‚çš„æŠ½è±¡ç±»,ç”Ÿäº§äº§å“Aå’Œäº§å“B
 class AbstractFactory
 {
 public:
@@ -73,8 +73,8 @@ public:
 	virtual AbstractProductB* CreateProductB() = 0;
 };
 
-// ÅÉÉúÀàConcreateFactory1,¼Ì³Ğ×ÔAbstractFactory
-// Éú²ú²úÆ·AºÍ²úÆ·BµÄµÚÒ»ÖÖÊµÏÖ
+// æ´¾ç”Ÿç±»ConcreateFactory1,ç»§æ‰¿è‡ªAbstractFactory
+// ç”Ÿäº§äº§å“Aå’Œäº§å“Bçš„ç¬¬ä¸€ç§å®ç°
 class ConcreateFactory1
 	: public AbstractFactory
 {
@@ -86,8 +86,8 @@ public:
 	virtual AbstractProductB* CreateProductB();
 };
 
-// ÅÉÉúÀàConcreateFactory2,¼Ì³Ğ×ÔAbstractFactory
-// Éú²ú²úÆ·AºÍ²úÆ·BµÄµÚ¶şÖÖÊµÏÖ
+// æ´¾ç”Ÿç±»ConcreateFactory2,ç»§æ‰¿è‡ªAbstractFactory
+// ç”Ÿäº§äº§å“Aå’Œäº§å“Bçš„ç¬¬äºŒç§å®ç°
 class ConcreateFactory2
 	: public AbstractFactory
 {

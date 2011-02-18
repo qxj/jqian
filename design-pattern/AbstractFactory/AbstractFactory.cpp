@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/19
 	filename: 	AbstractFactory.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	AbstractFactoryµÄÑİÊ¾´úÂë
+	purpose:	AbstractFactoryçš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include <iostream>

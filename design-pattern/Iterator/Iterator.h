@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/04
 	filename: 	Iterator.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	IteratorÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Iteratoræ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef ITERATOR_H
@@ -14,7 +14,7 @@ typedef int DATA;
 
 class Iterater;
 
-// ÈİÆ÷µÄ³éÏó»ùÀà
+// å®¹å™¨çš„æŠ½è±¡åŸºç±»
 class Aggregate
 {
 public:
@@ -25,7 +25,7 @@ public:
 	virtual DATA GetItem(int nIndex) = 0;
 };
 
-// µü´úÆ÷µÄ³éÏó»ùÀà
+// è¿­ä»£å™¨çš„æŠ½è±¡åŸºç±»
 class Iterater
 {
 public:
@@ -39,7 +39,7 @@ public:
 private:
 };
 
-// Ò»¸ö¾ßÌåµÄÈİÆ÷Àà,ÕâÀïÊÇÓÃÊı×é±íÊ¾
+// ä¸€ä¸ªå…·ä½“çš„å®¹å™¨ç±»,è¿™é‡Œæ˜¯ç”¨æ•°ç»„è¡¨ç¤º
 class ConcreateAggregate
 	: public Aggregate
 {
@@ -56,7 +56,7 @@ private:
 	DATA *m_pData;
 };
 
-// ·ÃÎÊConcreateAggregateÈİÆ÷ÀàµÄµü´úÆ÷Àà
+// è®¿é—®ConcreateAggregateå®¹å™¨ç±»çš„è¿­ä»£å™¨ç±»
 class ConcreateIterater
 	: public Iterater
 {

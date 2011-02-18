@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/04
 	filename: 	main.cpp
-	author:		�
+	author:		李创
                 http://www.cppblog.com/converse/
 
-	purpose:	Commandģʽ�Ĳ��Դ���
+	purpose:	Command模式的测试代码
 *********************************************************************/
 
 #include "Command.h"

@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/04
 	filename: 	Command.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	CommandÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Commandæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "Command.h"

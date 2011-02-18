@@ -1,17 +1,17 @@
 /********************************************************************
 	created:	2006/07/26
 	filename: 	Proxy.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	ProxyÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Proxyæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef PROXY_H
 #define PROXY_H
 
-// ¶¨ÒåÁËProxyºÍRealSubjectµÄ¹«ÓĞ½Ó¿Ú,
-// ÕâÑù¾Í¿ÉÒÔÔÚÈÎºÎĞèÒªÊ¹ÓÃµ½RealSubjectµÄµØ·½¶¼Ê¹ÓÃProxy.
+// å®šä¹‰äº†Proxyå’ŒRealSubjectçš„å…¬æœ‰æ¥å£,
+// è¿™æ ·å°±å¯ä»¥åœ¨ä»»ä½•éœ€è¦ä½¿ç”¨åˆ°RealSubjectçš„åœ°æ–¹éƒ½ä½¿ç”¨Proxy.
 class Subject
 {
 public:
@@ -21,7 +21,7 @@ public:
 	virtual void Request() = 0;
 };
 
-// ÕæÕıÊ¹ÓÃµÄÊµÌå
+// çœŸæ­£ä½¿ç”¨çš„å®ä½“
 class RealSubject
 	: public Subject
 {
@@ -32,7 +32,7 @@ public:
 	virtual void Request();
 };
 
-// ´úÀíÀà,º¬ÓĞÒ»¸öÖ¸ÏòRealSubject¶ÔÏóµÄÖ¸Õë
+// ä»£ç†ç±»,å«æœ‰ä¸€ä¸ªæŒ‡å‘RealSubjectå¯¹è±¡çš„æŒ‡é’ˆ
 class Proxy
 	: public Subject
 {

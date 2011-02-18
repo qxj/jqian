@@ -1,29 +1,29 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	TemplateMethod.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	TemplateMethodÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	TemplateMethodæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
-// ³éÏó»ùÀà,¶¨ÒåËã·¨µÄÂÖÀª
+// æŠ½è±¡åŸºç±»,å®šä¹‰ç®—æ³•çš„è½®å»“
 class AbstractClass
 {
 public:
 	AbstractClass(){}
 	virtual ~AbstractClass(){}
 
-	// Õâ¸öº¯ÊıÖĞ¶¨ÒåÁËËã·¨µÄÂÖÀª
+	// è¿™ä¸ªå‡½æ•°ä¸­å®šä¹‰äº†ç®—æ³•çš„è½®å»“
 	void TemplateMethod();
 
 protected:
-	// ´¿Ğéº¯Êı,ÓÉÅÉÉúÀàÊµÏÖÖ®
+	// çº¯è™šå‡½æ•°,ç”±æ´¾ç”Ÿç±»å®ç°ä¹‹
 	virtual void PrimitiveOperation1() = 0;
 	virtual void PrimitiveOperation2() = 0;
 };
 
-// ¼Ì³Ğ×ÔAbstractClass,ÊµÏÖËã·¨
+// ç»§æ‰¿è‡ªAbstractClass,å®ç°ç®—æ³•
 class ConcreateClass
 	: public AbstractClass
 {

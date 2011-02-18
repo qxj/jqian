@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/07/20
 	filename: 	ChainOfResponsibility.cpp
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	ChainOfResponsibilityÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	ChainOfResponsibilityæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #include "ChainOfResponsibility.h"

@@ -1,10 +1,10 @@
 /********************************************************************
 	created:	2006/08/09
 	filename: 	Memento.h
-	author:		Àî´´
+	author:		æåˆ›
                 http://www.cppblog.com/converse/
 
-	purpose:	MementoÄ£Ê½µÄÑİÊ¾´úÂë
+	purpose:	Mementoæ¨¡å¼çš„æ¼”ç¤ºä»£ç 
 *********************************************************************/
 
 #ifndef MEMENTO_H
@@ -34,8 +34,8 @@ private:
 	State		m_State;
 };
 
-// °ÑMementoµÄ½Ó¿Úº¯Êı¶¼ÉèÖÃÎªË½ÓĞµÄ,¶øOriginatorÊÇËüµÄÓÑÔª,
-// ÕâÑù±£Ö¤ÁËÖ»ÓĞOriginator¿ÉÒÔ¶ÔÆä·ÃÎÊ
+// æŠŠMementoçš„æ¥å£å‡½æ•°éƒ½è®¾ç½®ä¸ºç§æœ‰çš„,è€ŒOriginatoræ˜¯å®ƒçš„å‹å…ƒ,
+// è¿™æ ·ä¿è¯äº†åªæœ‰Originatorå¯ä»¥å¯¹å…¶è®¿é—®
 class Memento
 {
 private:
