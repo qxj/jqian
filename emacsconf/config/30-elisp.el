@@ -24,8 +24,9 @@
        ;; ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
        ;; ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
        ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
+       ("b"    . 'browse-url-of-dired-file)
        ("z"    . 'ywb-dired-compress-dir)
-       ("b"    . 'ywb-list-directory-recursive)
+       ("L"    . 'ywb-list-directory-recursive)
        ("E"    . 'ywb-dired-w3m-visit)
        ("j"    . 'ywb-dired-jump-to-file)
        ("J"    . 'woman-dired-find-file)
