@@ -58,6 +58,7 @@
   ;; ("v" . 'imenu-tree)
   ;; ("w" . 'ywb-favorite-window-config)
   ("\C-b" . 'browse-url-at-point)
+  ;; ("\C-b" . 'browse-url-of-buffer)
   ("\C-o" . 'my-switch-recent-buffer)
   ("\C-r" . 'my-revert-buffer)
   ("\C-t" . 'tv-view-history)
