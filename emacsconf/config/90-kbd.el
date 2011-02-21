@@ -238,17 +238,17 @@
     (one-key-default-create-menu "C-x 5")
     (one-key-default-create-menu "C-x n")
     (one-key-default-create-menu "C-x v")
+    (one-key-default-create-menu "C-x a i")
+    (one-key-default-create-menu "C-x a" "C-x a i")
+    (one-key-default-create-menu "C-x @")
+    (one-key-default-create-menu "C-x"
+                                 "C-x RET" "C-x ESC" "C-x 4" "C-x 5"
+                                 "C-x a" "C-x n" "C-x v")
     (one-key-default-create-menu "M-g ESC")
     (one-key-default-create-menu "M-g" "M-g ESC")
     (one-key-default-create-menu "M-o ESC")
     (one-key-default-create-menu "M-o" "M-o ESC")
     (one-key-default-create-menu "<f1> 4")
     (one-key-default-create-menu "<f1>" "<f1> 4")
-    (one-key-default-create-menu "C-x a i")
-    (one-key-default-create-menu "C-x a" "C-x a i")
-    ;;(one-key-default-create-menu "C-x @")
-    (one-key-default-create-menu "C-x"
-                                 "C-x RET" "C-x ESC" "C-x 4" "C-x 5" "C-x a"
-                                 "C-x n" "C-x r" "C-x v")
     )
   )
