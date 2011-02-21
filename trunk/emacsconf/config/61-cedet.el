@@ -214,20 +214,32 @@ the mru bookmark stack."
     ;; (setq semanticdb-project-roots (list (expand-file-name "/")))
 
     (when (executable-find "gcc")
-      (semantic-gcc-setup))
+      (semantic-gcc-setup)))
 
-    (deh-define-key c-mode-base-map
-      ((kbd "C-c , G") . 'semantic-symref)
-      ((kbd "<C-return>") . 'semantic-ia-complete-symbol-menu)
-      ((kbd "C-c , c") . 'semantic-ia-complete-symbol)
-      ((kbd "C-c , =") . 'semantic-decoration-include-visit)
-      ((kbd "C-c , j") . 'semantic-ia-fast-jump)
-      ((kbd "C-c , J") . 'semantic-complete-jump)
-      ((kbd "C-c , q") . 'semantic-ia-show-doc)
-      ((kbd "C-c , s") . 'semantic-ia-show-summary)
-      ((kbd "C-c , p") . 'semantic-analyze-proto-impl-toggle)
-      ((kbd "C-c , b") . 'semantic-ia-fast-jump-or-back)
-      ((kbd "C-c , B") . 'semantic-ia-fast-jump-back))
+  (deh-require-if 'semantic-tag-folding
+    window-system
+    (global-semantic-tag-folding-mode 1)
+    (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
+    (deh-define-key semantic-tag-folding-mode-map
+      ((kbd "C-c , -") . 'semantic-tag-folding-fold-block)
+      ((kbd "C-c , +") . 'semantic-tag-folding-show-block)
+      ((kbd "C-_")     . 'semantic-tag-folding-fold-all)
+      ((kbd "C-+")     . 'semantic-tag-folding-show-all)))
+
+  (deh-require 'senator
+    ;; senator-prefix-key: "C-c ,"
+    (deh-define-key senator-prefix-map
+      ("G" . 'semantic-symref)
+      ("RET" . 'semantic-ia-complete-symbol-menu)
+      ("c" . 'semantic-ia-complete-symbol)
+      ("=" . 'semantic-decoration-include-visit)
+      ("j" . 'semantic-ia-fast-jump)
+      ("J" . 'semantic-complete-jump)
+      ("q" . 'semantic-ia-show-doc)
+      ("s" . 'semantic-ia-show-summary)
+      ("p" . 'semantic-analyze-proto-impl-toggle)
+      ("b" . 'semantic-ia-fast-jump-or-back)
+      ("B" . 'semantic-ia-fast-jump-back))
 
     (defun semantic-ia-fast-jump-back ()
       (interactive)
@@ -244,7 +256,16 @@ the mru bookmark stack."
       (interactive "P")
       (if back
           (semantic-ia-fast-jump-back)
-        (semantic-ia-fast-jump (point))))
+        (semantic-ia-fast-jump (point)))))
+
+  (deh-require 'eassist
+    (deh-define-key c-mode-base-map
+      ((kbd "C-c A")   . 'eassist-switch-h-cpp))
+    (deh-local-set-keys (c-mode-common-hook
+                         python-mode-hook
+                         emacs-lisp-mode-hook)
+      ((kbd "C-c , l") . 'eassist-list-methods)
+      ((kbd "C-c L") . 'eassist-list-methods)))
 
   (deh-require 'pulse
     (defadvice my-switch-recent-buffer (after pulse-advice activate)
@@ -294,22 +315,3 @@ the mru bookmark stack."
       "After viss-bookmark-prev-buffer, pulse the line the cursor lands on."
       (when (and pulse-command-advice-flag (interactive-p))
         (pulse-momentary-highlight-one-line (point))))))
-
-  (deh-require-if 'semantic-tag-folding
-    window-system
-    (global-semantic-tag-folding-mode 1)
-    (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
-    (deh-define-key semantic-tag-folding-mode-map
-      ((kbd "C-c , -") . 'semantic-tag-folding-fold-block)
-      ((kbd "C-c , +") . 'semantic-tag-folding-show-block)
-      ((kbd "C-_")     . 'semantic-tag-folding-fold-all)
-      ((kbd "C-+")     . 'semantic-tag-folding-show-all)))
-
-  (deh-require 'eassist
-    (deh-define-key c-mode-base-map
-      ((kbd "C-c a")   . 'eassist-switch-h-cpp))
-    (deh-local-set-keys (c-mode-common-hook
-                         python-mode-hook
-                         emacs-lisp-mode-hook)
-      ((kbd "C-c , l") . 'eassist-list-methods)))
-    )
