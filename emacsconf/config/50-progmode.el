@@ -543,10 +543,12 @@ Use CREATE-TEMP-F for creating temp copy."
 ;; Setting for common hook
 (defun my-mode-common-hook ()
   (setq tab-width 4)
-  (set (make-local-variable 'tab-stop-list) (number-sequence tab-width 80 tab-width))
-  ;; (abbrev-mode t)
-  (set (make-local-variable 'comment-style) 'indent)
   (setq c-basic-offset tab-width)
+  (set (make-local-variable 'tab-stop-list)
+       (number-sequence tab-width 80 tab-width))
+  ;; (abbrev-mode t)
+  (set (make-local-variable 'comment-style)
+       'indent)
   ;; comment new line and indent `M-j', as VIM acts.
   (defun my-cursor-on-comment-p (&optional point)
     (memq (get-text-property (or point (point)) 'face)

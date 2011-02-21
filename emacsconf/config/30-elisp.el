@@ -37,19 +37,24 @@
        ("\C-q" . 'ywb-dired-quickview)
        ("/r"   . 'ywb-dired-filter-regexp)
        ("/."   . 'ywb-dired-filter-extension)
+       ("s"    . 'one-key-menu-dired-sort)
        )
      (if (eq system-type 'windows-nt)
          (deh-define-key dired-mode-map
            ("X"    . 'wcy-w32-shell-execute)))
-     ;; Sort something, prefix key `s'
-     (make-local-variable  'dired-sort-map)
-     (setq dired-sort-map (make-sparse-keymap))
-     (define-key dired-mode-map "s" dired-sort-map)
-     (deh-define-key dired-sort-map
-       ("s" . '(lambda () "sort by Size" (interactive) (dired-sort-other (concat dired-listing-switches "S"))))
-       ("x" . '(lambda () "sort by eXtension" (interactive) (dired-sort-other (concat dired-listing-switches "X"))))
-       ("t" . '(lambda () "sort by Time" (interactive) (dired-sort-other (concat dired-listing-switches "t"))))
-       ("n" . '(lambda () "sort by Name" (interactive) (dired-sort-other (concat dired-listing-switches "")))))
+
+     (defun one-key-menu-dired-sort ()
+       "The `one-key' menu for DIRED-SORT."
+       (interactive)
+       (one-key-menu
+        "DIRED-SORT"
+        '((("s" . "Size") . dired-sort-size)
+          (("x" . "Extension") . dired-sort-extension)
+          (("n" . "Name") . dired-sort-name)
+          (("t" . "Modified Time") . dired-sort-time)
+          (("u" . "Access Time") . dired-sort-utime)
+          (("c" . "Create Time") . dired-sort-ctime))
+        t))
      ))
 
   ;; Setting for dired
@@ -109,7 +114,7 @@
   ;;         (setcdr prg (delete-dups (cons (car file) (cdr prg))))
   ;;       (add-to-list 'dired-guess-shell-alist-default (list suf (car file))))))))
   ;; sort directories first
-  (defun my-dired-sort ()
+  (defun dired-sort-directories-first ()
     "Dired sort hook to list directories first."
     (save-excursion
       (let (buffer-read-only)
@@ -117,10 +122,8 @@
         (sort-regexp-fields t "^.*$" "[ ]*." (point)
                             (point-max))))
     (set-buffer-modified-p nil))
-  (add-hook 'dired-after-readin-hook 'my-dired-sort)
-  (defun my-dired-long-lines ()
-    (setq truncate-lines t))
-  (add-hook 'dired-after-readin-hook 'my-dired-long-lines)
+  (add-hook 'dired-after-readin-hook 'dired-sort-directories-first)
+  (add-hook 'dired-after-readin-hook '(lambda () (setq truncate-lines t)))
   ;; Dired Association
   ;;This allows "X" in dired to open the file using the explorer settings.
   ;;From TBABIN(at)nortelnetworks.com
@@ -1392,20 +1395,6 @@ mouse-3: Toggle minor modes"
       (highlight-symbol-mode 1)
       (setq highlight-symbol-idle-delay 0.5
             highlight-symbol-mode nil)))
-
-  (deh-local-set-keys (emacs-lisp-mode-hook
-                       java-mode-hook
-                       c-mode-common-hook
-                       text-mode-hook
-                       html-mode-hook)
-    ((kbd "C-c l l") . 'highlight-symbol-at-point)
-    ((kbd "C-c l u") . 'highlight-symbol-remove-all)
-    ((kbd "C-c l n") . 'highlight-symbol-next)
-    ((kbd "C-c l p") . 'highlight-symbol-prev)
-    ((kbd "C-c l q") . 'highlight-symbol-query-replace)
-    ((kbd "C-c l N") . 'highlight-symbol-next-in-defun)
-    ((kbd "C-c l P") . 'highlight-symbol-prev-in-defun)
-    )
   )
 
 (deh-section "sh-mode"
