@@ -61,6 +61,8 @@
     (setq org-export-latex-listings t)
     ;; (add-to-list 'org-export-latex-packages-alist '(\"\" \"minted\"))
     ;; (setq org-export-latex-listings 'minted)
+
+    (defalias 'C-mode 'c-mode)
     )
 
   ;;# export org documents to html
