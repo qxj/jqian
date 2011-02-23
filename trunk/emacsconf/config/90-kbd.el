@@ -83,6 +83,7 @@
   ("c" . 'my-switch-scratch)
   ("d" . 'deh-customize-inplace)
   ("f" . 'find-library)
+  ("h" . 'highlight-symbol-at-point)
   ("i" . 'ispell-word)
   ("l" . 'org-store-link)
   ("o" . 'recentf-open-files-compl)
