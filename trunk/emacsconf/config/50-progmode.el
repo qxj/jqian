@@ -618,8 +618,6 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;; gnuplot
 (deh-section "gnuplot"
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
   (deh-add-hook gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook gnuplot-comint-setup-hook
@@ -628,7 +626,6 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;; graphviz
 (deh-section "graphviz"
-  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
   (setq graphviz-dot-auto-indent-on-semi nil)
   (deh-add-hook graphviz-dot-mode-hook
     (local-unset-key "\C-cc") ; it's prefix key
@@ -639,6 +636,10 @@ Use CREATE-TEMP-F for creating temp copy."
     (if (looking-at "\\>")
         (graphviz-dot-complete-word)
       (indent-for-tab-command))))
+
+(deh-require-if
+    'protobuf-mode
+  (executable-find "protoc"))
 
 ;; java
 (deh-section "java"
@@ -683,6 +684,12 @@ Use CREATE-TEMP-F for creating temp copy."
   ;; iimage
   (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
   (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
+  ;; graphviz
+  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
+  ;; gnuplot
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
   )
 
 (deh-section "auto-mode"
@@ -701,7 +708,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (add-to-list 'auto-mode-alist '("\.schemas" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.dot$" . graphviz-dot-mode))
+  (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
   )
 
 (deh-section-reserved "php"
