@@ -86,8 +86,6 @@
   ("s" . 'compile-dwim-compile)
   ("t" . 'template-simple-expand-template)
   ("v" . 'view-mode)
-  ("x" . 'incr-dwim)
-  ("z" . 'decr-dwim)
   ("\t" . 'ispell-complete-word)
   )
 
