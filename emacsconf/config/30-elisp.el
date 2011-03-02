@@ -543,6 +543,10 @@
             (lambda ()
               (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
               (define-key Man-mode-map (kbd "M-n") 'pager-row-down)))
+  (add-hook 'woman-mode-hook
+            (lambda ()
+              (define-key woman-mode-map (kbd "M-p") 'pager-row-up)
+              (define-key woman-mode-map (kbd "M-n") 'pager-row-down)))
   (add-hook 'Info-mode-hook
             (lambda ()
               (define-key Info-mode-map (kbd "M-p") 'pager-row-up)

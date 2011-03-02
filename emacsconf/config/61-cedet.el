@@ -314,4 +314,8 @@ the mru bookmark stack."
     (defadvice viss-bookmark-prev-buffer (after pulse-advice activate)
       "After viss-bookmark-prev-buffer, pulse the line the cursor lands on."
       (when (and pulse-command-advice-flag (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice sourcepair-load (after pulse-advice activate)
+      "After sourcepair-load, pulse the line the cursor lands on."
+      (when (and pulse-command-advice-flag (interactive-p))
         (pulse-momentary-highlight-one-line (point))))))
