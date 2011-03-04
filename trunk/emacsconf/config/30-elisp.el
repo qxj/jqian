@@ -54,8 +54,7 @@
           (("t" . "Modified Time") . dired-sort-time)
           (("u" . "Access Time") . dired-sort-utime)
           (("c" . "Create Time") . dired-sort-ctime))
-        t))
-     ))
+        t))))
 
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
@@ -82,6 +81,11 @@
           (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
 
   (deh-section "dired-assoc"
+    ;; Based upon the name of a file, Dired tries to guess what shell
+    ;; command you might want to apply to it. For example, if you have
+    ;; point on a file named foo.tar and you press !, Dired will guess
+    ;; you want to ‘tar xvf’ it and suggest that as the default shell
+    ;; command.
     (dolist (file `(("acroread" "pdf")
                     ("evince" "pdf")
                     ;; ("xpdf" "pdf")
@@ -107,13 +111,27 @@
                     ("firefox" "xml" "html" "htm" "mht")))
       (add-to-list 'dired-guess-shell-alist-default
                    (list (concat "\\." (regexp-opt (cdr file) t) "$")
-                         (car file)))))
-  ;; (dolist (suf (cdr file))
-  ;;   (let ((prg (assoc suf dired-guess-shell-alist-default)))
-  ;;     (if prg
-  ;;         (setcdr prg (delete-dups (cons (car file) (cdr prg))))
-  ;;       (add-to-list 'dired-guess-shell-alist-default (list suf (car file))))))))
-  ;; sort directories first
+                         (car file))))
+    ;;# Dired Association
+    (if (eq system-type 'windows-nt)
+        (progn
+          (defun dired-custom-execute-file (&optional arg)
+            (interactive "P")
+            (mapcar #'(lambda (file)
+                        (w32-shell-execute "open" (convert-standard-filename file)))
+                    (dired-get-marked-files nil arg))))
+      ;; Redefine of this function
+      (defun dired-run-shell-command (command)
+        (let ((handler
+               (find-file-name-handler (directory-file-name default-directory)
+                                       'shell-command)))
+          (if handler
+              (apply handler 'shell-command (list command))
+            (start-process-shell-command "dired-run" nil command)))
+        ;; Return nil for sake of nconc in dired-bunch-files.
+        nil)))
+
+  ;;# sort directories first
   (defun dired-sort-directories-first ()
     "Dired sort hook to list directories first."
     (save-excursion
@@ -123,31 +141,7 @@
                             (point-max))))
     (set-buffer-modified-p nil))
   (add-hook 'dired-after-readin-hook 'dired-sort-directories-first)
-  (add-hook 'dired-after-readin-hook '(lambda () (setq truncate-lines t)))
-  ;; Dired Association
-  ;;This allows "X" in dired to open the file using the explorer settings.
-  ;;From TBABIN(at)nortelnetworks.com
-  ;;ToDo: adapt mswindows-shell-execute() for XEmacs or use tinyurl shell exec
-  (if (eq system-type 'windows-nt)
-      (progn
-        (defun dired-custom-execute-file (&optional arg)
-          (interactive "P")
-          (mapcar #'(lambda (file)
-                      (w32-shell-execute "open" (convert-standard-filename file)))
-                  (dired-get-marked-files nil arg)))
-        (defun dired-custom-dired-mode-hook ()
-          (define-key dired-mode-map "X" 'dired-custom-execute-file))
-        (add-hook 'dired-mode-hook 'dired-custom-dired-mode-hook))
-    ;; Redefine of this function
-    (defun dired-run-shell-command (command)
-      (let ((handler
-             (find-file-name-handler (directory-file-name default-directory)
-                                     'shell-command)))
-        (if handler
-            (apply handler 'shell-command (list command))
-          (start-process-shell-command "dired-run" nil command)))
-      ;; Return nil for sake of nconc in dired-bunch-files.
-      nil)))
+  (add-hook 'dired-after-readin-hook '(lambda () (setq truncate-lines t))))
 ;;}}}
 
 ;;{{{ ido
@@ -255,12 +249,26 @@
 (deh-require 'ibuffer
   (require 'ibuf-ext nil t)
   ;; keybinds
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (define-key ibuffer-mode-map "sf" 'ibuffer-do-sort-by-file-name)
-  (define-key ibuffer-mode-map "sr" 'ibuffer-do-sort-by-recency)
-  (define-key ibuffer-mode-map "r" 'ywb-ibuffer-rename-buffer)
-  (define-key ibuffer-mode-map (kbd "C-x C-f") 'ywb-ibuffer-find-file)
-  (define-key ibuffer-mode-map " " 'scroll-up)
+  ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (deh-define-key ibuffer-mode-map
+    ("s" . 'one-key-menu-ibuffer-sort)
+    ("r" . 'ywb-ibuffer-rename-buffer)
+    (" " . 'scroll-up)
+    ((kbd "C-x C-f") . 'ywb-ibuffer-find-file))
+
+  (defun one-key-menu-ibuffer-sort ()
+    "The `one-key' menu for IBUFFER-SORT."
+    (interactive)
+    (one-key-menu
+     "IBUFFER-SORT"
+     '((("a" . "Alphabetic") . ibuffer-do-sort-by-alphabetic)
+       (("f" . "File Name")  . ibuffer-do-sort-by-file-name)
+       (("r" . "Recenctly")  . ibuffer-do-sort-by-recency)
+       (("m" . "Major Mode") . ibuffer-do-sort-by-major-mode)
+       (("n" . "Mode Name")  . ibuffer-do-sort-by-mode-name)
+       (("s" . "File Size")  . ibuffer-do-sort-by-size)
+       (("p" . "File Name/Process") . ibuffer-do-sort-by-filename/process))
+     t))
 
   (define-ibuffer-sorter file-name
     "Sort buffers by associated file name"
@@ -1371,7 +1379,6 @@ mouse-3: Toggle minor modes"
         ;; sr-speedbar-delete-windows t
         sr-speedbar-width-x 22
         sr-speedbar-max-width 30))
-
 
 (deh-section "ediff"
   ;; (global-set-key "\C-cd" 'ediff-show-registry)

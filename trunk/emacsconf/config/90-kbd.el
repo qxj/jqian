@@ -65,6 +65,7 @@
   )
 
 (deh-define-key (lookup-key global-map "\C-x")
+  ("\C-b" . 'ibuffer)
   ("\C-t" . 'transpose-sexps)
   ("\C-r" . 'find-file-root)
   ("\C-k" . 'kill-this-buffer)
