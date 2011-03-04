@@ -228,10 +228,10 @@ the directories in the INCLUDE environment variable."
 (deh-section "compile"
   (setq compilation-auto-jump-to-first-error t)
   ;;# Close complication buffer if succeed to compile
-  ;; (setq compilation-finish-functions
-  ;;       (lambda (buf str)
-  ;;         (when (and (string= (buffer-name buf) "*compilation*")
-  ;;                    (not (string-match "exited abnormally" str)))
-  ;;           (run-at-time 0.5 nil 'delete-windows-on buf))))
+  (setq compilation-finish-functions
+        (lambda (buf str)
+          (when (and (string= (buffer-name buf) "*compilation*")
+                     (not (string-match "exited abnormally" str)))
+            (run-at-time 0.5 nil 'delete-windows-on buf))))
   )
 
