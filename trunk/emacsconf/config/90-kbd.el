@@ -228,7 +228,7 @@
     ;; default settings
     (one-key-default-create-menu "ESC ESC")
     (one-key-default-create-menu "ESC" "ESC ESC")
-    (one-key-default-create-menu "C-x RET")
+    ;; (one-key-default-create-menu "C-x RET")
     (one-key-default-create-menu "C-x ESC")
     (one-key-default-create-menu "C-x 4")
     (one-key-default-create-menu "C-x 5")
@@ -240,8 +240,8 @@
     (one-key-default-create-menu "C-x"
                                  "C-x RET" "C-x ESC" "C-x 4" "C-x 5"
                                  "C-x a" "C-x n" "C-x v")
-    (one-key-default-create-menu "M-g ESC")
-    (one-key-default-create-menu "M-g" "M-g ESC")
+    ;; (one-key-default-create-menu "M-g ESC")
+    ;; (one-key-default-create-menu "M-g" "M-g ESC")
     (one-key-default-create-menu "M-o ESC")
     (one-key-default-create-menu "M-o" "M-o ESC")
     (one-key-default-create-menu "<f1> 4")
