@@ -95,9 +95,12 @@ the mru bookmark stack."
   ;; semantic cache directory
   (setq semanticdb-default-save-directory my-temp-dir)
 
+  ;; CEDET tweaks: http://stackoverflow.com/questions/3807345/cedet-scalability-tips/3808830#3808830
   (setq semantic-idle-scheduler-idle-time 5
-        semantic-idle-scheduler-work-idle-time 10
-        semantic-idle-scheduler-max-buffer-size 100000)
+        semantic-idle-scheduler-work-idle-time 60
+        semantic-idle-scheduler-max-buffer-size 100000
+        semantic-idle-work-parse-neighboring-files-flag t
+        semantic-idle-work-update-headers-flag nil)
 
   (deh-section "semantic-tags"
     ;; exuberent ctags
@@ -230,7 +233,7 @@ the mru bookmark stack."
     ;; senator-prefix-key: "C-c ,"
     (deh-define-key senator-prefix-map
       ("G" . 'semantic-symref)
-      ("RET" . 'semantic-ia-complete-symbol-menu)
+      ((kbd "RET") . 'semantic-ia-complete-symbol-menu)
       ("c" . 'semantic-ia-complete-symbol)
       ("=" . 'semantic-decoration-include-visit)
       ("j" . 'semantic-ia-fast-jump)

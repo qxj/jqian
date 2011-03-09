@@ -3,6 +3,7 @@
 (deh-section "dired"
   (require 'dired-x)
   (require 'dired-single)
+  (require 'dired-isearch)
   (add-hook
    'dired-load-hook
    (lambda ()
@@ -38,6 +39,11 @@
        ("/r"   . 'ywb-dired-filter-regexp)
        ("/."   . 'ywb-dired-filter-extension)
        ("s"    . 'one-key-menu-dired-sort)
+       ;; dired-search
+       ((kbd "C-s")     . 'dired-isearch-forward)
+       ((kbd "C-r")     . 'dired-isearch-backward)
+       ((kbd "ESC C-s") . 'dired-isearch-forward-regexp)
+       ((kbd "ESC C-r") . 'dired-isearch-backward-regexp)
        )
      (if (eq system-type 'windows-nt)
          (deh-define-key dired-mode-map
@@ -99,7 +105,7 @@
                     ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
                     ("mplayer -playlist" "list")
                     ("display" "gif" "jpeg" "jpg" "tif" "png" )
-                    ("gthumb" "gif" "jpeg" "jpg" "tif" "png")
+                    ("eog" "gif" "jpeg" "jpg" "tif" "png")
                     ("docview.pl" "doc")
                     ("ooffice -writer" "ods" "doc")
                     ("ooffice -calc"  "xls")
@@ -859,7 +865,7 @@ indent line."
       (add-to-list 'ac-trigger-commands-on-completing command))
     (setq ac-sources (append '(ac-source-yasnippet
                                ;; ac-source-gtags
-                               ac-source-semantic-raw
+                               ac-source-semantic
                                ac-source-imenu) ac-sources))
     ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
     (when (executable-find "clang")

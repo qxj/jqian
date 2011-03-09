@@ -113,8 +113,7 @@
     (defvar ywb-emacs-lisp-path
       (expand-file-name (concat data-directory "../site-lisp/")))
     (defvar ffap-ess-path '("/usr/lib/R/library/"
-                            "/usr/local/lib/R/site-library/"
-                            "/home/ywb/proj/RWork/Rlibaries/"))
+                            "/usr/local/lib/R/site-library/"))
     (setq x-select-enable-clipboard t)
 
     (dolist (dir '("/usr/lib/info"
@@ -131,8 +130,7 @@
       (add-to-list 'Info-default-directory-list dir))
 
     (if (= emacs-major-version 23)
-        (setq find-function-C-source-directory "/home/ywb/softwares/sources/emacs-23.1/src")
-      (setq find-function-C-source-directory "/home/ywb/downloads/cvs.savannah.gnu.org/emacs-22/src"))
+        (setq find-function-C-source-directory "~/src/emacs-23.2/src/"))
 
     (deh-section "font-config-emacs22"
       (if (= emacs-major-version 23)
