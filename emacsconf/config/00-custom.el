@@ -113,6 +113,7 @@
 (deh-section "register"
   (set-register ?. '(file . my-config-dir))
   (set-register ?t '(file . "~/temp/"))
+  (set-register ?s '(file . "~/src/"))
   (set-register ?p '(file . "~/projects/"))
   (set-register ?d '(file . "~/Downloads/")))
 

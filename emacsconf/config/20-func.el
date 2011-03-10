@@ -445,7 +445,9 @@ clipboard/external selection to the kill ring"
   (add-hook
    'c-mode-hook
    #'(lambda ()
-       (if (save-excursion
-            (goto-char (point-min))
-            (search-forward-regexp "^class" nil t))
-           (c++-mode)))))
+       (if (and (string-match "\.h$" (buffer-name))
+                (save-excursion
+                  (goto-char (point-min))
+                  (search-forward-regexp "^class" nil t)))
+           (c++-mode))))
+  )
