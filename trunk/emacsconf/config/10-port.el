@@ -18,18 +18,6 @@
   (setenv "EDITOR" "emacsclient")
   )
 
-(deh-section "window-system"
-  (if (eq window-system 'x)
-      (progn
-        ;; no scroll bar
-        (set-scroll-bar-mode nil)
-        ;; no tool bar
-        (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-        ;; transparent frame
-        (set-frame-parameter (selected-frame) 'alpha '(95 85))
-        (add-to-list 'default-frame-alist '(alpha 95 85))
-        )))
-
 (deh-section "coding-system"
   (unless (coding-system-p 'gbk)
     (define-coding-system-alias 'gbk 'chinese-iso-8bit))
@@ -168,11 +156,29 @@
 
 (deh-section "emacs23"
   (when (= emacs-major-version 23)
-    (require 'fenc nil t)
-    (when (eq window-system 'x)
+    (require 'fenc nil t)))
+
+(deh-section "window-system"
+  ;; If terminal and X is sharing the same emacs server, color-theme
+  ;; will affect terminal display. Below function will resolve this
+  ;; issue.
+  (defun init-window-frame (&optional frame)
+    (and frame (select-frame frame))
+    (set-variable 'color-theme-is-global nil)
+    ;; only enable color theme in window system
+    ;; the same color-theme  looks bad in terminal
+    (when window-system
       (load (expand-file-name "my-fontset.el" my-config-dir))
-      (load (expand-file-name "my-theme.el" my-config-dir)))
-    ))
+      (load (expand-file-name "my-theme.el" my-config-dir))
+      ;; no scroll bar
+      (set-scroll-bar-mode nil)
+      ;; no tool bar
+      (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+      ;; transparent frame
+      (set-frame-parameter (selected-frame) 'alpha '(95 85))
+      (add-to-list 'default-frame-alist '(alpha 95 85))))
+  (add-hook 'after-make-frame-functions 'init-window-frame)
+  (add-hook 'after-init-hook 'init-window-frame))
 
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)
