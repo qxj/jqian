@@ -112,6 +112,7 @@
 ;; set my file register
 (deh-section "register"
   (set-register ?. '(file . my-config-dir))
+  (set-register ?b '(file . "~/Dropbox/"))
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
   (set-register ?p '(file . "~/projects/"))

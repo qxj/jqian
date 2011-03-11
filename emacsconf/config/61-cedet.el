@@ -13,8 +13,10 @@
     (semantic-load-enable-code-helpers)
     ;; (semantic-load-enable-gaudy-code-helpers)
     ;; (semantic-load-enable-excessive-code-helpers)
-    (semantic-load-enable-semantic-debugging-helpers)
-    (global-semantic-show-unmatched-syntax-mode -1)
+    ;; (semantic-load-enable-semantic-debugging-helpers)
+    (if window-system
+        (global-semantic-highlight-edits-mode 1))
+    (global-semantic-show-parser-state-mode 1)
 
     (require 'semantic-decorate-include nil 'noerror)
     (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
