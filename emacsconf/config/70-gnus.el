@@ -216,7 +216,7 @@
 (setq gnus-select-method '(nntp "news.cn99.com"))
 
 ;;雅科\新帆
-;;(add-to-list 'gnus-secondary-select-methods '(nntp "news.newsfan.net"))
+(add-to-list 'gnus-secondary-select-methods '(nntp "news.newsfan.net"))
 ;;(add-to-list 'gnus-secondary-select-methods '(nntp "news.yaako.com"))
 
 ;;首先我们设置POP3服务器：
@@ -231,10 +231,10 @@
       '(
         ;; gmail setting
         (imap :server "127.0.0.1" ; stunnel 为本地服务
-              :user my-gmail-user ; 用户名
+              :user 'my-gmail-user ; 用户名
               :port 9939          ; stunnel 本地端口
               ;; :stream ssl
-              :password my-gmail-passwd
+              :password 'my-gmail-passwd
               )
         ;; pop3 mail setting
         ;; (pop :server "pop3.example.com"   ; 在这里设置pop3服务器
@@ -356,8 +356,8 @@
 (setq gnus-sum-thread-tree-root "● ")
 (setq gnus-sum-thread-tree-false-root "☆")
 (setq gnus-sum-thread-tree-vertical "│")
-(setq gnus-sum-thread-tree-leaf-with-other "├─78 ")
-(setq gnus-sum-thread-tree-single-leaf "t─78 ")
+(setq gnus-sum-thread-tree-leaf-with-other "├─ ")
+(setq gnus-sum-thread-tree-single-leaf "t─ ")
 
 
 ;; 用 Supercite 显示多种多样的引文形式
@@ -607,7 +607,7 @@
         ;; all
         (".*"
          (name my-real-name)
-         (address my-gmail-user)
+         (address (concat "NO.SPAM" my-gmail-user))
          (face (gnus-convert-png-to-face (concat home-directory "Gnus/xface.png")))
          (organization my-laptop-name)
          (signature (concat "
@@ -620,7 +620,7 @@ Best Regards,
         ;;cn.bbs.com
         ("^cn\\.bbs\\.comp"
          (name my-real-name)
-         (address my-gmail-user)
+         (address (concat "NO.SPAM" my-gmail-user))
          (face (gnus-convert-png-to-face (concat home-directory "Gnus/xface.png")))
          (organization my-laptop-name)
          (signature "")
@@ -726,9 +726,7 @@ Best Regards,
          (set (make-local-variable 'gnus-configure-windows-hook)
               nil)))))
 
-;;
-;; 最后设置
-;;
+;; REF: http://www.ibm.com/developerworks/cn/linux/l-cn-emacsgnus/
 
 ;;(gnus-compile)                          ;编译一些选项, 加快速度
 ;;(provide 'init-gnus)
