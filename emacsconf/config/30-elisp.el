@@ -1532,3 +1532,7 @@ If the flag is set, only complete with local files."
   (setq evernote-mode-hook
         '(lambda () (outline-minor-mode t)))
   )
+
+(deh-require 'epa-file
+  (epa-file-enable)
+  (setq epa-file-cache-passphrase-for-symmetric-encryption t))
