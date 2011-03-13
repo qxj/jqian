@@ -1065,7 +1065,7 @@ indent line."
   (autoload 'blank-mode "blank-mode" "Toggle blank visualization."    t)
   (autoload 'blank-mode-customize "blank-mode" "Customize blank visualization." t)
   ;; hexl editor
-  (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
+  ;; (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
   ;; A visual table editor, very cool
   (autoload 'table-insert "table" "WYGIWYS table editor")
   ;; ansit
