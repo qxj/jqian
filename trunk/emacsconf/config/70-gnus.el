@@ -1,201 +1,297 @@
 ;; -*- coding: utf-8 mode: emacs-lisp -*-
 ;;
-;; 1-先说说我的系统：
-;; ubuntu 9.10 默认中文环境zh_CN.UTF-8,输入法Ibus
-;; Emacs23.1 + w3w + gnus + erc + org-mode
-;; 最后配置了stunnel4用于处理ssl连接，这个主要是为了对付gmail，对我来说更为实际的是
-;; stunnel4在windows和linux下都能用。
 
-;; 2-收拾stunnel4：
-;; 这个程序在ubuntu9.xx上好像有些问题，看到老外在论坛上直骂“biche!”。主要的毛病就是
-;; 不能作为服务自动启动，每次都要手动，很烦人。我也没有解决，只能也骂一句：他奶奶的！
-;; 配置stunnel4需要设置两个文件：
-;; (1) /etc/stunnel/stunnel.conf
-;; 这是我的配置文件，你可以参考：
+(setq gnus-startup-file "~/Gnus/newsrc"
+      gnus-default-directory "~/Gnus"
+      gnus-home-directory "~/Gnus"
+      gnus-dribble-directory "~/Gnus"
+      gnus-directory "~/Gnus/News"
+      gnus-article-save-directory "~/Gnus/News"
+      gnus-kill-files-directory "~/Gnus/News/trash"
+      gnus-agent-directory "~/Gnus/News/agent"
+      gnus-cache-directory "~/Gnus/News/cache"
+      gnus-cache-active-file "~/Gnus/News/cache/active"
+      message-directory "~/Gnus/Mail"
+      message-auto-save-directory "~/Gnus/Mail/drafts"
+      mail-source-directory "~/Gnus/Mail/incoming"
+      mail-archive-file-name "~/Gnus/outgoing"
+      nnmail-message-id-cache-file "~/Gnus/nnmail-cache"
+      nnml-newsgroups-file "~/Gnus/Mail/newsgroup"
+      nntp-marks-directory "~/Gnus/News/marks"
+      mml-default-directory "~/Gnus/Attachment")
 
-;; ; Sample stunnel configuration file by Michal Trojnara 2002-2009
-;; ; Some options used here may not be adequate for your particular configuration
-;; ; Please make sure you understand them (especially the effect of the chroot jail)
+;;; Backends
 
-;; ; Certificate/key is needed in server mode and optional in client mode
-;; ;;cert = /etc/ssl/certs/stunnel.pem
-;; ;key = /etc/ssl/certs/stunnel.pem
+(setq gnus-interactive-exit nil)
 
-;; ; Protocol version (all, SSLv2, SSLv3, TLSv1)
-;; sslVersion = SSLv3
+(setq gnus-subscribe-newsgroup-method 'gnus-subscribe-topics
+      gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
 
-;; ; Some security enhancements for UNIX systems - comment them out on Win32
-;; chroot = /var/lib/stunnel4/
-;; setuid = stunnel4
-;; setgid = stunnel4
-;; ; PID is created inside the chroot jail
-;; pid = /stunnel4.pid
+(setq gnus-nov-is-evil nil
+      gnus-asynchronous t
+      gnus-fetch-old-headers 'some
+      gnus-use-cross-reference nil)
 
-;; ; Some performance tunings
-;; socket = l:TCP_NODELAY=1
-;; socket = r:TCP_NODELAY=1
-;; ;compression = rle
+;; Newsgroup
+(setq gnus-select-method '(nntp "news.cn99.com"))
 
-;; ; Workaround for Eudora bug
-;; ;options = DONT_INSERT_EMPTY_FRAGMENTS
+(setq gnus-default-subscribed-newsgroups
+      '("cn.bbs.comp.emacs"
+        "cn.bbs.comp.linux"
+        "cn.bbs.comp.lang.python"
+        "gnu.emacs.help"
+        ))
 
-;; ; Authentication stuff
-;; ;verify = 2
-;; ; Don't forget to c_rehash CApath
-;; ; CApath is located inside chroot jail
-;; ;CApath = /certs
-;; ; It's often easier to use CAfile
-;; ;CAfile = /etc/stunnel/certs.pem
-;; ; Don't forget to c_rehash CRLpath
-;; ; CRLpath is located inside chroot jail
-;; ;CRLpath = /crls
-;; ; Alternatively you can use CRLfile
-;; ;CRLfile = /etc/stunnel/crls.pem
+;; Use `B' in Group buffer to subscribe to some groups from a different
+;; newsgroup server.
 
-;; ; Some debugging stuff useful for troubleshooting
-;; debug = 7
-;; output = /var/log/stunnel4/stunnel.log
+;; nntp: news.gmane.org, aioe.cjb.net, news.mozilla.org
 
-;; ; Use it for client mode
-;; client = yes
+(setq gnus-secondary-select-methods
+      `((nnml "")
+        ;; (nnfolder "")
+        (nntp "news.newsfan.net")
 
-;; ; Service-level configuration
+        ;; gmail
+        (nnimap "gmail"
+                (nnimap-address "imap.gmail.com")
+                (nnimap-server-port 993)
+                (nnimap-stream ssl)
+                (nnimap-authinfo-file "~/.authinfo.gpg"))))
 
-;; [pop3s]
-;; accept  = 995
-;; connect = 110
+;; Store encrypted gmail login info in ~/.authinfo.gpg, eg:
+;; machine imap.gmail.com login xxx@gmail.com password yyy port 993
+;; machine smtp.gmail.com login xxx@gmail.com password yyy port 587
 
-;; [imaps]
-;; accept  = 993
-;; connect = 143
 
-;; [ssmtp]
-;; accept  = 465
-;; connect = 25
+
+;;; Receiving Mails
 
-;; ; ----------------------------------------------------
-;; ; gmail 的设置
-;; ; accept表示stunnel的接受端口, connect表示stunnel的发送端口
-;; ; 可以简单的把它理解为一个转接口：
-;; ; 一端接上自己的机器，一端连接到gmail服务器
+(setq mail-sources
+      `(
+        ;; pop3 mail setting
+        ;; (pop :server "pop3.example.com"   ; 在这里设置pop3服务器
+        ;;      :user "username@example.com" ; 用户名
+        ;;      :port "110"
+        ;;      :password "password"
+        ;;      )
+        ;; local mail pool
+        ;; (file :path "~/Gnus/incoming")
+        ))
 
-;; [gmail-pop3s]
-;; accept  = 127.0.0.1:9959
-;; connect = pop.gmail.com:995
+(eval-after-load "gnus"
+  '(progn
+     ;; When idle 2 minutes, then check news every 3 minutes.
+     (if gnus-plugged
+         (gnus-demon-add-handler 'xwl-gnus-group-get-new-news 30 10)
+       (gnus-demon-add-handler 'xwl-gnus-group-get-new-news 30 nil))
 
-;; [gmail-imaps]
-;; accept  = 127.0.0.1:9939
-;; connect = imap.gmail.com:993
+     ;; FIXME: can i remove this?
+     (load "rs-gnus-summary.el")
 
-;; [gmail-ssmtp]
-;; accept  = 127.0.0.1:4659
-;; connect = smtp.gmail.com:465
+     ))
 
-;; ;[https]
-;; ;accept  = 443
-;; ;connect = 80
-;; ;TIMEOUTclose = 0
+(setq qxj-gnus-important-groups
+      '("nnimap+imap.gmail.com:important.now"
+        "nnfolder:important.now"
+        ))
 
-;; ; vim:ft=dosini
+(defun qxj-gnus-group-get-new-news ()
+  (interactive)
+  (if gnus-plugged
+      ;; Only get news for groups with a level lower than 4.  This is
+      ;; because some levels' updating takes too long time.
+      (gnus-group-get-new-news 3)
+    (gnus-read-active-file)
+    (gnus-get-unread-articles)
+    (gnus-group-list-groups))
 
-;; (2) /etc/default/stunnel4
-;; 这个文件更简单，不同的系统可能不同，ubuntu上是有的，用来控制是否随系统启动
-;; 似乎有点鸡肋！
+  (let ((new (apply '+
+                    (mapcar (lambda (i)
+                              (let ((n (gnus-group-unread i)))
+                                (if (numberp n) n 0)))
+                            qxj-gnus-important-groups))))
+    (if (zerop new)
+        (setq qxj-mail-notify-string "")
+      (setq qxj-mail-notify-string (format "Mail(%d)" new))
+      (shell-command
+       (format "zenity --info --text \"You've Got %d Mail \!\" --title \"Gnus\"" new))
+      )
+    (force-mode-line-update)))
 
-;; # /etc/default/stunnel
-;; # Julien LEMOINE <speedblue@debian.org>
-;; # September 2003
+
+;;; Sending Mails
 
-;; # Change to one to enable stunnel automatic startup
-;; ENABLED=1
-;; FILES="/etc/stunnel/*.conf"
-;; OPTIONS=""
+;; starttls.el, pop3.el, starttls/gnutls-bin
+(require 'starttls)
 
-;; # Change to one to enable ppp restart scripts
-;; PPP_RESTART=0
+;; (setq mail-user-agent 'gnus-user-agent)
 
-;; (3) 我不太理解Certificate key的工作机制，在(1)的配置中已经禁用了，但在调式的
-;; 过程中似乎必须要生成一个stunnel.pem。我参照/usr/share/doc/stunnel4/readme.debian
-;; 操作了一下，可以使用了。
-;; 要使用管理员权限，这是具体过程：
-;; # cd /etc/stunnel
-;; # openssl req -new -x509 -nodes -days 365 -out stunnel.pem -keyout stunnel.pem
-;; # chmod 600 stunnel.pem
-;; # dd if=/dev/urandom of=temp_file count=2
-;; # openssl dhparam -rand temp_file 512 >> stunnel.pem
-;; # ln -sf stunnel.pem `openssl x509 -noout -hash < stunnel.pem`.0
-;; 最后做个链接：
-;; # cd /etc/ssl/certs
-;; # ln -s /etc/stunnel/stunnel.pem stunnel.pem
-;; 以上操作我一点也不理解，纯粹是照抄！
-;; 配置完成后，运行stunnel4服务:
-;; # /etc/init.d/stunnel4 restart
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-auth-credentials "~/.authinfo.gpg"
+      smtpmail-local-domain my-laptop-name)
 
-;; (4)配置gnus
-;; 我是在.emacs里调用mygnus.el来分离配置文件的，你可以直接写在.emacs里
-;; 在我的配置文件中有个变量 emacsHome是我的emacs主目录(在移动硬盘上)，你
-;; 修改成自己的地址。
-;; 这个配置文件包含了很多人的内容，比较杂，可以作为一个参考根据个人喜好剪裁...
+;; http://www.emacswiki.org/cgi-bin/wiki/MultipleSMTPAccounts
 
-;; (require 'gnus)
-;; gnus-notify+从这里下载：http://www.emacswiki.org/emacs/gnus-notify%2B.el
-;; (require 'gnus-notify+)
+
+;;; Message Mode
 
-;; 存储设置
-;; concat emacsHome "xx/xx/xx") --用来计算我自己的Gnus存档目录，emacsHome变量
-;; 是我自己预先设置的，完全可以不用，直接写成 "xx/xx/xx"
+(unless (eq system-type 'windows-nt)
+  (add-hook 'message-send-hook 'ispell-message)
+  (add-hook 'mail-send-hook  'ispell-message)
+  (add-hook 'mh-before-send-letter-hook 'ispell-message)
+  )
 
-(setq home-directory "~/")
+(setq message-sendmail-envelope-from 'header)
 
-(setq gnus-startup-file                 ; 初始文件
-      (concat home-directory "Gnus/newsrc")
-      gnus-default-directory            ; 默认目录
-      (concat home-directory "Gnus")
-      gnus-home-directory               ; 主目录
-      (concat home-directory "Gnus")
-      gnus-dribble-directory            ; 恢复目录
-      (concat home-directory "Gnus")
-      gnus-directory                    ; 新闻组的存储目录
-      (concat home-directory "Gnus/News")
-      gnus-article-save-directory       ; 文章保存目录
-      (concat home-directory "Gnus/News")
-      gnus-kill-files-directory         ; 文件删除目录
-      (concat home-directory "Gnus/News/trash")
-      gnus-agent-directory              ; 代理目录
-      (concat home-directory "Gnus/News/agent")
-      gnus-cache-directory              ; 缓存目录
-      (concat home-directory "Gnus/News/cache")
-      gnus-cache-active-file            ; 缓存激活文件
-      (concat home-directory "Gnus/News/cache/active")
-      message-directory                 ; 邮件的存储目录
-      (concat home-directory "Gnus/Mail")
-      message-auto-save-directory       ; 自动保存的目录
-      (concat home-directory "Gnus/Mail/drafts")
-      mail-source-directory             ; 邮件的源目录
-      (concat home-directory "Gnus/Mail/incoming")
-      nnmail-message-id-cache-file      ; nnmail的消息ID缓存
-      (concat home-directory "Gnus/nnmail-cache")
-      nnml-newsgroups-file              ; 邮件新闻组解释文件
-      (concat home-directory "Gnus/Mail/newsgroup")
-      nntp-marks-directory              ; nntp组存储目录
-      (concat home-directory "Gnus/News/marks")
-      mml-default-directory             ; 附件的存储位置
-      (concat home-directory "Gnus/Attachment"))
-;;
-;; 关闭默认的archive 这个方法不好控制
-;;
+(eval-after-load "message"
+  '(progn
+     (define-key message-mode-map (kbd "ESC TAB") 'bbdb-complete-name)
+     (define-key message-mode-map (kbd "<backtab>") 'bbdb-complete-name)))
+
+;; set outgoing coding
+(setq mm-coding-system-priorities '(utf-8))
+
+;; One can mail the *Group* buffer, select different posting styles
+;; according to group name at point for matching. So better avoiding
+;; composing mail by `C-x m', instead, `m' at a proper group line in
+;; *Group* buffer.
+
+(global-unset-key (kbd "C-x m"))
+
+
+;;; Chinese Stuffs
+
+(define-coding-system-alias 'x-gbk 'gb18030)
+
+(eval-after-load "gnus"
+  '(progn
+     (setq gnus-default-charset 'gbk)
+     (setq gnus-group-name-charset-group-alist
+           '(("nnrss.*" . utf-8)        ; `G R'
+             ("news\\.newsfan\\.net" . gbk)
+             (".*" . gb18030)))
+     (setq gnus-newsgroup-ignored-charsets
+           '(unknown-8bit x-unknown x-gbk gb18030))
+
+     (add-to-list 'gnus-group-charset-alist '("nnrss.*" utf-8))
+     (add-to-list 'gnus-group-charset-alist
+                  '("\\(^\\|:\\)cn\\>\\|\\<chinese\\>" gbk))
+
+     (setq gnus-summary-show-article-charset-alist
+           '((1 . utf-8)
+             (2 . big5)
+             (3 . gb18030)
+             (4 . gbk)
+             (5 . gn2312)
+             (6 . utf-7)))))
+
+
+;;; Essential: It's all about groups!
+
+;; 1. List Groups, Nonlist Groups
+;; 2. Group Parameters
+;; 3. Posting Style Based On Group
+;; 4. Split Received Mails Into Groups
+;; 5. Expire Groups
+
+;;;; 1. List Groups, Nonlist Groups, Important Groups
+
+;; '((group . to-list) ...)
+(setq qxj-company-list-table
+      (mapcar
+       (lambda (i)
+         (cons (replace-regexp-in-string "@.*" "" i) i))
+       '(
+         ;; "daily@abc.net"
+         )))
+
+(setq qxj-list-table
+      (mapcar
+       (lambda (i)
+         (cons (replace-regexp-in-string "@.*" "" i) i))
+       '(
+         "bug-gnu-emacs@gnu.org"
+         ;; to remove
+
+         ;; "cocoa-dev@lists.apple.com"
+         "pongba@googlegroups.com"
+         "python-cn@googlegroups.com"
+         )))
+
+
+;;;; 2. Gnus Parameters
+(setq gnus-gcc-mark-as-read t)		; mark Gcc mail as read
+
+(setq gnus-parameters
+      `(,@(mapcar
+           (lambda (i)
+             `(,(car i)
+               (to-list . ,(cdr i))
+               (gcc-self . t)))
+           qxj-list-table)
+
+        ,@(mapcar
+           (lambda (i)
+             `(,(car i)
+               (to-list . ,(cdr i))))
+           qxj-company-list-table)
+
+        ("nnimap+imap.gmail.com.*"
+         (gcc-self . t))
+
+        (".*important.*"
+         (gcc-self . t))
+
+        ("trash"
+         (total-expire . t))))
+
+
+;;;; 3. Posting Style
+(setq user-full-name my-real-name
+      user-mail-address my-gmail-user
+      mail-signature t)
+
+(setq gnus-posting-styles
+      `((".*"
+         (name ,user-full-name)
+         (address ,(concat "NO.SPAM" user-mail-address)) ; avoid spam
+         (face (gnus-convert-png-to-face "~/Gnus/xface.png"))
+         (organization ,my-laptop-name)
+         (signature ,(concat "Best Regards,\n" user-full-name))
+         (eval (setq mm-coding-system-priorities
+                     '(utf-8 gb2312 gbk gb18030 iso-8859-1)))
+         )
+        ;; cn.*
+        (,(regexp-opt '("cn.fan" "cn.bbs"))
+         (name ,user-full-name)
+         (address ,(concat "NO.SPAM" user-mail-address))
+         (face (gnus-convert-png-to-face "~/Gnus/xface.png"))
+         (signature nil)
+         (eval (setq mm-coding-system-priorities
+                     '(gb2312 gbk gb18030 utf-8 )))
+         ;;(body "")
+         )
+        ;; Keep company mail at the end.
+        (,(regexp-opt (mapcar 'car qxj-company-list-table))
+         (address "xxx@xxx.com")
+         (signature "\n"))
+        ))
+
+
+;;;; 4. Split Received Mails
+(setq mail-source-delete-incoming t)
+
 (setq gnus-message-archive-group nil)
 
-;; 设置存档目录
 (setq gnus-outgoing-message-group
       '(nnml "archive"
-             (nnml-directory   (concat home-directory "Gnus/Mail/archive"))
-             (nnml-active-file (concat home-directory "Gnus/Mail/archive/active"))
+             (nnml-directory   "~/Gnus/Mail/archive")
+             (nnml-active-file "~/Gnus/Mail/archive/active")
              (nnml-get-new-mail nil)
              (nnml-inhibit-expiry t)))
 
-;;;; 一个老外的例子，可以参考
-;;;;A function that selects a reasonable group for Gcc'ing this mail.
+;; A function that selects a reasonable group for Gcc'ing this mail.
 ;;(defun MySendedMail ()
 ;;  (cond ((and gnus-newsgroup-name
 ;;              (not (message-news-p))
@@ -205,116 +301,261 @@
 ;;;; Use it.
 ;;(setq gnus-outgoing-message-group "nnml:SendMails")
 
-(defun MySended ()
-  (if (message-news-p)
-      "nnml:SendNews"
-    "nnml:SendMails"))
-(setq gnus-outgoing-message-group 'MySended)
+(setq gnus-outgoing-message-group
+      '(lambda nil
+         (if (message-news-p)
+             "nnml:SendNews"
+           "nnml:SendMails")))
 
-;; 新闻组
-;;cn99
-(setq gnus-select-method '(nntp "news.cn99.com"))
-
-;;雅科\新帆
-(add-to-list 'gnus-secondary-select-methods '(nntp "news.newsfan.net"))
-;;(add-to-list 'gnus-secondary-select-methods '(nntp "news.yaako.com"))
-
-;;首先我们设置POP3服务器：
-;; Gmail
-
-;;告诉gnus如何存放接收来的邮件，gnus把这个叫做backend，
-;;最常用的方式是nnfolder，另外还有nnmbox, nnml等其它几种方式，我们
-;;选择其中一种就可以了：
-
-;; 采用stunnel作为服务器处理ssl链接
-(setq mail-sources
-      '(
-        ;; gmail setting
-        (imap :server "127.0.0.1" ; stunnel 为本地服务
-              :user 'my-gmail-user ; 用户名
-              :port 9939          ; stunnel 本地端口
-              ;; :stream ssl
-              :password 'my-gmail-passwd
-              )
-        ;; pop3 mail setting
-        ;; (pop :server "pop3.example.com"   ; 在这里设置pop3服务器
-        ;;      :user "username@example.com" ; 用户名
-        ;;      :port "110"
-        ;;      :password "password"
-        ;;      )
-        ))
-
-;;告诉gnus如何存放接收来的邮件，gnus把这个叫做backend，最常用的方式
-;;是nnfolder，另外还有nnmbox, nnml等其它几种方式，我们选择其中一种就可以了：
-(setq gnus-secondary-select-methods '((nnml "")))
-
-;;然后我们设置SMTP服务器，采用smtp方式发送邮件需要一个小程序
-;;smtpmail.el, 这个程序现在已被纳入了官方的Emacs，如果你用的是最新的
-;;CVS Emacs，比如 Emacs22, Emacs23等，就已经包含了这个程序。你可以检
-;;查一下emacs的安装目录中 lisp/mail/ 目录下有没有这个文件，如果没有
-;;的话，就只好自己下载、安装了。现在我们看看如何设置：
-
-;;发送邮件，参考 http://www.emacswiki.org/emacs/GnusGmail
-;;;; 采用stunnel处理ssl连接
-(setq message-send-mail-function 'smtpmail-send-it
-      ;;smtpmail-starttls-credentials '(("127.0.0.1" 4659 nil nil))
-      smtpmail-auth-credentials '(("127.0.0.1" 4659 my-gmail-user my-gmail-passwd))
-      smtpmail-default-smtp-server "127.0.0.1"
-      smtpmail-smtp-server "127.0.0.1"
-      smtpmail-smtp-service 4659
-      ;;smtpmail-local-domain "your-pc-name"
-      )
-
-;;
-;;现在我们可以选择几个自己喜欢的新闻组，作为默认的新闻组：
-;;
-(setq gnus-default-subscribed-newsgroups
-      '(
-        "cn.bbs.comp.emacs"
-        "cn.bbs.comp.linux"
-        "cn.bbs.comp.lang.python"
-        "gnu.emacs.help"
-        ))
-
-;;
-;; 邮件分类,使用 nnmail-split-fancy方法更为灵活
-;;
-
-(setq nnmail-treat-duplicates 'delete ; 如果由重复，删除！
-      nnmail-crosspost nil ; 同一个邮件不要到多个组
-      nnmail-split-methods 'nnmail-split-fancy ; 这个分类方法比较灵活
-      nnmail-split-fancy-match-partial-words t ; 单词部分匹配也算成功匹配
-      nnmail-split-fancy
-      '(| ; 根据 mailing list 分类
-        (to my-gmail-user "To-me")
+(setq nnmail-split-fancy
+      `(|
+        (from ,(concat ".*"
+                       (regexp-opt '("@localhost"
+                                     "Cron Daemon"))
+                       ".*")
+              "local")
+        ,@(mapcar (lambda (i)
+                    `(any ,(cdr i) ,(car i)))
+                  `(,@qxj-company-list-table ,@qxj-list-table))
+        (: qxj-split-mailing-lists)
+        (to ,my-gmail-user (: qxj-notify-important))
+        (from ".*@\\(mails.pku.edu.cn\\|pku.org.cn\\)" "pku")
         (any ".*@gmail.com" "gmail")
-        "misc")) ;; 这里或许是 junk 了
+        (to ".*@newsmth.*" "newsmth")
+        ;; maybe junk
+        "misc"))
 
-;;
-;;总是显示mail组，如何显示所有组呢？
-;;
+(setq nnmail-treat-duplicates 'delete
+      nnmail-crosspost nil
+      nnmail-split-methods 'nnmail-split-fancy
+      nnmail-split-fancy-match-partial-words t)
+
+(setq nnimap-split-inbox '("INBOX")
+      nnimap-split-rule 'nnmail-split-fancy)
+
+(defun qxj-split-mailing-lists ()
+  "e.g., foo@googlegroups.com -> foo, digest from xwl's setting."
+  (let ((re (concat "^List-Post:.*<mailto:\\([-a-zA-Z._]+\\)@"
+                    (regexp-opt '("googlegroups.com"
+                                  "lists.apple.com"
+                                  "lists.sourceforge.net"
+                                  ;; "gnu.org"
+                                  )))))
+    (save-excursion
+      (goto-char (point-min))
+      (when (re-search-forward re nil t)
+        (match-string 1)))))
+
+(defun qxj-notify-important ()
+  ;;   (qxj-shell-command-asynchronously
+  ;;     "zenity --info --text \"You've Got Mail \!\" --title \"Gnus\"")
+  "important.now")
+
+
+;;;; 5. Expire Groups
+
+(setq nnmail-expiry-wait-function
+      (lambda (group)
+        (cond
+         ;; email
+         ((string-match "nnimap.*" group)
+          'never)
+         ((string-match "nnml.*" group)
+          'never)
+         ;; list
+         ((string-match (regexp-opt
+                         (mapcar 'car `(,@qxj-list-table)))
+                        group)
+          14)
+         ;; trash
+         ((or (string= "trash" group)
+              (string= "cc-trash" group))
+          3)
+         (t 'never))))
+
+;; (setq nnmail-fancy-expiry-targets
+;;       '(("Newsgroups" ".+" "")))
+
+
+;;; Group
+
+(setq gnus-activate-level 5)
+
 (setq gnus-permanently-visible-groups '"nn*")
+;; (setq gnus-permanently-visible-groups
+;;       (regexp-opt `("blog-life"
+;;                     "blog-tech"
+;;                     "important.now"
+;;                     )))
 
+(add-hook
+ 'gnus-group-mode-hook
+ '(lambda nil
+    (local-unset-key (kbd "q"))
+    (local-unset-key (kbd "Q"))))
 
-;;--------------------------------------------------------------------------------------
-;; 一些常规设置
+
+;;; Summary
+;; Make mails sent by myself display my name instead of "=>blahblah" in
+;; the summary buffer.
+(setq gnus-ignored-from-addresses nil)
+
+;; date view
+(setq gnus-user-date-format-alist
+      '(((gnus-seconds-today) . "%H:%M")
+        (604800               . "%a %H:%M") ; this week
+        ((gnus-seconds-month) . "%d")
+        ((gnus-seconds-year)  . "%m/%d")
+        (t                    . "%Y/%m/%d")))
+
+;; Note!  Do `^, g' to update changes by `nnmail-extra-headers'! See
+;; info for more.
+(setq gnus-extra-headers '(Content-Type To Newsgroups))
+(setq nnmail-extra-headers gnus-extra-headers)
+
+(defalias 'gnus-user-format-function-ct 'rs-gnus-summary-line-content-type)
+
+(defun gnus-user-format-function-from (head)
+  "Trim `From:' to 20 bytes."
+  (let* ((re "[\" ]")
+         (from
+          (replace-regexp-in-string
+           (format "^%s+\\|%s+$" re re)
+           ""
+           (replace-regexp-in-string
+            "<.*>" "" (gnus-header-from head)))))
+    (when (> (length from) 20)
+      (setq from (concat (substring from 0 18) "..")))
+    (format "%-20s" from)))
+
+;;(setq gnus-summary-line-format "%U%R%z%-6d  %5k  %-20f%B%s\n")
+;; (setq gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n")
+(setq gnus-summary-line-format
+      "%U%R%z%10&user-date; %u&ct; %5k  %4i  %u&from; %B(%t) %s\n")
+
+(defun xwl-gnus-summary-tree-plain ()
+  "My old plain summary tree."
+  (interactive)
+  (setq gnus-sum-thread-tree-root            "" ; "* "
+        gnus-sum-thread-tree-false-root      "" ; "* "
+        gnus-sum-thread-tree-single-leaf     "\\"
+        gnus-sum-thread-tree-single-indent   ""
+        gnus-sum-thread-tree-indent          "  "
+        gnus-sum-thread-tree-leaf-with-other "| "
+        gnus-sum-thread-tree-vertical        ""))
+
+;; vi
+(defun xwl-vi-like-hook ()
+  (local-set-key (kbd "k") 'previous-line)
+  (local-set-key (kbd "j") 'next-line)
+  (local-set-key (kbd "l") 'forward-char)
+  (local-set-key (kbd "h") 'backward-char))
+
+(defun xwl-gnus-summary-mode-hook ()
+  (xwl-vi-like-hook)
+
+  (define-key gnus-summary-mode-map (kbd "p") 'gnus-summary-prev-same-subject)
+  (define-key gnus-summary-mode-map (kbd "n") 'gnus-summary-next-same-subject)
+  (define-key gnus-summary-mode-map (kbd "q") 'delete-other-windows)
+  (define-key gnus-summary-mode-map (kbd "Q") 'gnus-summary-exit)
+
+  (define-key gnus-summary-mode-map (kbd ",") 'gnus-summary-prev-thread)
+  (define-key gnus-summary-mode-map (kbd ".") 'gnus-summary-next-thread)
+
+  (define-key gnus-summary-mode-map (kbd "<") 'scroll-other-window-down)
+  (define-key gnus-summary-mode-map (kbd ">") 'scroll-other-window)
+  (define-key gnus-summary-mode-map (kbd "/ n") 'gnus-summary-insert-new-articles)
+
+  (define-key gnus-summary-mode-map (kbd "r") (lambda () (interactive)
+                                                (gnus-summary-show-article)
+                                                (other-window 1)))
+
+  (define-key gnus-summary-mode-map (kbd "RET") (lambda () (interactive)
+                                                  (gnus-summary-show-article)
+                                                  (other-window 1)))
+
+  (define-key gnus-summary-mode-map (kbd "C-o") nil))
+
+(add-hook 'gnus-summary-mode-hook 'xwl-gnus-summary-mode-hook)
+
+(add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
+
+;; save/copy some articles?
 ;;
-;;(gnus-agentize)                                  ; 旧格式，已废弃！
+;; - `B c': copy article to some group
+;; - `*': put it in the cache, and use `Y c' to show it later
+;; - `M-*': delete cached articles
+(setq gnus-use-cache 'passive)
+
+
+;;; Article
+
+(setq gnus-visible-headers
+      (concat "^\\("
+              (regexp-opt
+               '("From" "To" "CC" "Subject" "Date"
+                 "User-Agent" "X-Mailer" "X-Newsreader"
+                 "NNTP-Posting-Host"
+                 "Organization"
+                 ;; "Content-Type" "Content-Transfer-Encoding"
+                 "Newsgroups"))
+              "\\):"))
+
+;; Use 'C-u g' to view mail source, W w, W Q
+(add-hook 'gnus-article-prepare-hook 'gnus-article-fill-long-lines)
+
+(defun xwl-gnus-article-show-ip ()
+  "Show author's ip info in newsgroups."
+  (save-excursion
+    (message-narrow-to-headers)
+    (when (search-forward-regexp
+           "NNTP-Posting-Host: \\([0-9.]+\\)" nil t) ; a-zA-Z
+      (end-of-line)
+      (insert-and-inherit " (")
+      (insert-and-inherit
+       (car
+        (split-string
+         (shell-command-to-string
+          (concat "pyip.py " (match-string-no-properties 1)))
+         "\n")))
+      (insert-and-inherit ")"))))
+
+(setq message-yank-prefix nil)
+;; "> ")
+
+
+;;; Scoring
+
+(add-hook 'message-sent-hook 'gnus-score-followup-thread)
+
+(add-hook 'gnus-summary-exit-hook 'gnus-group-save-newsrc)
+(add-hook 'gnus-summary-exit-hook 'gnus-summary-bubble-group)
+(add-hook 'gnus-summary-exit-hook 'gnus-group-sort-groups-by-rank)
+
+
+;;; MIME
+
+(setq mm-default-directory "~/Downloads")
+
+;; Use "symbol link files" for attached files, instead of making copies.
+(setq gnus-gcc-externalize-attachments 'all)
+
+;; See `~/.mailcap' about actions based on MIME.
+
+
+;; general setting
 (setq gnus-agent t                                 ; 开启代理功能, 以支持离线浏览
       gnus-inhibit-startup-message t               ; 关闭启动时的画面
       gnus-novice-user nil                         ; 关闭新手设置, 不进行确认
       gnus-expert-user t                           ; 不询问用户
       gnus-show-threads t                          ; 显示邮件线索
-      gnus-interactive-exit nil                    ; 退出时不进行交互式询问
       gnus-use-dribble-file nil                    ; 不创建恢复文件
       gnus-always-read-dribble-file nil            ; 不读取恢复文件
-      gnus-asynchronous t                          ; 异步操作
       gnus-large-newsgroup 100                     ; 设置大容量的新闻组默认显示的大小
       gnus-large-ephemeral-newsgroup nil           ; 同上, 只不过对于短暂的新闻组
       gnus-summary-ignore-duplicates t             ; 忽略具有相同ID的消息
       gnus-treat-fill-long-lines t                 ; 如果有很长的行, 不提示
       message-confirm-send t                       ; 防止误发邮件, 发邮件前需要确认
-      message-kill-buffer-on-exit t                ; 设置发送邮件后删除buffer
       message-from-style 'angles                   ; From 头的显示风格
       message-syntax-checks '((sender . disabled)) ; 语法检查
       nnmail-expiry-wait 7                         ; 邮件自动删除的期限 (单位: 天)
@@ -322,17 +563,16 @@
       gnus-summary-display-while-building 100)
 
 ;;
-;; 显示设置
+;; View setting
 ;;
-(setq mm-text-html-renderer 'w3m        ; 用W3M显示HTML格式的邮件
-      mm-inline-large-images t          ; 显示内置图片
-      mm-attachment-override-types '("image/.*")) ; Inline images?
-(auto-image-file-mode)                                ;自动加载图片
+(setq mm-text-html-renderer 'w3m
+      mm-inline-large-images t
+      mm-attachment-override-types '("image/.*"))
+(auto-image-file-mode 1)
 
-;; 概要显示设置
-(setq gnus-summary-gather-subject-limit 'fuzzy) ; 聚集题目用模糊算法
-(setq gnus-summary-line-format "%4P %U%R%z%O %{%5k%} %{%14&user-date;%}   %{%-20,20n%} %{%ua%} %B %(%I%-60,60s%)\n")
-(defun gnus-user-format-function-a (header) ; 用户的格式函数 `%ua'
+;; summary view setting
+(setq gnus-summary-gather-subject-limit 'fuzzy)
+(defun gnus-user-format-function-a (header)
   (let ((myself (concat "<" my-mail ">"))
         (references (mail-header-references header))
         (message-id (mail-header-id header)))
@@ -342,23 +582,15 @@
                  (string-match myself message-id)))
         "X" "│")))
 
-(setq gnus-user-date-format-alist             ; 用户的格式列表 `user-date'
-      '(((gnus-seconds-today) . "TD %H:%M")   ; 当天
-        (604800 . "W%w %H:%M")                ; 七天之内
-        ((gnus-seconds-month) . "%d %H:%M")   ; 当月
-        ((gnus-seconds-year) . "%m-%d %H:%M") ; 今年
-        (t . "%y-%m-%d %H:%M")))              ; 其他
-
-;; 线程的可视化外观, `%B'
-(setq gnus-summary-same-subject "")
-(setq gnus-sum-thread-tree-indent "    ")
-(setq gnus-sum-thread-tree-single-indent "◎ ")
-(setq gnus-sum-thread-tree-root "● ")
-(setq gnus-sum-thread-tree-false-root "☆")
-(setq gnus-sum-thread-tree-vertical "│")
-(setq gnus-sum-thread-tree-leaf-with-other "├─ ")
-(setq gnus-sum-thread-tree-single-leaf "t─ ")
-
+;; visual threads
+(setq gnus-summary-same-subject ""
+      gnus-sum-thread-tree-indent "  "
+      gnus-sum-thread-tree-single-indent "◎ "
+      gnus-sum-thread-tree-root "● "
+      gnus-sum-thread-tree-false-root "☆"
+      gnus-sum-thread-tree-vertical "│"
+      gnus-sum-thread-tree-leaf-with-other "├─"
+      gnus-sum-thread-tree-single-leaf "\\")
 
 ;; 用 Supercite 显示多种多样的引文形式
 (setq sc-attrib-selection-list nil
@@ -373,10 +605,9 @@
       sc-preferred-header-style 4
       sc-use-only-preference-p nil)
 
-;; 线程设置
+;; threads
 (setq gnus-use-trees t                  ; 联系老的标题
       gnus-tree-minimize-window nil     ; 用最小窗口显示
-      gnus-fetch-old-headers 'some      ; 抓取老的标题以联系线程
       gnus-generate-tree-function 'gnus-generate-horizontal-tree ; 生成水平树
       gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject ; 聚集函数根据标题聚集
       )
@@ -388,11 +619,9 @@
 (add-hook 'gnus-select-group-hook 'gnus-group-set-timestamp)   ;跟踪组的时间轴
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)              ;新闻组分组
 
-
 ;; 排序
 (setq gnus-thread-sort-functions
-      '(
-        (not gnus-thread-sort-by-date)                               ;时间的逆序
+      '((not gnus-thread-sort-by-date)                               ;时间的逆序
         (not gnus-thread-sort-by-number)))                           ;跟踪的数量的逆序
 
 ;; 自动跳到第一个没有阅读的组
@@ -410,7 +639,6 @@
               gnus-sum-thread-tree-vertical
               "]*"))
 
-;;------------------------------------------------------------------------------------
 ;; 其他的一些设置
 ;;
 
@@ -445,24 +673,8 @@
                (vertical 1.0
                          (summary 1.0 point)))))
 
-;;
-;;不喜欢 Summary buffer 的样子，如何调整？
-;;那么你需要和变量 gnus-summary-line-format 玩一玩，它得值是一个符号
-;;串，比如作者，日期，主题等。手册 "Summary Buffer Lines" 中有可用的
-;;符号列表和常被忘记的节点 "Formatting Variables" 和它的子节点。其中
-;;有很多有用的东西，像指定光标和制表符的位置等。
-;;
-;;从 5.10.0 起，Gnus 新提供了一些很不错的标志符，例如，%B 可以形成一
-;;个线索树，%&user-date 根据帖子给出时间细节。例子如下：
-;;
-(setq gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n")
 
 ;;Article Buffer设置
-;;设定要显示的头消息格式
-(setq gnus-visible-headers
-      "^\\(^To:\\|^CC:\\|^From:\\|^Subject:\\|^Date:\\|^Followup-To:
-\\|^X-Newsreader:\\|^User-Agent:\\|^X-Mailer:
-\\|Line:\\|Lines:\\|Content-Type:\\|NNTP-Posting-Host\\)")
 
 ;;
 ;;写消息时如何打开自动折行 (word-wrap) ？
@@ -475,17 +687,6 @@
 (setq message-cite-function 'message-cite-original-without-signature)
 (add-hook 'mail-citation-hook 'sc-cite-original)
 
-
-;;
-;;如果开启了主题视图，只看未读邮件是令人讨厌的，在 ~/.gnus 里面加如这行：
-;;
-(setq gnus-fetch-old-headers 'some)
-;;
-;; topic mode 参考这里：(info "(gnus)Group Topics")
-;;
-(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
-(add-hook 'mail-citation-hook 'sc-cite-original)
-
 ;;
 ;;压缩保存的邮件
 ;;
@@ -494,9 +695,10 @@
 ;;
 ;;开启记分
 ;;
-(setq gnus-use-adaptive-scoring t)
-(setq gnus-save-score t)
-(add-hook 'mail-citation-hook 'sc-cite-original)
+(setq gnus-use-adaptive-scoring t
+      gnus-save-score t
+      gnus-score-find-score-files-function
+      '(gnus-score-find-hierarchical gnus-score-find-bnews bbdb/gnus-score))
 (add-hook 'message-sent-hook 'gnus-score-followup-article)
 (add-hook 'message-sent-hook 'gnus-score-followup-thread)
 
@@ -510,11 +712,6 @@
     (gnus-ticked-mark (from 10))
     (gnus-dormant-mark (from 5))))
 
-(setq gnus-score-find-score-files-function
-      '(gnus-score-find-hierarchical gnus-score-find-bnews bbdb/gnus-score)
-      gnus-use-adaptive-scoring t)
-
-;;;
 (setq gnus-confirm-mail-reply-to-news t
       message-kill-buffer-on-exit t
       message-elide-ellipsis "[...]\n"
@@ -525,7 +722,7 @@
 ;;
 ;; 例如在 gnu.emacs.gnus 中，你偶然发现一个有趣的消息，想要存档，有好几种
 ;; 方法。第一种，也是最简单的，另存为文件`O f'。但是，从 Gnus 访问这样的
-;; 存档文件并不方便。把 Frank Haun &lt;pille3003@fhaun.de&gt; 的这个代码
+;; 存档文件并不方便。把 Frank Haun <pille3003@fhaun.de> 的这个代码
 ;; 片断放入 ~/.gnus：
 ;;
 (defun my-archive-article (&optional n)
@@ -542,94 +739,18 @@
                      (replace-in-string gnus-newsgroup-name "^.*:" "")
                    (replace-regexp-in-string "^.*:" "" gnus-newsgroup-name)))))
     (gnus-summary-copy-article n archive-name)))
-
 ;;
 ;; 此时，可以在 summary buffer 中用 `M-x my-archive-article' 把光标处的文
 ;; 章存档到一个 nnml 组（当然，可以改为你想要的其他后端）。
 ;;
-;; 当然，也可以使用缓冲：
-;;
-(setq gnus-use-cache t)
 
-;;
-;; 这样，你只需设置 tick 或者 dormant 标记来保存，在缓冲中设置已读标记可
-;; 以删除（文章）。
-;;
 ;; 另一种保存帖子的方法：
 ;;
 ;; 看到有价值的帖子，只要按下`*'键，这篇帖子就会被拷贝到本地的cache中保存
 ;; 起来，即使服务器那边删除了帖子，也没关系了。如果不想要了，用`Meta-*'就
 ;; 可以把帖子从缓存中删掉。
 ;;
-(setq gnus-use-cache 'passive)
-
-;;
-;; 中文！中文！永远都是头痛的事儿...Emacs23终于解决的这个问题 :-)
-;;
-;; 设置编码，这个是改变了整个emacs的编码！太恐怖了
-;;(set-language-environment 'Chinese-GBK)
-(setq gnus-default-charset 'gbk)
-(add-to-list 'gnus-group-charset-alist
-             '("\\(^\\|:\\)cn\\>\\|\\<chinese\\>" gbk))
-(setq gnus-summary-show-article-charset-alist
-      '((1 . utf-8)
-        (2 . big5)
-        (3 . gb18030)
-        (4 . gbk)
-        (5 . gn2312)
-        (6 . utf-7)))
-
-(setq gnus-group-name-charset-group-alist
-      '(("\\.com\\.cn:" . gbk)
-        ("news\\.newsfan\\.net" . gbk)))
-
-(setq gnus-group-name-charset-method-alist
-      '(((nntp "news.cn99.net") . gbk)))
-
-(setq gnus-group-name-charset-method-alist
-      '(((nntp "news.newsfan.net") . gbk)))
-
-(setq gnus-newsgroup-ignored-charsets
-      '(unknown-8bit x-unknown x-gbk gb18030))
-
-;; 显示编码格式
-(add-hook 'gnus-startup-hook
-          '(lambda ()
-             (setq gnus-visible-headers
-                   (concat "^User-Agent:\\|^Content-Type:\\|"
-                           "Content-Transfer-Encoding:\\|"
-                           "^X-mailer:\\|^X-Newsreader:\\|^X-Sender:\\|"
-                           gnus-visible-headers))))
-
-;;设置发送风格
-(setq gnus-posting-styles
-      '(
-        ;; all
-        (".*"
-         (name my-real-name)
-         (address (concat "NO.SPAM" my-gmail-user))
-         (face (gnus-convert-png-to-face (concat home-directory "Gnus/xface.png")))
-         (organization my-laptop-name)
-         (signature (concat "
-Best Regards,
-" my-real-name))
-         (eval (setq mm-coding-system-priorities
-                     '(iso-8859-1 gb2312 gbk gb18030 utf-8)))
-         ;;(body "")
-         )
-        ;;cn.bbs.com
-        ("^cn\\.bbs\\.comp"
-         (name my-real-name)
-         (address (concat "NO.SPAM" my-gmail-user))
-         (face (gnus-convert-png-to-face (concat home-directory "Gnus/xface.png")))
-         (organization my-laptop-name)
-         (signature "")
-         (eval (setq mm-coding-system-priorities
-                     '(iso-8859-1 gb2312 gbk gb18030 utf-8)))
-         ;;(body "")
-         )
-        ))
-
+;; (setq gnus-use-cache 'passive)
 
 ;;
 ;; 多窗口处理
@@ -728,5 +849,5 @@ Best Regards,
 
 ;; REF: http://www.ibm.com/developerworks/cn/linux/l-cn-emacsgnus/
 
-;;(gnus-compile)                          ;编译一些选项, 加快速度
+;;(gnus-compile)
 ;;(provide 'init-gnus)
