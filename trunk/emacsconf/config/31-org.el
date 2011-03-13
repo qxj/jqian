@@ -81,7 +81,7 @@
 
   ;; Single keys to execute commands at the beginning of a headline
   (setq org-use-speed-commands t
-        org-special-ctrl-k t
+        ;; org-special-ctrl-k t
         org-special-ctrl-a/e 'reserved
         org-export-with-sub-superscripts nil
         org-file-apps-defaults-gnu '((t . emacs)))
