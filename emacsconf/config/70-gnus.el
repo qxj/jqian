@@ -161,6 +161,9 @@
 
 (global-unset-key (kbd "C-x m"))
 
+;; attachment
+(defalias 'mail-header-encode-parameter 'rfc2047-encode-parameter)
+
 
 ;;; Chinese Stuffs
 
