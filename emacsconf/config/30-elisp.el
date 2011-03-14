@@ -1126,6 +1126,8 @@ indent line."
 
 ;; Enhanced ansi-term
 (deh-require 'multi-term
+  (setq multi-term-dedicated-window-height 10
+        multi-term-dedicated-max-window-height 10)
   ;; compatible with normal terminal keybinds
   (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
   (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
