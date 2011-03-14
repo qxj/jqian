@@ -33,7 +33,9 @@
       gnus-use-cross-reference nil)
 
 ;; Newsgroup
-(setq gnus-select-method '(nntp "news.cn99.com"))
+(setq gnus-select-method '(nntp "localhost")) ; for leafnode
+
+;; (setq gnus-select-method '(nntp "news.cn99.com"))
 
 (setq gnus-default-subscribed-newsgroups
       '("cn.bbs.comp.emacs"
@@ -388,6 +390,8 @@
 ;;                     "important.now"
 ;;                     )))
 
+(setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+
 (add-hook
  'gnus-group-mode-hook
  '(lambda nil
@@ -429,20 +433,17 @@
     (format "%-20s" from)))
 
 ;;(setq gnus-summary-line-format "%U%R%z%-6d  %5k  %-20f%B%s\n")
-;; (setq gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n")
-(setq gnus-summary-line-format
-      "%U%R%z%10&user-date; %u&ct; %5k  %4i  %u&from; %B(%t) %s\n")
+(setq gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n")
+;; (setq gnus-summary-line-format "%U%R%z%10&user-date; %u&ct; %5k  %4i  %u&from; %B(%t) %s\n")
 
-(defun xwl-gnus-summary-tree-plain ()
-  "My old plain summary tree."
-  (interactive)
-  (setq gnus-sum-thread-tree-root            "" ; "* "
-        gnus-sum-thread-tree-false-root      "" ; "* "
-        gnus-sum-thread-tree-single-leaf     "\\"
-        gnus-sum-thread-tree-single-indent   ""
-        gnus-sum-thread-tree-indent          "  "
-        gnus-sum-thread-tree-leaf-with-other "| "
-        gnus-sum-thread-tree-vertical        ""))
+(setq gnus-summary-same-subject ""
+      gnus-sum-thread-tree-indent "  "
+      gnus-sum-thread-tree-single-indent "◎ "
+      gnus-sum-thread-tree-root "● "
+      gnus-sum-thread-tree-false-root "☆"
+      gnus-sum-thread-tree-vertical "│"
+      gnus-sum-thread-tree-leaf-with-other "├─"
+      gnus-sum-thread-tree-single-leaf "\\")
 
 ;; vi
 (defun xwl-vi-like-hook ()
@@ -476,7 +477,7 @@
 
   (define-key gnus-summary-mode-map (kbd "C-o") nil))
 
-(add-hook 'gnus-summary-mode-hook 'xwl-gnus-summary-mode-hook)
+;; (add-hook 'gnus-summary-mode-hook 'xwl-gnus-summary-mode-hook)
 
 (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 
@@ -581,16 +582,6 @@
             (and (stringp message-id)
                  (string-match myself message-id)))
         "X" "│")))
-
-;; visual threads
-(setq gnus-summary-same-subject ""
-      gnus-sum-thread-tree-indent "  "
-      gnus-sum-thread-tree-single-indent "◎ "
-      gnus-sum-thread-tree-root "● "
-      gnus-sum-thread-tree-false-root "☆"
-      gnus-sum-thread-tree-vertical "│"
-      gnus-sum-thread-tree-leaf-with-other "├─"
-      gnus-sum-thread-tree-single-leaf "\\")
 
 ;; 用 Supercite 显示多种多样的引文形式
 (setq sc-attrib-selection-list nil
