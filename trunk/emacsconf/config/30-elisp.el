@@ -249,6 +249,8 @@
 ;;{{{ Ibuffer
 (deh-require 'ibuffer
   (require 'ibuf-ext nil t)
+  (setq ibuffer-old-time 24
+        ibuffer-show-empty-filter-groups nil)
   ;; keybinds
   ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
   (deh-define-key ibuffer-mode-map
@@ -305,7 +307,13 @@
                             (mode . w3m-mode)
                             (mode . erc-mode)
                             (name . "^\\*gud")
-                            (name . "^\\*scratch")))
+                            (name . "^\\*scratch")
+                            ;; gnus
+                            (mode . message-mode)
+                            (mode . mail-mode)
+                            (mode . gnus-group-mode)
+                            (mode . gnus-summary-mode)
+                            (mode . gnus-article-mode)))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
                               (mode . makefile-mode)))
@@ -357,6 +365,7 @@
                     (mode . org-mode)
                     (mode . LaTeX-mode))))
           ("*" ((name . "*")))))
+
   )
 ;;}}}
 
@@ -1266,13 +1275,15 @@ indent line."
   )
 
 (deh-section "mode-line"
+  (size-indication-mode 1)
+  ;; (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
+
   (defun get-lines-4-mode-line ()
     (let ((lines (count-lines (point-min) (point-max))))
       (concat (propertize
                (concat "%l:" (format "%dL" lines))
                'mouse-face 'mode-line-highlight
-               ;; make it colorful
-               ;; 'face 'mode-line-lines-face
+               'face 'mode-line-lines-face
                'help-echo (format "%d lines" lines)) " ")))
 
   (defun get-size-indication-format ()
@@ -1283,9 +1294,6 @@ indent line."
   (defun get-mode-line-region-face ()
     (and transient-mark-mode mark-active
          (if window-system 'region 'region-invert)))
-
-  (size-indication-mode 1)
-  (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
 
   (setq-default
    mode-line-position
@@ -1310,58 +1318,25 @@ mouse-1: Display Line and Column Mode Menu")
 mouse-2: Make current window occupy the whole frame\n\
 mouse-3: Remove current window from display")
          (recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
-         (standard-mode-line-modes
-          (list
-           " "
-           (propertize "%[" 'help-echo recursive-edit-help-echo)
-           (propertize "(" 'help-echo help-echo)
-           `(:propertize ("" mode-name)
-                         help-echo "Major mode\n\
-mouse-1: Display major mode menu\n\
-mouse-2: Show help for major mode\n\
-mouse-3: Toggle minor modes"
-                         mouse-face mode-line-highlight
-                         local-map ,mode-line-major-mode-keymap)
-           '("" mode-line-process)
-           `(:propertize ("" minor-mode-alist)
-                         mouse-face mode-line-highlight
-                         help-echo "Minor mode\n\
-mouse-1: Display minor mode menu\n\
-mouse-2: Show help for minor mode\n\
-mouse-3: Toggle minor modes"
-                         local-map ,mode-line-minor-mode-keymap)
-           (propertize "%n" 'help-echo "mouse-2: Remove narrowing from the current buffer"
-                       'mouse-face 'mode-line-highlight
-                       'local-map (make-mode-line-mouse-map
-                                   'mouse-1 #'mode-line-widen))
-           (propertize ")" 'help-echo help-echo)
-           (propertize "%]" 'help-echo recursive-edit-help-echo))))
-    (setq-default mode-line-modes standard-mode-line-modes)
+         (dashes (propertize "--" 'help-echo help-echo)))
     (setq-default mode-line-format
-                  `("%e%t"
-                    mode-line-mule-info
-                    mode-line-client
-                    mode-line-modified
-                    mode-line-remote
-                    " "
-                    mode-line-buffer-identification
-                    ,(propertize " " 'help-echo help-echo)
-                    mode-line-position
-                    (which-func-mode (" " which-func-format))
-                    (vc-mode vc-mode)
-                    mode-line-modes
-                    (working-mode-line-message (" " working-mode-line-message))
-                    ,(propertize "-%-" 'help-echo help-echo))))
-
-  (setq mode-line-format-bak mode-line-format)
-  (setq mode-line t)
-  (defun toggle-mode-line ()
-    "Toggle mode-line."
-    (interactive)
-    (if mode-line
-        (setq-default mode-line-format nil)
-      (setq-default mode-line-format mode-line-format-bak))
-    (setq mode-line (not mode-line)))
+                  (list
+                   "%e%t"
+                   ;; (propertize "-" 'help-echo help-echo)
+                   'mode-line-mule-info
+                   'mode-line-client
+                   'mode-line-modified
+                   'mode-line-remote
+                   'mode-line-frame-identification
+                   'mode-line-buffer-identification
+                   (propertize " " 'help-echo help-echo)
+                   'mode-line-position
+                   `(which-func-mode (" " which-func-format))
+                   '(vc-mode vc-mode)
+                   ;; (propertize "  " 'help-echo help-echo)
+                   'mode-line-modes
+                   `(global-mode-string ("" global-mode-string ,dashes))
+                   (propertize "-%-" 'help-echo help-echo))))
   )
 
 ;; sr-speedbar
@@ -1544,4 +1519,5 @@ If the flag is set, only complete with local files."
   (setq gmail-notifier-protocol 993)
   ;; (setq gmail-notifier-username "william.xwl"
   ;;       gmail-notifier-password "******")
-  (gmail-notifier-start))
+  ;; (gmail-notifier-start)
+  )
