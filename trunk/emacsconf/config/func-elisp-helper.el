@@ -67,6 +67,5 @@ pgrep, so.. make sure pgrep is already installed in your system."
 (defalias 'pp* 'cl-prettyprint)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (defalias 'chr 'char-to-string)
-(defalias 'sc 'smart-compile)
 (defalias 'list-ascii 'ascii-table-show)
 

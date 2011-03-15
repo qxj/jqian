@@ -111,7 +111,7 @@
 
 ;; set my file register
 (deh-section "register"
-  (set-register ?. '(file . my-config-dir))
+  (set-register ?. `(file . ,my-config-dir))
   (set-register ?b '(file . "~/Dropbox/"))
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
@@ -165,6 +165,7 @@
  '(help-window-select t)
  '(tooltip-use-echo-area nil)
  '(view-read-only t)
+ '(user-mail-address "junist@gmail.com")
  '(woman-cache-filename "~/.wmncach.el")
  '(woman-manpath (quote ("/usr/man" "/usr/share/man" "/usr/X11R6/man" "/usr/local/man" "/usr/share/man/zh_TW" "/usr/share/man/zh_CN"))))
 

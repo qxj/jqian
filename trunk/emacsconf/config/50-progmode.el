@@ -618,6 +618,9 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;; gnuplot
 (deh-section "gnuplot"
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
+
   (deh-add-hook gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook gnuplot-comint-setup-hook
@@ -626,6 +629,8 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;; graphviz
 (deh-section "graphviz"
+  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
+
   (setq graphviz-dot-auto-indent-on-semi nil)
   (deh-add-hook graphviz-dot-mode-hook
     (local-unset-key "\C-cc") ; it's prefix key
@@ -637,8 +642,8 @@ Use CREATE-TEMP-F for creating temp copy."
         (graphviz-dot-complete-word)
       (indent-for-tab-command))))
 
-(deh-require-if
-    'protobuf-mode
+(deh-section-if "protobuf"
+  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
   (executable-find "protoc"))
 
 ;; java
@@ -655,41 +660,30 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; emacs --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
+  (autoload 'js2-mode "js2" "" t)
   (deh-add-hook js2-mode-hook
     (setq forward-sexp-function nil)))
 
 (deh-section "autoloads"
-  ;; (autoload 'gtags-mode "gtags" "Global Tags Mode from GNU." t)
-  (autoload 'svn-status "psvn" nil t)
-  (autoload 'js2-mode "js2" "" t)
+  (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
   (autoload 'git-status "git" "" t)
   (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
   (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
   (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
   (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
   (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
-  (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
   (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'python-mode "python" "Python editing mode." t)
-  (autoload 'php-mode "php-mode" "php mode" t)
   (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
   ;; (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
   (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
   (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
   (autoload 'sourcepair-load "sourcepair" nil t)
-  (autoload 'compile-dwim-compile "compile-dwim" nil t)
-  (autoload 'compile-dwim-run "compile-dwim" nil t)
   ;; emacs lock
   (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
   ;; iimage
   (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
   (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
-  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
-  ;; graphviz
-  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
-  ;; gnuplot
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
   )
 
 (deh-section "auto-mode"
@@ -712,8 +706,11 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 (deh-section-reserved "php"
+  (autoload 'php-mode "php-mode" "php mode" t)
+
   (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
   (add-to-list 'interpreter-mode-alist '("php" . php-mode))
+
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))

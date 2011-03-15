@@ -42,13 +42,39 @@
 ;;}}}
 
 (defun vi-open-next-line (arg)
- "Move to the next line (like vi) and then open a new line, bind
+ "Move to the next line (like vi) and then open a new line. bind
 to \\[vi-open-next-line]."
  (interactive "p")
  (end-of-line)
  (open-line arg)
  (forward-line 1)
  (indent-according-to-mode))
+
+;;{{{ simulate J, gJ in vi
+(defun vi-join-lines(&optional arg)
+  "Join next line to current line (like vi), splitted by only one
+space. bind to \\[vi-join-lines]."
+  (interactive "P")
+  (setq arg (abs (if arg (prefix-numeric-value arg) 1)))
+  (while (> arg 0)
+    (save-excursion
+      (end-of-line)
+      (delete-char 1)
+      (just-one-space))
+    (setq arg (- arg 1))))
+
+(defun vi-merge-lines(&optional arg)
+  "Merge next line to current line (like vi), without spaces
+leaving. bind to \\[vi-merge-lines]."
+  (interactive "P")
+  (setq arg (abs (if arg (prefix-numeric-value arg) 1)))
+  (while (> arg 0)
+    (save-excursion
+      (end-of-line)
+      (delete-char 1)
+      (delete-horizontal-space))
+    (setq arg (- arg 1))))
+;;}}}
 
 (defmacro def-redo-command (fun-name redo undo)
   "Make redo command, bind to \\[redo]."
