@@ -72,8 +72,8 @@
 (setq mail-sources
       `(
         ;; pop3 mail setting
-        ;; (pop :server "pop3.example.com"   ; 在这里设置pop3服务器
-        ;;      :user "username@example.com" ; 用户名
+        ;; (pop :server "pop3.example.com"
+        ;;      :user "username@example.com"
         ;;      :port "110"
         ;;      :password "password"
         ;;      )
@@ -124,16 +124,20 @@
 
 ;;; Sending Mails
 
-;; starttls.el, pop3.el, starttls/gnutls-bin
-(require 'starttls)
+;; 1) internal
 
+;; starttls.el, pop3.el, starttls/gnutls-bin
+;; (require 'starttls)
 ;; (setq mail-user-agent 'gnus-user-agent)
 
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-auth-credentials "~/.authinfo.gpg"
-      smtpmail-local-domain system-name)
+;; (setq message-send-mail-function 'smtpmail-send-it
+;;       smtpmail-auth-credentials "~/.authinfo.gpg"
+;;       smtpmail-local-domain system-name)
 
-;; http://www.emacswiki.org/cgi-bin/wiki/MultipleSMTPAccounts
+;; 2) msmtp
+;; http://www.emacswiki.org/emacs/GnusMSMTP
+(setq message-send-mail-function 'message-send-mail-with-sendmail
+      sendmail-program "msmtp")
 
 
 ;;; Message Mode
@@ -152,7 +156,7 @@
      (define-key message-mode-map (kbd "<backtab>") 'bbdb-complete-name)))
 
 ;; set outgoing coding
-(setq mm-coding-system-priorities '(utf-8))
+(setq mm-coding-system-priorities '(utf-8 gb2312 gbk gb18030 iso-8859-1))
 
 ;; One can mail the *Group* buffer, select different posting styles
 ;; according to group name at point for matching. So better avoiding
@@ -203,14 +207,6 @@
 ;;;; 1. List Groups, Nonlist Groups, Important Groups
 
 ;; '((group . to-list) ...)
-(setq qxj-company-list-table
-      (mapcar
-       (lambda (i)
-         (cons (replace-regexp-in-string "@.*" "" i) i))
-       '(
-         ;; "daily@abc.net"
-         )))
-
 (setq qxj-list-table
       (mapcar
        (lambda (i)
@@ -236,12 +232,6 @@
                (gcc-self . t)))
            qxj-list-table)
 
-        ,@(mapcar
-           (lambda (i)
-             `(,(car i)
-               (to-list . ,(cdr i))))
-           qxj-company-list-table)
-
         ("nnimap+imap.gmail.com.*"
          (gcc-self . t))
 
@@ -259,27 +249,29 @@
       `((".*"
          (name ,user-full-name)
          (address ,(concat "NO.SPAM" user-mail-address)) ; avoid spam
-         (face (gnus-convert-png-to-face "~/Gnus/xface.png"))
+         ,(if (file-exists-p "~/Gnus/xface.png")
+              '(face (gnus-convert-png-to-face "~/Gnus/xface.png")))
+         (x-url (getenv "WWW_HOME"))
          (organization ,system-name)
          (signature ,(concat "Best Regards,\n" user-full-name))
-         (eval (setq mm-coding-system-priorities
-                     '(utf-8 gb2312 gbk gb18030 iso-8859-1)))
-         )
+         (eval (setq message-sendmail-extra-arguments '("-a" "gmail"))))
         ;; cn.*
         (,(regexp-opt '("cn.fan" "cn.bbs"))
-         (name ,user-full-name)
-         (address ,(concat "NO.SPAM" user-mail-address))
-         (face (gnus-convert-png-to-face "~/Gnus/xface.png"))
-         (signature nil)
-         (eval (setq mm-coding-system-priorities
-                     '(gb2312 gbk gb18030 utf-8 )))
+         (eval (list
+                (setq message-sendmail-extra-arguments '("-a" "gmail"))
+                (setq mm-coding-system-priorities '(gb2312 gbk gb18030 utf-8))))
          ;;(body "")
          )
-        ;; Keep company mail at the end.
-        (,(regexp-opt (mapcar 'car qxj-company-list-table))
-         (address "xxx@xxx.com")
-         (signature "\n"))
+        (,(regexp-opt (mapcar 'car qxj-list-table))
+         )
         ))
+
+;; Keep company mail at the end.
+(if (and (fboundp 'qxj-company-email) (fboundp 'qxj-company-posting-style))
+    (add-to-list 'gnus-posting-styles
+                 `(,(regexp-opt (replace-regexp-in-string "@.*" "" qxj-company-email))
+                   ,@(qxj-company-posting-style)
+                   (eval (setq message-sendmail-extra-arguments '("-a" "company"))))))
 
 
 ;;;; 4. Split Received Mails
@@ -319,7 +311,7 @@
               "local")
         ,@(mapcar (lambda (i)
                     `(any ,(cdr i) ,(car i)))
-                  `(,@qxj-company-list-table ,@qxj-list-table))
+                  `(,@qxj-list-table))
         (: qxj-split-mailing-lists)
         (to ,user-mail-address (: qxj-notify-important))
         (from ".*@\\(mails.pku.edu.cn\\|pku.org.cn\\)" "pku")
