@@ -3,7 +3,6 @@
 (deh-section "dired"
   (require 'dired-x)
   (require 'dired-single)
-  (require 'dired-isearch)
   (add-hook
    'dired-load-hook
    (lambda ()
@@ -39,11 +38,6 @@
        ("/r"   . 'ywb-dired-filter-regexp)
        ("/."   . 'ywb-dired-filter-extension)
        ("s"    . 'one-key-menu-dired-sort)
-       ;; dired-search
-       ((kbd "C-s")     . 'dired-isearch-forward)
-       ((kbd "C-r")     . 'dired-isearch-backward)
-       ((kbd "ESC C-s") . 'dired-isearch-forward-regexp)
-       ((kbd "ESC C-r") . 'dired-isearch-backward-regexp)
        )
      (if (eq system-type 'windows-nt)
          (deh-define-key dired-mode-map
@@ -65,9 +59,10 @@
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
     (setq dired-listing-switches "-alvh"))
-  (setq dired-recursive-copies 'top)
-  (setq dired-recursive-deletes 'top)
-  (setq dired-dwim-target t)
+  (setq dired-recursive-copies 'top
+        dired-recursive-deletes 'top
+        dired-isearch-filenames t       ; only search filename
+        dired-dwim-target t)
 
   (deh-section "dired-omit"
     (add-hook 'dired-mode-hook
@@ -1538,3 +1533,15 @@ If the flag is set, only complete with local files."
 (deh-require 'epa-file
   (epa-file-enable)
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
+
+(deh-section "buffer-action"
+  (autoload 'buffer-action-compile "buffer-action")
+  (autoload 'buffer-action-run "buffer-action"))
+
+(deh-require-if 'gmail-notifier
+  ;;# set user/passwd in ~/.authinfo.gpg
+  (file-exists-p "~/.authinfo.gpg")
+  (setq gmail-notifier-protocol 993)
+  ;; (setq gmail-notifier-username "william.xwl"
+  ;;       gmail-notifier-password "******")
+  (gmail-notifier-start))

@@ -2,3 +2,9 @@
 
 * Input special charactors
 C-x 8 RET, C-x 8 C-h
+
+* Join two lines
+M-^
+
+* Input 100 times 1
+C-u 100 C-u 1

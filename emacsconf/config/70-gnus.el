@@ -131,7 +131,7 @@
 
 (setq message-send-mail-function 'smtpmail-send-it
       smtpmail-auth-credentials "~/.authinfo.gpg"
-      smtpmail-local-domain my-laptop-name)
+      smtpmail-local-domain system-name)
 
 ;; http://www.emacswiki.org/cgi-bin/wiki/MultipleSMTPAccounts
 
@@ -253,16 +253,14 @@
 
 
 ;;;; 3. Posting Style
-(setq user-full-name my-real-name
-      user-mail-address my-gmail-user
-      mail-signature t)
+(setq mail-signature t)
 
 (setq gnus-posting-styles
       `((".*"
          (name ,user-full-name)
          (address ,(concat "NO.SPAM" user-mail-address)) ; avoid spam
          (face (gnus-convert-png-to-face "~/Gnus/xface.png"))
-         (organization ,my-laptop-name)
+         (organization ,system-name)
          (signature ,(concat "Best Regards,\n" user-full-name))
          (eval (setq mm-coding-system-priorities
                      '(utf-8 gb2312 gbk gb18030 iso-8859-1)))
@@ -323,7 +321,7 @@
                     `(any ,(cdr i) ,(car i)))
                   `(,@qxj-company-list-table ,@qxj-list-table))
         (: qxj-split-mailing-lists)
-        (to ,my-gmail-user (: qxj-notify-important))
+        (to ,user-mail-address (: qxj-notify-important))
         (from ".*@\\(mails.pku.edu.cn\\|pku.org.cn\\)" "pku")
         (any ".*@gmail.com" "gmail")
         (to ".*@newsmth.*" "newsmth")
