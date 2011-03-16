@@ -69,3 +69,11 @@ pgrep, so.. make sure pgrep is already installed in your system."
 (defalias 'chr 'char-to-string)
 (defalias 'list-ascii 'ascii-table-show)
 
+;; from xwl-util.el
+(defun my-shell-command-asynchronously (cmd)
+  (start-process-shell-command cmd nil cmd))
+
+(defun my-notify (title message)
+  (my-shell-command-asynchronously
+   (format "zenity --info --title \"%s\" --text \"%s\""
+           title message)))

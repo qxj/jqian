@@ -118,7 +118,8 @@
       (add-to-list 'Info-default-directory-list dir))
 
     (if (= emacs-major-version 23)
-        (setq find-function-C-source-directory "~/src/emacs-23.2/src/"))
+        (setq find-function-C-source-directory "~/src/emacs-23.2/src/"
+              find-function-source-path '("~/src/emacs-23.2/lisp/")))
 
     (deh-section "font-config-emacs22"
       (if (= emacs-major-version 23)
