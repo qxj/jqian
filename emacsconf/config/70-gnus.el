@@ -320,7 +320,7 @@
         ;; (any ".*@gmail.com" "gmail")
         (to ".*@newsmth.*" "newsmth")
         ;; maybe junk
-        "misc"))
+        ))
 
 (setq nnmail-treat-duplicates 'delete
       nnmail-crosspost nil
