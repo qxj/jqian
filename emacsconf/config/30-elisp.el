@@ -1515,9 +1515,6 @@ If the flag is set, only complete with local files."
 
 (deh-require-if 'gmail-notifier
   ;;# set user/passwd in ~/.authinfo.gpg
-  (file-exists-p "~/.authinfo.gpg")
-  (setq gmail-notifier-protocol 993)
-  ;; (setq gmail-notifier-username "william.xwl"
-  ;;       gmail-notifier-password "******")
-  ;; (gmail-notifier-start)
+  (file-exists-p "~/.authinfo")
+  (gmail-notifier-start)
   )

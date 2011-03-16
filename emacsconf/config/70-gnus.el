@@ -1,6 +1,9 @@
 ;; -*- coding: utf-8 mode: emacs-lisp -*-
 ;;
 
+;; press ^ in *group buffer*, list all servers
+;; press / o in *summary buffer*, list all old messages
+
 (setq gnus-startup-file "~/Gnus/newsrc"
       gnus-default-directory "~/Gnus"
       gnus-home-directory "~/Gnus"
@@ -59,7 +62,7 @@
                 (nnimap-address "imap.gmail.com")
                 (nnimap-server-port 993)
                 (nnimap-stream ssl)
-                (nnimap-authinfo-file "~/.authinfo.gpg"))))
+                (nnimap-authinfo-file "~/.authinfo"))))
 
 ;; Store encrypted gmail login info in ~/.authinfo.gpg, eg:
 ;; machine imap.gmail.com login xxx@gmail.com password yyy port 993
@@ -93,12 +96,12 @@
 
      ))
 
-(setq qxj-gnus-important-groups
+(setq my-gnus-important-groups
       '("nnimap+imap.gmail.com:important.now"
         "nnfolder:important.now"
         ))
 
-(defun qxj-gnus-group-get-new-news ()
+(defun my-gnus-group-get-new-news ()
   (interactive)
   (if gnus-plugged
       ;; Only get news for groups with a level lower than 4.  This is
@@ -112,12 +115,11 @@
                     (mapcar (lambda (i)
                               (let ((n (gnus-group-unread i)))
                                 (if (numberp n) n 0)))
-                            qxj-gnus-important-groups))))
+                            my-gnus-important-groups))))
     (if (zerop new)
-        (setq qxj-mail-notify-string "")
-      (setq qxj-mail-notify-string (format "Mail(%d)" new))
-      (shell-command
-       (format "zenity --info --text \"You've Got %d Mail \!\" --title \"Gnus\"" new))
+        (setq my-mail-notify-string "")
+      (setq my-mail-notify-string (format "Mail(%d)" new))
+      (my-notify "Gnus" my-mail-notify-string)
       )
     (force-mode-line-update)))
 
@@ -207,7 +209,7 @@
 ;;;; 1. List Groups, Nonlist Groups, Important Groups
 
 ;; '((group . to-list) ...)
-(setq qxj-list-table
+(setq my-list-table
       (mapcar
        (lambda (i)
          (cons (replace-regexp-in-string "@.*" "" i) i))
@@ -230,7 +232,7 @@
              `(,(car i)
                (to-list . ,(cdr i))
                (gcc-self . t)))
-           qxj-list-table)
+           my-list-table)
 
         ("nnimap+imap.gmail.com.*"
          (gcc-self . t))
@@ -262,15 +264,15 @@
                 (setq mm-coding-system-priorities '(gb2312 gbk gb18030 utf-8))))
          ;;(body "")
          )
-        (,(regexp-opt (mapcar 'car qxj-list-table))
+        (,(regexp-opt (mapcar 'car my-list-table))
          )
         ))
 
 ;; Keep company mail at the end.
-(if (and (fboundp 'qxj-company-email) (fboundp 'qxj-company-posting-style))
+(if (and (fboundp 'my-company-email) (fboundp 'my-company-posting-style))
     (add-to-list 'gnus-posting-styles
-                 `(,(regexp-opt (replace-regexp-in-string "@.*" "" qxj-company-email))
-                   ,@(qxj-company-posting-style)
+                 `(,(regexp-opt (replace-regexp-in-string "@.*" "" my-company-email))
+                   ,@(my-company-posting-style)
                    (eval (setq message-sendmail-extra-arguments '("-a" "company"))))))
 
 
@@ -311,11 +313,11 @@
               "local")
         ,@(mapcar (lambda (i)
                     `(any ,(cdr i) ,(car i)))
-                  `(,@qxj-list-table))
-        (: qxj-split-mailing-lists)
-        (to ,user-mail-address (: qxj-notify-important))
+                  `(,@my-list-table))
+        (: my-split-mailing-lists)
+        ;; (to ,user-mail-address (: my-notify-important))
         (from ".*@\\(mails.pku.edu.cn\\|pku.org.cn\\)" "pku")
-        (any ".*@gmail.com" "gmail")
+        ;; (any ".*@gmail.com" "gmail")
         (to ".*@newsmth.*" "newsmth")
         ;; maybe junk
         "misc"))
@@ -328,7 +330,7 @@
 (setq nnimap-split-inbox '("INBOX")
       nnimap-split-rule 'nnmail-split-fancy)
 
-(defun qxj-split-mailing-lists ()
+(defun my-split-mailing-lists ()
   "e.g., foo@googlegroups.com -> foo, digest from xwl's setting."
   (let ((re (concat "^List-Post:.*<mailto:\\([-a-zA-Z._]+\\)@"
                     (regexp-opt '("googlegroups.com"
@@ -341,8 +343,8 @@
       (when (re-search-forward re nil t)
         (match-string 1)))))
 
-(defun qxj-notify-important ()
-  ;;   (qxj-shell-command-asynchronously
+(defun my-notify-important ()
+  ;;   (my-shell-command-asynchronously
   ;;     "zenity --info --text \"You've Got Mail \!\" --title \"Gnus\"")
   "important.now")
 
@@ -359,7 +361,7 @@
           'never)
          ;; list
          ((string-match (regexp-opt
-                         (mapcar 'car `(,@qxj-list-table)))
+                         (mapcar 'car `(,@my-list-table)))
                         group)
           14)
          ;; trash

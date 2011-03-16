@@ -30,7 +30,8 @@
 ;;         gmail-notifier-password "******")
 ;;   (gmail-notifier-start)
 ;;
-;; You may also store account and password in `~/.authinfo.gpg'.
+;; You may also store account and password in `~/.authinfo.gpg' or
+;; `~/.authinfo'.
 
 ;;; Code:
 
@@ -38,6 +39,7 @@
 (require 'gnus-util)
 (eval-when-compile (require 'cl))
 (require 'auth-source)
+(require 'nnimap)
 
 (defgroup gmail-notifier nil
   "Gmail notifier."
@@ -74,7 +76,7 @@
   :type 'string
   :group 'gmail-notifier)
 
-(defcustom gmail-notifier-protocol "587"
+(defcustom gmail-notifier-protocol "993"
   "Protocol name or number, as string."
   :type 'string
   :group 'gmail-notifier)
@@ -150,12 +152,20 @@ Note: you are suggested to kill process buffer at the end of CALLBACK. "
     (setq gmail-notifier-username
           (or (auth-source-user-or-password
                "login"  gmail-notifier-host gmail-notifier-protocol)
+              (netrc-machine-user-or-password "login" nnimap-authinfo-file
+                                              (list gmail-notifier-host)
+                                              (list gmail-notifier-protocol)
+                                              nil)
               (read-string "Gmail username: "))))
 
   (unless gmail-notifier-password
     (setq gmail-notifier-password
           (or (auth-source-user-or-password
                "password" gmail-notifier-host gmail-notifier-protocol)
+              (netrc-machine-user-or-password "password" nnimap-authinfo-file
+                                              (list gmail-notifier-host)
+                                              (list gmail-notifier-protocol)
+                                              nil)
               (read-passwd "Gmail password: "))))
 
   (add-to-list 'global-mode-string
