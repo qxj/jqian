@@ -1388,7 +1388,7 @@ mouse-3: Remove current window from display")
 
 (deh-section "sh-mode"
   (deh-add-hook sh-mode-hook
-    (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
+    ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
     ))
 
 ;; shell

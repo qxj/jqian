@@ -26,6 +26,7 @@
   ((kbd "C-M-0")   . 'sr-speedbar-select-window)
   ((kbd "M-1")   . 'sdcv-search)
   ;; ((kbd "M-'")   . 'just-one-space)
+  ((kbd "M--")   . 'delete-blank-lines)
   ((kbd "M-J")   . 'vi-join-lines)
   ((kbd "M-M")   . 'vi-merge-lines)
   ((kbd "M-f")   . 'ywb-camelcase-forward-word)
@@ -62,7 +63,6 @@
   ;; ("w" . 'ywb-favorite-window-config)
   ("\C-b" . 'browse-url-at-point)
   ;; ("\C-b" . 'browse-url-of-buffer)
-  ("\C-o" . 'my-switch-recent-buffer)
   ("\C-t" . 'tv-view-history)
   )
 
@@ -71,6 +71,7 @@
   ("\C-t" . 'transpose-sexps)
   ("\C-r" . 'find-file-root)
   ("\C-k" . 'kill-this-buffer)
+  ("\C-o" . 'my-switch-recent-buffer)
   ("\C-_" . 'fit-frame)
   ;; ("t"    . 'template-expand-template)
   ("m"    . 'message-mail)

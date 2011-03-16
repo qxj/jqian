@@ -96,7 +96,6 @@
                  'find-file) file))
 
   (deh-add-hook org-mode-hook
-    (local-unset-key "\C-c\C-o")        ; trigger for `org-open-at-point'
     (org-set-local 'comment-start "#+COMMENT:")
     (toggle-truncate-lines nil)
     (auto-fill-mode 1)
@@ -107,7 +106,7 @@
     ((kbd "C-c o l") . 'org-store-link)
     ((kbd "C-c o a") . 'org-agenda)
     ((kbd "C-c o b") . 'org-iswitchb)
-    ((kbd "C-c o o") . 'org-open-at-point)
+    ((kbd "C-c o o") . 'org-open-at-point) ; "\C-c\C-o"
     ("\M-\C-l" . 'org-table-sort-lines)
     ("\M-\C-w" . 'org-table-copy-region)
     ("\M-\C-y" . 'org-table-paste-rectangle)

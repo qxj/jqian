@@ -226,7 +226,7 @@ If the buffer is currently not visible, makes it sticky."
                       "identified" "invalid" "your unique" "now you hidden"
                       "identified for" "nickname" "your hidden host"))
                    message)))
-    (xwl-notify (concat "ERC: " (buffer-name)) message)))
+    (my-notify (concat "ERC: " (buffer-name)) message)))
 
 (add-hook 'erc-text-matched-hook 'xwl-erc-text-matched-hook)
 
