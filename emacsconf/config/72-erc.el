@@ -59,7 +59,7 @@
      ((string= b "#emacs-cn")
       (erc-message "PRIVMSG" (concat "chanserv op " b)))
      ((string= b "#avkon")
-      (erc-message "PRIVMSG" (concat "userserv login xwl " pwerc))
+      (erc-message "PRIVMSG" (concat "userserv login jqian " pwerc))
       (erc-message "PRIVMSG" (concat "chanserv op " b))))))
 
 (add-hook 'erc-join-hook 'xwl-erc-auto-op)
@@ -280,9 +280,9 @@ If the buffer is currently not visible, makes it sticky."
 
   (define-key erc-mode-map (kbd "q") (lambda ()
                                        (interactive)
-                                       (if less-minor-mode
-                                           (xwl-hide-buffer)
-                                         (insert "q"))))
+                                       ;; (if less-minor-mode
+                                       ;;     (xwl-hide-buffer)
+                                         (insert "q")))
   )
 
 (add-hook 'erc-mode-hook 'xwl-erc-mode-hook)
