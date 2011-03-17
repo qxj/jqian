@@ -1,0 +1,7 @@
+poll mail.example.com proto POP3 uidl
+    user 'user@example.com'
+    password 'password'
+    keep
+#    mda "/usr/bin/procmail -f - -m $HOME/.procmailrc"
+    set daemon 300  # 5 min interval
+    set logfile $HOME/fetchmail.log
