@@ -330,6 +330,12 @@ etc).  The following options will be available:
   )
 ;;}}}
 
+;;{{{ git setting
+(deh-require 'git-emacs-autoloads
+  (setq git-state-modeline-decoration 'git-state-decoration-large-dot)
+)
+;;}}}
+
 ;;{{{ flymake & flyspell
 (deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
