@@ -1,8 +1,7 @@
 #+TITLE: (>>>FILE<<<)
-#+AUTHOR: (>>>AUTHOR<<<)
 #+EMAIL: (>>>EMAIL<<<)
 
-* Title 1
+* Title 1(>>>POINT<<<)
 
 
 #+COMMENT: Local Variables:

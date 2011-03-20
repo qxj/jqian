@@ -1,6 +1,5 @@
 #+TITLE: (>>>FILE<<<)
-#+AUTHOR: (>>>AUTHOR<<<)
-#+EMAIL: (>>>EMAIL<<<)
+#+EMAIL: (>>>AUTHOR<<<)
 #+LATEX_HEADER: \setmainfont[BoldFont=Microsoft YaHei]{WenQuanYi Micro Hei}
 #+LATEX_HEADER: \setsansfont[BoldFont=Microsoft YaHei]{WenQuanYi Micro Hei}
 #+LATEX_HEADER: \setmonofont[BoldFont=WenQuanYi Micro Hei Mono]{WenQuanYi Micro Hei Mono}
@@ -9,7 +8,7 @@
 |---------+-----------------+--------------|
 |     0.1 | (>>>VC_DATE<<<) | Draft        |
 
-* Title 1
+* Title 1(>>>POINT<<<)
 
 
 #+COMMENT: Local Variables:
