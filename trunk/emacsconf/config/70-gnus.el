@@ -250,21 +250,21 @@
 (setq gnus-posting-styles
       `((".*"
          (name ,user-full-name)
-         (address ,(concat "NO.SPAM" user-mail-address)) ; avoid spam
          ,(if (file-exists-p "~/Gnus/xface.png")
               '(face (gnus-convert-png-to-face "~/Gnus/xface.png")))
          (x-url (getenv "WWW_HOME"))
          (organization ,system-name)
          (signature ,(concat "Best Regards,\n" user-full-name))
          (eval (setq message-sendmail-extra-arguments '("-a" "gmail"))))
+        (,(regexp-opt (mapcar 'car my-list-table))
+         )
         ;; cn.*
         (,(regexp-opt '("cn.fan" "cn.bbs"))
+         (address ,(concat "NO.SPAM" user-mail-address)) ; avoid spam
          (eval (list
                 (setq message-sendmail-extra-arguments '("-a" "gmail"))
                 (setq mm-coding-system-priorities '(gb2312 gbk gb18030 utf-8))))
          ;;(body "")
-         )
-        (,(regexp-opt (mapcar 'car my-list-table))
          )
         ))
 

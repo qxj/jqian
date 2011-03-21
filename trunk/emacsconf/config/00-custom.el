@@ -166,6 +166,5 @@
  '(tooltip-use-echo-area nil)
  '(view-read-only t)
  '(user-mail-address "junist@gmail.com")
- '(woman-cache-filename "~/.wmncach.el")
- '(woman-manpath (quote ("/usr/man" "/usr/share/man" "/usr/X11R6/man" "/usr/local/man" "/usr/share/man/zh_TW" "/usr/share/man/zh_CN"))))
+)
 
