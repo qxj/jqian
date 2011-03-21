@@ -161,7 +161,7 @@
 
   ;; Only display tags in another window, hacked by julian
   (defvar gtags-previous-window-conf nil
-    "Window configuration before switching to sdcv buffer.")
+    "Window configuration before switching to gtags buffer.")
   (defun gtags-display-tag ()
     "Input tag name and move to the definition."
     (interactive)
@@ -334,6 +334,21 @@ etc).  The following options will be available:
 (deh-require 'git-emacs-autoloads
   (setq git-state-modeline-decoration 'git-state-decoration-large-dot)
 )
+;;}}}
+
+;;{{{ woman
+(deh-section "woman"
+  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-temp-dir)
+        woman-manpath '("/usr/man"
+                        "/usr/share/man"
+                        "/usr/X11R6/man"
+                        "/usr/local/man"
+                        "/usr/share/man/zh_TW"
+                        "/usr/share/man/zh_CN")
+        woman-manpath-man-regexp (regexp-opt '("man2" "man3" "man7"))
+        woman-imenu t
+        woman-use-own-frame nil)
+  )
 ;;}}}
 
 ;;{{{ flymake & flyspell
