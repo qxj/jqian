@@ -151,7 +151,9 @@
   (ido-everywhere t)
   (add-hook 'term-setup-hook 'ido-mode)
 
-  (setq ido-enable-regexp t
+  (setq ido-enable-regexp nil
+        ido-enable-dot-prefix t
+        ido-enable-flex-matching t
         ido-enable-tramp-completion nil
         ido-use-faces t
         ;; ido-use-filename-at-point 'guess
