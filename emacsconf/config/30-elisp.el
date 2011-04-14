@@ -1285,7 +1285,7 @@ indent line."
       (concat (propertize
                (concat "%l:" (format "%dL" lines))
                'mouse-face 'mode-line-highlight
-               'face 'mode-line-lines-face
+               ;; 'face 'mode-line-lines-face
                'help-echo (format "%d lines" lines)) " ")))
 
   (defun get-size-indication-format ()
