@@ -376,6 +376,22 @@ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
   (dolist (dir (find-subdirs-containing my-startup-dir "\\.el$"))
     (byte-recompile-directory dir 0)))
 
+(defun antiword (&optional file width)
+  "Run antiword on the entire buffer."
+  (let ((doc-name (buffer-name)))
+    (save-window-excursion
+      (shell-command-on-region
+       (point-min)
+       (point-max)
+       (concat
+        (format "antiword -w %d " (if (null width) 78 width))
+        (if file (replace-regexp-in-string " " "\\ " file t t) "-"))
+       "*no-word-temp-name*")
+      (kill-buffer (current-buffer)))
+    (switch-to-buffer "*no-word-temp-name*")
+    (view-mode)
+    (rename-buffer (concat "*" doc-name "*"))))
+
 (deh-section "defadvice"
   (defadvice kill-line (before check-position activate)
     "killing the newline between indented lines and remove extra

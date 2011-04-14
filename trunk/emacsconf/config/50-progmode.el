@@ -707,6 +707,7 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 (deh-section "auto-mode"
+  (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
   (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
