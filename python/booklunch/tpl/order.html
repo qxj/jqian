@@ -1,0 +1,24 @@
+<h3>已订餐列表</h3>
+<table>
+  <tr>
+    <th>姓名
+    </th>
+    <th>菜单
+    </th>
+    <th>餐厅
+    </th>
+    <th>电话
+    </th>
+    <th>时间
+    </th>
+  </tr>
+  {% for order in order_list %}
+  <tr>
+    <td>{{ order.order_user }}</td>
+    <td>{{ order.order_dish.name }}</td>
+    <td>{{ order.order_dish.res.name }}</td>
+    <td>{{ order.order_dish.res.phone }}</td>
+    <td>{{ order.order_date|date:"Y-m-d H:i" }}</td>
+  </tr>
+  {% endfor %}
+</table>

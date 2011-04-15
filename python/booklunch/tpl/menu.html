@@ -1,0 +1,40 @@
+<style type="text/css">
+#rest-desc { margin: 20px 0; }
+#rest-menu-list { margin: 20px 0; }
+</style>
+<div id="rest-desc">
+  <table>
+    <tr>
+      <td><strong>订餐电话</strong>: {{ rest.phone }}
+      </td>
+    </tr>
+    <tr>
+      <td><strong>餐馆地址</strong>: {{ rest.address }}
+      </td>
+    </tr>  
+  </table>
+</div>
+<div id="rest-menu-list">
+  <table>
+    <tr>
+      <th width="10px">
+      </th>
+      <th>菜名
+      </th>
+      <th width="60px">价格
+      </th>
+      <th width="20px">推荐
+      </th>
+    </tr>    
+    {% for menu in menu_list %}
+    <tr>
+      <td><input type="checkbox" name="dishname" value="{{ menu.name }}" /></td>
+      <td>{{ menu.name }}</td>
+      <td>{{ menu.price }}￥</td>
+      <td>{{ menu.ratio }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+  

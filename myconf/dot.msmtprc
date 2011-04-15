@@ -3,21 +3,21 @@
 # gmail
 account gmail
 host smtp.gmail.com
-domain smtp.gmail.com
 tls on
 tls_certcheck off
 tls_starttls on
 auth on
 user user@gmail.com
-from user@gmail.com
 password password
 port 587
 
 # company
 account company
 host mail.example.com
+domain mail.example.com
 auth on
 user user@example.com
+from user@example.com
 password password
 port 25
-logfile /home/jqian/msmtp.log
+logfile ~/msmtp.log

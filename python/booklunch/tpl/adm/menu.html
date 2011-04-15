@@ -1,0 +1,56 @@
+
+<div id="rest-desc">
+  <p><strong>订餐电话</strong>: {{ rest.phone }}</p>
+  <p><strong>餐馆地址</strong>: {{ rest.address }}</p>
+</div>
+
+<div id="rest-menu">
+  <table>
+    <tr>
+      <th>菜名
+      </th>
+      <th>价格
+      </th>
+      <th>推荐
+      </th>
+    </tr>
+    {% for menu in menu_list %}
+    <tr>
+      <td>{{ menu.name }}</td>
+      <td>{{ menu.price }}￥</td>
+      <td>{{ menu.ratio }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div id="menu-add">
+  <h3> 增加新菜单 </h3>
+  <div id="menu-add-result"></div>
+  <p>
+    <label for="dishname">菜名</label>
+    <input type="text" id="dish-name" />
+  </p>
+  <p>
+    <label for="dishprice">单价</label>
+    <input type="text" id="dish-price" />
+  </p>
+  <p>
+    <input type="button" id="menu-add-button" value="增加" />
+  </p>
+  <input type="hidden" id="rest-name" value="{{ rest_name }}">
+</div>
+
+<script type="text/javascript">
+$("#menu-add-button").click(function(){
+    $.post("/admin/menu/",
+    {
+        name: $("#dish-name").val(),
+        price: $("#dish-price").val(),
+        rest: $("#rest-name").val()
+    },function(data){
+        $("#menu-add-result").html("<span>" + data + "</span>");
+    });
+});
+</script>
+  
