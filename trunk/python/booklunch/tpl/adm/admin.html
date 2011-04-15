@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title>BookLunch Admin Page</title>
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/lib.js"></script>
+    <style type="text/css">
+    * { font-size:9pt; color:#333; }
+    #sidebar { font-size: 11pt; float:left; border-right:2px black solid; width:120px; margin-right: 10px; height:100%; }
+    #sidebar ul { list-style:none; }
+    #sidebar ul li a { display:block; font-weight:bold; text-decoration:none; }
+    #sidebar ul li a:hover { text-decoration:underline; }
+    #content { }
+    #menu-add-result { color:red; }
+    #rest-add-result { color:red; }
+    table { border: 1px #ccc solid; padding: 0 5px}
+    input { border: 0; border-bottom: 1px #ccc solid; }
+    span { color:red; }
+    </style>
+    <script type="text/javascript">
+      <!-- //
+      function content(name){
+          $("#sidebar ul li > a").css("text-decoration", "none");
+          $("#"+name).css("text-decoration", "underline");
+          $("#content").html("Loading ...");
+          $.get("/admin/"+name,function(data){
+              $("#content").html(data);
+          });
+      }
+      
+      $(document).ready(function(){
+          $("#rest").click(function(){
+              content("rest");
+          });
+          $("#history").click(function(){
+              content("history");
+          });
+      });
+      // -->
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <!-- sidebar -->
+      <div id="sidebar">
+        <ul>
+          <li><a id="rest" href="javascript:void(0)">餐馆管理</a></li>
+          <li><a id="history" href="javascript:void(0)">订餐历史</a></li>
+        </ul>
+      </div>
+      <div id="content">
+		在这里进行菜单管理和查询自己的订餐历史
+      </div>
+    </div>
+  </body>
+</html>

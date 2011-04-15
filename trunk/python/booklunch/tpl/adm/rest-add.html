@@ -1,0 +1,41 @@
+<style type="text/css">
+  label { font-weight:bold; }
+</style>
+<div id="rest-add">
+  <p>在这里增加新的餐馆.
+  </p>
+  <p>
+    <div id="rest-add-result">
+    </div>
+  </p>
+  <p>
+    <label for="rest-add">餐馆名</label>
+    <input type="text" id="name" />
+  </p>
+  <p>
+    <label for="rest-add">订餐电话</label>
+    <input type="text" id="phone" />
+  </p>
+  <p>
+    <label for="rest-add">餐馆地址</label>
+    <input type="text" id="address" />
+  </p>
+  <p>
+    <!-- TODO: geo info -->
+  </p>    
+  <input type="button" value="增加" id="rest-add-button"/>
+</div>
+
+<script type="text/javascript">
+$("#rest-add-button").click(function(){
+    $.post("/admin/rest/add",
+    {
+        name: $("#name").val(),
+        phone: $("#phone").val(),
+        address: $("#address").val()
+    }, function(data){
+        $("#rest-add-result").html(data);
+    });
+});
+
+</script>
