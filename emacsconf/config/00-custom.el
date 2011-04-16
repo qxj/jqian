@@ -93,6 +93,9 @@
 
 (setq tab-always-indent 'complete)
 
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "firefox-4.0")
+
 (eval-after-load "grep"
   '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
 
@@ -167,4 +170,3 @@
  '(view-read-only t)
  '(user-mail-address "junist@gmail.com")
 )
-
