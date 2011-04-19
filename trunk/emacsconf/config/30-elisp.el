@@ -23,6 +23,7 @@
        ([mouse-1] . 'joc-dired-single-buffer-mouse)
        ;; ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
        ;; ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+       ;; ("\M-=" . 'dired-backup-diff)
        ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
        ("b"    . 'browse-url-of-dired-file)
        ("z"    . 'ywb-dired-compress-dir)
@@ -257,9 +258,9 @@
   ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
   (deh-define-key ibuffer-mode-map
     ("s" . 'one-key-menu-ibuffer-sort)
-    ("r" . 'ywb-ibuffer-rename-buffer)
-    (" " . 'scroll-up)
-    ((kbd "C-x C-f") . 'ywb-ibuffer-find-file))
+    ("r" . 'ibuffer-rename-buffer)
+    ((kbd "C-x C-f") . 'ibuffer-find-file)
+    (" " . 'scroll-up))
 
   (defun one-key-menu-ibuffer-sort ()
     "The `one-key' menu for IBUFFER-SORT."
@@ -283,7 +284,7 @@
                      (with-current-buffer (car buf)
                        (or buffer-file-name default-directory)))
                    (list a b))))
-  (defun ywb-ibuffer-rename-buffer ()
+  (defun ibuffer-rename-buffer ()
     (interactive)
     (call-interactively 'ibuffer-update)
     (let* ((buf (ibuffer-current-buffer))
@@ -293,7 +294,7 @@
       (with-current-buffer buf
         (rename-buffer name)))
     (call-interactively 'ibuffer-update))
-  (defun ywb-ibuffer-find-file ()
+  (defun ibuffer-find-file ()
     (interactive)
     (let ((default-directory (let ((buf (ibuffer-current-buffer)))
                                (if (buffer-live-p buf)
