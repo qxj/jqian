@@ -36,9 +36,8 @@
        ("W"    . 'ywb-dired-copy-fullname-as-kill)
        ("a"    . 'ywb-add-description)
        ("\C-q" . 'ywb-dired-quickview)
-       ("/r"   . 'ywb-dired-filter-regexp)
-       ("/."   . 'ywb-dired-filter-extension)
        ("s"    . 'one-key-menu-dired-sort)
+       ("/"    . 'one-key-menu-dired-filter)
        )
      (if (eq system-type 'windows-nt)
          (deh-define-key dired-mode-map
@@ -49,13 +48,23 @@
        (interactive)
        (one-key-menu
         "DIRED-SORT"
-        '((("s" . "Size") . dired-sort-size)
-          (("x" . "Extension") . dired-sort-extension)
-          (("n" . "Name") . dired-sort-name)
+        '((("s" . "Size")          . dired-sort-size)
+          (("x" . "Extension")     . dired-sort-extension)
+          (("n" . "Name")          . dired-sort-name)
           (("t" . "Modified Time") . dired-sort-time)
-          (("u" . "Access Time") . dired-sort-utime)
-          (("c" . "Create Time") . dired-sort-ctime))
-        t))))
+          (("u" . "Access Time")   . dired-sort-utime)
+          (("c" . "Create Time")   . dired-sort-ctime))
+        t))
+     (defun one-key-menu-dired-filter ()
+       "The `one-key' menu for DIRED-FILTER."
+       (interactive)
+       (one-key-menu
+        "DIRED-SORT"
+        '((("r" . "Filter by regexp")    . ywb-dired-filter-regexp)
+          (("." . "Filter by extension") . ywb-dired-filter-extension)
+          (("/" . "Filter match")        . my-dired-omit-expunge))
+        t))
+     ))
 
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
