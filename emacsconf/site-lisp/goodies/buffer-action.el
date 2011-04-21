@@ -106,7 +106,7 @@ end).
                      "%n.elc"
                      eval-buffer)
     ("\\.info$" nil t (lambda () (info (buffer-file-name))))
-    ("\\.dot$" "dot -Tjpg %f -o %n.jpg" "%n.png" "qiv %f &"))
+    ("\\.dot$" "dot -Tpng %f -o %n.png" "%n.png" "qiv %f &"))
   "Each element in the table has the form:
 
     '(MATCHER COMPILER-ACTION BIN RUN-ACTION)
