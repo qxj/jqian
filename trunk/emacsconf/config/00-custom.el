@@ -93,8 +93,9 @@
 
 (setq tab-always-indent 'complete)
 
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "firefox-4.0")
+(setq browse-url-browser-function '(("/HyperSpec/" . w3m-browse-url)
+                                    ("." . browse-url-generic))
+      browse-url-generic-program "firefox-trunk")
 
 (eval-after-load "grep"
   '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
