@@ -593,7 +593,13 @@
           (url "--:=&?$+@-Z_a-z~#,%;*" "^A-Za-z0-9" ":;.,!?")
           (nocolon "--9$+<>@-Z_a-z~" "<@" "@>;.,!?")
           (machine "-a-zA-Z0-9." "" ".")
-          (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:"))))
+          (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
+  (setq ffap-c-path
+        '("/usr/include" "/usr/include/sys" "/usr/include/asm"
+          "/usr/include/asm-generic" "/usr/include/linux"
+          "/usr/include/net" "/usr/include/netinet"
+          "/usr/include/bits" "/usr/local/include"))
+  )
 ;;}}}
 
 ;;{{{ View
