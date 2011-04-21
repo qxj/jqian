@@ -651,7 +651,9 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-section "graphviz"
   (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
 
-  (setq graphviz-dot-auto-indent-on-semi nil)
+  (setq graphviz-dot-auto-indent-on-semi nil
+        graphviz-dot-auto-indent-on-newline nil
+        graphviz-dot-toggle-completions t)
   (deh-add-hook graphviz-dot-mode-hook
     (local-unset-key "\C-cc") ; it's prefix key
     (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
