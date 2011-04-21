@@ -275,7 +275,7 @@ ROW is matched one in `buffer-action-table'."
           (lambda (el)
             (let ((f (find-if 'file-exists-p (car el))))
               (when f (concat (cadr el) " " f))))
-          `((("Makefile" "makefile" "../Makefile" "../makefile") "make -C")
+          `((("Makefile" "makefile" "../Makefile" "../makefile") "make -f")
             (("build.xml") "ant")
             (,(directory-files "." nil "\\.pro$") "qmake")
             (("bld.inf" "../group/bld.inf") "sbs -c winscw_udeb -b")))))

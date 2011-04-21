@@ -466,7 +466,15 @@ clipboard/external selection to the kill ring"
         (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
           (setq file (replace-match enc t t file))))
       (setq ad-return-value file)))
-  (ad-activate 'browse-url-file-url))
+  (ad-activate 'browse-url-file-url)
+
+  ;;# this defadvice is un-necessary, apt-get install emacs23-el
+  ;; (defadvice find-library-name (before find-library-new-place activate)
+  ;;   "Find library in another source path."
+  ;;   (ad-set-arg 0 (replace-regexp-in-string "/usr/share/emacs/23.1/"
+  ;;                                           "~/src/emacs-23.2/"
+  ;;                                           (ad-get-arg 0))))
+  )
 
 (deh-section "hooks"
   ;;# chmod executable files automatically
