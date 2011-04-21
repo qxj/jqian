@@ -584,17 +584,17 @@ Use CREATE-TEMP-F for creating temp copy."
 ;;{{{ elisp
 (deh-section "elisp"
   (deh-require 'browse-el
-    (define-key lisp-mode-shared-map (kbd "M-.") 'browse-el-find-funtion)
-    (define-key lisp-mode-shared-map (kbd "M-*") 'browse-el-go-back)
+    (define-key emacs-lisp-mode-map (kbd "M-.") 'browse-el-find-funtion)
+    (define-key emacs-lisp-mode-map (kbd "M-*") 'browse-el-go-back)
     )
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
-  (defun my-emacs-lisp-mode-hook ()
+  (deh-add-hook emacs-lisp-mode-hook
     (my-mode-common-hook)
     (define-key lisp-mode-shared-map (kbd "C-)") 'ywb-insert-paren)
     (hs-minor-mode 1)
     (turn-on-eldoc-mode))
-  (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook))
+  )
 ;;}}}
 
 ;;=============================================================

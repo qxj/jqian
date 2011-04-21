@@ -320,6 +320,8 @@
                             (mode . erc-mode)
                             (name . "^\\*gud")
                             (name . "^\\*scratch")
+                            ;; slime
+                            (name . "^\\*slime-repl")
                             ;; gnus
                             (mode . message-mode)
                             (mode . mail-mode)
@@ -568,19 +570,23 @@
   (global-set-key (kbd "M-p") 'pager-row-up)
   (global-set-key (kbd "<down>") 'pager-row-down)
   (global-set-key (kbd "M-n") 'pager-row-down)
-  ;; Some individual keybinds
-  (add-hook 'Man-mode-hook
-            (lambda ()
-              (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
-              (define-key Man-mode-map (kbd "M-n") 'pager-row-down)))
-  (add-hook 'woman-mode-hook
-            (lambda ()
-              (define-key woman-mode-map (kbd "M-p") 'pager-row-up)
-              (define-key woman-mode-map (kbd "M-n") 'pager-row-down)))
-  (add-hook 'Info-mode-hook
-            (lambda ()
-              (define-key Info-mode-map (kbd "M-p") 'pager-row-up)
-              (define-key Info-mode-map (kbd "M-n") 'pager-row-down)))
+  ;; Some individual keybind overrides
+  ;; info
+  (define-key Info-mode-map (kbd "M-p") 'pager-row-up)
+  (define-key Info-mode-map (kbd "M-n") 'pager-row-down)
+  ;; after load
+  (eval-after-load "man"
+    '(progn
+       (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
+       (define-key Man-mode-map (kbd "M-n") 'pager-row-down)))
+  (eval-after-load "woman"
+    '(progn
+       (define-key woman-mode-map (kbd "M-p") 'pager-row-up)
+       (define-key woman-mode-map (kbd "M-n") 'pager-row-down)))
+  (eval-after-load "w3m"
+    '(progn
+       (define-key w3m-mode-map (kbd "M-p") 'pager-row-up)
+       (define-key w3m-mode-map (kbd "M-n") 'pager-row-down)))
   )
 ;;}}}
 
@@ -1530,6 +1536,11 @@ If the flag is set, only complete with local files."
 (deh-section "buffer-action"
   (autoload 'buffer-action-compile "buffer-action")
   (autoload 'buffer-action-run "buffer-action"))
+
+(deh-section "slime"
+  ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
+  (setq common-lisp-hyperspec-root "/home/jqian/src/HyperSpec/")
+  )
 
 (deh-require-if 'gmail-notifier
   ;;# set user/passwd in ~/.authinfo.gpg
