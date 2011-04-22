@@ -986,6 +986,7 @@ indent line."
     ("\M->" . 'isearch-end-of-buffer)
     ("\M-i" . 'isearch-query-replace-current)
     ("\C-u" . 'isearch-clean)
+    ("\C-\M-y" . 'isearch-yank-symbol-regexp)
     ("\C-y" . 'isearch-yank-symbol) ; instead of `isearch-yank-line'
     ;; Remind other useful keybinds
     ;; ("\M-e" . 'isearch-edit-string)
@@ -1029,8 +1030,8 @@ indent line."
                (if isearch-regexp 'isearch-forward-regexp 'isearch-forward)
              (if isearch-regexp 'isearch-backward-regexp 'isearch-backward))))
       (call-interactively isearch-command)))
-  (defun isearch-yank-symbol ()
-    "Put symbol at current point into search string."
+  (defun isearch-yank-symbol-regexp ()
+    "Put symbol at current point into isearch string, and do regexp isearch."
     (interactive)
     (let ((sym (symbol-at-point)))
       (if sym
@@ -1041,29 +1042,15 @@ indent line."
                   isearch-yank-flag t))
         (ding)))
     (isearch-search-and-update))
-
-  ;; Search word at point
-  (defun isearch-word-at-point ()
+  (defun isearch-yank-symbol ()
+    "Put current symbol into search string."
     (interactive)
-    (call-interactively 'isearch-forward-regexp))
-  (defun isearch-yank-word-hook ()
-    (when (equal this-command 'isearch-word-at-point)
-      (let ((string (concat "\\<"
-                            (buffer-substring-no-properties
-                             (progn (skip-syntax-backward "w_") (point))
-                             (progn (skip-syntax-forward "w_") (point)))
-                            "\\>")))
-        (if (and isearch-case-fold-search
-                 (eq 'not-yanks search-upper-case))
-            (setq string (downcase string)))
-        (setq isearch-string string
-              isearch-message
-              (concat isearch-message
-                      (mapconcat 'isearch-text-char-description
-                                 string ""))
-              isearch-yank-flag t)
-        (isearch-search-and-update))))
-  (add-hook 'isearch-mode-hook 'isearch-yank-word-hook)
+    (save-excursion
+      (re-search-backward "[^[:alnum:]-_@.]" nil t)
+      (forward-char)
+      (isearch-yank-internal
+       (lambda ()
+         (re-search-forward "[[:alnum:]-_@.]*[[:alnum:]_]" nil t)))))
 
 ;;   (defadvice isearch-repeat (after isearch-no-fail activate)
 ;;     "When Isearch fails, it immediately tries again with
