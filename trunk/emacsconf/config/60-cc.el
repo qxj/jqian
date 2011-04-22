@@ -44,10 +44,12 @@
   "My C/C++/ObjC Programming Style")
 
 (deh-section "c-mode"
+  (require 'google-c-style)
   (defun my-c-mode-common-hook ()
     (my-mode-common-hook)
     ;; (c-add-style "Personal" my-c-style t)
-    (c-set-style "stroustrup")
+    ;; (c-set-style "stroustrup")
+    (call-interactively 'google-set-c-style)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
