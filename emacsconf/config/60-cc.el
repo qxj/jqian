@@ -74,7 +74,7 @@
     (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
-    (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
+    ;; (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
     (local-unset-key "\C-d")            ; trigger for `c-electric-delete-forward'
     (local-set-key "\C-ca" 'sourcepair-load)
     ;;# keybinds remind
