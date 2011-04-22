@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# yitai_json.py --- Time-stamp: <Julian Qian 2010-10-28 13:33:10>
+# json_client.py --- Time-stamp: <Julian Qian 2011-01-21 23:36:01>
 # Copyright 2010 Julian Qian
 # Author: jqian@desktop
 # Version: $Id: yitai_json.py,v 0.0 2010/10/11 02:33:57 jqian Exp $
@@ -29,15 +29,27 @@ def main():
     "yitai_json.py"
     yitai = Yitai()
     yitai.request("test", '')
-    yitai.request("login", '"test_1","b0baee9d279d34fa1dfd71aadb908c3f"')
-    yitai.request("getDeviceList", '')
-    yitai.request("getBindPhones", '1')
+    yitai.request("login", '"bj_11508","9db0f341c9ceeff04c5918e6bdc34725"')
+    yitai.request("getDeviceRecentAlarm", '11508,5')
+    yitai.request("getDeviceRecentOnline", '11508,5')
+    yitai.request("getDeviceRecentDefend", '11508,5')
+    # yitai.request("getRecentVideo", '11508')
+    # yitai.request("getVideoList", '11508')
+    # yitai.request("getUserProfile", '');
+    # yitai.request("setUserProfile", 'null,"test@test.com",null,null')
+    # yitai.request("setDeviceDefence",'1,true')
+    # yitai.request("setBindPhone",'1, "13811121802", {"urgency":1}')
+    # yitai.request("getUserProfile", '');
+    # yitai.request("getBindPhones", '1')
+
+    # yitai.request("getDeviceList", '')
+    # yitai.request("getBindPhones", '1')
     # yitai.request("setBindPhone", '1,"18602419635",{"urgency":0}')
-    # yitai.request("setBindPhone", '1,"18602419636",{"urgency":1}')
-    yitai.request("delBindPhone", '1,"18602419636"')
-    yitai.request("getBindPhones", '1')
+    yitai.request("setBindPhone", '11508,"18602419636",{"urgency":1}')
+    # yitai.request("delBindPhone", '1,"18602419636"')
+    # yitai.request("getBindPhones", '1')
     # yitai.request("getDeviceStatus", '1')
-    # yitai.request("checkAlarmMessage", '')
+    yitai.request("checkAlarmMessage", '')
 
 
 if __name__ == "__main__":
