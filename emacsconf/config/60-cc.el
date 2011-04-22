@@ -45,11 +45,26 @@
 
 (deh-section "c-mode"
   (require 'google-c-style)
+
+  ;;# if function name is too long, we will indent the parameters forward.
+  (defconst my-c-lineup-maximum-indent 20)
+  (defun my-c-lineup-arglist (langelem)
+    (let ((ret (c-lineup-arglist langelem)))
+      (if (< (elt ret 0) my-c-lineup-maximum-indent)
+          ret
+        (save-excursion
+          (goto-char (cdr langelem))
+          (vector (+ (current-column) 8))))))
+  (defun my-indent-setup ()
+    (setcdr (assoc 'arglist-cont-nonempty c-offsets-alist)
+            '(c-lineup-gcc-asm-reg my-c-lineup-arglist)))
+
   (defun my-c-mode-common-hook ()
     (my-mode-common-hook)
     ;; (c-add-style "Personal" my-c-style t)
     ;; (c-set-style "stroustrup")
     (call-interactively 'google-set-c-style)
+    (my-indent-setup)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
