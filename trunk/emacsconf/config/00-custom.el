@@ -140,7 +140,7 @@
                        php-mode lisp-interaction-mode sh-mode sgml-mode))
   (font-lock-add-keywords
    mode
-   '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\|WORKAROUND\\):" 1 font-lock-warning-face prepend)
+   '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\|WORKAROUND\\|DEPRECATED\\):" 1 font-lock-warning-face prepend)
      ("\\<\\(DONE\\|NOTE\\):" 1 font-lock-doc-face t)
      ;; highlight too long lines
      ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)

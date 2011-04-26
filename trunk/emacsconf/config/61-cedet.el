@@ -101,8 +101,8 @@ the mru bookmark stack."
   (setq semantic-idle-scheduler-idle-time 5
         semantic-idle-scheduler-work-idle-time 60
         semantic-idle-scheduler-max-buffer-size 100000
-        semantic-idle-work-parse-neighboring-files-flag t
-        semantic-idle-work-update-headers-flag nil)
+        semantic-idle-work-parse-neighboring-files-flag nil
+        semantic-idle-work-update-headers-flag t) ; if slow, disable it
 
   (deh-section "semantic-tags"
     ;; exuberent ctags

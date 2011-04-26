@@ -327,6 +327,9 @@ etc).  The following options will be available:
       ('deleted    "red")
       ('unmerged   "purple")
       (t           "black")))
+
+  (setq vc-svn-diff-switches nil
+        vc-diff-switches '("--normal" "-bB"))
   )
 ;;}}}
 
