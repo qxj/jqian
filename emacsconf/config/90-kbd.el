@@ -66,7 +66,7 @@
   ("\C-t" . 'tv-view-history)
   )
 
-(deh-define-key (lookup-key global-map "\C-x")
+(deh-define-key ctl-x-map
   ("\C-b" . 'ibuffer)
   ("\C-t" . 'transpose-sexps)
   ("\C-r" . 'find-file-root)
@@ -110,6 +110,8 @@
     ("c" . 'one-key-menu-cscope)
     ("h" . 'one-key-menu-highlight)
     ("s" . 'one-key-menu-hideshow)
+    ("v" . 'one-key-menu-version)
+    ("w" . 'one-key-menu-window)
     )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ROOT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -118,7 +120,9 @@
           (("g" . "Gtags") . one-key-menu-gtags)
           (("c" . "Cscope") . one-key-menu-cscope)
           (("h" . "Highlight") . one-key-menu-highlight)
-          (("s" . "Show Hide") . one-key-menu-hideshow)))
+          (("s" . "Show Hide") . one-key-menu-hideshow)
+          (("v" . "Version Control") . one-key-menu-version)
+          (("w" . "Window") . one-key-menu-window)))
 
   (defun one-key-menu-root ()
     "The `one-key' menu for root."
@@ -210,4 +214,52 @@
     "The `one-key' menu for HIDESHOW."
     (interactive)
     (one-key-menu "HIDESHOW" one-key-menu-hideshow-alist t))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defvar one-key-menu-window-alist nil
+    "The `one-key' menu alist for WINDOW.")
+
+  (setq one-key-menu-window-alist
+        '(
+          (("b" . "Balance") . balance-windows)
+          (("l" . "Shrink If Larger") . shrink-window-if-larger-than-buffer)
+          (("e" . "Enlarge") . enlarge-window)
+          (("s" . "Shrink") . shrink-window)
+          (("h" . "Enlarge H.") . enlarge-window-horizontally)
+          (("y" . "Shrink H.") . shrink-window-horizontally)))
+
+  (defun one-key-menu-window ()
+    "The `one-key' menu for WINDOW."
+    (interactive)
+    (one-key-menu "WINDOW" one-key-menu-window-alist t))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Version ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defvar one-key-menu-version-alist nil
+    "The `one-key' menu alist for VERSION.")
+
+  (setq one-key-menu-version-alist
+        '((("+" . "Update") . vc-update)
+          (("=" . "Diff Base") . vc-diff)
+          (("#" . "Diff With Other Ver.") . vc-diff)
+          (("~" . "View Other Ver.") . vc-revision-other-window)
+          (("a" . "Update ChangeLog") . vc-update-change-log)
+          ;; (("b" . "Switch Backend") . vc-switch-backend)
+          ;; (("c" . "Rollback") . vc-rollback)
+          (("d" . "Status") . vc-dir)
+          (("g" . "Annotate!") . vc-annotate)
+          (("h" . "Insert Headers") . vc-insert-headers)
+          ;; (("i" . "Register") . vc-register)
+          (("l" . "Print Log") . vc-print-log)
+          (("m" . "Merge") . vc-merge)
+          (("r" . "Retrieve Tag") . vc-retrieve-tag)
+          (("s" . "Create Tag") . vc-create-tag)
+          (("u" . "Revert") . vc-revert)
+          (("v" . "Commit") . vc-next-action)
+          ))
+
+  (defun one-key-menu-version ()
+    "The `one-key' menu for VERSION."
+    (interactive)
+    (one-key-menu "VERSION" one-key-menu-version-alist t))
+
   )

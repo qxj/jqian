@@ -8,3 +8,6 @@ M-^
 
 * Input 100 times 1
 C-u 100 C-u 1
+
+* Save and restore window configuration
+C-x r w, C-x r j

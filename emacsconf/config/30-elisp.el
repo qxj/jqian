@@ -540,22 +540,31 @@
 ;; recent opened files
 (deh-require 'recentf
   ;; recent finded buffers
-  (setq recentf-max-saved-items nil)
-  (setq recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir))
+  (setq recentf-max-saved-items nil
+        recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir)
+        recentf-exclude '(my-temp-dir))
   (recentf-mode t)
 
   (defun recentf-open-files-compl ()
+    "Open files opened recently with `ido-completing-read'."
     (interactive)
-    (let* ((alist (remq nil (mapcar
-                             '(lambda (el)
-                                (unless (string-match "/$" el) ; skip dired
-                                  (cons (file-name-nondirectory el) el)))
-                             recentf-list)))
-           ;; use `ido-completing-read' instead of `completing-read'
-           (filename (ido-completing-read "Open file: "
-                                          (mapcar 'car alist))))
-      (find-file (cdr (assoc filename alist)))))
-  ;; (global-set-key (kbd "C-x C-o") 'recentf-open-files-compl)
+    (let (el (elist '()))
+      (dolist (item recentf-list)
+        (setq el (file-name-nondirectory item))
+        (unless (zerop (length el))     ; skip dir
+          (let ((orig el))
+            ;; distinguish collided file name
+            (while (assoc el elist)
+              (if (string-match (format "%s<\\([0-9]+\\)>$" orig) el)
+                  (setq el (format "%s<%d>" orig
+                                   (+ 1 (string-to-number (match-string 1 el)))))
+                (setq el (format "%s<%d>" orig 1))
+                )))
+          (add-to-list 'elist (cons el item))))
+      ;; use `ido-completing-read' instead of `completing-read'
+      (find-file (cdr (assoc (ido-completing-read "Open file: "
+                                                  (mapcar 'car elist))
+                             elist)))))
 
   ;; Also store recent opened directories besides files
   (add-hook 'dired-mode-hook
@@ -614,7 +623,7 @@
     ("h" . 'backward-char)
     ("l" . 'forward-char)
     ("j" . 'View-scroll-line-forward)
-    ("k" . 'View-scroll-page-backward)
+    ("k" . 'View-scroll-line-backward)
     ("G" . 'View-goto-line-last)
     ("b" . 'View-scroll-page-backward)
     ("f" . 'View-scroll-page-forward)
@@ -1376,7 +1385,7 @@ mouse-3: Remove current window from display")
         ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (deh-require 'highlight-parentheses
-  (setq hl-paren-colors '("red" "yellow" "cyan" "magenta" "green" "red"))
+  (setq hl-paren-colors '("brown" "magenta" "maroon" "navy" "orange" "cyan"))
   (deh-add-hooks (emacs-lisp-mode-hook
                   java-mode-hook
                   c-mode-common-hook)
