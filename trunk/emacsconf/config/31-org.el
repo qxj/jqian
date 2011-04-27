@@ -107,6 +107,7 @@
     ((kbd "C-c o a") . 'org-agenda)
     ((kbd "C-c o b") . 'org-iswitchb)
     ((kbd "C-c o o") . 'org-open-at-point) ; "\C-c\C-o"
+    ((kbd "C-c o j") . 'org-open-at-point) ; "\C-c\C-o"
     ("\M-\C-l" . 'org-table-sort-lines)
     ("\M-\C-w" . 'org-table-copy-region)
     ("\M-\C-y" . 'org-table-paste-rectangle)
@@ -157,7 +158,7 @@
           (tags priority-down category-keep))))
 
 (deh-require 'org-remember
-  (global-set-key (kbd "C-c r") 'org-remember)
+  ;; (global-set-key (kbd "C-c r") 'org-remember)
   ;; (org-remember-insinuate)
 
   (setq org-directory my-org-dir
