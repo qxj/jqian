@@ -495,6 +495,7 @@
           (message "No bookmark at this line.")
         (bm-bookmark-remove bookmark)
         ;; TODO: refresh bookmark show
+        (when bm-electric-show (bm-show-quit-window))
         )))
 
   ;; hack bm.el
@@ -613,7 +614,11 @@
         '("/usr/include" "/usr/include/sys" "/usr/include/asm"
           "/usr/include/asm-generic" "/usr/include/linux"
           "/usr/include/net" "/usr/include/netinet"
-          "/usr/include/bits" "/usr/local/include"))
+          "/usr/include/bits" "/usr/local/include"
+          ;; cedet-user-include-dirs
+          ".." "../include" "../inc" "../common" "../public" "../hdr"
+          "../.." "../../include" "../../inc" "../../common" "../../public"
+          "../../hdr"))
   )
 ;;}}}
 

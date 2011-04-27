@@ -48,6 +48,17 @@
   ((kbd "<C-down-mouse-1>") . 'undefined)
   )
 
+(deh-define-key ctl-x-map
+  ("\C-b" . 'ibuffer)
+  ("\C-t" . 'transpose-sexps)
+  ("\C-r" . 'find-file-root)
+  ("\C-k" . 'kill-this-buffer)
+  ("\C-o" . 'my-switch-recent-buffer)
+  ("\C-_" . 'fit-frame)
+  ;; ("t"    . 'template-expand-template)
+  ;; ("m"    . 'message-mail)
+  )
+
 (deh-define-key (lookup-key global-map "\C-c")
   ("c" . 'ctl-cc-map)
   ("k" . 'ctl-ck-map)
@@ -56,6 +67,7 @@
   ;; ("g" . 'fold-dwim-hide-all)
   ("i" . 'imenu)
   ("j" . 'ffap)
+  ("r" . 'org-remember)
   ;; ("k" . 'auto-fill-mode)
   ;; ("q" . 'refill-mode)
   ;; ("u" . 'revert-buffer)
@@ -66,18 +78,6 @@
   ("\C-t" . 'tv-view-history)
   )
 
-(deh-define-key ctl-x-map
-  ("\C-b" . 'ibuffer)
-  ("\C-t" . 'transpose-sexps)
-  ("\C-r" . 'find-file-root)
-  ("\C-k" . 'kill-this-buffer)
-  ("\C-o" . 'my-switch-recent-buffer)
-  ("\C-_" . 'fit-frame)
-  ;; ("t"    . 'template-expand-template)
-  ("m"    . 'message-mail)
-  ("c"    . 'ywb-clone-buffer)
-  )
-
 (deh-define-key ctl-cc-map
   ("b" . 'my-revert-buffer)
   ("c" . 'my-switch-scratch)
@@ -85,6 +85,7 @@
   ("f" . 'find-library)
   ("h" . 'highlight-symbol-at-point)
   ("i" . 'ispell-word)
+  ("n" . 'ywb-clone-buffer)
   ("o" . 'recentf-open-files-compl)
   ("r" . 'buffer-action-run)
   ("s" . 'buffer-action-compile)
@@ -240,7 +241,7 @@
   (setq one-key-menu-version-alist
         '((("+" . "Update") . vc-update)
           (("=" . "Diff Base") . vc-diff)
-          (("#" . "Diff With Other Ver.") . vc-diff)
+          (("#" . "Diff With Other Ver.") . vc-version-diff)
           (("~" . "View Other Ver.") . vc-revision-other-window)
           (("a" . "Update ChangeLog") . vc-update-change-log)
           ;; (("b" . "Switch Backend") . vc-switch-backend)
