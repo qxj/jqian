@@ -541,9 +541,9 @@
 ;; recent opened files
 (deh-require 'recentf
   ;; recent finded buffers
-  (setq recentf-max-saved-items nil
+  (setq recentf-max-saved-items 1000
         recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir)
-        recentf-exclude '(my-temp-dir))
+        recentf-exclude `(,my-temp-dir))
   (recentf-mode t)
 
   (defun recentf-open-files-compl ()
