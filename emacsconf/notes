@@ -11,3 +11,12 @@ C-u 100 C-u 1
 
 * Save and restore window configuration
 C-x r w, C-x r j
+
+* Repeat last command
+C-x z
+
+* Print keystrokes you entered
+M-x view-lossage
+
+* View command you entered
+M-x command-history
