@@ -310,11 +310,6 @@ into `kill-ring'."
   (interactive)
   (revert-buffer nil t nil))
 
-(defun my-toggle-sr-speedbar ()
-  "Toggle sr speedbar window."
-  (interactive)
-  (sr-speedbar-toggle) (sr-speedbar-select-window))
-
 (defun my-switch-recent-buffer ()
   "Swith to the recent visited buffer."
   (interactive)

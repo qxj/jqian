@@ -160,6 +160,23 @@ the directories in the INCLUDE environment variable."
     ;; M-r 'comint-history-isearch-backward-regexp
     (set (make-local-variable 'paragraph-separate) "\\'"))
 
+  (defun my-toggle-gdb ()
+    "Switch to a gdb buffer or return to the previous buffer."
+    (interactive)
+    (if (derived-mode-p 'gud-mode)
+        (while (derived-mode-p 'gud-mode)
+          (bury-buffer))
+      (let ((list (buffer-list)))
+        (while list
+          (if (with-current-buffer (car list)
+                (derived-mode-p 'gud-mode))
+              (progn
+                (call-interactively 'gdb-restore-windows)
+                (setq list nil))
+            (setq list (cdr list))))
+        (unless (derived-mode-p 'gud-mode)
+          (call-interactively 'gdb)))))
+
   (eval-after-load "gud"
     '(progn
        (deh-define-key gud-minor-mode-map

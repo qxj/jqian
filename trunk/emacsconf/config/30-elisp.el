@@ -773,7 +773,8 @@
 ;;; recommend
 ;;{{{  w3m
 (deh-require-if 'w3m-load (executable-find "w3m")
-  (setq w3m-verbose t)                  ; log in *Messages*
+  (setq w3m-verbose t                   ; log in *Messages*
+        w3m-default-display-inline-images t)
   (deh-add-hook w3m-mode-hook
     (local-unset-key "\C-xb")
     (local-unset-key (kbd "S-SPC"))
@@ -1184,7 +1185,10 @@ indent line."
     (interactive)
     (unless (multi-term-dedicated-exist-p)
       (multi-term-dedicated-open))
-    (multi-term-dedicated-select)))
+    (multi-term-dedicated-select))
+
+  (defalias 'my-toggle-multi-term 'multi-term-dedicated-toggle)
+  )
 
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
@@ -1367,7 +1371,14 @@ mouse-3: Remove current window from display")
 ;; sr-speedbar
 (deh-require 'sr-speedbar
   ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
-  (define-key speedbar-key-map (kbd "M-u") '(lambda () (interactive) (speedbar-up-directory)))
+  (deh-define-key speedbar-key-map
+    ((kbd "M-u") . 'speedbar-up-directory))
+
+  (defun my-toggle-sr-speedbar ()
+    "Toggle sr speedbar window."
+    (interactive)
+    (sr-speedbar-toggle) (sr-speedbar-select-window))
+    )
 
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit)))

@@ -36,9 +36,9 @@
   ((kbd "<C-M-up>")   . 'my-move-line-up)
   ((kbd "<M-S-down>") . 'my-dup-line-down)
   ((kbd "<S-down>") . 'my-dup-line-down-continued)
-  ((kbd "<f6>")  . 'my-toggle-sr-speedbar)
+  ((kbd "<f6>") . 'one-key-menu-root)
   ((kbd "<f11>") . 'w3m)
-  ((kbd "<f12>") . 'my-switch-recent-buffer)
+  ((kbd "<f12>")  . 'one-key-menu-toggle)
   ((kbd "<f8>")  . 'org-agenda)
   ((kbd "<f7>")  . 'calendar)
   ((kbd "C-h j") . (lambda () (interactive) (info "elisp")))
@@ -107,6 +107,7 @@
 (deh-require 'one-key
   (deh-define-key ctl-ck-map
     ("k" . 'one-key-menu-root)
+    ("t" . 'one-key-menu-toggle)
     ("g" . 'one-key-menu-gtags)
     ("c" . 'one-key-menu-cscope)
     ("h" . 'one-key-menu-highlight)
@@ -118,6 +119,7 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ROOT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (setq one-key-menu-root-alist
         '(
+          (("t" . "Toggle") . one-key-menu-toggle)
           (("g" . "Gtags") . one-key-menu-gtags)
           (("c" . "Cscope") . one-key-menu-cscope)
           (("h" . "Highlight") . one-key-menu-highlight)
@@ -129,6 +131,23 @@
     "The `one-key' menu for root."
     (interactive)
     (one-key-menu "ROOT" one-key-menu-root-alist))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Toggle ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defvar one-key-menu-toggle-alist nil
+    "The `one-key' menu alist for TOGGLE.")
+
+  (setq one-key-menu-toggle-alist
+        '(
+          (("g" . "Gdb") . my-toggle-gdb)
+          (("t" . "Multi-Term") . my-toggle-multi-term)
+          (("s" . "SpeedBar") . my-toggle-sr-speedbar)
+          (("w" . "W3M") . my-toggle-w3m)
+          ))
+
+  (defun one-key-menu-toggle ()
+    "The `one-key' menu for TOGGLE."
+    (interactive)
+    (one-key-menu "TOGGLE" one-key-menu-toggle-alist t))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Gtags ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defvar one-key-menu-gtags-alist nil
