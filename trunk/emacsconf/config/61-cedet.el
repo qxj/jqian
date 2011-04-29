@@ -144,15 +144,14 @@ the mru bookmark stack."
   (deh-require 'ede
     ;; (setq semantic-c-obey-conditional-section-parsing-flag nil) ; ignore #if
     (setq ede-locate-setup-options
-          '(ede-locate-global
-            ede-locate-base))
+          '(ede-locate-global ede-locate-locate ede-locate-base)
+          ede-project-placeholder-cache-file
+          (expand-file-name "ede-project.el" my-temp-dir))
+
+    ;; (global-ede-mode t)
 
     ;; Ede project support
     ;; M-x `ede-new' to generate Project.ede to project root directory.
-    (global-ede-mode t)
-    (setq ede-project-placeholder-cache-file
-          (expand-file-name "ede-project.el" my-temp-dir))
-
     (defun my-ede-new (projname
                        filename
                        &optional incdir
@@ -183,7 +182,6 @@ the mru bookmark stack."
                       :local-variables (list
                                         (cons 'compile-command '(my-gen-compile-string \"%s\")))" cmd)))
         (insert ")")))
-
     (defun my-gen-compile-string (&optional cmd)
       "Generates compile string for compiling project"
       (let* ((current-dir (file-name-directory
