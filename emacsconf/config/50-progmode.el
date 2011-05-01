@@ -715,8 +715,6 @@ Use CREATE-TEMP-F for creating temp copy."
   (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
-  (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
-  (add-to-list 'auto-mode-alist '("\\.cls$" . LaTeX-mode))
   (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
@@ -729,6 +727,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
+  (add-to-list 'auto-mode-alist '(".vim\\(rc\\)?$" . vimrc-mode))
   )
 
 (deh-section-reserved "php"
