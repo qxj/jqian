@@ -1141,6 +1141,8 @@ indent line."
     '(require 'info+))
   ;; for normal term
   ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
+  ;; .vimrc syntax hightlight
+  (require 'vimrc-mode)
   )
 
 (deh-require 'midnight
@@ -1187,7 +1189,12 @@ indent line."
       (multi-term-dedicated-open))
     (multi-term-dedicated-select))
 
-  (defalias 'my-toggle-multi-term 'multi-term-dedicated-toggle)
+  (defun my-toggle-multi-term ()
+    "Toggle dedicated `multi-term' window and select."
+    (interactive)
+    (if (multi-term-dedicated-exist-p)
+        (multi-term-dedicated-close)
+      (multi-term-dedicated-open-select)))
   )
 
 ;; browse-kill-ring
@@ -1378,7 +1385,6 @@ mouse-3: Remove current window from display")
     "Toggle sr speedbar window."
     (interactive)
     (sr-speedbar-toggle) (sr-speedbar-select-window))
-    )
 
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit)))
