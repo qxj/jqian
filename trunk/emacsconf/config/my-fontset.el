@@ -80,7 +80,7 @@
 ;;   (add-to-list 'default-frame-alist `(font . ,fontset)))
 
 ;; Way 3
-(set-frame-font "Consolas:pixelsize=12")  ; set-default-font has been obsoleted
+(set-frame-font "Consolas:pixelsize=14")  ; set-default-font has been obsoleted
 (set-fontset-font (frame-parameter nil 'font)
                   'han '("Microsoft YaHei" . "unicode-bmp"))
 

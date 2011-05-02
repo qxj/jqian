@@ -385,9 +385,31 @@
 
 ;;{{{ tramp
 (deh-section "tramp"
+  ;; If Tramp still isn’t fast enough for you (or if you don’t use
+  ;; linux), try [Accelerating OpenSSH connections with ControlMaster |
+  ;; http://linux.com/feature/54498]
+  ;;
+  ;; Set up the ControlMaster feature by adding the following lines to
+  ;; ~/.ssh/config:
+  ;;
+  ;; Host *
+  ;; ControlMaster auto
+  ;; ControlPath ~/.ssh/master-%r@%h:%p
+  ;;
+
   ;; (setq tramp-mode nil)                  ; disable tramp
-  (setq tramp-auto-save-directory my-temp-dir
-        tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)))
+  (setq tramp-syntax 'url
+        tramp-default-method "ssh"
+        tramp-auto-save-directory my-temp-dir
+        tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)
+        password-cache-expiry nil)
+  ;;# avoid to backup tramp files
+  (add-to-list 'backup-directory-alist
+               (cons tramp-file-name-regexp nil))
+
+  ;; tramp-compile is deperated, which is integrated into compile
+  ;; command.
+  )
 ;;}}}
 
 ;;{{{ session management

@@ -180,6 +180,32 @@
         remember-handler-functions '(org-remember-handler))
   (add-hook 'remember-mode-hook 'org-remember-apply-template))
 
+(deh-require 'org-capture
+  (setq org-capture-templates
+        '(("a" "Appointment" entry
+           (file+headline "taskdiary.org" "Calendar")
+           "* APPT %^{Description} %^g
+    %i%?
+    Added: %U")
+          ("n" "Notes" entry
+           (file+datetree "taskdiary.org")
+           "* %^{Title} %^g
+    %i%?")
+          ("t" "Task Diary" entry
+           (file+datetree "taskdiary.org")
+           "* TODO %^{Title} %^g
+    %i%?")
+          ("j" "Journal" entry
+           (file+datetree "workjournal.org")
+           "** %^{Heading}")
+          ("s" "Source Code" entry
+           (file "codereview.org")
+           "* %^{Title}
+    %i%?
+    Reference: %a")
+          ))
+  )
+
 (deh-section "rst"
   (add-hook 'rst-adjust-hook 'rst-toc-update)
   ;; Auto fill and outline mode
