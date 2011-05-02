@@ -1,6 +1,6 @@
 
 (deh-section-path "org-export"
-  "~/src/org-7.01h"
+  "~/src/org-mode"
   ;; load-path
   (add-to-list 'load-path (expand-file-name "lisp" deh-this-path))
   (add-to-list 'load-path (expand-file-name "contrib/lisp" deh-this-path))
@@ -78,6 +78,9 @@
 
 (deh-require 'org
   (setq org-CUA-compatible t)
+
+  (setq org-directory my-org-dir
+        org-default-notes-file (concat my-org-dir "Notes.org"))
 
   ;; Single keys to execute commands at the beginning of a headline
   (setq org-use-speed-commands t
@@ -161,9 +164,7 @@
   ;; (global-set-key (kbd "C-c r") 'org-remember)
   ;; (org-remember-insinuate)
 
-  (setq org-directory my-org-dir
-        org-default-notes-file (concat my-org-dir "Notes.org")
-        org-remember-templates
+  (setq org-remember-templates
         '(("Tasks"  ?t  "* TODO %^{Title} %^g\n       %?     %i\n"
            "Task.org"  "New task")
           ("Personal"  ?g  "* %^{Title} %^g\n       %?     %i\n   Reference: %a"
@@ -184,14 +185,14 @@
   (setq org-capture-templates
         '(("a" "Appointment" entry
            (file+headline "taskdiary.org" "Calendar")
-           "* APPT %^{Description} %^g
+           "* APPT %^g
     %i%?
     Added: %U")
           ("n" "Notes" entry
            (file+datetree "taskdiary.org")
            "* %^{Title} %^g
     %i%?")
-          ("t" "Task Diary" entry
+          ("t" "Task Notes" entry
            (file+datetree "taskdiary.org")
            "* TODO %^{Title} %^g
     %i%?")
@@ -199,8 +200,13 @@
            (file+datetree "workjournal.org")
            "** %^{Heading}")
           ("s" "Source Code" entry
-           (file "codereview.org")
-           "* %^{Title}
+           (file+function "codereview.org"
+                          ;; FIXME: TBD
+                          (lambda ()
+                            (if (org-list-search-forward "asd" (point-max) t)
+                                (org-end-of-item)
+                              )))
+           "* %f
     %i%?
     Reference: %a")
           ))

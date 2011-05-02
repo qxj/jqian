@@ -161,7 +161,7 @@
   (ido-everywhere t)
   (add-hook 'term-setup-hook 'ido-mode)
 
-  (setq ido-enable-regexp nil
+  (setq ido-enable-regexp t
         ido-enable-dot-prefix t
         ido-enable-flex-matching t
         ido-enable-tramp-completion nil
@@ -398,10 +398,10 @@
   ;;
 
   ;; (setq tramp-mode nil)                  ; disable tramp
-  (setq tramp-syntax 'url
-        tramp-default-method "ssh"
-        tramp-auto-save-directory my-temp-dir
+  (setq tramp-auto-save-directory my-temp-dir
         tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)
+        tramp-default-method "ssh"
+        ;; tramp-syntax 'url
         password-cache-expiry nil)
   ;;# avoid to backup tramp files
   (add-to-list 'backup-directory-alist
@@ -565,7 +565,8 @@
   ;; recent finded buffers
   (setq recentf-max-saved-items 1000
         recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir)
-        recentf-exclude `(,my-temp-dir))
+        recentf-exclude `(,my-temp-dir
+                          ,tramp-file-name-regexp))
   (recentf-mode t)
 
   (defun recentf-open-files-compl ()
@@ -728,7 +729,6 @@
           ":"
           (:eval (or (buffer-file-name) (buffer-name)))))
 
-  ;; (setq display-time-format "%m月%d日 星期%a %R")
   ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
   (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
 
