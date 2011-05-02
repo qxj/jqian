@@ -267,21 +267,62 @@ to date."
              (file-newer-than-file-p target-file (buffer-file-name)))
     target-file))
 
+(defun buffer-action-throw-final-path (try-dir)
+  (cond
+   ;; tramp root-dir
+   ((and (featurep 'tramp)
+         (string-match tramp-file-name-regexp try-dir))
+    (with-parsed-tramp-file-name try-dir foo
+      foo-localname))
+   (t try-dir)))
+
+(defun buffer-action-is-root-dir (try-dir)
+  (or
+   ;; windows root dir for a driver or Unix root
+   (string-match "\\`\\([a-zA-Z]:\\)?/$" try-dir)
+   ;; tramp root-dir
+   (and (featurep 'tramp)
+        (string-match (concat tramp-file-name-regexp ".*:/$") try-dir))))
+
+(defun buffer-action-find-make-dir (try-dir)
+  "Return a directory contain makefile. try-dir is absolute
+path."
+  (if (buffer-action-is-root-dir try-dir)
+      nil ;; return nil if failed to find such directory.
+    (let ((candidate-make-file-name `("GNUmakefile" "makefile" "Makefile")))
+      (or (catch 'break
+            (mapc (lambda (f)
+                    (if (file-readable-p (concat (file-name-as-directory try-dir) f))
+                        (throw 'break (buffer-action-throw-final-path try-dir))))
+                  candidate-make-file-name)
+            nil)
+          (buffer-action-find-make-dir
+           (expand-file-name (concat (file-name-as-directory try-dir) "..")))))))
+
 (defun buffer-action-compile-setup (row)
-  "Setup correct compiler action.
-ROW is matched one in `buffer-action-table'."
-  (let ((cmd
-         (some
-          (lambda (el)
-            (let ((f (find-if 'file-exists-p (car el))))
-              (when f (concat (cadr el) " " f))))
-          `((("Makefile" "makefile" "../Makefile" "../makefile") "make -f")
-            (("build.xml") "ant")
-            (,(directory-files "." nil "\\.pro$") "qmake")
-            (("bld.inf" "../group/bld.inf") "sbs -c winscw_udeb -b")))))
-    (if (and cmd (y-or-n-p (format "Run like this? `%s' " cmd)))
+  "Setup correct compiler action. ROW is matched one in
+`buffer-action-table'."
+  (let* ((dir (buffer-action-find-make-dir (expand-file-name ".")))
+         (cmd (concat "make -C " dir)))
+    (if (and dir (y-or-n-p (format "Run like this? `%s' " cmd)))
         (setq buffer-action-compile-action (concat cmd " "))
       (setq buffer-action-compile-action (nth 1 row)))))
+
+;; (defun buffer-action-compile-setup (row)
+;;   "Setup correct compiler action.
+;; ROW is matched one in `buffer-action-table'."
+;;   (let ((cmd
+;;          (some
+;;           (lambda (el)
+;;             (let ((f (find-if 'file-exists-p (car el))))
+;;               (when f (concat (cadr el) " " f))))
+;;           `((("Makefile" "makefile" "../Makefile" "../makefile") "make -f")
+;;             (("build.xml") "ant")
+;;             (,(directory-files "." nil "\\.pro$") "qmake")
+;;             (("bld.inf" "../group/bld.inf") "sbs -c winscw_udeb -b")))))
+;;     (if (and cmd (y-or-n-p (format "Run like this? `%s' " cmd)))
+;;         (setq buffer-action-compile-action (concat cmd " "))
+;;       (setq buffer-action-compile-action (nth 1 row)))))
 
 (provide 'buffer-action)
 
