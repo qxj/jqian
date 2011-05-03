@@ -160,57 +160,41 @@
           (todo priority-down category-keep)
           (tags priority-down category-keep))))
 
-(deh-require 'org-remember
-  ;; (global-set-key (kbd "C-c r") 'org-remember)
-  ;; (org-remember-insinuate)
-
-  (setq org-remember-templates
-        '(("Tasks"  ?t  "* TODO %^{Title} %^g\n       %?     %i\n"
-           "Task.org"  "New task")
-          ("Personal"  ?g  "* %^{Title} %^g\n       %?     %i\n   Reference: %a"
-           "Personal.org"  "New arrangement")
-          ("Journal"  ?d  "* %u %^{Title}\n  %?\n   %i\n\n     Reference: %a"
-           "Journal.org")
-          ("Study"  ?x  "* %u %^{Title}\n  %?\n   %i\n\n     Reference: %a"
-           "Study.org" "New item")
-          ("Project"  ?s  "* %^{Title}\n  %?\n   %i\n\n     Reference: %a"
-           "Project.org"  "New resource")))
-
-  ;; If missing the function org-remember-insinuate, try the following
-  (setq remember-annotation-functions '(org-remember-annotation)
-        remember-handler-functions '(org-remember-handler))
-  (add-hook 'remember-mode-hook 'org-remember-apply-template))
-
-(deh-require 'org-capture
+(deh-require-if 'org-capture
+  ;; org-capture supersedes org-remember
+  (>= (string-to-int org-version) 7.5)
   (setq org-capture-templates
-        '(("a" "Appointment" entry
+        '(("a" "Appointments" entry
            (file+headline "taskdiary.org" "Calendar")
-           "* APPT %^g
-    %i%?
+           "* APPT %? %^g
+    %i
     Added: %U")
           ("n" "Notes" entry
            (file+datetree "taskdiary.org")
-           "* %^{Title} %^g
-    %i%?")
-          ("t" "Task Notes" entry
+           "* %? %^g
+    %i")
+          ("t" "TODO List" entry
            (file+datetree "taskdiary.org")
-           "* TODO %^{Title} %^g
-    %i%?")
-          ("j" "Journal" entry
+           "* TODO %? %^g
+    %i")
+          ("j" "Work Journal" entry
            (file+datetree "workjournal.org")
-           "** %^{Heading}")
+           "** %? %^g
+    %i")
           ("s" "Source Code" entry
            (file+function "codereview.org"
-                          ;; FIXME: TBD
                           (lambda ()
-                            (if (org-list-search-forward "asd" (point-max) t)
-                                (org-end-of-item)
-                              )))
+                            ;; only append to the end
+                            (if (org-list-search-backward
+                                 (format "\\* %s"
+                                         (file-name-nondirectory
+                                          (buffer-file-name (current-buffer))))
+                                 nil t)
+                                (org-end-of-item))))
            "* %f
     %i%?
     Reference: %a")
-          ))
-  )
+          )))
 
 (deh-section "rst"
   (add-hook 'rst-adjust-hook 'rst-toc-update)

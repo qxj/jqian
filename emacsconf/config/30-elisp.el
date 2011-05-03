@@ -1429,7 +1429,8 @@ mouse-3: Remove current window from display")
         ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (deh-require 'highlight-parentheses
-  (setq hl-paren-colors '("brown" "magenta" "maroon" "navy" "orange" "cyan"))
+  ;; colors is applied by reversed order
+  (setq hl-paren-colors '("magenta" "cyan" "orange" "navy" "brown"))
   (deh-add-hooks (emacs-lisp-mode-hook
                   java-mode-hook
                   c-mode-common-hook)

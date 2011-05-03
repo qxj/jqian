@@ -67,7 +67,7 @@
   ;; ("g" . 'fold-dwim-hide-all)
   ("i" . 'imenu)
   ("j" . 'ffap)
-  ("r" . 'org-remember)
+  ("r" . 'org-capture)
   ;; ("k" . 'auto-fill-mode)
   ;; ("q" . 'refill-mode)
   ;; ("u" . 'revert-buffer)
