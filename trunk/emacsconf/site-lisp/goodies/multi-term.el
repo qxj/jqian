@@ -6,7 +6,7 @@
 ;; Copyright (C) 2010, ahei, all rights reserved.
 ;; Created: <2008-09-19 23:02:42>
 ;; Version: 0.8.8
-;; Last-Updated: <2010-05-13 00:40:24 Thursday by ahei>
+;; Last-Updated: <Julian Qian 2011-05-03 10:59:45>
 ;; URL: http://www.emacswiki.org/emacs/download/multi-term.el
 ;; Keywords: term, terminal, multiple buffer
 ;; Compatibility: GNU Emacs 23.2.1
@@ -467,7 +467,7 @@ Will prompt you shell name when you type `C-u' before this command."
 (defun term-send-backward-kill-word ()
   "Backward kill word in term mode."
   (interactive)
-  (term-send-raw-string "\C-w"))
+  (term-send-raw-string "\e\C-?"))
 
 (defun term-send-forward-kill-word ()
   "Kill word in term mode."

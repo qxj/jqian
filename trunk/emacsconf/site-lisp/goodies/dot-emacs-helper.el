@@ -315,7 +315,7 @@ Example:
                   `(define-key ,map ,(car pair) ,(cdr pair)))
                 keypairs)))
 
-;;; added by julian
+;;; added by julian <jqian@jqian.net>
 (defmacro deh-section-path (section path &rest forms)
   "If path exists, call `deh-section'. One internal variable
 `deh-this-path' indicates the argument path, which you can use in
@@ -364,6 +364,13 @@ Example:
 
 
 (defmacro deh-section-if (section cond &rest forms)
+  "If COND is true, SECTION will be enabled.
+
+Example:
+  (deh-section-if \"cedet\"
+    cedet-enable
+    (require 'cedet nil 'noerror))
+"
   (declare (indent 1))
   `(progn
      (when ,cond
@@ -372,6 +379,14 @@ Example:
        ,@forms)))
 
 (defmacro deh-require-if (feature cond &rest forms)
+  "If COND is true, require this FEATURE.
+
+Example:
+  (deh-require-if 'org-capture
+    (>= (string-to-int org-version) 7.5)
+    (setq org-capture-templates '(
+    )))
+"
   (declare (indent 1))
   `(progn
      (when ,cond
