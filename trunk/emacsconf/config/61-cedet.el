@@ -1,7 +1,5 @@
 ;; (load "cedet")
 
-(defvar cedet-enable nil)
-
 (if (< (string-to-number emacs-version) 23.2)
   ;; try to load external cedet
   (let ((path "~/src/cedet-1.0/common/cedet.el"))
@@ -38,7 +36,6 @@
   ;; try to load internal offical cedet
   (locate-library "semantic-ctxt")
   (require 'cedet nil 'noerror)
-  (setq cedet-enable t)
 
   (setq semantic-default-submodes '(global-semantic-idle-scheduler-mode
                                     global-semanticdb-minor-mode
