@@ -2,41 +2,40 @@
 
 (defvar cedet-enable nil)
 
-;; try to load external cedet
-(let ((path "~/src/cedet-1.0/common/cedet.el"))
-  (when (file-exists-p path)
-    (load-file path)
-    (setq cedet-enable t)
+(if (< (string-to-number emacs-version) 23.2)
+  ;; try to load external cedet
+  (let ((path "~/src/cedet-1.0/common/cedet.el"))
+    (when (file-exists-p path)
+      (load-file path)
+      ;;# Enable cedet modes
+      ;; (semantic-load-enable-minimum-features)
+      (semantic-load-enable-code-helpers)
+      ;; (semantic-load-enable-gaudy-code-helpers)
+      ;; (semantic-load-enable-excessive-code-helpers)
+      ;; (semantic-load-enable-semantic-debugging-helpers)
+      (if window-system
+          (global-semantic-highlight-edits-mode 1))
+      (global-semantic-show-parser-state-mode 1)
 
-    ;;# Enable cedet modes
-    ;; (semantic-load-enable-minimum-features)
-    (semantic-load-enable-code-helpers)
-    ;; (semantic-load-enable-gaudy-code-helpers)
-    ;; (semantic-load-enable-excessive-code-helpers)
-    ;; (semantic-load-enable-semantic-debugging-helpers)
-    (if window-system
-        (global-semantic-highlight-edits-mode 1))
-    (global-semantic-show-parser-state-mode 1)
+      (require 'semantic-decorate-include nil 'noerror)
+      (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
+      (global-semantic-decoration-mode 1)
 
-    (require 'semantic-decorate-include nil 'noerror)
-    (semantic-toggle-decoration-style "semantic-tag-boundary" -1)
-    (global-semantic-decoration-mode 1)
+      ;;# vss is useful
+      (deh-section "viss-bookmark"
+        (enable-visual-studio-bookmarks)
+        (deh-define-key global-map
+          ((kbd "<f2>") . 'viss-bookmark-toggle)
+          ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
+          ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
+          ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer))
+        )
 
-    ;;# vss is useful
-    (deh-section "viss-bookmark"
-      (enable-visual-studio-bookmarks)
-      (deh-define-key global-map
-        ((kbd "<f2>") . 'viss-bookmark-toggle)
-        ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
-        ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
-        ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer))
-      )
+      ;;# turn on pulse
+      (pulse-toggle-integration-advice (if window-system 1 -1))
+      ))
 
-    ;;# turn on pulse
-    (pulse-toggle-integration-advice (if window-system 1 -1))))
-
-;; try to load internal offical cedet
-(when (and (boundp 'semantic-mode) (null cedet-enable))
+  ;; try to load internal offical cedet
   (locate-library "semantic-ctxt")
   (require 'cedet nil 'noerror)
   (setq cedet-enable t)
@@ -89,10 +88,11 @@ the mru bookmark stack."
     (semantic-mrub-push semantic-mru-bookmark-ring
                         (point)
                         'mark)
-    ad-do-it))
+    ad-do-it)
+)
 
 (deh-section-if "cedet"
-  cedet-enable
+  (boundp 'cedet-version)
 
   ;; semantic cache directory
   (setq semanticdb-default-save-directory my-temp-dir)
