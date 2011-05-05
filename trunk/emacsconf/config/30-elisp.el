@@ -1398,21 +1398,26 @@ mouse-3: Remove current window from display")
   )
 
 ;; sr-speedbar
-(deh-require 'sr-speedbar
+(deh-section "speedbar"
   ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
   (deh-define-key speedbar-key-map
-    ((kbd "M-u") . 'speedbar-up-directory))
+    ("j" . 'speedbar-next)
+    ("k" . 'speedbar-prev)
+    ("\M-u" . 'speedbar-up-directory))
+  (deh-define-key speedbar-file-key-map
+    ((kbd "RET") . 'speedbar-toggle-line-expansion)) ; SPC
 
-  (defun my-toggle-sr-speedbar ()
-    "Toggle sr speedbar window."
-    (interactive)
-    (sr-speedbar-toggle) (sr-speedbar-select-window))
+  (setq speedbar-directory-unshown-regexp
+        "^\\(CVS\\|RCS\\|SCCS\\|\\.bak\\|\\..*\\)\\'")
 
-  ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
-  (setq speedbar-mode-hook '(lambda () (View-exit)))
   ;; add supported extensions
-  (dolist (ext (list ".php" ".js" ".css" ".txt" "README" ".jpg" ".png"))
+  (dolist (ext (list ".php" ".js" ".css" ".xml"
+                     ".sh"
+                     ".txt" ".org" ".md" "README"
+                     ".pdf" ".doc"
+                     ".jpg" ".png"))
     (speedbar-add-supported-extension ext))
+  ;; (setq speedbar-show-unknown-files t)
 
   (add-to-list 'speedbar-fetch-etags-parse-list
                '("\\.php" . speedbar-parse-c-or-c++tag))
@@ -1420,7 +1425,17 @@ mouse-3: Remove current window from display")
   (setq sr-speedbar-skip-other-window-p t
         ;; sr-speedbar-delete-windows t
         sr-speedbar-width-x 22
-        sr-speedbar-max-width 30))
+        sr-speedbar-max-width 30)
+
+  ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
+  (setq speedbar-mode-hook '(lambda () (View-exit)))
+
+  ;;# speedbar in one frame
+  (require 'sr-speedbar)
+  (defun my-toggle-sr-speedbar ()
+    "Toggle sr speedbar window."
+    (interactive)
+    (sr-speedbar-toggle) (sr-speedbar-select-window)))
 
 (deh-section "ediff"
   ;; (global-set-key "\C-cd" 'ediff-show-registry)
