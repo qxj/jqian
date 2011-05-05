@@ -354,6 +354,36 @@ etc).  The following options will be available:
   )
 ;;}}}
 
+;;{{{ info
+(deh-section "info"
+  (add-to-list 'Info-default-directory-list "~/info")
+
+  (deh-define-key Info-mode-map
+    ("j" . 'next-line)
+    ("k" . 'previous-line))
+
+  (defun my-toggle-info ()
+    "Switch to info buffer or return to the previous buffer."
+    (interactive)
+    (if (derived-mode-p 'info-mode)
+        (while (derived-mode-p 'info-mode)
+          (bury-buffer))
+      ;; Find the first info buffer
+      (let ((list (buffer-list)))
+        (while list
+          (if (with-current-buffer (car list)
+                (derived-mode-p 'info-mode))
+              (progn
+                (switch-to-buffer (car list))
+                (setq list nil))
+            (setq list (cdr list))))
+        (unless (derived-mode-p 'info-mode)
+          (call-interactively 'info)))))
+  ;; info+
+  (eval-after-load "info"
+    '(require 'info+)))
+;;}}}
+
 ;;{{{ flymake & flyspell
 (deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
@@ -375,7 +405,9 @@ etc).  The following options will be available:
        ;; (flymake-mode t)
 
        (setq flymake-gui-warnings-enabled nil
-             flymake-log-level 0)
+             ;; flymake-allowed-file-name-masks '()
+             flymake-log-level 0
+             flymake-no-changes-timeout 5.0)
 
        ;; (deh-add-hooks (c-mode-common-hook makefile-mode-hook)
        ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
@@ -437,6 +469,36 @@ etc).  The following options will be available:
                         flymake-simple-make-java-init flymake-simple-java-cleanup))
          (add-to-list 'flymake-allowed-file-name-masks
                       '("\\.cs\\'" flymake-simple-make-init)))
+       (add-to-list 'flymake-allowed-file-name-masks
+                    '("\\.el$" flymake-elisp-init))
+       ;; (add-hook 'write-file-functions (lambda nil
+       ;;                                   (when (eq major-mode 'emacs-lisp-mode)
+       ;;                                     (check-parens))))
+       (defun flymake-elisp-init ()
+         (if (string-match "^ " (buffer-name))
+             nil
+           (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                              'flymake-create-temp-inplace))
+                  (local-file (file-relative-name
+                               temp-file
+                               (file-name-directory buffer-file-name))))
+             (list
+              (expand-file-name invocation-name invocation-directory)
+              (list
+               "-Q" "--batch" "--eval"
+               (prin1-to-string
+                (quote
+                 (dolist (file command-line-args-left)
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (emacs-lisp-mode)
+                     (condition-case data
+                         (scan-sexps (point-min) (point-max))
+                       (scan-error
+                        (goto-char(nth 2 data))
+                        (princ (format "%s:%s: error: Unmatched bracket or quote\n"
+                                       file (line-number-at-pos)))))))))
+               local-file)))))
        (when (or (executable-find "make")
                  (executable-find "gcc")
                  (executable-find "g++"))
@@ -596,7 +658,8 @@ Use CREATE-TEMP-F for creating temp copy."
     (my-mode-common-hook)
     (define-key lisp-mode-shared-map (kbd "C-)") 'ywb-insert-paren)
     (hs-minor-mode 1)
-    (turn-on-eldoc-mode))
+    (turn-on-eldoc-mode)
+    (ignore-errors (imenu-add-menubar-index)))
   )
 ;;}}}
 

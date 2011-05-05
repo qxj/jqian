@@ -626,6 +626,8 @@
 ;;{{{ ffap
 (deh-section "ffap"
   (autoload 'ffap "ffap" "Alias of find-file-at-point")
+  ;; (ffap-bindings)
+
   ;; for windows path recognize
   (setq ffap-string-at-point-mode-alist
         '((file "--{}:\\\\$+<>@-Z_a-z~*?\x100-\xffff" "<@" "@>;.,!:")
@@ -633,15 +635,16 @@
           (nocolon "--9$+<>@-Z_a-z~" "<@" "@>;.,!?")
           (machine "-a-zA-Z0-9." "" ".")
           (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
-  (setq ffap-c-path
-        '("/usr/include" "/usr/include/sys" "/usr/include/asm"
-          "/usr/include/asm-generic" "/usr/include/linux"
-          "/usr/include/net" "/usr/include/netinet"
-          "/usr/include/bits" "/usr/local/include"
-          ;; cedet-user-include-dirs
-          ".." "../include" "../inc" "../common" "../public" "../hdr"
-          "../.." "../../include" "../../inc" "../../common" "../../public"
-          "../../hdr"))
+
+  (eval-after-load "ffap"
+    '(setq ffap-c-path (append ffap-c-path user-include-dirs)))
+
+  (eval-after-load "filecache"
+    '(progn (file-cache-add-directory-list load-path)
+            (file-cache-add-directory-list user-include-dirs)
+            (file-cache-add-directory "/usr/include")
+            (file-cache-add-directory-recursively "/usr/include/c++")
+            (file-cache-add-directory-recursively "/usr/local/include")))
   )
 ;;}}}
 
@@ -712,9 +715,6 @@
        ("^>.*" . font-lock-warning-face)
        ("^D.*" . font-lock-type-face))))
 
-  (deh-define-key Info-mode-map
-    ("j" . 'next-line)
-    ("k" . 'previous-line))
   ;; (filesets-init)
   (defalias 'default-generic-mode 'conf-mode)
   )
@@ -866,9 +866,9 @@
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
-  (setq ac-candidate-limit ac-menu-height ; improve drop menu performance
-        ac-auto-start 3
+  (setq ac-auto-start 3
         ac-auto-show-menu 1.5
+        ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
         ac-ignore-case nil
         ac-show-menu-immediately-on-auto-complete nil
         ;; ac-expand-on-auto-complete nil
@@ -1012,7 +1012,10 @@ indent line."
 ;;{{{ a simple template
 (deh-require 'template-simple
   (setq template-directory-list (list my-template-dir)
-        template-skip-directory-list (list my-temp-dir my-template-dir)))
+        template-skip-directory-list (list my-temp-dir my-template-dir))
+  (defadvice ido-find-file (after ido-file-file-template activate)
+    (funcall 'template-auto-insert))
+  )
 ;;}}}
 
 ;;{{{ isearch tweaks
@@ -1158,9 +1161,6 @@ indent line."
   (require 'smart-mark)
   ;; visible-line
   (require 'visible-lines nil t)
-  ;; info+
-  (eval-after-load "info"
-    '(require 'info+))
   ;; for normal term
   ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
   ;; .vimrc syntax hightlight
@@ -1437,9 +1437,11 @@ mouse-3: Remove current window from display")
     (highlight-parentheses-mode 1))
   )
 
-;; Highlight current line
-;; (global-hl-line-mode)
-;; (set-face-background 'hl-line "white smoke") ; list-colors-display
+(deh-section "highlight-line"
+  ;; (global-hl-line-mode 1)
+  (setq hl-line-face 'underline)
+  ;; (set-face-background 'hl-line "white smoke") ; list-colors-display
+  )
 
 (deh-require 'highlight-symbol
   (deh-add-hooks (emacs-lisp-mode-hook

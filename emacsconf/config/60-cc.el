@@ -70,7 +70,9 @@
     (c-toggle-auto-newline nil)
     (hs-minor-mode 1)
     (eldoc-mode 1)
+    (cwarn-mode 1)
     ;; (smart-operator-mode 1)
+    (ignore-errors (imenu-add-menubar-index))
     (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
@@ -258,8 +260,9 @@ the directories in the INCLUDE environment variable."
 
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
-(deh-section "compile"
-  (setq compilation-auto-jump-to-first-error t)
+(deh-section "compilation"
+  (setq compilation-auto-jump-to-first-error t
+        compilation-scroll-output t)
   ;;# Close complication buffer if succeed to compile
   (setq compilation-finish-functions
         (lambda (buf str)

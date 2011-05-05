@@ -89,5 +89,7 @@
  'after-make-frame-functions
  (lambda (frame)
    (when window-system
-     (set-face-attribute 'default nil :height 100 :width 'normal
-                         :family "Consolas"))))
+     ;; (set-face-attribute 'default nil :height 100 :width 'normal
+     ;;                     :family "Consolas")
+     (set-frame-font "Consolas:pixelsize=14")
+     )))
