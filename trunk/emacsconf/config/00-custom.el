@@ -95,7 +95,10 @@
 
 (setq browse-url-browser-function '(("/HyperSpec/" . w3m-browse-url)
                                     ("." . browse-url-generic))
-      browse-url-generic-program "firefox-trunk")
+      browse-url-generic-program "firefox")
+
+(setq find-function-C-source-directory "~/src/emacs-23.2/src/"
+      find-function-source-path '("~/src/emacs-23.2/lisp/"))
 
 (eval-after-load "grep"
   '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))

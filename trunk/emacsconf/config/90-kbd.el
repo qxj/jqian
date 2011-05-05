@@ -139,6 +139,7 @@
   (setq one-key-menu-toggle-alist
         '(
           (("g" . "Gdb") . my-toggle-gdb)
+          (("i" . "Info") . my-toggle-info)
           (("t" . "Multi-Term") . my-toggle-multi-term)
           (("s" . "SpeedBar") . my-toggle-sr-speedbar)
           (("w" . "W3M") . my-toggle-w3m)
