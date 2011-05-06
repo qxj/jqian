@@ -1399,7 +1399,14 @@ mouse-3: Remove current window from display")
 
 ;; sr-speedbar
 (deh-section "speedbar"
+  ;;# speedbar in one frame
+  (require 'sr-speedbar)
+  (defun my-toggle-sr-speedbar ()
+    "Toggle sr speedbar window."
+    (interactive)
+    (sr-speedbar-toggle) (sr-speedbar-select-window))
   ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
+
   (deh-define-key speedbar-key-map
     ("j" . 'speedbar-next)
     ("k" . 'speedbar-prev)
@@ -1428,14 +1435,7 @@ mouse-3: Remove current window from display")
         sr-speedbar-max-width 30)
 
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
-  (setq speedbar-mode-hook '(lambda () (View-exit)))
-
-  ;;# speedbar in one frame
-  (require 'sr-speedbar)
-  (defun my-toggle-sr-speedbar ()
-    "Toggle sr speedbar window."
-    (interactive)
-    (sr-speedbar-toggle) (sr-speedbar-select-window)))
+  (setq speedbar-mode-hook '(lambda () (View-exit))))
 
 (deh-section "ediff"
   ;; (global-set-key "\C-cd" 'ediff-show-registry)
