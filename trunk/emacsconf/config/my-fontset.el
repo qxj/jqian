@@ -80,9 +80,9 @@
 ;;   (add-to-list 'default-frame-alist `(font . ,fontset)))
 
 ;; Way 3
-(set-frame-font "Consolas:pixelsize=14")  ; set-default-font has been obsoleted
-(set-fontset-font (frame-parameter nil 'font)
-                  'han '("Microsoft YaHei" . "unicode-bmp"))
+;; (set-frame-font "Consolas:pixelsize=14")  ; set-default-font has been obsoleted
+;; (set-fontset-font (frame-parameter nil 'font)
+;;                   'han '("Microsoft YaHei" . "unicode-bmp"))
 
 ;; For `emacsclient -c xxx`
 (add-hook
@@ -93,3 +93,12 @@
      ;;                     :family "Consolas")
      (set-frame-font "Consolas:pixelsize=14")
      )))
+
+;; Make Chinese characters match exactly twice more than English ones.
+(let ((font-en "Consolas:pixelsize=14")
+      (font-zh "Microsoft YaHei")
+      (font-zh-size 16))
+  (set-frame-font font-en t)
+  (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    (set-fontset-font "fontset-default" charset
+                      (font-spec :family font-zh :size font-zh-size))))
