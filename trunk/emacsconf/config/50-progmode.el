@@ -868,4 +868,22 @@ Use CREATE-TEMP-F for creating temp copy."
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
 
+(deh-require 'pymacs
+  ;; Python mode hook
+  (deh-add-hook python-mode-hook
+    ;;(setq ropemacs-enable-shortcuts nil)
+    ;;(setq ropemacs-local-prefix "C-c C-p")
+    (setq ropemacs-confirm-saving 'nil)
+    (autoload 'pymacs-apply "pymacs")
+    (autoload 'pymacs-call "pymacs")
+    (autoload 'pymacs-eval "pymacs" nil t)
+    (autoload 'pymacs-exec "pymacs" nil t)
+    (autoload 'pymacs-load "pymacs" nil t)
+    ;;(pymacs-load "ropemacs" "rope-")
+    ;; Automatically save project python buffers before refactorings
+    ;; (define-key python-mode-map "\C-m" 'newline-and-indent)
+    (ac-ropemacs-setup)
+    ;;(setq ac-sources (append ac-sources '(ac-source-ropemacs)))
+    (ropemacs-mode t)))
+
 
