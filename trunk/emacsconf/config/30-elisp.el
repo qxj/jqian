@@ -888,6 +888,7 @@
   ;; disable auto-complete in comments
   ;; (setq ac-disable-faces
   ;;       '(font-lock-string-face font-lock-doc-face))
+  (setq ac-disable-faces '(font-lock-string-face))
 
   ;; for terminal, works well with `global-hl-line-mode'
   (if (null window-system)
