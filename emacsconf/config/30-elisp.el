@@ -165,10 +165,12 @@
         ido-enable-dot-prefix t
         ido-enable-flex-matching t
         ido-enable-tramp-completion nil
+        ido-record-ftp-work-directories nil
         ido-use-faces t
         ;; ido-use-filename-at-point 'guess
         ;; ido-use-url-at-point t
-        ido-auto-merge-work-directories-length -1)
+        ido-auto-merge-work-directories-length -1
+        ido-max-work-file-list 20)
 
   (setq ido-save-directory-list-file
         (expand-file-name "emacs.ido-last" my-temp-dir)
@@ -181,7 +183,11 @@
         ido-ignore-files
         '("\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\|vrb\\)$"
           "^\\(CVS\\|TAGS\\|GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"
-          "_region_" "^[.#]"))
+          "_region_" "^[.#]")
+        ido-work-directory-list-ignore-regexps
+        `(,tramp-file-name-regexp))
+  (setq ido-file-extensions-order
+        '(".h" ".c" ".cpp" ".e." ".txt" ".org"))
 
   (add-hook 'ido-setup-hook 'ido-my-keys)
   (defun ido-my-keys ()
@@ -415,25 +421,27 @@
 ;;{{{ session management
 (deh-require-if 'desktop
   (not (emacs-process-duplicated-p))
-  (setq desktop-globals-to-save
-        (delq 'tags-table-list desktop-globals-to-save)
-        ;; Do not save to desktop
-        desktop-buffers-not-to-save
-        (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
 
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-path (list my-temp-dir)
         desktop-restore-eager 8        ; firstly restore 8 buffers
         history-length 100)
 
-  (add-to-list 'desktop-globals-to-save 'file-name-history)
+  ;;# not to save
+  (setq desktop-globals-to-save
+        (delq 'tags-table-list desktop-globals-to-save))
+  (setq desktop-globals-to-save
+        (delq 'file-name-history desktop-globals-to-save))
+  (setq desktop-buffers-not-to-save
+        (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
+  (dolist (mode '(dired-mode Info-mode info-lookup-mode fundamental-mode))
+    (add-to-list 'desktop-modes-not-to-save mode))
+
+  ;;# to save
+  (add-to-list 'desktop-globals-to-save 'kill-ring)
   (if (boundp 'windata-name-winconf)
       (add-to-list 'desktop-globals-to-save 'windata-named-winconf))
 
-  (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-  (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-  (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-  (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
   ;; if error occurred, no matter it!
   ;; (condition-case nil
   ;;     (desktop-read)
@@ -445,8 +453,8 @@
   ;;       desktop-menu-base-filename desktop-base-file-name
   ;;       desktop-menu-list-file "emacs.desktops")
 
-  ;;# persist desktop into file every 30 mins
-  (run-with-idle-timer 1800 1800 'desktop-save-in-desktop-dir)
+  ;;# persist desktop into file every 10 mins
+  (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir)
 
   (defun my-save-desktop (file)
     (interactive

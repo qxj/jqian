@@ -100,7 +100,7 @@
     ;; only enable color theme in window system
     ;; the same color-theme  looks bad in terminal
     (when window-system
-      (load (expand-file-name "my-fontset.el" my-config-dir))
+      ;; (load (expand-file-name "my-fontset.el" my-config-dir))
       (load (expand-file-name "my-theme.el" my-config-dir))
       ;; no scroll bar
       (set-scroll-bar-mode nil)
@@ -108,7 +108,24 @@
       (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
       ;; transparent frame
       (set-frame-parameter (selected-frame) 'alpha '(95 85))
-      (add-to-list 'default-frame-alist '(alpha 95 85))))
+      (add-to-list 'default-frame-alist '(alpha 95 85))
+      ;; use 120 char wide window for largeish displays and smaller 80
+      ;; column windows for smaller displays pick whatever numbers make
+      ;; sense for you
+      (if (> (x-display-pixel-width) 1280)
+          (progn
+            (add-to-list 'default-frame-alist (cons 'width 100))
+            (set-frame-font "Consolas:pixelsize=14")
+            (set-fontset-font "fontset-default" 'han
+                              (font-spec :family "Microsoft YaHei" :size 16)))
+        (add-to-list 'default-frame-alist (cons 'width 80))
+        (set-frame-font "Consolas:pixelsize=12"))
+      ;; for the height, subtract a couple hundred pixels from the
+      ;; screen height (for panels, menubars and whatnot), then divide
+      ;; by the height of a char to get the height we want
+      (add-to-list 'default-frame-alist
+                   (cons 'height (/ (- (x-display-pixel-height) 50)
+                                    (frame-char-height))))))
   (add-hook 'after-make-frame-functions 'init-window-frame)
   (add-hook 'after-init-hook 'init-window-frame))
 
