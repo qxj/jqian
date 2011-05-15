@@ -117,9 +117,11 @@
             (add-to-list 'default-frame-alist (cons 'width 100))
             (set-frame-font "Consolas:pixelsize=14")
             (set-fontset-font "fontset-default" 'han
-                              (font-spec :family "Microsoft YaHei" :size 16)))
+                              (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
         (add-to-list 'default-frame-alist (cons 'width 80))
-        (set-frame-font "Consolas:pixelsize=12"))
+        (set-frame-font "Consolas:pixelsize=12")
+        (set-fontset-font "fontset-default" 'han
+                          (font-spec :family "WenQuanYi Micro Hei Mono" :size 14)))
       ;; for the height, subtract a couple hundred pixels from the
       ;; screen height (for panels, menubars and whatnot), then divide
       ;; by the height of a char to get the height we want
@@ -128,6 +130,10 @@
                                     (frame-char-height))))))
   (add-hook 'after-make-frame-functions 'init-window-frame)
   (add-hook 'after-init-hook 'init-window-frame))
+
+(deh-add-hook find-file-hook
+  (if (string-match (expand-file-name "~/src/") (buffer-file-name))
+      (view-mode)))
 
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)
