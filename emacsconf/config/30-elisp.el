@@ -502,6 +502,11 @@
   (setq-default bm-buffer-persistence t)
   (setq bm-repository-file
         (expand-file-name "emacs.bm-repository" my-temp-dir))
+  (setq bm-cycle-all-buffers t
+        bm-highlight-style
+        (if (and window-system (> emacs-major-version 21))
+            'bm-highlight-only-fringe
+          'bm-highlight-only-line))
   ;; For persistent bookmarks
   (add-hook' after-init-hook 'bm-repository-load)
   (add-hook 'find-file-hooks 'bm-buffer-restore)
@@ -514,6 +519,10 @@
   (add-hook 'after-revert-hook 'bm-buffer-restore)
   ;; make sure bookmarks is saved before check-in (and revert-buffer)
   (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
+
+  ;; mouse setting
+  (global-set-key [left-margin mouse-2] 'bm-toggle-mouse)
+  (global-set-key [left-margin mouse-3] 'bm-next-mouse)
 
   ;; remove bookmark in bm-show
   (defun bm-show-remove-bookmark nil

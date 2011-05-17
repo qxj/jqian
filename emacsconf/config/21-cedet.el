@@ -34,7 +34,7 @@
             (lambda ()
               (setq imenu-create-index-function 'semantic-create-imenu-index)))
 
-  (deh-define-key senator-mode-map 
+  (deh-define-key senator-mode-map
     ((kbd "C-c , RET") . 'semantic-ia-complete-symbol-menu)
     ("\C-c,c" . 'semantic-ia-complete-symbol)
     ("\C-c,G" . 'semantic-symref)
@@ -225,4 +225,27 @@ the mru bookmark stack."
     (defadvice sourcepair-load (after pulse-advice activate)
       "After sourcepair-load, pulse the line the cursor lands on."
       (when (and pulse-command-advice-flag (interactive-p))
-        (pulse-momentary-highlight-one-line (point))))))
+        (pulse-momentary-highlight-one-line (point))))
+    ;; pulse for bm
+    (defadvice bm-next (after pulse-advice activate)
+      "After bm-next, pulse the line the cursor lands on."
+      (when (and (boundp 'pulse-command-advice-flag) pulse-command-advice-flag
+                 (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice bm-previous (after pulse-advice activate)
+      "After bm-previous, pulse the line the cursor lands on."
+      (when (and (boundp 'pulse-command-advice-flag) pulse-command-advice-flag
+                 (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice bm-next-mouse (after pulse-advice activate)
+      "After bm-next-mouse, pulse the line the cursor lands on."
+      (when (and (boundp 'pulse-command-advice-flag) pulse-command-advice-flag
+                 (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    (defadvice bm-previous-mouse (after pulse-advice activate)
+      "After bm-previous-mouse, pulse the line the cursor lands on."
+      (when (and (boundp 'pulse-command-advice-flag) pulse-command-advice-flag
+                 (interactive-p))
+        (pulse-momentary-highlight-one-line (point))))
+    ;; END pulse for bm
+    ))
