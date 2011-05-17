@@ -115,11 +115,11 @@
       (if (> (x-display-pixel-width) 1280)
           (progn
             (add-to-list 'default-frame-alist (cons 'width 100))
-            (set-frame-font "Consolas:pixelsize=14")
+            (set-frame-font "DejaVu Sans Mono:pixelsize=14")
             (set-fontset-font "fontset-default" 'han
                               (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
         (add-to-list 'default-frame-alist (cons 'width 80))
-        (set-frame-font "Consolas:pixelsize=12")
+        (set-frame-font "DejaVu Sans Mono:pixelsize=12")
         (set-fontset-font "fontset-default" 'han
                           (font-spec :family "WenQuanYi Micro Hei Mono" :size 14)))
       ;; for the height, subtract a couple hundred pixels from the
