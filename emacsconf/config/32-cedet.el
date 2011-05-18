@@ -1,7 +1,9 @@
 ;; (load "cedet")
 
 ;; try to load external cedet
-(when (load "~/src/cedet-1.0/common/cedet.el" t)
+(deh-section-path "cedet"
+  "~/src/cedet-1.0/common/cedet.el"
+  (load deh-this-path t)
   ;;# Enable cedet modes
   ;; (semantic-load-enable-minimum-features)
   (semantic-load-enable-code-helpers)
@@ -25,14 +27,6 @@
         semantic-idle-scheduler-max-buffer-size 100000
         semantic-idle-work-parse-neighboring-files-flag t
         semantic-idle-work-update-headers-flag t) ; if slow, disable it
-
-  ;;# imenu, expand all functions
-  (setq semantic-imenu-bucketize-file nil
-        semantic-imenu-buckets-to-submenu nil
-        semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing)
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (setq imenu-create-index-function 'semantic-create-imenu-index)))
 
   (deh-define-key senator-mode-map
     ((kbd "C-c , RET") . 'semantic-ia-complete-symbol-menu)
@@ -75,6 +69,22 @@
           (dolist (mode '(c-mode c++-mode))
             (semantic-add-system-include dir mode)))
         user-include-dirs)
+
+
+  (deh-section "imenu-semantic"
+    ;;# imenu, expand all functions
+    (setq semantic-imenu-bucketize-file nil
+          semantic-imenu-buckets-to-submenu nil
+          semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing
+          ;; semantic-imenu-auto-rebuild-directory-indexes t
+          ;; semantic-imenu-index-directory t
+          semantic-which-function-use-color t)
+    (deh-add-hook c-mode-common-hook
+      (setq imenu-create-index-function 'semantic-create-imenu-index))
+    ;; TODO: append it after `semantic-default-elisp-setup'
+    (deh-add-hooks (emacs-lisp-mode-hook python-mode-hook)
+      (make-local-variable 'imenu-create-index-function)
+      (setq imenu-create-index-function 'imenu-default-create-index-function)))
 
   (deh-section "hippie-semantic"
     (autoload 'senator-try-expand-semantic "senator")

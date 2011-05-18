@@ -1,4 +1,10 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; my functions ;;;;;;;;;;;;;;;;;;;;
+;; -*- mode: Emacs-Lisp -*-
+
+;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
+;; Hi-lock: (("^;;{{{ .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
+;; Hi-lock: end
+
 ;; Most useful interactive function and commands for keybinds
 
 ;; Toggle window dedication
@@ -75,7 +81,6 @@ Like eclipse's Ctrl+Alt+F."
                      (cxx-file-p x))
                 (format-cxx-file x)))))))
 ;;}}}
-
 
 (defun my-comment-or-uncomment-region (&optional line)
   "Comment or uncomment a line or a region."
@@ -239,27 +244,6 @@ leaving. bind to \\[vi-merge-lines]."
      (call-interactively ,undo)
      (setq this-command ,redo)))
 (def-redo-command redo 'redo 'undo)
-
-(defun my-untabify ()
-  "My untabify function as discussed and described at
- http://www.jwz.org/doc/tabs-vs-spaces.html
- and improved by Claus Brunzema:
- - return nil to get `write-contents-hooks' to work correctly
-   (see documentation there)
- - `make-local-hook' instead of `make-local-variable'
- - when instead of if
- Use some lines along the following for getting this to work in the
- modes you want it to:
-
- \(add-hook 'some-mode-hook
-           '(lambda ()
-               (make-local-hook 'write-contents-hooks)
-                (add-hook 'write-contents-hooks 'my-untabify nil t)))"
-  (save-excursion
-    (goto-char (point-min))
-    (when (search-forward "\t" nil t)
-      (untabify (1- (point)) (point-max)))
-    nil))
 
 ;;{{{ move and duplicate lines
 (defun my-move-line-up (p)
@@ -446,6 +430,7 @@ into `kill-ring'."
         (case copy
           ((nil)
            (message "Buffer path: %s" f))
+          ;; TODO: prompt what to be copied
           (1                                ; store only path
            (let ((d (file-name-directory f)))
              (kill-new d)
