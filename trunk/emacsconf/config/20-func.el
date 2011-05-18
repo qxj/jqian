@@ -1,13 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; my functions ;;;;;;;;;;;;;;;;;;;;
 ;; Most useful interactive function and commands for keybinds
 
-(dolist (func '("func-dired-ext"
-                "func-elisp-helper"
-                "func-prog"
-                "func-misc"))
-  (load (expand-file-name func my-config-dir)))
-
-
 ;; Toggle window dedication
 (defun toggle-window-dedicated ()
   "Toggle whether the current active window is dedicated or not."
@@ -19,6 +12,69 @@
        "Window '%s' is dedicated"
      "Window '%s' is normal")
    (current-buffer)))
+
+;;{{{ format
+(defun format-region ()
+  "Format region, if no region actived, format current buffer.
+Like eclipse's Ctrl+Alt+F."
+  (interactive)
+  (let ((start (point-min))
+        (end (point-max)))
+    (if (and (fboundp 'region-active-p) (region-active-p))
+        (progn (setq start (region-beginning))
+               (setq end (region-end)))
+      (progn (when (fboundp 'whitespace-cleanup)
+               (whitespace-cleanup))
+             (setq end (point-max))))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region (point-min) end)
+        (push-mark (point))
+        (push-mark (point-max) nil t)
+        (goto-char start)
+        (when (fboundp 'whitespace-cleanup)
+          (whitespace-cleanup))
+        (untabify start (point-max))
+        (indent-region start (point-max) nil)))))
+
+(defun cxx-file-p (file)
+  (let ((file-extension (file-name-extension file)))
+    (and file-extension
+         (string= file (file-name-sans-versions file))
+         (find file-extension
+               '("h" "hpp" "hxx" "c" "cpp" "cxx")
+               :test 'string=))))
+
+(defun format-cxx-file (file)
+  "Format a c/c++ file."
+  (interactive "F")
+  (if (cxx-file-p file)
+      (let ((buffer (find-file-noselect file))) ;; open buffer
+        (set-buffer buffer)
+        ;; (mark-whole-buffer)
+        (when (fboundp 'whitespace-cleanup)
+          (whitespace-cleanup))
+        (untabify (point-min) (point-max))
+        (indent-region (point-min) (point-max))
+        (save-buffer)
+        (kill-buffer)
+        (message "Formated c++ file:%s" file))
+    (message "%s isn't a c++ file" file)))
+
+(defun format-cxx-directory (dirname)
+  "Format all c/c++ file in a directory."
+  (interactive "D")
+  ;; (message "directory:%s" dirname)
+  (let ((files (directory-files dirname t)))
+    (dolist (x files)
+      (if (not (string= "." (substring (file-name-nondirectory x) 0 1)))
+          (if (file-directory-p x)
+              (format-cxx-directory x)
+            (if (and (file-regular-p x)
+                     (not (file-symlink-p x))
+                     (cxx-file-p x))
+                (format-cxx-file x)))))))
+;;}}}
 
 
 (defun my-comment-or-uncomment-region (&optional line)
@@ -36,6 +92,91 @@
            (end-of-line)
            (point))))
     (call-interactively 'comment-or-uncomment-region)))
+
+;;{{{ sudo find file
+(defvar find-file-root-prefix
+  (if (featurep 'xemacs)
+      "/[sudo/root@localhost]"
+    "/sudo:root@localhost:" )
+  "*The filename prefix used to open a file with `find-file-root'.")
+
+
+(defvar find-file-root-history nil
+  "History list for files found using `find-file-root'.")
+
+(defvar find-file-root-hook nil
+  "Normal hook for functions to run after finding a \"root\" file.")
+
+;;;###autoload
+(defun find-file-root ()
+  "*Open a file as the root user.
+   Prepends `find-file-root-prefix' to the selected file name so that it
+   maybe accessed via the corresponding tramp method."
+  (interactive)
+  (require 'tramp)
+  (let* ((tramp-mode t)                 ; enable tramp-mode internal
+         ;; We bind the variable `file-name-history' locally so we can
+         ;; use a separate history list for "root" files.
+         (file-name-history find-file-root-history)
+         (name (or buffer-file-name default-directory))
+         (tramp (and (tramp-tramp-file-p name)
+                     (tramp-dissect-file-name name)))
+         path dir file)
+
+    ;; If called from a "root" file, we need to fix up the path.
+    ;;     (when tramp
+    ;;       (setq path (tramp-file-name-path tramp)
+    ;;             dir (file-name-directory path)))
+
+    (when (setq file (read-file-name "Find file (UID = 0): " dir path))
+      (find-file (concat find-file-root-prefix file))
+      ;; If this all succeeded save our new history list.
+      (setq find-file-root-history file-name-history)
+      ;; allow some user customization
+      (run-hooks 'find-file-root-hook))))
+;;}}}
+
+;;{{{ manipulate item
+(defun my-insert-item ()
+  (interactive)
+  (let (curr next)
+    (beginning-of-line)
+    (cond ((looking-at "\\(\\s-*\\)\\([0-9]+\\)\\.\\s-*")
+           (setq curr (string-to-number (buffer-substring (match-beginning 2)
+                                                          (match-end 2))))
+           (setq next (number-to-string (1+ curr)))
+           (end-of-line)
+           (insert "\n" (buffer-substring (match-beginning 1)
+                                          (match-end 1))
+                   next ". ")
+           (my-sync-item))
+          ((looking-at "\\s-*[-+]\\s-*")
+           (progn
+             (end-of-line)
+             (insert "\n" (buffer-substring (match-beginning 0)
+                                            (match-end 0)))))
+          (t
+           (progn
+             (end-of-line)
+             (newline-and-indent))))))
+(defun my-sync-item ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at "\\(\\s-*\\)\\([0-9]+\\)\\.\\s-*")
+        (let ((curr (string-to-number (buffer-substring (match-beginning 2)
+                                                        (match-end 2))))
+              (blank1 (buffer-substring (match-beginning 1)
+                                        (match-end 1)))
+              (blank2 (buffer-substring (match-end 2)
+                                        (match-end 0))))
+          (while (progn
+                   (beginning-of-line 2)
+                   (looking-at "\\s-*[0-9]+\\.\\s-*"))
+            (setq curr (1+ curr))
+            (delete-region (match-beginning 0) (match-end 0))
+            (insert blank1 (number-to-string curr) blank2))))))
+;;}}}
 
 ;;{{{ polish beginning-of-line & end-of-line (C-a/C-e)
 (defun my-end-of-line ()
@@ -188,7 +329,7 @@ indirect buffer. bind to \\[ywb-clone-buffer]."
 ;;}}}
 
 ;;{{{ camelcase move, rebind "M-f/M-b"
-(defun ywb-camelcase-move-word (fw)
+(defun camelcase-move-word (fw)
   (let ((case-fold-search nil)
         wordpos casepos)
     (save-excursion
@@ -207,17 +348,17 @@ indirect buffer. bind to \\[ywb-clone-buffer]."
           (casepos (goto-char casepos))
           (t (goto-char (if (> fw 0) (point-max) (point-min)))))))
 
-(defun ywb-camelcase-forward-word (arg)
-  "Camelcase forward word, rebind to \\[ywb-camelcase-forward-word]."
+(defun camelcase-forward-word (arg)
+  "Camelcase forward word, rebind to \\[camelcase-forward-word]."
   (interactive "p")
   (let ((fw (signum arg)))
     (dotimes (i (abs arg))
-      (ywb-camelcase-move-word fw))))
+      (camelcase-move-word fw))))
 
-(defun ywb-camelcase-backward-word (arg)
-  "Camelcase backward word, rebind to \\[ywb-camelcase-move-word]."
+(defun camelcase-backward-word (arg)
+  "Camelcase backward word, rebind to \\[camelcase-move-word]."
   (interactive "p")
-  (ywb-camelcase-forward-word (- arg)))
+  (camelcase-forward-word (- arg)))
 ;;}}}
 
 (defun ywb-uniq-region (beg end)
@@ -399,112 +540,19 @@ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
     (view-mode)
     (rename-buffer (concat "*" doc-name "*"))))
 
-(deh-section "defadvice"
-  (defadvice kill-line (before check-position activate)
-    "killing the newline between indented lines and remove extra
-spaces."
-    (if (member major-mode
-                '(emacs-lisp-mode scheme-mode lisp-mode
-                                  c-mode c++-mode objc-mode python-mode
-                                  latex-mode plain-tex-mode))
-        (if (and (eolp) (not (bolp)))
-            (progn (forward-char 1)
-                   (just-one-space 0)
-                   (backward-char 1)))))
-
-  (defadvice kill-ring-save (before slickcopy activate compile)
-    "When called interactively with no active region, copy the
-current single line to `kill-ring' instead."
-    (interactive
-     (if mark-active (list (region-beginning) (region-end))
-       (list (line-beginning-position)
-             (line-beginning-position 2)))))
-
-  (defadvice kill-region (before slickcut activate compile)
-    "When called interactively with no active region, kill the
-current single line instead."
-    (interactive
-     (if mark-active (list (region-beginning) (region-end))
-       (list (line-beginning-position)
-             (line-beginning-position 2)))))
-
-  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-    "Prevent annoying \"Active processes exist\" query when you
-quit Emacs."
-    (flet ((process-list ())) ad-do-it))
-
-  (defadvice kill-new (before kill-new-push-xselection-on-kill-ring activate)
-    "Before putting new kill onto the kill-ring, add the
-clipboard/external selection to the kill ring"
-    (let ((have-paste (and interprogram-paste-function
-                           (funcall interprogram-paste-function))))
-      (when have-paste (push have-paste kill-ring))))
-
-  ;; Auto indent pasted content
-  (dolist (command '(yank yank-pop))
-    (eval
-     `(defadvice ,command (after indent-region activate)
-        (and (not current-prefix-arg)
-             (member major-mode
-                     '(emacs-lisp-mode
-                       python-mode
-                       c-mode c++-mode
-                       latex-mode
-                       js-mode
-                       php-mode
-                       plain-tex-mode))
-             (let ((mark-even-if-inactive transient-mark-mode))
-               (indent-region (region-beginning) (region-end) nil))))))
-
-  (defadvice occur (around occur-mark-region)
-    (save-restriction
-      (if (and mark-active transient-mark-mode)
-          (narrow-to-region (region-beginning) (region-end)))
-      ad-do-it))
-  (ad-activate 'occur)
-
-  ;; (defadvice browse-url-generic (before ywb-browse-url-generic)
-  ;;   (setq url (replace-regexp-in-string "\\cC" 'url-hexify-string url)))
-  ;; (ad-activate 'browse-url-generic)
-
-  (defadvice browse-url-file-url (after ywb-url-han)
-    (let ((file ad-return-value))
-      (while (string-match "[\x7f-\xff]" file)
-        (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
-          (setq file (replace-match enc t t file))))
-      (setq ad-return-value file)))
-  (ad-activate 'browse-url-file-url)
-
-  ;;# this defadvice is un-necessary, apt-get install emacs23-el
-  ;; (defadvice find-library-name (before find-library-new-place activate)
-  ;;   "Find library in another source path."
-  ;;   (ad-set-arg 0 (replace-regexp-in-string "/usr/share/emacs/23.1/"
-  ;;                                           "~/src/emacs-23.2/"
-  ;;                                           (ad-get-arg 0))))
-  )
-
-(deh-section "hooks"
-  ;;# chmod executable files automatically
-  (add-hook
-   'after-save-hook
-   #'(lambda ()
-       (and (save-excursion
-              (save-restriction
-                (widen)
-                (goto-char (point-min))
-                (save-match-data
-                  (looking-at "^#!"))))
-            (not (file-executable-p buffer-file-name))
-            (shell-command (concat "chmod u+x " buffer-file-name))
-            (message
-             (concat "Saved as script: " buffer-file-name)))))
-  ;;# convert some .h to c++-mode automatically
-  (add-hook
-   'c-mode-hook
-   #'(lambda ()
-       (if (and (string-match "\.h$" (buffer-name))
-                (save-excursion
-                  (goto-char (point-min))
-                  (search-forward-regexp "^class" nil t)))
-           (c++-mode))))
-  )
+(defun my-count-ce-word (beg end)
+  "Count Chinese and English words in marked region."
+  (interactive
+   (if (and mark-active transient-mark-mode)
+       (list (region-beginning) (region-end))
+     (list (point-min) (point-max))))
+  (let ((cn-word 0)
+        (en-word 0)
+        (total-word 0)
+        (total-byte 0))
+    (setq cn-word (count-matches "\\cc" beg end)
+          en-word (count-matches "\\w+\\W" beg end)
+          total-word (+ cn-word en-word)
+          total-byte (+ cn-word (abs (- beg end))))
+    (message (format "Total: %d (cn: %d, en: %d) words, %d bytes."
+                     total-word cn-word en-word total-byte))))

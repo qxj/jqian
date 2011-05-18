@@ -1,70 +1,119 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;; standard library ;;;;;;;;;;;;;;;;;;
-;;{{{ Dired
-(deh-section "dired"
+
+(deh-section "std-lib"
+  (partial-completion-mode 1)
+  (icomplete-mode 1)
+  (winner-mode 1)
+  ;; (auto-insert-mode 1)
+  ;; (filesets-init)
+  (require 'generic-x)
+
+  ;; smart mark, useful when edit markuped documents
+  (require 'smart-mark)
+  ;; visible-line
+  (require 'visible-lines nil t)
+  ;; for normal term
+  ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
+  ;; .vimrc syntax hightlight
+  (require 'vimrc-mode))
+
+;; (deh-require 'auto-install
+;;   ;; (auto-install-update-emacswiki-package-name t)
+;;   (auto-install-compatibility-setup))
+
+(deh-section "bookmark"
+  ;; autosave bookmark into the diskete
+  (setq bookmark-save-flag 1)
+  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
+  (deh-add-hook bookmark-bmenu-mode-hook
+    (font-lock-add-keywords
+     nil
+     '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
+        (1 (let ((file (split-string (buffer-substring-no-properties
+                                      (line-beginning-position)
+                                      (line-end-position)) " \\{2,\\}")))
+             (if (and (not (file-remote-p (nth 2 file)))
+                      (file-directory-p (nth 2 file)))
+                 font-lock-function-name-face
+               nil))))
+       ("^>.*" . font-lock-warning-face)
+       ("^D.*" . font-lock-type-face)))))
+
+(deh-section "mode-line"
+  (size-indication-mode 1)
+  ;; (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
+
+  (defun get-lines-4-mode-line ()
+    (let ((lines (count-lines (point-min) (point-max))))
+      (concat (propertize
+               (concat "%l:" (format "%dL" lines))
+               'mouse-face 'mode-line-highlight
+               ;; 'face 'mode-line-lines-face
+               'help-echo (format "%d lines" lines)) " ")))
+
+  (defun get-size-indication-format ()
+    (if (and transient-mark-mode mark-active)
+        (format "%d chars" (abs (- (mark t) (point))))
+      "%I"))
+
+  (defun get-mode-line-region-face ()
+    (and transient-mark-mode mark-active
+         (if window-system 'region 'region-invert)))
+
+  (setq-default
+   mode-line-position
+   `((:eval (get-lines-4-mode-line))
+     (:propertize
+      ;; "%p " ;; no need to indicate this position
+      'local-map mode-line-column-line-number-mode-map
+      'mouse-face 'mode-line-highlight
+      'help-echo "Size indication mode\n\
+mouse-1: Display Line and Column Mode Menu")
+     ;; caculate word numbers of selected region. Otherwise, indicate all word number of this buffer, if no region selected.
+     (size-indication-mode
+      (:eval
+       (propertize (get-size-indication-format)
+                   'face (and transient-mark-mode mark-active (get-mode-line-region-face))
+                   'local-map mode-line-column-line-number-mode-map
+                   'mouse-face 'mode-line-highlight
+                   'help-echo "Buffer position, mouse-1: Line/col menu")))))
+
+  (let* ((help-echo
+          "mouse-1: Select (drag to resize)\n\
+mouse-2: Make current window occupy the whole frame\n\
+mouse-3: Remove current window from display")
+         (recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
+         (dashes (propertize "--" 'help-echo help-echo)))
+    (setq-default mode-line-format
+                  (list
+                   "%e%t"
+                   ;; (propertize "-" 'help-echo help-echo)
+                   'mode-line-mule-info
+                   'mode-line-client
+                   'mode-line-modified
+                   'mode-line-remote
+                   'mode-line-frame-identification
+                   'mode-line-buffer-identification
+                   (propertize " " 'help-echo help-echo)
+                   'mode-line-position
+                   `(which-func-mode (" " which-func-format))
+                   '(vc-mode vc-mode)
+                   ;; (propertize "  " 'help-echo help-echo)
+                   'mode-line-modes
+                   `(global-mode-string ("" global-mode-string ,dashes))
+                   (propertize "-%-" 'help-echo help-echo))))
+  )
+
+(deh-section-after "dired"
   (require 'dired-x)
   (require 'dired-single)
-  (add-hook
-   'dired-load-hook
-   (lambda ()
-     ;; Make the execuatable file with different color
-     (add-to-list 'dired-font-lock-keywords
-                  (list dired-re-exe
-                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t)))
-  (add-hook
-   'dired-mode-hook
-   (lambda ()
-     ;; No confirm operations
-     (setq dired-no-confirm
-           '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
-     ;; Keybind for dired
-     ;; (define-key dired-mode-map (kbd "M-u" ) 'dired-up-directory)
-     (deh-define-key dired-mode-map
-       ([return] . 'joc-dired-single-buffer)
-       ([mouse-1] . 'joc-dired-single-buffer-mouse)
-       ;; ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-       ;; ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-       ;; ("\M-=" . 'dired-backup-diff)
-       ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
-       ("b"    . 'browse-url-of-dired-file)
-       ("z"    . 'ywb-dired-compress-dir)
-       ("L"    . 'ywb-list-directory-recursive)
-       ("E"    . 'ywb-dired-w3m-visit)
-       ("j"    . 'ywb-dired-jump-to-file)
-       ("J"    . 'woman-dired-find-file)
-       (" "    . 'ywb-dired-count-dir-size)
-       ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
-       ("W"    . 'ywb-dired-copy-fullname-as-kill)
-       ("a"    . 'ywb-add-description)
-       ("\C-q" . 'ywb-dired-quickview)
-       ("s"    . 'one-key-menu-dired-sort)
-       ("/"    . 'one-key-menu-dired-filter)
-       )
-     (if (eq system-type 'windows-nt)
-         (deh-define-key dired-mode-map
-           ("X"    . 'wcy-w32-shell-execute)))
 
-     (defun one-key-menu-dired-sort ()
-       "The `one-key' menu for DIRED-SORT."
-       (interactive)
-       (one-key-menu
-        "DIRED-SORT"
-        '((("s" . "Size")          . dired-sort-size)
-          (("x" . "Extension")     . dired-sort-extension)
-          (("n" . "Name")          . dired-sort-name)
-          (("t" . "Modified Time") . dired-sort-time)
-          (("u" . "Access Time")   . dired-sort-utime)
-          (("c" . "Create Time")   . dired-sort-ctime))
-        t))
-     (defun one-key-menu-dired-filter ()
-       "The `one-key' menu for DIRED-FILTER."
-       (interactive)
-       (one-key-menu
-        "DIRED-SORT"
-        '((("r" . "Filter by regexp")    . ywb-dired-filter-regexp)
-          (("." . "Filter by extension") . ywb-dired-filter-extension)
-          (("/" . "Filter match")        . my-dired-omit-expunge))
-        t))
-     ))
+  ;; hooks
+  (deh-add-hook dired-load-hook
+    ;; Make the execuatable file with different color
+    (add-to-list 'dired-font-lock-keywords
+                 (list dired-re-exe
+                       '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
 
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
@@ -73,6 +122,122 @@
         dired-recursive-deletes 'top
         dired-isearch-filenames t       ; only search filename
         dired-dwim-target t)
+  ;; No confirm operations
+  (setq dired-no-confirm
+        '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
+
+  ;; Keybind for dired
+  (deh-define-key dired-mode-map
+    ([return] . 'joc-dired-single-buffer)
+    ([mouse-1] . 'joc-dired-single-buffer-mouse)
+    ;; ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+    ;; ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
+    ;; ("\M-=" . 'dired-backup-diff)
+    ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
+    ("b"    . 'browse-url-of-dired-file)
+    ("J"    . 'woman-dired-find-file)
+    ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
+    (" "    . 'dired-count-directory-size)
+    ("E"    . 'dired-w3m-visit)
+    ("z"    . 'dired-compress-directory)
+    ("s"    . 'one-key-menu-dired-sort)
+    ("/"    . 'one-key-menu-dired-filter))
+
+  ;; helper functions
+  (defun dired-compress-directory ()
+    "Compress directory in `dired-mode'."
+    (interactive)
+    (let ((files (dired-get-marked-files t)))
+      (if (and (null (cdr files))
+               (string-match "\\.\\(tgz\\|tar\\.gz\\)" (car files)))
+          (shell-command (concat "tar -xvf " (car files)))
+        (let ((cfile (concat (file-name-nondirectory
+                              (if (null (cdr files))
+                                  (car files)
+                                (directory-file-name
+                                 default-directory))) ".tgz"))
+              proc)
+          (setq cfile
+                (read-from-minibuffer "Compress file name: " cfile))
+          (setq proc
+                (apply 'start-process (append (list "diredz" nil "tar"
+                                                    "-hzcvf" cfile) files)))
+          (set-process-sentinel proc
+                                (lambda (&rest args)
+                                  (message "Compress finished. Press g to flush directory!")))))))
+  (defun dired-w3m-visit (file)
+    (interactive (list (dired-get-filename nil t)))
+    (w3m-goto-url (concat "file://" file)))
+  (defun dired-count-directory-size (arg)
+    (interactive "P")
+    (let ((dir (dired-get-filename nil t))
+          proc)
+      (when (file-directory-p dir)
+        (with-current-buffer (get-buffer-create "*Shell Command Output*")
+          (setq default-directory "~/")
+          (erase-buffer)
+          (setq proc
+                (start-process-shell-command "dirsize" (current-buffer)
+                                             ;; "/home/ywb/bin/dirsize"
+                                             "du" "-h"
+                                             (if arg "-s" "")
+                                             (format "\"%s\"" dir)))
+          (set-process-sentinel proc
+                                (lambda (proc event)
+                                  (let ((buf (process-buffer proc)))
+                                    (with-selected-window
+                                        (get-buffer-window buf)
+                                      (goto-char (point-min))))))
+          (display-buffer (current-buffer))))))
+
+  ;; sort functions
+  (defun dired-sort-size ()
+    "Dired sort by size."
+    (interactive)
+    (dired-sort-other (concat dired-listing-switches "S")))
+  (defun dired-sort-extension ()
+    "Dired sort by extension."
+    (interactive)
+    (dired-sort-other (concat dired-listing-switches "X")))
+  (defun dired-sort-ctime ()
+    "Dired sort by create time."
+    (interactive)
+    (dired-sort-other (concat dired-listing-switches "ct")))
+  (defun dired-sort-utime ()
+    "Dired sort by access time."
+    (interactive)
+    (dired-sort-other (concat dired-listing-switches "ut")))
+  (defun dired-sort-time ()
+    "Dired sort by time."
+    (interactive)
+    (dired-sort-other (concat dired-listing-switches "t")))
+  (defun dired-sort-name ()
+    "Dired sort by name."
+    (interactive)
+    (dired-sort-other (concat dired-listing-switches "")))
+
+  ;; one-key functions
+  (defun one-key-menu-dired-sort ()
+    "The `one-key' menu for DIRED-SORT."
+    (interactive)
+    (one-key-menu
+     "DIRED-SORT"
+     '((("s" . "Size")          . dired-sort-size)
+       (("x" . "Extension")     . dired-sort-extension)
+       (("n" . "Name")          . dired-sort-name)
+       (("t" . "Modified Time") . dired-sort-time)
+       (("u" . "Access Time")   . dired-sort-utime)
+       (("c" . "Create Time")   . dired-sort-ctime))
+     t))
+  (defun one-key-menu-dired-filter ()
+    "The `one-key' menu for DIRED-FILTER."
+    (interactive)
+    (one-key-menu
+     "DIRED-SORT"
+     '((("r" . "Filter by regexp")    . ywb-dired-filter-regexp)
+       (("." . "Filter by extension") . ywb-dired-filter-extension)
+       (("/" . "Filter match")        . my-dired-omit-expunge))
+     t))
 
   (deh-section "dired-omit"
     (add-hook 'dired-mode-hook
@@ -92,34 +257,36 @@
           (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
 
   (deh-section "dired-assoc"
+    (setq my-dired-guess-command-alist
+          '(("acroread" "pdf")
+            ("evince" "pdf")
+            ;; ("xpdf" "pdf")
+            ("xdvi" "dvi")
+            ("dvipdf" "dvi")
+            ("zxpdf" "pdf.gz")
+            ("ps2pdf" "ps" "eps")
+            ("gv" "ps" "eps")
+            ("unrar x" "rar")
+            ("kchmviewer" "chm")
+            ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
+            ("mplayer -playlist" "list")
+            ("display" "gif" "jpeg" "jpg" "tif" "png" )
+            ("eog" "gif" "jpeg" "jpg" "tif" "png")
+            ("docview.pl" "doc")
+            ("ooffice -writer" "ods" "doc")
+            ("ooffice -calc"  "xls")
+            ("ooffice -impress" "odt" "ppt")
+            ("gnumeric" "xls")
+            ("7z x" "7z")
+            ("djview" "djvu")
+            ("perl" "pl")
+            ("firefox" "xml" "html" "htm" "mht")))
     ;; Based upon the name of a file, Dired tries to guess what shell
     ;; command you might want to apply to it. For example, if you have
     ;; point on a file named foo.tar and you press !, Dired will guess
     ;; you want to ‘tar xvf’ it and suggest that as the default shell
     ;; command.
-    (dolist (file `(("acroread" "pdf")
-                    ("evince" "pdf")
-                    ;; ("xpdf" "pdf")
-                    ("xdvi" "dvi")
-                    ("dvipdf" "dvi")
-                    ("zxpdf" "pdf.gz")
-                    ("ps2pdf" "ps" "eps")
-                    ("gv" "ps" "eps")
-                    ("unrar x" "rar")
-                    ("kchmviewer" "chm")
-                    ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
-                    ("mplayer -playlist" "list")
-                    ("display" "gif" "jpeg" "jpg" "tif" "png" )
-                    ("eog" "gif" "jpeg" "jpg" "tif" "png")
-                    ("docview.pl" "doc")
-                    ("ooffice -writer" "ods" "doc")
-                    ("ooffice -calc"  "xls")
-                    ("ooffice -impress" "odt" "ppt")
-                    ("gnumeric" "xls")
-                    ("7z x" "7z")
-                    ("djview" "djvu")
-                    ("perl" "pl")
-                    ("firefox" "xml" "html" "htm" "mht")))
+    (dolist (file my-dired-guess-command-alist)
       (add-to-list 'dired-guess-shell-alist-default
                    (list (concat "\\." (regexp-opt (cdr file) t) "$")
                          (car file))))
@@ -153,9 +320,7 @@
     (set-buffer-modified-p nil))
   (add-hook 'dired-after-readin-hook 'dired-sort-directories-first)
   (add-hook 'dired-after-readin-hook '(lambda () (setq truncate-lines t))))
-;;}}}
 
-;;{{{ ido
 (deh-require 'ido
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
   (ido-everywhere t)
@@ -262,9 +427,7 @@
           "~/temp/"
           "~/bin/"
           "~/")))
-;;}}}
 
-;;{{{ Ibuffer
 (deh-require 'ibuffer
   (require 'ibuf-ext nil t)
   (setq ibuffer-old-time 24
@@ -321,19 +484,11 @@
   (setq ibuffer-saved-filter-groups
         '(("default"
            ("*buffers*" (or (mode . term-mode)
-                            (mode . twittering-mode)
-                            (mode . w3m-mode)
-                            (mode . erc-mode)
                             (name . "^\\*gud")
                             (name . "^\\*scratch")
                             ;; slime
                             (name . "^\\*slime-repl")
-                            ;; gnus
-                            (mode . message-mode)
-                            (mode . mail-mode)
-                            (mode . gnus-group-mode)
-                            (mode . gnus-summary-mode)
-                            (mode . gnus-article-mode)))
+                            (mode . message-mode)))
            ("programming" (or (mode . c++-mode)
                               (mode . c-mode)
                               (mode . makefile-mode)))
@@ -387,9 +542,7 @@
           ("*" ((name . "*")))))
 
   )
-;;}}}
 
-;;{{{ tramp
 (deh-section "tramp"
   ;; If Tramp still isn’t fast enough for you (or if you don’t use
   ;; linux), try [Accelerating OpenSSH connections with ControlMaster |
@@ -416,9 +569,7 @@
   ;; tramp-compile is deperated, which is integrated into compile
   ;; command.
   )
-;;}}}
 
-;;{{{ session management
 (deh-require-if 'desktop
   (not (emacs-process-duplicated-p))
 
@@ -610,9 +761,7 @@
   ;; Also store recent opened directories besides files
   (add-hook 'dired-mode-hook
             (lambda () (recentf-add-file dired-directory))))
-;;}}}
 
-;;{{{ pager
 (deh-require 'pager
   (global-set-key (kbd "C-v") 'pager-page-down)
   (global-set-key (kbd "M-v") 'pager-page-up)
@@ -621,10 +770,10 @@
   (global-set-key (kbd "<down>") 'pager-row-down)
   (global-set-key (kbd "M-n") 'pager-row-down)
   ;; Some individual keybind overrides
-  ;; info
-  (define-key Info-mode-map (kbd "M-p") 'pager-row-up)
-  (define-key Info-mode-map (kbd "M-n") 'pager-row-down)
-  ;; after load
+  (eval-after-load "info"
+    '(progn
+       (define-key Info-mode-map (kbd "M-p") 'pager-row-up)
+       (define-key Info-mode-map (kbd "M-n") 'pager-row-down)))
   (eval-after-load "man"
     '(progn
        (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
@@ -638,9 +787,7 @@
        (define-key w3m-mode-map (kbd "M-p") 'pager-row-up)
        (define-key w3m-mode-map (kbd "M-n") 'pager-row-down)))
   )
-;;}}}
 
-;;{{{ ffap
 (deh-section "ffap"
   (autoload 'ffap "ffap" "Alias of find-file-at-point")
   ;; (ffap-bindings)
@@ -663,9 +810,7 @@
             (file-cache-add-directory-recursively "/usr/include/c++")
             (file-cache-add-directory-recursively "/usr/local/include")))
   )
-;;}}}
 
-;;{{{ View
 (deh-section-after "view"
   (deh-define-key view-mode-map
     ("h" . 'backward-char)
@@ -676,78 +821,6 @@
     ("b" . 'View-scroll-page-backward)
     ("f" . 'View-scroll-page-forward)
     ("?" . 'View-search-regexp-backward)))
-;;}}}
-
-;;{{{ standard libraries and settings
-(deh-section "std-lib"
-  (partial-completion-mode 1)
-  (icomplete-mode 1)
-  (winner-mode 1)
-  ;; (auto-insert-mode 1)
-
-  ;; TimeStamp
-  (add-hook 'before-save-hook 'time-stamp)
-  (setq time-stamp-active t)
-  (setq time-stamp-warn-inactive t)
-
-  (deh-add-hook occur-mode-hook (setq truncate-lines t))
-
-  ;; tetris game
-  ;; (setq tetris-update-speed-function (lambda (shapes rows) (/ 10.0 (+ 80.0 rows))))
-
-  ;; woman
-  (setq woman-use-own-frame nil)
-  (setq woman-fontify t)                ; dump emacs need this
-  (autoload 'woman-mode "woman")
-  (add-hook 'woman-mode-hook 'view-mode)
-  (autoload 'woman-decode-buffer "woman")
-
-  ;; change-log
-  (deh-add-hook change-log-mode-hook
-    (auto-fill-mode t)
-    (add-to-list 'change-log-font-lock-keywords
-                 '("^[0-9-]+:? +\\|^\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\) [A-z][a-z][a-z] [0-9:+ ]+"
-                   (0 'change-log-date-face)
-                   ("\\([^<(]+?\\)[   ]*[(<]\\([A-Za-z0-9_.+-]+@[A-Za-z0-9_.-]+\\)[>)]" nil nil
-                    (1 'change-log-name)
-                    (2 'change-log-email)))))
-
-  ;; generic-x
-  (require 'generic-x)
-
-  ;; autosave bookmark into the diskete
-  (setq bookmark-save-flag 1)
-  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
-  (deh-add-hook bookmark-bmenu-mode-hook
-    (font-lock-add-keywords
-     nil
-     '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
-        (1 (let ((file (split-string (buffer-substring-no-properties
-                                      (line-beginning-position)
-                                      (line-end-position)) " \\{2,\\}")))
-             (if (and (not (file-remote-p (nth 2 file)))
-                      (file-directory-p (nth 2 file)))
-                 font-lock-function-name-face
-               nil))))
-       ("^>.*" . font-lock-warning-face)
-       ("^D.*" . font-lock-type-face))))
-
-  ;; (filesets-init)
-  (defalias 'default-generic-mode 'conf-mode)
-  )
-
-;; formats and timestamp
-(deh-section "formats"
-  (setq frame-title-format
-        '((:eval
-           (let ((login-name (getenv-internal "LOGNAME")))
-             (if login-name (concat login-name "@") "")))
-          (:eval (system-name))
-          ":"
-          (:eval (or (buffer-file-name) (buffer-name)))))
-
-  ;; (setq time-stamp-format "%04y-%02m-%02d %02H:%02M:%02S %:a by %u")
-  (setq time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
 
 ;; unique buffers' name
 (deh-require 'uniquify
@@ -774,10 +847,9 @@
           try-expand-whole-kill)))
 
 (deh-section "doc-view"
-  (add-hook 'doc-view-mode-hook
-            (lambda ()
-              (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
-              (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol))))
+  (deh-add-hook doc-view-mode-hook
+    (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
+    (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol)))
 
 (deh-section "image"
   (defun image-display-info ()
@@ -805,12 +877,9 @@
   (add-hook 'image-mode-hook
             (lambda ()
               (define-key image-mode-map "I" 'image-display-info))))
-;;}}}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; site-lisp library ;;;;;;;;;;;;;;;;;;
 
-;;; recommend
-;;{{{  w3m
 (deh-require-if 'w3m-load (executable-find "w3m")
   (setq w3m-verbose t                   ; log in *Messages*
         w3m-default-display-inline-images t)
@@ -857,9 +926,7 @@
             (setq list (cdr list))))
         (unless (derived-mode-p 'w3m-mode)
           (call-interactively 'w3m))))))
-;;}}}
 
-;;{{{ autopair, like skeleton
 (deh-require 'autopair
   (deh-add-hooks (java-mode-hook
                   c-mode-common-hook
@@ -876,9 +943,68 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string)))
   )
-;;}}}
 
-;;{{{ auto-complete
+(deh-require 'moccur-edit
+
+  (deh-add-hook occur-mode-hook
+    (setq truncate-lines t))
+
+  ;; make cursor become a line
+  ;; (require 'bar-cursor)
+
+  (defadvice moccur-edit-change-file
+   (after save-after-moccur-edit-buffer activate)
+   (save-buffer))
+
+  ;; handy functions
+  (defun moccur-word-all-buffers (regexp)
+    "Run `multi-occur' to find regexp in all buffers."
+    (if (= 0 (length regexp))
+        (message "Regexp is blank.")
+      (let ((buffers (buffer-list)))
+        (dolist (buffer buffers)
+          (let ((pos (string-match " *\\*" (buffer-name buffer))))
+            (when (and pos (= 0 pos))
+              (setq buffers (remq buffer buffers)))))
+        (multi-occur buffers regexp))))
+
+  (defun moccur-all-buffers (&optional prompt)
+    "Run `multi-occur' to find current word in all buffers."
+    (interactive "P")
+    (let ((word (grep-tag-default)))
+      (when (or prompt (= (length word) 0))
+        (setq word (read-regexp "List lines matching regexp" word)))
+      (moccur-word-all-buffers word)))
+
+  (defun moccur-todo-all-buffers ()
+    "Run `multi-occur' to find 'TODO' in all buffers."
+    (interactive)
+    (moccur-word-all-buffers
+     "\\<\\([Tt][Oo][Dd][Oo]\\|[Ff][Ii][Xx][Mm][Ee]\\)\\>"))
+  )
+
+(deh-section "grep"
+  (autoload 'grep-tag-default "grep")
+  (autoload 'grep-apply-setting "grep")
+  (defun grep-current-dir (&optional prompt wd)
+    "Run `grep' to find current word in current directory."
+    (interactive "P")
+    (let* ((word (or wd (grep-tag-default)))
+           (cmd (concat "grep -inrHIE \"" word "\" ."
+                        " | grep -vE \"\.svn/|\.git/|\.hg/|\.bzr/|CVS/\"")))
+      (grep-apply-setting 'grep-use-null-device nil)
+      (if (or prompt (= (length word) 0))
+          (grep (read-shell-command
+                 "Run grep (like this): " cmd 'grep-history))
+        (if (= 0 (length word))
+            (message "Word is blank.")
+          (grep cmd)))))
+
+  (defun grep-todo-current-dir ()
+    "Run `grep' to find 'TODO' in current directory."
+    (interactive)
+    (grep-current-dir nil "TODO|FIXME")))
+
 (deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
@@ -989,9 +1115,6 @@ indent line."
     '(ac-settings-4-autopair))
   )
 
-;;}}}
-
-;;{{{ Yet Another Snippet -  pluskid@newsmth
 (deh-require 'yasnippet
   (setq yas/root-directory my-snippet-dir)
   (yas/load-directory yas/root-directory)
@@ -1025,18 +1148,14 @@ indent line."
       (when (string-match (concat "^" root) bfn)
         (yas/load-snippet-buffer))))
 )
-;;}}}
 
-;;{{{ a simple template
 (deh-require 'template-simple
   (setq template-directory-list (list my-template-dir)
         template-skip-directory-list (list my-temp-dir my-template-dir))
   (defadvice ido-find-file (after ido-file-file-template activate)
     (funcall 'template-auto-insert))
   )
-;;}}}
 
-;;{{{ isearch tweaks
 (deh-section "isearch"
   (deh-define-key isearch-mode-map
     ("\t" . 'isearch-complete)
@@ -1121,33 +1240,8 @@ indent line."
 ;;       (ad-enable-advice 'isearch-repeat 'after 'isearch-no-fail)
 ;;       (ad-activate 'isearch-repeat)))
   )
-;;}}}
 
-;;{{{ autoloads non-std libraries
-(deh-section "non-std-lib"
-  ;; wb-line
-  ;; (autoload 'wb-line-number-toggle "wb-line-number" nil t)
-  ;; htmlize
-  (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
-  ;; moccur
-  (autoload 'moccur-grep "moccur-edit" "Glob search file" t)
-  (autoload 'moccur "moccur-edit" "moccur" t)
-  ;; blank-mode
-  (autoload 'blank-mode-on "blank-mode" "Turn on blank visualization."   t)
-  (autoload 'blank-mode-off "blank-mode" "Turn off blank visualization."  t)
-  (autoload 'blank-mode "blank-mode" "Toggle blank visualization."    t)
-  (autoload 'blank-mode-customize "blank-mode" "Customize blank visualization." t)
-  ;; hexl editor
-  ;; (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
-  ;; A visual table editor, very cool
-  (autoload 'table-insert "table" "WYGIWYS table editor")
-  ;; ansit
-  (autoload 'ansit-ansify-this "ansit"  "Ansi the region." t)
-  ;; rst-mode
-  (autoload 'rst-mode "rst" "" t)
-  ;; minibuf-isearch
-  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
-  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
+(deh-section "minibuffer"
   (mapcar (lambda (keymap)
             (define-key keymap "\C-r" 'minibuf-isearch-prev)
             (define-key keymap "\C-s" 'minibuf-isearch-next))
@@ -1158,32 +1252,7 @@ indent line."
                           (and (boundp 'minibuffer-local-completion-map)
                                minibuffer-local-completion-map)
                           (and (boundp 'minibuffer-local-must-match-map)
-                               minibuffer-local-must-match-map))))
-
-  ;; Add "CHARSET" for .po default charset
-  (setq po-content-type-charset-alist
-        '(("ASCII" . undecided)
-          ("ANSI_X3.4-1968" . undecided)
-          ("US-ASCII" . undecided)
-          ("CHARSET" . undecided)))
-  (autoload 'po-mode "po-mode"
-    "Major mode for translators to edit PO files" t)
-
-  (autoload 'yaml-mode "yaml-mode" "Simple mode to edit YAML." t)
-  ;; (autoload 'muse-insert-list-item "muse-mode" t)
-  ;; make cursor become a line
-  ;; (require 'bar-cursor)
-  ;; sdcv, dictionary search
-  (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
-  ;; smart mark, useful when edit markuped documents
-  (require 'smart-mark)
-  ;; visible-line
-  (require 'visible-lines nil t)
-  ;; for normal term
-  ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
-  ;; .vimrc syntax hightlight
-  (require 'vimrc-mode)
-  )
+                               minibuffer-local-must-match-map)))))
 
 (deh-require 'midnight
   (setq midnight-mode t
@@ -1252,10 +1321,6 @@ indent line."
 ;;   (setq linum-format (concat (propertize "%6d " 'face 'default)
 ;;                              (propertize " " 'face 'fringe)))
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
-
-(deh-require 'auto-install
-  ;; (auto-install-update-emacswiki-package-name t)
-  (auto-install-compatibility-setup))
 
 (deh-section "anything"
   (autoload 'anything "anything" "" t)
@@ -1350,70 +1415,6 @@ indent line."
       (add-to-list 'anything-sources 'anything-c-source-surfraw t)))
   )
 
-(deh-section "mode-line"
-  (size-indication-mode 1)
-  ;; (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
-
-  (defun get-lines-4-mode-line ()
-    (let ((lines (count-lines (point-min) (point-max))))
-      (concat (propertize
-               (concat "%l:" (format "%dL" lines))
-               'mouse-face 'mode-line-highlight
-               ;; 'face 'mode-line-lines-face
-               'help-echo (format "%d lines" lines)) " ")))
-
-  (defun get-size-indication-format ()
-    (if (and transient-mark-mode mark-active)
-        (format "%d chars" (abs (- (mark t) (point))))
-      "%I"))
-
-  (defun get-mode-line-region-face ()
-    (and transient-mark-mode mark-active
-         (if window-system 'region 'region-invert)))
-
-  (setq-default
-   mode-line-position
-   `((:eval (get-lines-4-mode-line))
-     (:propertize
-      ;; "%p " ;; no need to indicate this position
-      'local-map mode-line-column-line-number-mode-map
-      'mouse-face 'mode-line-highlight
-      'help-echo "Size indication mode\n\
-mouse-1: Display Line and Column Mode Menu")
-     ;; caculate word numbers of selected region. Otherwise, indicate all word number of this buffer, if no region selected.
-     (size-indication-mode
-      (:eval
-       (propertize (get-size-indication-format)
-                   'face (and transient-mark-mode mark-active (get-mode-line-region-face))
-                   'local-map mode-line-column-line-number-mode-map
-                   'mouse-face 'mode-line-highlight
-                   'help-echo "Buffer position, mouse-1: Line/col menu")))))
-
-  (let* ((help-echo
-          "mouse-1: Select (drag to resize)\n\
-mouse-2: Make current window occupy the whole frame\n\
-mouse-3: Remove current window from display")
-         (recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
-         (dashes (propertize "--" 'help-echo help-echo)))
-    (setq-default mode-line-format
-                  (list
-                   "%e%t"
-                   ;; (propertize "-" 'help-echo help-echo)
-                   'mode-line-mule-info
-                   'mode-line-client
-                   'mode-line-modified
-                   'mode-line-remote
-                   'mode-line-frame-identification
-                   'mode-line-buffer-identification
-                   (propertize " " 'help-echo help-echo)
-                   'mode-line-position
-                   `(which-func-mode (" " which-func-format))
-                   '(vc-mode vc-mode)
-                   ;; (propertize "  " 'help-echo help-echo)
-                   'mode-line-modes
-                   `(global-mode-string ("" global-mode-string ,dashes))
-                   (propertize "-%-" 'help-echo help-echo))))
-  )
 
 ;; sr-speedbar
 (deh-section "speedbar"
@@ -1486,11 +1487,6 @@ mouse-3: Remove current window from display")
             highlight-symbol-mode nil)))
   )
 
-(deh-section "sh-mode"
-  (deh-add-hook sh-mode-hook
-    ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
-    ))
-
 ;; shell
 (deh-section "shell"
   (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
@@ -1523,73 +1519,19 @@ mouse-3: Remove current window from display")
                    ("open" my-lftp-sites)
                    ("bookmark" "add")))))
 
-;; erc
-(deh-section "erc"
-  (setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir))
-  (eval-after-load "erc"
-    '(deh-require 'emoticons
-       (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)
-       (add-hook 'erc-send-modify-hook 'emoticons-fill-buffer)
-       (add-hook 'erc-mode-hook
-                 (lambda ()
-                   (eldoc-mode t)
-                   (setq eldoc-documentation-function 'emoticons-help-echo))))))
 ;;}}}
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; Extra library ;;;;;;;;;;;;;;;;;;
-;; Tricks to load feature when needed
-(deh-section-reserved "latex"
-  (load "preview-latex.el" t t t)
-  (load "auctex.el" t t t)
-  (autoload 'CJK-insert-space "cjkspace"
-    "Insert tildes appropriately in CJK document." t)
-  (defun cjk-toggle-space-tilde (arg)
-    (interactive "P")
-    (setq CJK-space-after-space
-          (if (null arg)
-              (not CJK-space-after-space)
-            (> (prefix-numeric-value arg) 0)))
-    (message "Now SPC will insert %s" (if CJK-space-after-space "SPC" "~")))
-  (setq TeX-electric-escape t)
-  (add-hook
-   'TeX-mode-hook
-   (lambda ()
-     (auto-fill-mode 1)
-     (defun TeX-arg-input-file (optionel &optional prompt local)
-       "Prompt for a tex or sty file.
-
-First optional argument is the prompt, the second is a flag.
-If the flag is set, only complete with local files."
-       (unless (or TeX-global-input-files local)
-         (message "Searching for files...")
-         (setq TeX-global-input-files
-               (mapcar 'list (TeX-search-files (append TeX-macro-private
-                                                       TeX-macro-global)
-                                               TeX-file-extensions t t))))
-       (let ((file (if TeX-check-path
-                       (completing-read
-                        (TeX-argument-prompt optionel prompt "File")
-                        (unless local
-                          TeX-global-input-files))
-                     (read-file-name
-                      (TeX-argument-prompt optionel prompt "File")))))
-         (if (null file)
-             (setq file ""))
-         (if (not (string-equal "" file))
-             (TeX-run-style-hooks file))
-         (TeX-argument-insert file optionel)))
-     (my-turn-on-pair-insert '((?$ _ ?$)))
-     (define-key LaTeX-mode-map " " 'CJK-insert-space)
-     (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde)
-     ))
-  ;; for XeLaTeX
-  (deh-add-hook LaTeX-mode-hook
-    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-    (TeX-PDF-mode t)
-    (setq TeX-command-default "XeLaTeX")
-    (setq TeX-save-query nil )
-    (setq TeX-show-compilation t)
-    ))
+;; ;; erc
+;; (deh-section "erc"
+;;   (setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir))
+;;   (eval-after-load "erc"
+;;     '(deh-require 'emoticons
+;;        (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)
+;;        (add-hook 'erc-send-modify-hook 'emoticons-fill-buffer)
+;;        (add-hook 'erc-mode-hook
+;;                  (lambda ()
+;;                    (eldoc-mode t)
+;;                    (setq eldoc-documentation-function 'emoticons-help-echo))))))
 
 (deh-require-if 'evernote-mode
   (executable-find "enclient.rb")
@@ -1608,15 +1550,6 @@ If the flag is set, only complete with local files."
 (deh-require 'epa-file
   (epa-file-enable)
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
-
-(deh-section "buffer-action"
-  (autoload 'buffer-action-compile "buffer-action")
-  (autoload 'buffer-action-run "buffer-action"))
-
-(deh-section "slime"
-  ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
-  (setq common-lisp-hyperspec-root "/home/jqian/src/HyperSpec/")
-  )
 
 (deh-require-if 'gmail-notifier
   ;;# set user/passwd in ~/.authinfo.gpg

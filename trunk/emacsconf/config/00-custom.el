@@ -116,6 +116,22 @@
         calendar-latitude 22.3
         calendar-location-name "Beijing"))
 
+;; formats and timestamp
+(deh-section "formats"
+  (setq frame-title-format
+        '((:eval
+           (let ((login-name (getenv-internal "LOGNAME")))
+             (if login-name (concat login-name "@") "")))
+          (:eval (system-name))
+          ":"
+          (:eval (or (buffer-file-name) (buffer-name))))))
+
+(deh-section "timestamp"
+  (add-hook 'before-save-hook 'time-stamp)
+  (setq time-stamp-active t
+        time-stamp-warn-inactive t
+        time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
+
 ;; set my file register
 (deh-section "register"
   (set-register ?. `(file . ,my-config-dir))

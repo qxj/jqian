@@ -29,8 +29,8 @@
   ((kbd "M--")   . 'delete-blank-lines)
   ((kbd "M-J")   . 'vi-join-lines)
   ((kbd "M-M")   . 'vi-merge-lines)
-  ((kbd "M-f")   . 'ywb-camelcase-forward-word)
-  ((kbd "M-b")   . 'ywb-camelcase-backward-word)
+  ((kbd "M-f")   . 'camelcase-forward-word)
+  ((kbd "M-b")   . 'camelcase-backward-word)
   ((kbd "M-m")   . 'smart-mark)
   ((kbd "<C-M-down>") . 'my-move-line-down)
   ((kbd "<C-M-up>")   . 'my-move-line-up)
@@ -138,11 +138,15 @@
 
   (setq one-key-menu-toggle-alist
         '(
+          (("e" . "Erc") . my-toggle-erc)
           (("g" . "Gdb") . my-toggle-gdb)
+          (("G" . "Gnus") . my-toggle-gnus)
           (("i" . "Info") . my-toggle-info)
-          (("t" . "Multi-Term") . my-toggle-multi-term)
           (("s" . "SpeedBar") . my-toggle-sr-speedbar)
-          (("w" . "W3M") . my-toggle-w3m)
+          (("S" . "Slime") . my-toggle-slime)
+          (("t" . "Multi-Term") . my-toggle-multi-term)
+          (("T" . "Twitter") . my-toggle-twitter)
+          (("w" . "W3m") . my-toggle-w3m)
           ))
 
   (defun one-key-menu-toggle ()

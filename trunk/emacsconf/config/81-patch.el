@@ -1,5 +1,89 @@
 ;;; * patch for some elisp
 
+(deh-section "defadvice"
+  (defadvice kill-line (before check-position activate)
+    "killing the newline between indented lines and remove extra
+spaces."
+    (if (member major-mode
+                '(emacs-lisp-mode scheme-mode lisp-mode
+                                  c-mode c++-mode objc-mode python-mode
+                                  latex-mode plain-tex-mode))
+        (if (and (eolp) (not (bolp)))
+            (progn (forward-char 1)
+                   (just-one-space 0)
+                   (backward-char 1)))))
+
+  (defadvice kill-ring-save (before slickcopy activate compile)
+    "When called interactively with no active region, copy the
+current single line to `kill-ring' instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+
+  (defadvice kill-region (before slickcut activate compile)
+    "When called interactively with no active region, kill the
+current single line instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+
+  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+    "Prevent annoying \"Active processes exist\" query when you
+quit Emacs."
+    (flet ((process-list ())) ad-do-it))
+
+  (defadvice kill-new (before kill-new-push-xselection-on-kill-ring activate)
+    "Before putting new kill onto the kill-ring, add the
+clipboard/external selection to the kill ring"
+    (let ((have-paste (and interprogram-paste-function
+                           (funcall interprogram-paste-function))))
+      (when have-paste (push have-paste kill-ring))))
+
+  ;; Auto indent pasted content
+  (dolist (command '(yank yank-pop))
+    (eval
+     `(defadvice ,command (after indent-region activate)
+        (and (not current-prefix-arg)
+             (member major-mode
+                     '(emacs-lisp-mode
+                       python-mode
+                       c-mode c++-mode
+                       latex-mode
+                       js-mode
+                       php-mode
+                       plain-tex-mode))
+             (let ((mark-even-if-inactive transient-mark-mode))
+               (indent-region (region-beginning) (region-end) nil))))))
+
+  (defadvice occur (around occur-mark-region)
+    (save-restriction
+      (if (and mark-active transient-mark-mode)
+          (narrow-to-region (region-beginning) (region-end)))
+      ad-do-it))
+  (ad-activate 'occur)
+
+  ;; (defadvice browse-url-generic (before ywb-browse-url-generic)
+  ;;   (setq url (replace-regexp-in-string "\\cC" 'url-hexify-string url)))
+  ;; (ad-activate 'browse-url-generic)
+
+  (defadvice browse-url-file-url (after ywb-url-han)
+    (let ((file ad-return-value))
+      (while (string-match "[\x7f-\xff]" file)
+        (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
+          (setq file (replace-match enc t t file))))
+      (setq ad-return-value file)))
+  (ad-activate 'browse-url-file-url)
+
+  ;;# this defadvice is un-necessary, apt-get install emacs23-el
+  ;; (defadvice find-library-name (before find-library-new-place activate)
+  ;;   "Find library in another source path."
+  ;;   (ad-set-arg 0 (replace-regexp-in-string "/usr/share/emacs/23.1/"
+  ;;                                           "~/src/emacs-23.2/"
+  ;;                                           (ad-get-arg 0))))
+  )
+
 ;;{{{ imenu -> ido-completing-read
 (defun ido-imenu-completion (index-alist &optional prompt)
   ;; Create a list for this buffer only when needed.
