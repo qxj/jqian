@@ -1,4 +1,10 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;; standard library ;;;;;;;;;;;;;;;;;;
+;; -*- mode: Emacs-Lisp -*-
+
+;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
+;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
+;; Hi-lock: end
+
 
 (deh-section "std-lib"
   (partial-completion-mode 1)
@@ -20,24 +26,6 @@
 ;; (deh-require 'auto-install
 ;;   ;; (auto-install-update-emacswiki-package-name t)
 ;;   (auto-install-compatibility-setup))
-
-(deh-section "bookmark"
-  ;; autosave bookmark into the diskete
-  (setq bookmark-save-flag 1)
-  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
-  (deh-add-hook bookmark-bmenu-mode-hook
-    (font-lock-add-keywords
-     nil
-     '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
-        (1 (let ((file (split-string (buffer-substring-no-properties
-                                      (line-beginning-position)
-                                      (line-end-position)) " \\{2,\\}")))
-             (if (and (not (file-remote-p (nth 2 file)))
-                      (file-directory-p (nth 2 file)))
-                 font-lock-function-name-face
-               nil))))
-       ("^>.*" . font-lock-warning-face)
-       ("^D.*" . font-lock-type-face)))))
 
 (deh-section "mode-line"
   (size-indication-mode 1)
@@ -104,6 +92,20 @@ mouse-3: Remove current window from display")
                    (propertize "-%-" 'help-echo help-echo))))
   )
 
+(deh-section "minibuffer"
+  (mapcar (lambda (keymap)
+            (define-key keymap "\C-r" 'minibuf-isearch-prev)
+            (define-key keymap "\C-s" 'minibuf-isearch-next))
+          (delq nil (list (and (boundp 'minibuffer-local-map)
+                               minibuffer-local-map)
+                          (and (boundp 'minibuffer-local-ns-map)
+                               minibuffer-local-ns-map)
+                          (and (boundp 'minibuffer-local-completion-map)
+                               minibuffer-local-completion-map)
+                          (and (boundp 'minibuffer-local-must-match-map)
+                               minibuffer-local-must-match-map)))))
+
+;;; Directories and buffers
 (deh-section-after "dired"
   (require 'dired-x)
   (require 'dired-single)
@@ -509,38 +511,11 @@ mouse-3: Remove current window from display")
   (set 'ibuffer-mode-hook
        (lambda ()
          (ibuffer-switch-to-saved-filter-groups "default")))
-  (setq ibuffer-saved-filters
-        '(("t" ((or (mode . latex-mode)
-                    (mode . plain-tex-mode))))
-          ("c" ((or (mode . c-mode)
-                    (mode . c++-mode))))
-          ("p" ((mode . cperl-mode)))
-          ("e" ((or (mode . emacs-lisp-mode)
-                    (mode . lisp-interaction-mode))))
-          ("d" ((mode . dired-mode)))
-          ("s" ((mode . shell-mode)))
-          ("i" ((mode . image-mode)))
-          ("h" ((mode . html-mode)))
-          ("gnus" ((or (mode . message-mode)
-                       (mode . mail-mode)
-                       (mode . gnus-group-mode)
-                       (mode . gnus-summary-mode)
-                       (mode . gnus-article-mode))))
-          ("pr" ((or (mode . emacs-lisp-mode)
-                     (mode . cperl-mode)
-                     (mode . c-mode)
-                     (mode . c++-mode)
-                     (mode . php-mode)
-                     (mode . java-mode)
-                     (mode . idl-mode)
-                     (mode . lisp-interaction-mode))))
-          ("w" ((or (mode . emacs-wiki-mode)
-                    (mode . muse-mode)
-                    (mode . rst-mode)
-                    (mode . org-mode)
-                    (mode . LaTeX-mode))))
-          ("*" ((name . "*")))))
+  )
 
+(deh-require 'uniquify
+  (setq uniquify-buffer-name-style 'forward)
+  ;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
   )
 
 (deh-section "tramp"
@@ -569,6 +544,25 @@ mouse-3: Remove current window from display")
   ;; tramp-compile is deperated, which is integrated into compile
   ;; command.
   )
+
+;;; Session management
+(deh-section "bookmark"
+  ;; autosave bookmark into the diskete
+  (setq bookmark-save-flag 1)
+  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
+  (deh-add-hook bookmark-bmenu-mode-hook
+    (font-lock-add-keywords
+     nil
+     '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
+        (1 (let ((file (split-string (buffer-substring-no-properties
+                                      (line-beginning-position)
+                                      (line-end-position)) " \\{2,\\}")))
+             (if (and (not (file-remote-p (nth 2 file)))
+                      (file-directory-p (nth 2 file)))
+                 font-lock-function-name-face
+               nil))))
+       ("^>.*" . font-lock-warning-face)
+       ("^D.*" . font-lock-type-face)))))
 
 (deh-require-if 'desktop
   (not (emacs-process-duplicated-p))
@@ -811,23 +805,6 @@ mouse-3: Remove current window from display")
             (file-cache-add-directory-recursively "/usr/local/include")))
   )
 
-(deh-section-after "view"
-  (deh-define-key view-mode-map
-    ("h" . 'backward-char)
-    ("l" . 'forward-char)
-    ("j" . 'View-scroll-line-forward)
-    ("k" . 'View-scroll-line-backward)
-    ("G" . 'View-goto-line-last)
-    ("b" . 'View-scroll-page-backward)
-    ("f" . 'View-scroll-page-forward)
-    ("?" . 'View-search-regexp-backward)))
-
-;; unique buffers' name
-(deh-require 'uniquify
-  (setq uniquify-buffer-name-style 'forward)
-  ;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-  )
-
 (deh-section "hippie-expand"
   ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
   (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
@@ -845,6 +822,18 @@ mouse-3: Remove current window from display")
           try-complete-lisp-symbol
           try-complete-lisp-symbol-partially
           try-expand-whole-kill)))
+
+;;; Buffer view
+(deh-section-after "view"
+  (deh-define-key view-mode-map
+    ("h" . 'backward-char)
+    ("l" . 'forward-char)
+    ("j" . 'View-scroll-line-forward)
+    ("k" . 'View-scroll-line-backward)
+    ("G" . 'View-goto-line-last)
+    ("b" . 'View-scroll-page-backward)
+    ("f" . 'View-scroll-page-forward)
+    ("?" . 'View-search-regexp-backward)))
 
 (deh-section "doc-view"
   (deh-add-hook doc-view-mode-hook
@@ -877,8 +866,6 @@ mouse-3: Remove current window from display")
   (add-hook 'image-mode-hook
             (lambda ()
               (define-key image-mode-map "I" 'image-display-info))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;; site-lisp library ;;;;;;;;;;;;;;;;;;
 
 (deh-require-if 'w3m-load (executable-find "w3m")
   (setq w3m-verbose t                   ; log in *Messages*
@@ -927,6 +914,7 @@ mouse-3: Remove current window from display")
         (unless (derived-mode-p 'w3m-mode)
           (call-interactively 'w3m))))))
 
+;;; Edit
 (deh-require 'autopair
   (deh-add-hooks (java-mode-hook
                   c-mode-common-hook
@@ -979,8 +967,9 @@ mouse-3: Remove current window from display")
   (defun moccur-todo-all-buffers ()
     "Run `multi-occur' to find 'TODO' in all buffers."
     (interactive)
-    (moccur-word-all-buffers
-     "\\<\\([Tt][Oo][Dd][Oo]\\|[Ff][Ii][Xx][Mm][Ee]\\)\\>"))
+    ;; (moccur-word-all-buffers "\\<\\([Tt][Oo][Dd][Oo]\\|[Ff][Ii][Xx][Mm][Ee]\\)\\>")
+    (moccur-word-all-buffers "\\<\\(FIXME\\|TODO\\):")
+    )
   )
 
 (deh-section "grep"
@@ -1034,7 +1023,9 @@ mouse-3: Remove current window from display")
   (add-to-list 'ac-user-dictionary-files
                (expand-file-name "ac.dict" my-startup-dir))
 
+  ;;# enable auto-complete in some modes
   (add-to-list 'ac-modes 'org-mode)
+  (add-to-list 'ac-modes 'LaTeX-mode)
 
   (ac-config-default)
 
@@ -1241,19 +1232,6 @@ indent line."
 ;;       (ad-activate 'isearch-repeat)))
   )
 
-(deh-section "minibuffer"
-  (mapcar (lambda (keymap)
-            (define-key keymap "\C-r" 'minibuf-isearch-prev)
-            (define-key keymap "\C-s" 'minibuf-isearch-next))
-          (delq nil (list (and (boundp 'minibuffer-local-map)
-                               minibuffer-local-map)
-                          (and (boundp 'minibuffer-local-ns-map)
-                               minibuffer-local-ns-map)
-                          (and (boundp 'minibuffer-local-completion-map)
-                               minibuffer-local-completion-map)
-                          (and (boundp 'minibuffer-local-must-match-map)
-                               minibuffer-local-must-match-map)))))
-
 (deh-require 'midnight
   (setq midnight-mode t
         clean-buffer-list-delay-general 2 ; delete after two days
@@ -1265,7 +1243,7 @@ indent line."
         clean-buffer-list-kill-regexps '("^ \\*Customize.*")
         ))
 
-;; Enhanced ansi-term
+;;; Enhanced terminal
 (deh-require 'multi-term
   (setq multi-term-dedicated-window-height 10
         multi-term-dedicated-max-window-height 10)
@@ -1304,7 +1282,46 @@ indent line."
     (if (multi-term-dedicated-exist-p)
         (multi-term-dedicated-close)
       (multi-term-dedicated-open-select)))
+
+  ;; hack to backward kill word as it does in terminal
+  (eval-after-load "multi-term"
+    '(progn
+       (defun term-send-backward-kill-word ()
+         "Backward kill word in term mode."
+         (interactive)
+         (term-send-raw-string "\e\C-?"))))
   )
+
+(deh-section "shell"
+  (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
+  (defun wcy-shell-mode-kill-buffer-on-exit (process state)
+    "Auto save command history and kill buffers when exit ibuffer."
+    (shell-write-history-on-exit process state)
+    (kill-buffer (process-buffer process)))
+  (defun ywb-shell-mode-hook ()
+    (rename-buffer  (concat "*shell: " default-directory "*") t)
+    (set-process-sentinel (get-buffer-process (current-buffer))
+                          #'wcy-shell-mode-kill-buffer-on-exit)
+
+    (ansi-color-for-comint-mode-on)
+    (setq-default
+     comint-dynamic-complete-functions
+     (let ((list (default-value 'comint-dynamic-complete-functions)))
+       (add-to-list 'list 'shell-dynamic-complete-command t)))
+    )
+  (add-hook 'shell-mode-hook 'ywb-shell-mode-hook)
+
+  ;; shell-completion
+  (deh-require 'shell-completion
+    (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
+    (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
+                              (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
+    (add-to-list 'shell-completion-options-alist
+                 '("lftp" my-lftp-sites))
+    (add-to-list 'shell-completion-prog-cmdopt-alist
+                 '("lftp" ("help" "open" "get" "mirror" "bookmark")
+                   ("open" my-lftp-sites)
+                   ("bookmark" "add")))))
 
 ;; browse-kill-ring
 (deh-require 'browse-kill-ring
@@ -1416,7 +1433,7 @@ indent line."
   )
 
 
-;; sr-speedbar
+;;; Navigate buffer
 (deh-section "speedbar"
   ;;# speedbar in one frame
   (require 'sr-speedbar)
@@ -1456,12 +1473,131 @@ indent line."
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit))))
 
+(deh-section-after "hideshow"
+  (deh-define-key hs-minor-mode-map
+    ("\C-chh" . 'hs-hide-block)
+    ("\C-chs" . 'hs-show-block)
+    ("\C-chH" . 'hs-hide-all)
+    ("\C-chS" . 'hs-show-all)
+    ("\C-cht" . 'hs-toggle-hiding)
+    ((kbd "<left-fringe> <mouse-2>") . 'hs-mouse-toggle-hiding))
+
+  (defvar hs--overlay-keymap nil "keymap for folding overlay")
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1] 'hs-show-block)
+    (setq hs--overlay-keymap map))
+  (setq hs-set-up-overlay
+        (defun my-display-code-line-counts (ov)
+          (when (eq 'code (overlay-get ov 'hs))
+            (overlay-put ov 'display
+                         (propertize
+                          (format "...<%d lines>"
+                                  (count-lines (overlay-start ov)
+                                               (overlay-end ov)))
+                          'face 'mode-line))
+            (overlay-put ov 'priority (overlay-end ov))
+            (overlay-put ov 'keymap hs--overlay-keymap)
+            (overlay-put ov 'pointer 'hand)))))
+
+(deh-section-after "outline"
+  (setq outline-minor-mode-prefix (kbd "C-c o"))
+  (deh-define-key outline-minor-mode-map
+    ("\C-cos" . 'show-subtree)
+    ("\C-coS" . 'show-all)
+    ("\C-coh" . 'hide-subtree)
+    ("\C-coH" . 'hide-body)
+    ;; shortcuts
+    ((kbd "<right>") . 'show-subtree)
+    ((kbd "<M-right>") . 'show-all)
+    ((kbd "<left>") . 'hide-subtree)
+    ((kbd "<M-left>") . 'hide-body)
+    ((kbd "<up>") . 'outline-previous-heading)
+    ((kbd "<down>") . 'outline-next-heading)
+    ((kbd "<M-up>") . 'outline-previous-visible-heading)
+    ((kbd "<M-down>") . 'outline-next-visible-heading)
+    ;; xwl keybinds
+    ("\C-con" . 'xwl-narrow-to-outline-level)
+    ("\C-cou" . 'xwl-outline-toggle-enter-exit)
+    ("\C-coq" . 'xwl-outline-toggle-show-hide))
+
+  (defadvice outline-mode (after hide-sublevels)
+    "Enter overview after start up `outline-mode'."
+    (hide-sublevels 1))
+
+  (defadvice outline-minor-mode (after hide-sublevels)
+    "Enter overview after start up `outline-minor-mode'."
+    (hide-sublevels 2))
+
+  (setq outline-font-lock-keywords
+        '((eval list
+                (concat "^\\(?:" outline-regexp "\\).+")
+                0
+                '(outline-font-lock-face)
+                nil t)))
+
+  (eval-after-load "outline" '(require 'foldout))
+
+  ;; keys
+  (defun xwl-hide-body ()
+    "Make `hide-body' take effects at any moment."
+    (interactive)
+    (show-all)
+    (hide-body))
+
+  (defun xwl-outline-invisible-p ()
+    "Are we inside a outline fold?"
+    (interactive)
+    (let ((overlays (overlays-at (line-end-position))))
+      (and overlays
+           (eq (overlay-get (car overlays) 'invisible)
+               'outline))))
+
+  (defun xwl-foldout-exit-fold ()
+    "Goto current folded line."
+    (interactive)
+    (call-interactively 'foldout-exit-fold) ; FIX ME
+    (previous-line 1)
+    (next-line 1))
+
+  (defun xwl-outline-toggle-enter-exit ()
+    "Toggle entering and exiting fold."
+    (interactive)
+    (if (xwl-outline-invisible-p)
+        (foldout-zoom-subtree)
+      (xwl-foldout-exit-fold)))
+
+  (defun xwl-outline-toggle-show-hide ()
+    "Toggle showing or hiding contents."
+    (interactive)
+    (if (xwl-outline-invisible-p)
+        (show-subtree)
+      (hide-subtree)))
+
+  (defun xwl-narrow-to-outline-level ()
+    "Narrow to current outline level."
+    (interactive)
+    (save-excursion
+      (call-interactively 'outline-next-visible-heading)
+      (let ((end (point)))
+        (call-interactively 'outline-previous-visible-heading)
+        (narrow-to-region (point) end))))
+  )
+
+(deh-section "which-func"
+  (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook python-mode-hook)
+    (which-func-mode 1)
+    (setq which-func-unknown "unknown")))
+
+(deh-section "imenu"
+  (add-to-list 'imenu-after-jump-hook 'recenter))
+
 (deh-section "ediff"
   ;; (global-set-key "\C-cd" 'ediff-show-registry)
   (setq diff-switches "-ubB"
         ediff-split-window-function 'split-window-horizontally
         ediff-window-setup-function 'ediff-setup-windows-plain))
 
+;;; highlight
 (deh-require 'highlight-parentheses
   ;; colors is applied by reversed order
   (setq hl-paren-colors '("magenta" "cyan" "orange" "navy" "brown"))
@@ -1487,39 +1623,11 @@ indent line."
             highlight-symbol-mode nil)))
   )
 
-;; shell
-(deh-section "shell"
-  (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
-  (defun wcy-shell-mode-kill-buffer-on-exit (process state)
-    "Auto save command history and kill buffers when exit ibuffer."
-    (shell-write-history-on-exit process state)
-    (kill-buffer (process-buffer process)))
-  (defun ywb-shell-mode-hook ()
-    (rename-buffer  (concat "*shell: " default-directory "*") t)
-    (set-process-sentinel (get-buffer-process (current-buffer))
-                          #'wcy-shell-mode-kill-buffer-on-exit)
+(deh-section "hi-lock"
+  (setq hi-lock-file-patterns-range 5000
+        hi-lock-file-patterns-policy '(lambda (dummy) t)))
 
-    (ansi-color-for-comint-mode-on)
-    (setq-default
-     comint-dynamic-complete-functions
-     (let ((list (default-value 'comint-dynamic-complete-functions)))
-       (add-to-list 'list 'shell-dynamic-complete-command t)))
-    )
-  (add-hook 'shell-mode-hook 'ywb-shell-mode-hook)
-
-  ;; shell-completion
-  (deh-require 'shell-completion
-    (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
-    (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
-                              (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
-    (add-to-list 'shell-completion-options-alist
-                 '("lftp" my-lftp-sites))
-    (add-to-list 'shell-completion-prog-cmdopt-alist
-                 '("lftp" ("help" "open" "get" "mirror" "bookmark")
-                   ("open" my-lftp-sites)
-                   ("bookmark" "add")))))
-
-;;}}}
+;;; others
 
 ;; ;; erc
 ;; (deh-section "erc"
@@ -1532,20 +1640,6 @@ indent line."
 ;;                  (lambda ()
 ;;                    (eldoc-mode t)
 ;;                    (setq eldoc-documentation-function 'emoticons-help-echo))))))
-
-(deh-require-if 'evernote-mode
-  (executable-find "enclient.rb")
-  ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
-  (global-set-key "\C-cec" 'evernote-create-note)
-  (global-set-key "\C-ceo" 'evernote-open-note)
-  (global-set-key "\C-ces" 'evernote-search-notes)
-  (global-set-key "\C-ceS" 'evernote-do-saved-search)
-  (global-set-key "\C-cew" 'evernote-write-note)
-  (global-set-key "\C-cep" 'evernote-post-region)
-  (global-set-key "\C-ceb" 'evernote-browser)
-  (setq evernote-mode-hook
-        '(lambda () (outline-minor-mode t)))
-  )
 
 (deh-require 'epa-file
   (epa-file-enable)

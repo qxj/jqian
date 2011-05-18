@@ -1,6 +1,13 @@
 ;; -*- mode: Emacs-Lisp -*-
 
+;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
+;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
+;; Hi-lock: end
+
+;;; autoload
 (deh-section "autoloads"
+  (autoload 'php-mode "php-mode" "php mode" t)
   (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
   (autoload 'git-status "git" "" t)
   (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
@@ -52,6 +59,7 @@
   (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
   )
 
+;;; auto detect mode
 (deh-section "auto-mode"
   (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
@@ -77,8 +85,14 @@
   (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@interface" . objc-mode))
   (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@protocol" . objc-mode))
   ;; (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*class" . c++-mode))
+  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
   )
 
+(deh-section "interpreter-mode"
+  (add-to-list 'interpreter-mode-alist '("php" . php-mode))
+  )
+
+;;; common mode hook
 (deh-section "mode-common"
   (defun my-mode-common-hook ()
     (setq tab-width 4)
@@ -93,142 +107,48 @@
     (hs-minor-mode 1)
     (ignore-errors (imenu-add-menubar-index))
 
-    ;; comment new line and indent `M-j', as VIM acts.
-    (defun my-cursor-on-comment-p (&optional point)
-      (memq (get-text-property (or point (point)) 'face)
-            '(font-lock-comment-face)))
     ;; (local-set-key (kbd "RET")
     ;;                (lambda () (interactive)
     ;;                  (if (my-cursor-on-comment-p) (comment-indent-new-line)
     ;;                    (if (boundp 'autopair-newline) (autopair-newline)
     ;;                      (newline-and-indent)))))
+
+    ;; untabify source code
+    (make-local-hook 'write-contents-hooks)
+    (add-hook 'write-contents-hooks 'my-untabify nil t)
     )
 
-  (defun my-chmod-scripts-executable ()
-    "chmod sh/py/... scripts to be executable automatically."
-    (and (save-excursion
-           (save-restriction
-             (widen)
-             (goto-char (point-min))
-             (save-match-data
-               (looking-at "^#!"))))
-         (not (file-executable-p buffer-file-name))
-         (shell-command (concat "chmod u+x " buffer-file-name))
-         (message
-          (concat "Saved as script: " buffer-file-name))))
+  ;; comment new line and indent `M-j', as VIM acts.
+  (defun my-cursor-on-comment-p (&optional point)
+    (memq (get-text-property (or point (point)) 'face)
+          '(font-lock-comment-face)))
 
-  (add-hook 'after-save-hook 'my-chmod-scripts-executable)
-  )
+  (defun my-untabify ()
+    "My untabify function as discussed and described at
+ http://www.jwz.org/doc/tabs-vs-spaces.html
+ and improved by Claus Brunzema:
+ - return nil to get `write-contents-hooks' to work correctly
+   (see documentation there)
+ - `make-local-hook' instead of `make-local-variable'
+ - when instead of if
+ Use some lines along the following for getting this to work in the
+ modes you want it to:
 
-(deh-section-after "hideshow"
-  (deh-define-key hs-minor-mode-map
-    ("\C-chh" . 'hs-hide-block)
-    ("\C-chs" . 'hs-show-block)
-    ("\C-chH" . 'hs-hide-all)
-    ("\C-chS" . 'hs-show-all)
-    ("\C-cht" . 'hs-toggle-hiding)
-    ((kbd "<left-fringe> <mouse-2>") . 'hs-mouse-toggle-hiding))
-
-  (defvar hs--overlay-keymap nil "keymap for folding overlay")
-  (let ((map (make-sparse-keymap)))
-    (define-key map [mouse-1] 'hs-show-block)
-    (setq hs--overlay-keymap map))
-  (setq hs-set-up-overlay
-        (defun my-display-code-line-counts (ov)
-          (when (eq 'code (overlay-get ov 'hs))
-            (overlay-put ov 'display
-                         (propertize
-                          (format "...<%d lines>"
-                                  (count-lines (overlay-start ov)
-                                               (overlay-end ov)))
-                          'face 'mode-line))
-            (overlay-put ov 'priority (overlay-end ov))
-            (overlay-put ov 'keymap hs--overlay-keymap)
-            (overlay-put ov 'pointer 'hand)))))
-
-(deh-section-after "outline"
-  (setq outline-minor-mode-prefix (kbd "C-c o"))
-  (deh-define-key outline-minor-mode-map
-    ("\C-cos" . 'show-subtree)
-    ("\C-coS" . 'show-all)
-    ("\C-coh" . 'hide-subtree)
-    ("\C-coH" . 'hide-body)
-    ;; shortcuts
-    ((kbd "<right>") . 'show-subtree)
-    ((kbd "<M-right>") . 'show-all)
-    ((kbd "<left>") . 'hide-subtree)
-    ((kbd "<M-left>") . 'hide-body)
-    ((kbd "<up>") . 'outline-previous-heading)
-    ((kbd "<down>") . 'outline-next-heading)
-    ((kbd "<M-up>") . 'outline-previous-visible-heading)
-    ((kbd "<M-down>") . 'outline-next-visible-heading)
-    ;; xwl keybinds
-    ("\C-con" . 'xwl-narrow-to-outline-level)
-    ("\C-cou" . 'xwl-outline-toggle-enter-exit)
-    ("\C-coq" . 'xwl-outline-toggle-show-hide))
-
-  (defadvice outline-mode (after hide-sublevels)
-    "Enter overview after start up `outline-mode'."
-    (hide-sublevels 1))
-
-  (defadvice outline-minor-mode (after hide-sublevels)
-    "Enter overview after start up `outline-minor-mode'."
-    (hide-sublevels 2))
-
-  (setq outline-font-lock-keywords
-        '((eval list
-                (concat "^\\(?:" outline-regexp "\\).+")
-                0
-                '(outline-font-lock-face)
-                nil t)))
-
-  (eval-after-load "outline" '(require 'foldout))
-
-  ;; keys
-  (defun xwl-hide-body ()
-    "Make `hide-body' take effects at any moment."
-    (interactive)
-    (show-all)
-    (hide-body))
-
-  (defun xwl-outline-invisible-p ()
-    "Are we inside a outline fold?"
-    (interactive)
-    (let ((overlays (overlays-at (line-end-position))))
-      (and overlays
-           (eq (overlay-get (car overlays) 'invisible)
-               'outline))))
-
-  (defun xwl-foldout-exit-fold ()
-    "Goto current folded line."
-    (interactive)
-    (call-interactively 'foldout-exit-fold) ; FIX ME
-    (previous-line 1)
-    (next-line 1))
-
-  (defun xwl-outline-toggle-enter-exit ()
-    "Toggle entering and exiting fold."
-    (interactive)
-    (if (xwl-outline-invisible-p)
-        (foldout-zoom-subtree)
-      (xwl-foldout-exit-fold)))
-
-  (defun xwl-outline-toggle-show-hide ()
-    "Toggle showing or hiding contents."
-    (interactive)
-    (if (xwl-outline-invisible-p)
-        (show-subtree)
-      (hide-subtree)))
-
-  (defun xwl-narrow-to-outline-level ()
-    "Narrow to current outline level."
-    (interactive)
+ \(add-hook 'some-mode-hook
+           '(lambda ()
+               (make-local-hook 'write-contents-hooks)
+                (add-hook 'write-contents-hooks 'my-untabify nil t)))"
     (save-excursion
-      (call-interactively 'outline-next-visible-heading)
-      (let ((end (point)))
-        (call-interactively 'outline-previous-visible-heading)
-        (narrow-to-region (point) end))))
+      (goto-char (point-min))
+      (when (search-forward "\t" nil t)
+        (untabify (1- (point)) (point-max)))
+      nil))
   )
+
+;;; tags
+(deh-section "ebrowse"
+  (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
+  (setq ebrowse-global-prefix-key "\C-z"))
 
 (deh-section "etags"
   (defun my-find-top-directory (file &optional dir)
@@ -785,7 +705,74 @@ Use CREATE-TEMP-F for creating temp copy."
     (ignore-errors (imenu-add-menubar-index)))
   )
 
-;; HTML
+;;; scripts setting
+(deh-section "python"
+  (deh-add-hook python-mode-hook
+    (my-mode-common-hook)
+    (when (boundp 'rope-completions) (ac-ropemacs-initialize))
+    (make-local-hook 'after-save-hook)
+    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p))
+
+  (deh-try-require 'pymacs
+    (pymacs-load "ropemacs" "rope-")
+    ;;(setq ropemacs-enable-shortcuts nil)
+    ;;(setq ropemacs-local-prefix "C-c C-p")
+    (setq ropemacs-confirm-saving 'nil)
+    (ropemacs-mode t)))
+
+(deh-section "sh-mode"
+  (deh-add-hook sh-mode-hook
+    ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
+    (my-mode-common-hook)
+    (make-local-hook 'after-save-hook)
+    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+    ))
+
+
+;;; tools
+(deh-section "gnuplot"
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
+
+  (deh-add-hook gnuplot-after-plot-hook
+    (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
+  (deh-add-hook gnuplot-comint-setup-hook
+    (deh-define-key comint-mode-map
+      ("\C-d" . 'comint-delchar-or-maybe-eof))))
+
+(deh-section "graphviz"
+  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
+
+  (setq graphviz-dot-auto-indent-on-semi nil
+        graphviz-dot-auto-indent-on-newline nil
+        graphviz-dot-toggle-completions t)
+  (deh-add-hook graphviz-dot-mode-hook
+    (local-unset-key "\C-cc") ; it's prefix key
+    (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
+  (defun graphviz-dot-tab-action ()
+    "If cursor at one word end, try complete it. Otherwise, indent line."
+    (interactive)
+    (if (looking-at "\\>")
+        (graphviz-dot-complete-word)
+      (indent-for-tab-command))))
+
+(deh-section-if "protobuf"
+  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
+  (executable-find "protoc"))
+
+;;; java
+(deh-section "java"
+  (add-to-list 'load-path "/usr/local/jdee/lisp/")
+  (defun jde-init ()
+    (interactive)
+    (require 'cedet)
+    (require 'jde)
+    (jde-mode))
+  (deh-add-hook java-mode-hook
+    (c-set-style "java")
+    (setq c-basic-offset 4)))
+
+;;; web related
 (deh-section "html"
   (setq sgml-xml-mode t)
   (add-hook 'sgml-mode-hook 'my-mode-common-hook)
@@ -820,62 +807,13 @@ Use CREATE-TEMP-F for creating temp copy."
   (setq mumamo-chunk-coloring 5)        ; disable background colors
   )
 
-;; gnuplot
-(deh-section "gnuplot"
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-
-  (deh-add-hook gnuplot-after-plot-hook
-    (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
-  (deh-add-hook gnuplot-comint-setup-hook
-    (deh-define-key comint-mode-map
-      ("\C-d" . 'comint-delchar-or-maybe-eof))))
-
-;; graphviz
-(deh-section "graphviz"
-  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
-
-  (setq graphviz-dot-auto-indent-on-semi nil
-        graphviz-dot-auto-indent-on-newline nil
-        graphviz-dot-toggle-completions t)
-  (deh-add-hook graphviz-dot-mode-hook
-    (local-unset-key "\C-cc") ; it's prefix key
-    (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
-  (defun graphviz-dot-tab-action ()
-    "If cursor at one word end, try complete it. Otherwise, indent line."
-    (interactive)
-    (if (looking-at "\\>")
-        (graphviz-dot-complete-word)
-      (indent-for-tab-command))))
-
-(deh-section-if "protobuf"
-  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
-  (executable-find "protoc"))
-
-;; java
-(deh-section "java"
-  (add-to-list 'load-path "/usr/local/jdee/lisp/")
-  (defun jde-init ()
-    (interactive)
-    (require 'cedet)
-    (require 'jde)
-    (jde-mode))
-  (deh-add-hook java-mode-hook
-    (c-set-style "java")
-    (setq c-basic-offset 4)))
-
-;;; emacs --batch --eval '(byte-compile-file "js2.el")'
+;;# emacs --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
   (autoload 'js2-mode "js2" "" t)
   (deh-add-hook js2-mode-hook
     (setq forward-sexp-function nil)))
 
 (deh-section-reserved "php"
-  (autoload 'php-mode "php-mode" "php mode" t)
-
-  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
-  (add-to-list 'interpreter-mode-alist '("php" . php-mode))
-
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
@@ -891,26 +829,7 @@ Use CREATE-TEMP-F for creating temp copy."
         (pop-to-buffer buf nil t)
         (w3m-goto-url url)))
     )
-  (deh-try-require 'geben
-    (defun my-geben-open-file (file)
-      (interactive
-       (list
-        (let ((source-file
-               (replace-regexp-in-string
-                "^file://" ""
-                (geben-session-source-fileuri geben-current-session
-                                              (buffer-file-name)))))
-          (read-file-name "Open file: " (file-name-directory source-file)))))
-      (geben-open-file (concat "file://" file)))
-    (deh-define-key geben-mode-map
-      ("f" . 'my-geben-open-file)))
-  (deh-try-require 'simpletest
-    (simpletest-mode 1)
-    (setq simpletest-create-test-function 'simpletest-create-test-template)
-    (deh-define-key simpletest-mode-map
-      ("\C-ctb" . 'simpletest-switch)
-      ("\C-ctc" . 'simpletest-create-test)
-      ("\C-ctr" . 'simpletest-run-test)))
+
   (deh-add-hook php-mode-hook
     ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
@@ -931,7 +850,7 @@ Use CREATE-TEMP-F for creating temp copy."
     (local-set-key (kbd "C-M-a") 'beginning-of-defun)
     (local-set-key (kbd "C-M-e") 'end-of-defun)
     )
-  ;; ffap settings
+;;;; ffap settings
   (defvar ffap-php-path
     (let ((include-path
            (shell-command-to-string "php -r 'echo get_include_path();'")))
@@ -946,84 +865,72 @@ Use CREATE-TEMP-F for creating temp copy."
       (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
 
 (deh-section-reserved "latex"
-  (load "preview-latex.el" t t t)
-  (load "auctex.el" t t t)
-  (autoload 'CJK-insert-space "cjkspace"
-    "Insert tildes appropriately in CJK document." t)
-  (defun cjk-toggle-space-tilde (arg)
-    (interactive "P")
-    (setq CJK-space-after-space
-          (if (null arg)
-              (not CJK-space-after-space)
-            (> (prefix-numeric-value arg) 0)))
-    (message "Now SPC will insert %s" (if CJK-space-after-space "SPC" "~")))
-  (setq TeX-electric-escape t)
-  (deh-add-hook TeX-mode-hook
-    (auto-fill-mode 1)
-    (defun TeX-arg-input-file (optionel &optional prompt local)
-      "Prompt for a tex or sty file.
+  (load "preview-latex.el" nil t t)
+  (load "auctex.el" nil t t)
+  (set-default TeX-master nil)
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-electric-escape t
+        TeX-save-query nil
+        TeX-clean-confirm nil
+        TeX-show-compilation nil)
+  (deh-add-hook LaTeX-mode-hook
+    (turn-off-auto-fill)
+    ;; (LaTeX-math-mode 1)
+    (outline-minor-mode 1)
+
+    (TeX-PDF-mode t)
+
+    ;;# set evince as pdf viewer
+    (add-to-list 'TeX-view-program-list '("Evince" "evince %o"))
+    ;;# for XeLaTeX
+    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+    (setq TeX-command-default "XeLaTeX"
+          TeX-view-program-selection '((output-pdf "Evince"))
+          TeX-global-PDF-mode t
+          TeX-engine 'xetex)
+    )
+
+  (defun TeX-arg-input-file (optionel &optional prompt local)
+    "Prompt for a tex or sty file.
 
 First optional argument is the prompt, the second is a flag.
 If the flag is set, only complete with local files."
-      (unless (or TeX-global-input-files local)
-        (message "Searching for files...")
-        (setq TeX-global-input-files
-              (mapcar 'list (TeX-search-files (append TeX-macro-private
-                                                      TeX-macro-global)
-                                              TeX-file-extensions t t))))
-      (let ((file (if TeX-check-path
-                      (completing-read
-                       (TeX-argument-prompt optionel prompt "File")
-                       (unless local
-                         TeX-global-input-files))
-                    (read-file-name
-                     (TeX-argument-prompt optionel prompt "File")))))
-        (if (null file)
-            (setq file ""))
-        (if (not (string-equal "" file))
-            (TeX-run-style-hooks file))
-        (TeX-argument-insert file optionel)))
-    (my-turn-on-pair-insert '((?$ _ ?$)))
-    (define-key LaTeX-mode-map " " 'CJK-insert-space)
-    (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde)
-    )
-  ;; for XeLaTeX
-  (deh-add-hook LaTeX-mode-hook
-    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-    (TeX-PDF-mode t)
-    (setq TeX-command-default "XeLaTeX")
-    (setq TeX-save-query nil )
-    (setq TeX-show-compilation t)
-    ))
-
-(deh-require 'pymacs
-  ;; Python mode hook
-  (deh-add-hook python-mode-hook
-    ;;(setq ropemacs-enable-shortcuts nil)
-    ;;(setq ropemacs-local-prefix "C-c C-p")
-    (setq ropemacs-confirm-saving 'nil)
-    (autoload 'pymacs-apply "pymacs")
-    (autoload 'pymacs-call "pymacs")
-    (autoload 'pymacs-eval "pymacs" nil t)
-    (autoload 'pymacs-exec "pymacs" nil t)
-    (autoload 'pymacs-load "pymacs" nil t)
-    ;;(pymacs-load "ropemacs" "rope-")
-    ;; Automatically save project python buffers before refactorings
-    ;; (define-key python-mode-map "\C-m" 'newline-and-indent)
-    (ac-ropemacs-setup)
-    ;;(setq ac-sources (append ac-sources '(ac-source-ropemacs)))
-    (ropemacs-mode t)))
-
-(deh-section "sh-mode"
-  (deh-add-hook sh-mode-hook
-    ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
-    ))
-
-(deh-section "buffer-action"
-  (autoload 'buffer-action-compile "buffer-action")
-  (autoload 'buffer-action-run "buffer-action"))
+    (unless (or TeX-global-input-files local)
+      (message "Searching for files...")
+      (setq TeX-global-input-files
+            (mapcar 'list (TeX-search-files (append TeX-macro-private
+                                                    TeX-macro-global)
+                                            TeX-file-extensions t t))))
+    (let ((file (if TeX-check-path
+                    (completing-read
+                     (TeX-argument-prompt optionel prompt "File")
+                     (unless local
+                       TeX-global-input-files))
+                  (read-file-name
+                   (TeX-argument-prompt optionel prompt "File")))))
+      (if (null file)
+          (setq file ""))
+      (if (not (string-equal "" file))
+          (TeX-run-style-hooks file))
+      (TeX-argument-insert file optionel)))
+  )
 
 (deh-section "slime"
   ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
   (setq common-lisp-hyperspec-root "/home/jqian/src/HyperSpec/")
+  )
+
+(deh-require-if 'evernote-mode
+  (executable-find "enclient.rb")
+  ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
+  (global-set-key "\C-cec" 'evernote-create-note)
+  (global-set-key "\C-ceo" 'evernote-open-note)
+  (global-set-key "\C-ces" 'evernote-search-notes)
+  (global-set-key "\C-ceS" 'evernote-do-saved-search)
+  (global-set-key "\C-cew" 'evernote-write-note)
+  (global-set-key "\C-cep" 'evernote-post-region)
+  (global-set-key "\C-ceb" 'evernote-browser)
+  (setq evernote-mode-hook
+        '(lambda () (outline-minor-mode t)))
   )
