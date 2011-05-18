@@ -68,6 +68,7 @@ pgrep, so.. make sure pgrep is already installed in your system."
 (defalias 'yes-or-no-p 'y-or-n-p)
 (defalias 'chr 'char-to-string)
 (defalias 'list-ascii 'ascii-table-show)
+(defalias 'default-generic-mode 'conf-mode)
 
 ;; from xwl-util.el
 (defun my-shell-command-asynchronously (cmd)

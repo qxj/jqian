@@ -55,24 +55,31 @@
         (save-excursion
           (goto-char (cdr langelem))
           (vector (+ (current-column) 8))))))
-  (defun my-indent-setup ()
+  (defun my-c-indent-lineup-arglist ()
     (setcdr (assoc 'arglist-cont-nonempty c-offsets-alist)
             '(c-lineup-gcc-asm-reg my-c-lineup-arglist)))
+
+  ;;# convert some .h to c++-mode automatically
+  (defun my-c-correct-hpp-mode ()
+    (if (and (string-match "\.h$" (buffer-name))
+             (save-excursion
+               (goto-char (point-min))
+               (search-forward-regexp "^class" nil t)))
+        (c++-mode)))
 
   (defun my-c-mode-common-hook ()
     (my-mode-common-hook)
     ;; (c-add-style "Personal" my-c-style t)
     (c-set-style "stroustrup")
     ;; (call-interactively 'google-set-c-style)
-    (my-indent-setup)
+    (my-c-indent-lineup-arglist)
+    (my-c-correct-hpp-mode)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
-    (hs-minor-mode 1)
     (eldoc-mode 1)
     (cwarn-mode 1)
     ;; (smart-operator-mode 1)
-    (ignore-errors (imenu-add-menubar-index))
     (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds

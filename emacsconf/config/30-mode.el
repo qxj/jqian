@@ -1,16 +1,151 @@
 ;; -*- mode: Emacs-Lisp -*-
 
-;;{{{ Rebinding keys for hideshow
-(deh-require 'hideshow
+(deh-section "autoloads"
+  (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
+  (autoload 'git-status "git" "" t)
+  (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
+  (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
+  (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
+  (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
+  (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
+  (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
+  (autoload 'python-mode "python" "Python editing mode." t)
+  (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
+  ;; (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
+  (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
+  (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
+  (autoload 'sourcepair-load "sourcepair" nil t)
+  ;; emacs lock
+  (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
+  ;; iimage
+  (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+  (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+  (autoload 'po-mode "po-mode" "Major mode for translators to edit PO files" t)
+  (autoload 'yaml-mode "yaml-mode" "Simple mode to edit YAML." t)
+  (autoload 'woman-mode "woman")
+  (add-hook 'woman-mode-hook 'view-mode)
+  (autoload 'woman-decode-buffer "woman")
+  ;; (autoload 'muse-insert-list-item "muse-mode" t)
+  ;; wb-line
+  ;; (autoload 'wb-line-number-toggle "wb-line-number" nil t)
+  ;; htmlize
+  (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
+  ;; moccur
+  (autoload 'moccur-grep "moccur-edit" "Glob search file" t)
+  (autoload 'moccur "moccur-edit" "moccur" t)
+  ;; blank-mode
+  (autoload 'blank-mode-on "blank-mode" "Turn on blank visualization."   t)
+  (autoload 'blank-mode-off "blank-mode" "Turn off blank visualization."  t)
+  (autoload 'blank-mode "blank-mode" "Toggle blank visualization."    t)
+  (autoload 'blank-mode-customize "blank-mode" "Customize blank visualization." t)
+  ;; hexl editor
+  ;; (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
+  ;; A visual table editor, very cool
+  (autoload 'table-insert "table" "WYGIWYS table editor")
+  ;; ansit
+  (autoload 'ansit-ansify-this "ansit"  "Ansi the region." t)
+  ;; rst-mode
+  (autoload 'rst-mode "rst" "" t)
+  ;; minibuf-isearch
+  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
+  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
+  (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
+  )
+
+(deh-section "auto-mode"
+  (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
+  (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
+  (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
+  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+  (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
+  (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\)" . makefile-mode))
+  (add-to-list 'auto-mode-alist '("\.schemas" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
+  (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
+  (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
+  (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
+  (add-to-list 'auto-mode-alist '(".vim\\(rc\\)?$" . vimrc-mode))
+  )
+
+(deh-section "magic-mode"
+  (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@implementation" . objc-mode))
+  (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@interface" . objc-mode))
+  (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@protocol" . objc-mode))
+  ;; (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*class" . c++-mode))
+  )
+
+(deh-section "mode-common"
+  (defun my-mode-common-hook ()
+    (setq tab-width 4)
+    (setq c-basic-offset tab-width)
+    (setq indent-tabs-mode nil)
+    ;; (abbrev-mode t)
+    (set (make-local-variable 'comment-style) 'indent)
+    (set (make-local-variable 'tab-stop-list)
+         (number-sequence tab-width 80 tab-width))
+
+    ;; (when (fboundp 'whitespace-mode) (whitespace-mode t))
+    (hs-minor-mode 1)
+    (ignore-errors (imenu-add-menubar-index))
+
+    ;; comment new line and indent `M-j', as VIM acts.
+    (defun my-cursor-on-comment-p (&optional point)
+      (memq (get-text-property (or point (point)) 'face)
+            '(font-lock-comment-face)))
+    ;; (local-set-key (kbd "RET")
+    ;;                (lambda () (interactive)
+    ;;                  (if (my-cursor-on-comment-p) (comment-indent-new-line)
+    ;;                    (if (boundp 'autopair-newline) (autopair-newline)
+    ;;                      (newline-and-indent)))))
+    )
+
+  (defun my-chmod-scripts-executable ()
+    "chmod sh/py/... scripts to be executable automatically."
+    (and (save-excursion
+           (save-restriction
+             (widen)
+             (goto-char (point-min))
+             (save-match-data
+               (looking-at "^#!"))))
+         (not (file-executable-p buffer-file-name))
+         (shell-command (concat "chmod u+x " buffer-file-name))
+         (message
+          (concat "Saved as script: " buffer-file-name))))
+
+  (add-hook 'after-save-hook 'my-chmod-scripts-executable)
+  )
+
+(deh-section-after "hideshow"
   (deh-define-key hs-minor-mode-map
     ("\C-chh" . 'hs-hide-block)
     ("\C-chs" . 'hs-show-block)
     ("\C-chH" . 'hs-hide-all)
     ("\C-chS" . 'hs-show-all)
-    ("\C-cht" . 'hs-toggle-hiding)))
-;;}}}
+    ("\C-cht" . 'hs-toggle-hiding)
+    ((kbd "<left-fringe> <mouse-2>") . 'hs-mouse-toggle-hiding))
 
-;;{{{ Outline minor mode
+  (defvar hs--overlay-keymap nil "keymap for folding overlay")
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1] 'hs-show-block)
+    (setq hs--overlay-keymap map))
+  (setq hs-set-up-overlay
+        (defun my-display-code-line-counts (ov)
+          (when (eq 'code (overlay-get ov 'hs))
+            (overlay-put ov 'display
+                         (propertize
+                          (format "...<%d lines>"
+                                  (count-lines (overlay-start ov)
+                                               (overlay-end ov)))
+                          'face 'mode-line))
+            (overlay-put ov 'priority (overlay-end ov))
+            (overlay-put ov 'keymap hs--overlay-keymap)
+            (overlay-put ov 'pointer 'hand)))))
+
 (deh-section-after "outline"
   (setq outline-minor-mode-prefix (kbd "C-c o"))
   (deh-define-key outline-minor-mode-map
@@ -94,9 +229,7 @@
         (call-interactively 'outline-previous-visible-heading)
         (narrow-to-region (point) end))))
   )
-;;}}}
 
-;;{{{ Etags
 (deh-section "etags"
   (defun my-find-top-directory (file &optional dir)
     (or dir (setq dir (expand-file-name default-directory)))
@@ -111,9 +244,7 @@
         default-tags-table-function
         (lambda nil
           (my-find-top-directory "TAGS"))))
-;;}}}
 
-;;{{{ Gtags & Xcscope
 (deh-section-if "gtags" (executable-find "global")
   (autoload 'gtags-mode "gtags" "" t)
 
@@ -262,9 +393,7 @@
   ;; hack `xcscope.el', remove hooks
   (deh-remove-hooks (c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
-;;}}}
 
-;;{{{ tag view history
 (deh-require 'tags-view
   (deh-define-key tags-history-mode-map
     ("q" . 'tv-view-history-quit))
@@ -313,9 +442,7 @@ etc).  The following options will be available:
           (set-window-configuration gtags-previous-window-conf)
           (setq gtags-previous-window-conf nil))))
   )
-;;}}}
 
-;;{{{ svn settins
 (deh-require 'psvn
   (defsubst svn-status-interprete-state-mode-color (stat)
     "Interpret vc-svn-state symbol to mode line color"
@@ -331,15 +458,11 @@ etc).  The following options will be available:
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
   )
-;;}}}
 
-;;{{{ git setting
 (deh-require 'git-emacs-autoloads
   (setq git-state-modeline-decoration 'git-state-decoration-large-dot)
 )
-;;}}}
 
-;;{{{ woman
 (deh-section "woman"
   (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-temp-dir)
         woman-manpath '("/usr/man"
@@ -350,12 +473,11 @@ etc).  The following options will be available:
                         "/usr/share/man/zh_CN")
         woman-manpath-man-regexp (regexp-opt '("man2" "man3" "man7"))
         woman-imenu t
+        woman-fontify t
         woman-use-own-frame nil)
   )
-;;}}}
 
-;;{{{ info
-(deh-section "info"
+(deh-section-after "info"
   (add-to-list 'Info-default-directory-list "~/info")
 
   (deh-define-key Info-mode-map
@@ -379,12 +501,9 @@ etc).  The following options will be available:
             (setq list (cdr list))))
         (unless (derived-mode-p 'info-mode)
           (call-interactively 'info)))))
-  ;; info+
-  (eval-after-load "info"
-    '(require 'info+)))
-;;}}}
 
-;;{{{ flymake & flyspell
+  (require 'info+))
+
 (deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
@@ -624,29 +743,22 @@ Use CREATE-TEMP-F for creating temp copy."
                       '("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'"
                         flymake-simple-make-gcc-init)))
        )))
-;;}}}
 
-;; Setting for common hook
-(defun my-mode-common-hook ()
-  (setq tab-width 4)
-  (setq c-basic-offset tab-width)
-  (set (make-local-variable 'tab-stop-list)
-       (number-sequence tab-width 80 tab-width))
-  ;; (abbrev-mode t)
-  (set (make-local-variable 'comment-style)
-       'indent)
-  ;; comment new line and indent `M-j', as VIM acts.
-  (defun my-cursor-on-comment-p (&optional point)
-    (memq (get-text-property (or point (point)) 'face)
-          '(font-lock-comment-face)))
-  ;; (local-set-key (kbd "RET")
-  ;;                (lambda () (interactive)
-  ;;                  (if (my-cursor-on-comment-p) (comment-indent-new-line)
-  ;;                    (if (boundp 'autopair-newline) (autopair-newline)
-  ;;                      (newline-and-indent)))))
-  )
+(deh-section "makefile"
+  (deh-add-hook makefile-mode-hook
+    (my-mode-common-hook)))
 
-;;{{{ elisp
+(deh-section "change-log"
+  (deh-add-hook change-log-mode-hook
+    (auto-fill-mode t)
+    (add-to-list 'change-log-font-lock-keywords
+                 '("^[0-9-]+:? +\\|^\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\) [A-z][a-z][a-z] [0-9:+ ]+"
+                   (0 'change-log-date-face)
+                   ("\\([^<(]+?\\)[   ]*[(<]\\([A-Za-z0-9_.+-]+@[A-Za-z0-9_.-]+\\)[>)]" nil nil
+                    (1 'change-log-name)
+                    (2 'change-log-email)))))
+)
+
 (deh-section "elisp"
   (deh-require 'browse-el
     (define-key emacs-lisp-mode-map (kbd "M-.") 'browse-el-find-funtion)
@@ -654,18 +766,24 @@ Use CREATE-TEMP-F for creating temp copy."
     )
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
+
+  (defun my-auto-insert-paren ()
+    "Auto close matched parentheses."
+    (interactive)
+    (condition-case nil
+        (progn
+          (scan-sexps (point) -1)
+          (insert ")")
+          (my-auto-insert-paren))
+      (error (delete-char -1))))
+
   (deh-add-hook emacs-lisp-mode-hook
     (my-mode-common-hook)
-    (define-key lisp-mode-shared-map (kbd "C-)") 'ywb-insert-paren)
+    (define-key lisp-mode-shared-map (kbd "C-)") 'my-auto-insert-paren)
     (hs-minor-mode 1)
     (turn-on-eldoc-mode)
     (ignore-errors (imenu-add-menubar-index)))
   )
-;;}}}
-
-;;=============================================================
-;; Not use offen language
-;;=============================================================
 
 ;; HTML
 (deh-section "html"
@@ -752,47 +870,6 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook js2-mode-hook
     (setq forward-sexp-function nil)))
 
-(deh-section "autoloads"
-  (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
-  (autoload 'git-status "git" "" t)
-  (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
-  (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
-  (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
-  (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
-  (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
-  (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
-  (autoload 'python-mode "python" "Python editing mode." t)
-  (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
-  ;; (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
-  (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
-  (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
-  (autoload 'sourcepair-load "sourcepair" nil t)
-  ;; emacs lock
-  (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
-  ;; iimage
-  (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
-  (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
-  )
-
-(deh-section "auto-mode"
-  (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
-  (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
-  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
-  (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
-  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-  (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
-  (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\)" . makefile-mode))
-  (add-to-list 'auto-mode-alist '("\.schemas" . xml-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
-  (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
-  (add-to-list 'auto-mode-alist '(".vim\\(rc\\)?$" . vimrc-mode))
-  )
-
 (deh-section-reserved "php"
   (autoload 'php-mode "php-mode" "php mode" t)
 
@@ -868,6 +945,57 @@ Use CREATE-TEMP-F for creating temp copy."
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
 
+(deh-section-reserved "latex"
+  (load "preview-latex.el" t t t)
+  (load "auctex.el" t t t)
+  (autoload 'CJK-insert-space "cjkspace"
+    "Insert tildes appropriately in CJK document." t)
+  (defun cjk-toggle-space-tilde (arg)
+    (interactive "P")
+    (setq CJK-space-after-space
+          (if (null arg)
+              (not CJK-space-after-space)
+            (> (prefix-numeric-value arg) 0)))
+    (message "Now SPC will insert %s" (if CJK-space-after-space "SPC" "~")))
+  (setq TeX-electric-escape t)
+  (deh-add-hook TeX-mode-hook
+    (auto-fill-mode 1)
+    (defun TeX-arg-input-file (optionel &optional prompt local)
+      "Prompt for a tex or sty file.
+
+First optional argument is the prompt, the second is a flag.
+If the flag is set, only complete with local files."
+      (unless (or TeX-global-input-files local)
+        (message "Searching for files...")
+        (setq TeX-global-input-files
+              (mapcar 'list (TeX-search-files (append TeX-macro-private
+                                                      TeX-macro-global)
+                                              TeX-file-extensions t t))))
+      (let ((file (if TeX-check-path
+                      (completing-read
+                       (TeX-argument-prompt optionel prompt "File")
+                       (unless local
+                         TeX-global-input-files))
+                    (read-file-name
+                     (TeX-argument-prompt optionel prompt "File")))))
+        (if (null file)
+            (setq file ""))
+        (if (not (string-equal "" file))
+            (TeX-run-style-hooks file))
+        (TeX-argument-insert file optionel)))
+    (my-turn-on-pair-insert '((?$ _ ?$)))
+    (define-key LaTeX-mode-map " " 'CJK-insert-space)
+    (define-key LaTeX-mode-map "\C-c\C-a" 'cjk-toggle-space-tilde)
+    )
+  ;; for XeLaTeX
+  (deh-add-hook LaTeX-mode-hook
+    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+    (TeX-PDF-mode t)
+    (setq TeX-command-default "XeLaTeX")
+    (setq TeX-save-query nil )
+    (setq TeX-show-compilation t)
+    ))
+
 (deh-require 'pymacs
   ;; Python mode hook
   (deh-add-hook python-mode-hook
@@ -886,4 +1014,16 @@ Use CREATE-TEMP-F for creating temp copy."
     ;;(setq ac-sources (append ac-sources '(ac-source-ropemacs)))
     (ropemacs-mode t)))
 
+(deh-section "sh-mode"
+  (deh-add-hook sh-mode-hook
+    ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
+    ))
 
+(deh-section "buffer-action"
+  (autoload 'buffer-action-compile "buffer-action")
+  (autoload 'buffer-action-run "buffer-action"))
+
+(deh-section "slime"
+  ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
+  (setq common-lisp-hyperspec-root "/home/jqian/src/HyperSpec/")
+  )
