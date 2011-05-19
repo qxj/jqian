@@ -170,7 +170,7 @@ clipboard/external selection to the kill ring"
                                         ; Path style is defined in gtags-path-style:
                                         ;   root: relative from the root of the project (Default)
                                         ;   relative: relative from the current directory
-                                        ;	absolute: absolute (relative from the system root directory)
+                                        ;   absolute: absolute (relative from the system root directory)
                                         ;
          (cond
           ((equal gtags-path-style 'absolute)

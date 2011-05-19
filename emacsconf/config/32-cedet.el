@@ -79,12 +79,9 @@
           ;; semantic-imenu-auto-rebuild-directory-indexes t
           ;; semantic-imenu-index-directory t
           semantic-which-function-use-color t)
-    (deh-add-hook c-mode-common-hook
-      (setq imenu-create-index-function 'semantic-create-imenu-index))
-    ;; TODO: append it after `semantic-default-elisp-setup'
-    (deh-add-hooks (emacs-lisp-mode-hook python-mode-hook)
-      (make-local-variable 'imenu-create-index-function)
-      (setq imenu-create-index-function 'imenu-default-create-index-function)))
+    ;; (deh-add-hook c-mode-common-hook
+    ;;   (setq imenu-create-index-function 'semantic-create-imenu-index))
+    )
 
   (deh-section "hippie-semantic"
     (autoload 'senator-try-expand-semantic "senator")
@@ -99,9 +96,11 @@
   (deh-require 'eassist
     (deh-define-key senator-mode-map
       ((kbd "C-c A")   . 'eassist-switch-h-cpp)
-      ((kbd "C-c L") . 'eassist-list-methods)))
+      ((kbd "C-c L") . 'eassist-list-methods))
+    ;; donot miss minus "-"
+    (eassist-key-itself eassist-mode-map (string-to-char "-")))
 
-  (deh-require 'linemark
+  (deh-require-reserved 'linemark
     ;;# vss is useful
     (enable-visual-studio-bookmarks)
     (deh-define-key global-map
