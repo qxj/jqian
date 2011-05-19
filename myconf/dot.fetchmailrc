@@ -1,7 +1,22 @@
-poll mail.example.com proto POP3 uidl
-user 'user@example.com'
-password 'password'
-keep fetchall
+# -*- conf -*-
+# 1. use `fetchmail --configdump` to check .fetchmailrc
+# 2. use `fetchmail -d0 -vk pop.gmail.com` to check gmail connection
+# 3. put `fetchmail -vk` in crontab to check mail every interval minutes
+
+poll mail.example.com proto POP3 uidl no dns
+    user 'user@example.com'
+    password 'password'
+    options keep fetchall
+
+poll pop.gmail.com with proto POP3 uidl no dns
+    user 'junist@gmail.com'
+    password 'password' is jqian here
+    options keep ssl
+    sslcertck
+    sslcertpath /etc/ssl/certs
+    sslfingerprint '59:51:61:89:CD:DD:B2:35:94:BB:44:97:A0:39:D5:B4'
+
 mda "/usr/bin/procmail -d %T"
 
+set daemon 300
 set logfile /home/jqian/fetchmail.log
