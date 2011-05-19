@@ -6,6 +6,7 @@ host smtp.gmail.com
 tls on
 tls_certcheck off
 tls_starttls on
+# tls_trust_file /etc/ssl/certs/ca-certificates.cr
 auth on
 user user@gmail.com
 password password
@@ -20,4 +21,5 @@ user user@example.com
 from user@example.com
 password password
 port 25
+
 logfile ~/msmtp.log

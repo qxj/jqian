@@ -1,12 +1,14 @@
 # -*- conf -*-
 
-set imap_user = "junist@gmail.com"
-set imap_pass = ""
-
+### for smtp
 set smtp_url = "smtp://junist@smtp.gmail.com:587/"
-set smtp_pass = ""
+set smtp_pass = "password"
 set from = "junist@gmail.com"
 set realname = "Julian Qian"
+
+### for imap
+set imap_user = "junist@gmail.com"
+set imap_pass = "password"
 
 set folder = "imaps://imap.gmail.com:993"
 set spoolfile = "+INBOX"
@@ -14,17 +16,23 @@ set postponed = "+[Gmail]/Drafts"
 set record = "+[Gmail]/Sent Mail"
 set trash = "+[Gmail]/Trash"
 
-set header_cache = ~/.mutt/cache/headers
-set message_cachedir = ~/.mutt/cache/bodies
-set certificate_file = ~/.mutt/certificates
-
-set move = no              # Stop asking to "move read messages to mbox"!
 set imap_keepalive = 900
 set imap_check_subscribed
 
 # setup gmail filters to apply the corresp. labels:
 mailboxes ! =ml-lug-list =ml-lug-org =[Gmail]/Drafts "=[Gmail]/All Mail"
 
+### for pop3
+# set folder = "~/Mail"
+# set postponed = "+postponed"
+# set record = "+sent"
+# mailboxes ! +Fetchmail +slrn +mutt
+
+set header_cache = ~/.mutt/cache/headers
+set message_cachedir = ~/.mutt/cache/bodies
+set certificate_file = ~/.mutt/certificates
+
+set move = no              # Stop asking to "move read messages to mbox"!
 
 # keybinds
 bind editor <space> noop
@@ -33,7 +41,7 @@ macro index ga "<change-folder>=[Gmail]/All Mail<enter>" "Go to all mail"
 macro index gs "<change-folder>=[Gmail]/Sent Mail<enter>" "Go to Sent Mail"
 macro index gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
 macro index gg "<change-folder>=GGroup<enter>" "Go to Google Group"
-
+# macro index,pager I '<shell-escape> fetchmail -vk<enter>'
 
 ### extra stuff
 

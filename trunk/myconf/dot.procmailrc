@@ -1,9 +1,11 @@
-PATH=/bin:/usr/bin:/usr/local/bin
-DEFAULT=/var/mail/jqian
-MAILDIR=$HOME/Mail
-LOCKFILE=$MAILDIR/.lock
-LOGFILE=$HOME/procmail.log
-VERBOSE=off
+# -*- conf -*-
+
+PATH     = /bin:/usr/bin:/usr/local/bin
+DEFAULT  = /var/mail/jqian
+MAILDIR  = $HOME/Mail
+LOCKFILE = $MAILDIR/.lock
+LOGFILE  = $HOME/procmail.log
+VERBOSE  = off
 
 ## Filters
 # :0

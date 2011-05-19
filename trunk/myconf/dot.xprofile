@@ -17,3 +17,8 @@ done
 # disable middle button
 # xmodmap -e "pointer = 1 9 3 4 5 6 7 8 2"
 
+## adjust monitor resolution
+# cvt 1920 1050 60.00
+xrandr --newmode  "1920x1050_60.00"  167.25  1920 2040 2240 2560  1050 1053 1063 1089 -hsync +vsync
+xrandr --addmode VGA1 "1920x1050_60.00"
+xrandr --output VGA1 --mode "1920x1050_60.00"
