@@ -7,6 +7,31 @@
 
 ;;; autoload
 (deh-section "autoloads"
+  (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
+  ;; multi-term
+  (autoload 'multi-term "multi-term" "")
+  (autoload 'multi-term-dedicated-open-select "multi-term" "")
+  (autoload 'multi-term-dedicated-exist-p "multi-term" "")
+  (autoload 'multi-term-dedicated-open "multi-term" "")
+  (autoload 'multi-term-dedicated-close "multi-term" "")
+  (autoload 'multi-term-dedicated-select "multi-term" "")
+  (autoload 'multi-term-dedicated-toggle "multi-term" "")
+  ;; browse-el
+  (autoload 'browse-el-find-funtion "browse-el" "")
+  (autoload 'browse-el-go-back "browse-el" "")
+  ;; bm
+  (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
+  (autoload 'bm-next     "bm" "Goto bookmark."                     t)
+  (autoload 'bm-previous "bm" "Goto previous bookmark."            t)
+  (autoload 'bm-show     "bm" "Show bookmarks in current buffer."  t)
+  (autoload 'bm-show-all "bm" "Show all bookmarks."                t)
+  ;; gpg
+  (autoload 'epa-file-enable "epa-file" "" t)
+  ;; psvn
+  (autoload 'svn-status "psvn" "")
+  (autoload 'svn-status-update-modeline "psvn" "")
+  (autoload 'svn-status-in-vc-mode? "psvn" "")
+  ;; php
   (autoload 'php-mode "php-mode" "php mode" t)
   (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
   (autoload 'git-status "git" "" t)
@@ -58,6 +83,7 @@
 
 ;;; auto detect mode
 (deh-section "auto-mode"
+  (add-to-list 'auto-mode-alist '("\\.*mutt-*\\|.article\\|\\.followup" . mail-mode))
   (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
   (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
@@ -311,12 +337,12 @@
   (deh-remove-hooks (c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
 
-(deh-require 'tags-view
+(deh-require-reserved 'tags-view
   (deh-define-key tags-history-mode-map
     ("q" . 'tv-view-history-quit))
 
   (defvar tv-previous-window-conf nil
-    "Window configuration before switching to sdcv buffer.")
+    "Window configuration before switching to tv buffer.")
   (defun tv-view-history ()
     "The main entry point; pops open a buffer with the list of
 locations on the tag stack that can then optionally be operated
@@ -360,17 +386,24 @@ etc).  The following options will be available:
           (setq gtags-previous-window-conf nil))))
   )
 
-(deh-require 'psvn
-  (defsubst svn-status-interprete-state-mode-color (stat)
-    "Interpret vc-svn-state symbol to mode line color"
-    (case stat
-      ('up-to-date "GreenYellow")
-      ('edited     "tomato")
-      ('unknown    "gray")
-      ('added      "blue")
-      ('deleted    "red")
-      ('unmerged   "purple")
-      (t           "black")))
+(deh-section "svn"
+  ;; inspired from git-emacs-autoloads
+  (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
+    "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
+    (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
+
+  (eval-after-load "psvn"
+    '(progn
+       (defsubst svn-status-interprete-state-mode-color (stat)
+         "Interpret vc-svn-state symbol to mode line color"
+         (case stat
+           ('up-to-date "GreenYellow")
+           ('edited     "tomato")
+           ('unknown    "gray")
+           ('added      "blue")
+           ('deleted    "red")
+           ('unmerged   "purple")
+           (t           "black")))))
 
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
@@ -677,10 +710,11 @@ Use CREATE-TEMP-F for creating temp copy."
 )
 
 (deh-section "elisp"
-  (deh-require 'browse-el
-    (define-key emacs-lisp-mode-map (kbd "M-.") 'browse-el-find-funtion)
-    (define-key emacs-lisp-mode-map (kbd "M-*") 'browse-el-go-back)
-    )
+  ;; browse-el
+  (deh-define-key emacs-lisp-mode-map
+    ("M-." . 'browse-el-find-funtion)
+    ("M-*" . 'browse-el-go-back))
+
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
 
@@ -696,10 +730,8 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (deh-add-hook emacs-lisp-mode-hook
     (my-mode-common-hook)
-    (define-key lisp-mode-shared-map (kbd "C-)") 'my-auto-insert-paren)
-    (hs-minor-mode 1)
     (turn-on-eldoc-mode)
-    (ignore-errors (imenu-add-menubar-index)))
+    (define-key lisp-mode-shared-map (kbd "C-)") 'my-auto-insert-paren))
   )
 
 ;;; scripts setting

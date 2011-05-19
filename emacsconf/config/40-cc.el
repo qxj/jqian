@@ -44,7 +44,7 @@
   "My C/C++/ObjC Programming Style")
 
 (deh-section "c-mode"
-  (require 'google-c-style)
+  (deh-try-require 'google-c-style)
 
   ;;# if function name is too long, we will indent the parameters forward.
   (defconst my-c-lineup-maximum-indent 20)
@@ -61,7 +61,8 @@
 
   ;;# convert some .h to c++-mode automatically
   (defun my-c-correct-hpp-mode ()
-    (if (and (string-match "\.h$" (buffer-name))
+    (if (and (not (derived-mode-p 'c++-mode))
+             (string-match "\.h$" (buffer-name))
              (save-excursion
                (goto-char (point-min))
                (search-forward-regexp "^class" nil t)))
@@ -78,7 +79,7 @@
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
     (eldoc-mode 1)
-    (cwarn-mode 1)
+    ;; (cwarn-mode 1)
     ;; (smart-operator-mode 1)
     (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
@@ -111,7 +112,7 @@
   ;; Unfortunately many standard c++ header files have no file
   ;; extension, and so will not typically be identified by emacs as c++
   ;; files. The following code is intended to solve this problem.
-  (require 'cl)
+  (eval-when-compile (require 'cl))
   (defun file-in-directory-list-p (file dirlist)
     "Returns true if the file specified is contained within one of
 the directories in the list. The directories must also exist."

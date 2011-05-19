@@ -108,3 +108,14 @@ pgrep, so.. make sure pgrep is already installed in your system."
     (toggle-truncate-lines 1)
     (toggle-read-only 1)
     (display-buffer (current-buffer))))
+
+(defun run-in-ansi-term (prg &optional use-existing)
+  "Run program PRG in a terminal buffer. If USE_EXISTING is
+non-nil and PRG is already running, switch to that buffer instead
+of starting a new instance."
+  (interactive)
+  (let ((bufname (format "*%s*" prg)))
+    (when (not (and use-existing
+                    (let ((buf (get-buffer bufname)))
+                      (and buf (buffer-name (switch-to-buffer bufname))))))
+      (ansi-term prg prg))))
