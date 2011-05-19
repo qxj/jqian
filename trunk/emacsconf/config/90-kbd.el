@@ -1,9 +1,16 @@
-;;; key setting
+;; -*- mode: Emacs-Lisp -*-
+
+;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
+;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
+;; Hi-lock: end
+
+;;; prefix key
 (define-prefix-command 'ctl-cc-map nil "Command prefix: C-c c")
 (define-prefix-command 'ctl-ck-map nil "one-key prefix: C-c k")
 (define-prefix-command 'ctl-z-map nil "Command prefix: C-z")
 
-;; global key binding
+;;; global key binding
 (deh-define-key global-map
   ((kbd "C-z")   . 'ctl-z-map)
   ((kbd "C-d")   . 'delete-char-or-region)
@@ -25,7 +32,7 @@
   ((kbd "M-0")   . 'other-window)
   ((kbd "C-M-0")   . 'sr-speedbar-select-window)
   ((kbd "M-1")   . 'sdcv-search)
-  ;; ((kbd "M-'")   . 'just-one-space)
+  ((kbd "M-'")   . 'just-one-space)
   ((kbd "M--")   . 'delete-blank-lines)
   ((kbd "M-J")   . 'vi-join-lines)
   ((kbd "M-M")   . 'vi-merge-lines)
@@ -36,9 +43,15 @@
   ((kbd "<C-M-up>")   . 'my-move-line-up)
   ((kbd "<M-S-down>") . 'my-dup-line-down)
   ((kbd "<S-down>") . 'my-dup-line-down-continued)
+;;;; highlight symbol
+  ((kbd "<C-f3>") . 'highlight-symbol-at-point)
+  ((kbd "<f3>") . 'highlight-symbol-next)
+  ((kbd "<S-f3>") . 'highlight-symbol-prev)
+;;;; one key
+  ((kbd "<f5>") . 'one-key-menu-anything)
   ((kbd "<f6>") . 'one-key-menu-root)
-  ((kbd "<f11>") . 'w3m)
   ((kbd "<f12>")  . 'one-key-menu-toggle)
+
   ((kbd "<f8>")  . 'org-agenda)
   ((kbd "<f7>")  . 'calendar)
   ((kbd "C-h j") . (lambda () (interactive) (info "elisp")))
@@ -104,187 +117,201 @@
 (deh-define-key read-expression-map
   ("\t" . 'PC-lisp-complete-symbol))
 
+;;; one-key settings
 (deh-require 'one-key
   (deh-define-key ctl-ck-map
     ("k" . 'one-key-menu-root)
+    ("a" . 'one-key-menu-anything)
     ("t" . 'one-key-menu-toggle)
     ("g" . 'one-key-menu-gtags)
     ("c" . 'one-key-menu-cscope)
     ("h" . 'one-key-menu-highlight)
     ("s" . 'one-key-menu-hideshow)
-    ("v" . 'one-key-menu-version)
+    ("v" . 'one-key-menu-vc)
     ("w" . 'one-key-menu-window)
     )
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ROOT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (setq one-key-menu-root-alist
-        '(
-          (("t" . "Toggle") . one-key-menu-toggle)
-          (("g" . "Gtags") . one-key-menu-gtags)
-          (("c" . "Cscope") . one-key-menu-cscope)
-          (("h" . "Highlight") . one-key-menu-highlight)
-          (("s" . "Show Hide") . one-key-menu-hideshow)
-          (("v" . "Version Control") . one-key-menu-version)
-          (("w" . "Window") . one-key-menu-window)))
+;;;; Root
+  (defvar one-key-menu-root-alist
+    '(
+      (("a" . "Anything") . one-key-menu-anything)
+      (("t" . "Toggle") . one-key-menu-toggle)
+      (("g" . "Gtags") . one-key-menu-gtags)
+      (("c" . "Cscope") . one-key-menu-cscope)
+      (("h" . "Highlight") . one-key-menu-highlight)
+      (("s" . "Show Hide") . one-key-menu-hideshow)
+      (("v" . "Version Control") . one-key-menu-vc)
+      (("w" . "Window") . one-key-menu-window))
+    "The `one-key' menu alist for Root.")
 
   (defun one-key-menu-root ()
     "The `one-key' menu for root."
     (interactive)
     (one-key-menu "ROOT" one-key-menu-root-alist))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Toggle ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-toggle-alist nil
-    "The `one-key' menu alist for TOGGLE.")
+;;;; Anything
+  (defvar one-key-menu-anything-alist
+    '(
+      (("a" . "Anything") . anything)
+      (("b" . "Buffers") . anything-buffers+)
+      (("B" . "Bookmarks") . anything-c-pp-bookmarks)
+      (("c" . "Commands") . anything-M-x)
+      (("f" . "Files") . anything-for-files)
+      (("i" . "Imenu") . anything-imenu)
+      (("I" . "Info") . anything-info-emacs)
+      (("k" . "Kill Ring") . anything-show-kill-ring)
+      (("o" . "Occur") . anything-occur)
+      (("r" . "Register") . anything-register)
+      (("m" . "Man Pages") . anything-man-woman)
+      (("SPC" . "Execute anything commands") . anything-execute-anything-command)
+      )
+    "The `one-key' menu alist for Anything.")
 
-  (setq one-key-menu-toggle-alist
-        '(
-          (("e" . "Erc") . my-toggle-erc)
-          (("g" . "Gdb") . my-toggle-gdb)
-          (("G" . "Gnus") . my-toggle-gnus)
-          (("i" . "Info") . my-toggle-info)
-          (("s" . "SpeedBar") . my-toggle-sr-speedbar)
-          (("S" . "Slime") . my-toggle-slime)
-          (("t" . "Multi-Term") . my-toggle-multi-term)
-          (("T" . "Twitter") . my-toggle-twitter)
-          (("w" . "W3m") . my-toggle-w3m)
-          ))
+  (defun one-key-menu-anything ()
+    "The `one-key' menu for ANYTHING."
+    (interactive)
+    (require 'anything-config nil t)    ; latter load
+    (one-key-menu "ANYTHING" one-key-menu-anything-alist t))
+
+;;;; Toggle
+  (defvar one-key-menu-toggle-alist
+    '(
+      (("e" . "Erc") . my-toggle-erc)
+      (("g" . "Gdb") . my-toggle-gdb)
+      (("G" . "Gnus") . my-toggle-gnus)
+      (("i" . "Info") . my-toggle-info)
+      (("s" . "SpeedBar") . my-toggle-sr-speedbar)
+      (("S" . "Slime") . my-toggle-slime)
+      (("t" . "Multi-Term") . my-toggle-multi-term)
+      (("T" . "Twitter") . my-toggle-twittering)
+      (("w" . "W3m") . my-toggle-w3m)
+      )
+    "The `one-key' menu alist for TOGGLE.")
 
   (defun one-key-menu-toggle ()
     "The `one-key' menu for TOGGLE."
     (interactive)
     (one-key-menu "TOGGLE" one-key-menu-toggle-alist t))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Gtags ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-gtags-alist nil
+;;;; Toggle
+  (defvar one-key-menu-gtags-alist
+    '(
+      (("," . "Find Tag Define") . xgtags-find-tag-from-here)
+      (("." . "Find Tag Reference (No Prompt)") . xgtags-find-rtag-no-prompt)
+      ((">" . "Find Tag Reference") . xgtags-find-rtag)
+      (("t" . "Search Tag Define") . xgtags-find-tag)
+      (("s" . "Find Symbol") . xgtags-find-symbol)
+      (("p" . "Find Pattern") . xgtags-find-pattern)
+      (("/" . "Pop Stack") . xgtags-pop-stack)
+      (("b" . "Switch Current Window") . xgtags-switch-to-buffer)
+      (("o" . "Switch Other Window") . xgtags-switch-to-buffer-other-window)
+      (("x" . "Parse File") . xgtags-parse-file)
+      (("f" . "Find File") . xgtags-find-file)
+      (("g" . "Find With Grep") . xgtags-find-with-grep)
+      (("i" . "Find With Idutils") . xgtags-find-with-idutils)
+      (("m" . "Make Complete List") . xgtags-make-complete-alist)
+      (("q" . "Query Replace Regexp") . xgtags-query-replace-regexp)
+      (("v" . "Visit Root Directory") . xgtags-visit-rootdir)
+      (("r" . "Return Window") . xgtags-select-tag-return-window))
     "The `one-key' menu alist for GTAGS.")
-
-  (setq one-key-menu-gtags-alist
-        '(
-          (("," . "Find Tag Define") . xgtags-find-tag-from-here)
-          (("." . "Find Tag Reference (No Prompt)") . xgtags-find-rtag-no-prompt)
-          ((">" . "Find Tag Reference") . xgtags-find-rtag)
-          (("t" . "Search Tag Define") . xgtags-find-tag)
-          (("s" . "Find Symbol") . xgtags-find-symbol)
-          (("p" . "Find Pattern") . xgtags-find-pattern)
-          (("/" . "Pop Stack") . xgtags-pop-stack)
-          (("b" . "Switch Current Window") . xgtags-switch-to-buffer)
-          (("o" . "Switch Other Window") . xgtags-switch-to-buffer-other-window)
-          (("x" . "Parse File") . xgtags-parse-file)
-          (("f" . "Find File") . xgtags-find-file)
-          (("g" . "Find With Grep") . xgtags-find-with-grep)
-          (("i" . "Find With Idutils") . xgtags-find-with-idutils)
-          (("m" . "Make Complete List") . xgtags-make-complete-alist)
-          (("q" . "Query Replace Regexp") . xgtags-query-replace-regexp)
-          (("v" . "Visit Root Directory") . xgtags-visit-rootdir)
-          (("r" . "Return Window") . xgtags-select-tag-return-window)))
 
   (defun one-key-menu-gtags ()
     "The `one-key' menu for GTAGS."
     (interactive)
     (one-key-menu "GTAGS" one-key-menu-gtags-alist t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Cscope ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-cscope-alist nil
+;;;; Cscope
+  (defvar one-key-menu-cscope-alist
+    '(
+      (("s" . "This Symbol") . cscope-find-this-symbol)
+      (("d" . "Definition Prompt") . cscope-find-global-definition)
+      (("g" . "Definition No Prompt") . cscope-find-global-definition-no-prompting)
+      (("f" . "This File") . cscope-find-this-file)
+      (("i" . "Including This File") . cscope-find-files-including-file)
+      (("c" . "Calling This Function") . cscope-find-functions-calling-this-function)
+      (("e" . "This Function Called") . cscope-find-called-functions)
+      (("p" . "Pattern") . cscope-find-egrep-pattern)
+      (("t" . "This String") . cscope-find-this-text-string))
     "The `one-key' menu alist for CSCOPE.")
-
-  (setq one-key-menu-cscope-alist
-        '(
-          (("s" . "This Symbol") . cscope-find-this-symbol)
-          (("d" . "Definition Prompt") . cscope-find-global-definition)
-          (("g" . "Definition No Prompt") . cscope-find-global-definition-no-prompting)
-          (("f" . "This File") . cscope-find-this-file)
-          (("i" . "Including This File") . cscope-find-files-including-file)
-          (("c" . "Calling This Function") . cscope-find-functions-calling-this-function)
-          (("e" . "This Function Called") . cscope-find-called-functions)
-          (("p" . "Pattern") . cscope-find-egrep-pattern)
-          (("t" . "This String") . cscope-find-this-text-string)))
 
   (defun one-key-menu-cscope ()
     "The `one-key' menu for CSCOPE."
     (interactive)
     (one-key-menu "CSCOPE" one-key-menu-cscope-alist t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Highlight ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-highlight-alist nil
+;;;; Highlight
+  (defvar one-key-menu-highlight-alist
+    '(
+      (("h" . "Highlight At Point") . highlight-symbol-at-point)
+      (("u" . "Remote All Highlights") . highlight-symbol-remove-all)
+      (("n" . "Next Highlight") . highlight-symbol-next)
+      (("p" . "Previous Highlight") . highlight-symbol-prev)
+      (("N" . "Next Highlight In Defun") . highlight-symbol-next-in-defun)
+      (("P" . "Previous Highlight In Defun") . highlight-symbol-prev-in-defun)
+      (("q" . "Replace symbol At Point") . highlight-symbol-query-replace))
     "The `one-key' menu alist for Highlight.")
-
-  (setq one-key-menu-highlight-alist
-        '(
-          (("h" . "Highlight At Point") . highlight-symbol-at-point)
-          (("u" . "Remote All Highlights") . highlight-symbol-remove-all)
-          (("n" . "Next Highlight") . highlight-symbol-next)
-          (("p" . "Previous Highlight") . highlight-symbol-prev)
-          (("N" . "Next Highlight In Defun") . highlight-symbol-next-in-defun)
-          (("P" . "Previous Highlight In Defun") . highlight-symbol-prev-in-defun)
-          (("q" . "Replace symbol At Point") . highlight-symbol-query-replace)))
 
   (defun one-key-menu-highlight ()
     "The `one-key' menu for Highlight."
     (interactive)
     (one-key-menu "HIGHLIGHT" one-key-menu-highlight-alist t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Hideshow ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-hideshow-alist nil
+;;;; Hideshow
+  (defvar one-key-menu-hideshow-alist
+    '(
+      (("s" . "Show Block") . hs-show-block)
+      (("h" . "Hide Block") . hs-hide-block)
+      (("c" . "Toggle Hiding") . hs-toggle-hiding)
+      (("j" . "Show All") . hs-show-all)
+      (("k" . "Hide All") . hs-hide-all))
     "The `one-key' menu alist for HIDESHOW.")
-
-  (setq one-key-menu-hideshow-alist
-        '(
-          (("s" . "Show Block") . hs-show-block)
-          (("h" . "Hide Block") . hs-hide-block)
-          (("c" . "Toggle Hiding") . hs-toggle-hiding)
-          (("j" . "Show All") . hs-show-all)
-          (("k" . "Hide All") . hs-hide-all)))
 
   (defun one-key-menu-hideshow ()
     "The `one-key' menu for HIDESHOW."
     (interactive)
     (one-key-menu "HIDESHOW" one-key-menu-hideshow-alist t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Window ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-window-alist nil
+;;;; Window
+  (defvar one-key-menu-window-alist
+    '(
+      (("b" . "Balance") . balance-windows)
+      (("l" . "Shrink If Larger") . shrink-window-if-larger-than-buffer)
+      (("e" . "Enlarge") . enlarge-window)
+      (("s" . "Shrink") . shrink-window)
+      (("h" . "Enlarge H.") . enlarge-window-horizontally)
+      (("y" . "Shrink H.") . shrink-window-horizontally))
     "The `one-key' menu alist for WINDOW.")
-
-  (setq one-key-menu-window-alist
-        '(
-          (("b" . "Balance") . balance-windows)
-          (("l" . "Shrink If Larger") . shrink-window-if-larger-than-buffer)
-          (("e" . "Enlarge") . enlarge-window)
-          (("s" . "Shrink") . shrink-window)
-          (("h" . "Enlarge H.") . enlarge-window-horizontally)
-          (("y" . "Shrink H.") . shrink-window-horizontally)))
 
   (defun one-key-menu-window ()
     "The `one-key' menu for WINDOW."
     (interactive)
     (one-key-menu "WINDOW" one-key-menu-window-alist t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Version ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defvar one-key-menu-version-alist nil
-    "The `one-key' menu alist for VERSION.")
+;;;; Verson control
+  (defvar one-key-menu-vc-alist
+    '(
+      (("+" . "Update") . vc-update)
+      (("=" . "Diff Base") . vc-diff)
+      (("#" . "Diff With Other Ver.") . vc-version-diff)
+      (("~" . "View Other Ver.") . vc-revision-other-window)
+      (("a" . "Update ChangeLog") . vc-update-change-log)
+      ;; (("b" . "Switch Backend") . vc-switch-backend)
+      ;; (("c" . "Rollback") . vc-rollback)
+      (("d" . "Status") . vc-dir)
+      (("g" . "Annotate!") . vc-annotate)
+      (("h" . "Insert Headers") . vc-insert-headers)
+      ;; (("i" . "Register") . vc-register)
+      (("l" . "Print Log") . vc-print-log)
+      (("m" . "Merge") . vc-merge)
+      (("r" . "Retrieve Tag") . vc-retrieve-tag)
+      (("s" . "Create Tag") . vc-create-tag)
+      (("u" . "Revert") . vc-revert)
+      (("v" . "Commit") . vc-next-action)
+      )
+    "The `one-key' menu alist for VERSION CONTROL.")
 
-  (setq one-key-menu-version-alist
-        '((("+" . "Update") . vc-update)
-          (("=" . "Diff Base") . vc-diff)
-          (("#" . "Diff With Other Ver.") . vc-version-diff)
-          (("~" . "View Other Ver.") . vc-revision-other-window)
-          (("a" . "Update ChangeLog") . vc-update-change-log)
-          ;; (("b" . "Switch Backend") . vc-switch-backend)
-          ;; (("c" . "Rollback") . vc-rollback)
-          (("d" . "Status") . vc-dir)
-          (("g" . "Annotate!") . vc-annotate)
-          (("h" . "Insert Headers") . vc-insert-headers)
-          ;; (("i" . "Register") . vc-register)
-          (("l" . "Print Log") . vc-print-log)
-          (("m" . "Merge") . vc-merge)
-          (("r" . "Retrieve Tag") . vc-retrieve-tag)
-          (("s" . "Create Tag") . vc-create-tag)
-          (("u" . "Revert") . vc-revert)
-          (("v" . "Commit") . vc-next-action)
-          ))
-
-  (defun one-key-menu-version ()
-    "The `one-key' menu for VERSION."
+  (defun one-key-menu-vc ()
+    "The `one-key' menu for VERSION CONTROL."
     (interactive)
-    (one-key-menu "VERSION" one-key-menu-version-alist t))
-
+    (one-key-menu "VERSON CONTROL" one-key-menu-vc-alist t))
   )

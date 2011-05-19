@@ -324,7 +324,7 @@ If the buffer is currently not visible, makes it sticky."
   "Format a PRIVMSG in an insertible fashion."
   (let* ((mark-s (if msgp (if privp "*" "") "-"))
          (mark-e (if msgp (if privp "*" (concat " " xwl-vertical-bar)) "-"))
-         (str	 (format "%s%s%s %s" mark-s nick mark-e msg))
+         (str    (format "%s%s%s %s" mark-s nick mark-e msg))
          (nick-face (if privp 'erc-nick-msg-face 'erc-nick-default-face))
          (msg-face (if privp 'erc-direct-msg-face 'erc-default-face)))
     ;; add text properties to text before the nick, the nick and after the nick
@@ -368,3 +368,20 @@ If the buffer is currently not visible, makes it sticky."
 (defadvice erc-open (around disable-read-only activate)
   (let ((inhibit-read-only t))
     ad-do-it))
+
+(defun my-toggle-erc ()
+  "Switch to a erc buffer or return to the previous buffer."
+  (interactive)
+  (if (derived-mode-p 'erc-mode)
+      (while (derived-mode-p 'erc-mode)
+        (bury-buffer))
+    (let ((list (buffer-list)))
+      (while list
+        (if (with-current-buffer (car list)
+              (derived-mode-p 'erc-mode))
+            (progn
+              (switch-to-buffer (car list))
+              (setq list nil))
+          (setq list (cdr list))))
+      (unless (derived-mode-p 'erc-mode)
+        (call-interactively 'erc)))))

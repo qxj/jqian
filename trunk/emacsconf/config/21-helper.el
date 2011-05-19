@@ -78,3 +78,33 @@ pgrep, so.. make sure pgrep is already installed in your system."
   (my-shell-command-asynchronously
    (format "zenity --info --title \"%s\" --text \"%s\""
            title message)))
+
+(defun ascii-table-show ()
+  "Print the ascii table"
+  (interactive)
+  (with-current-buffer (get-buffer-create "*ASCII table*")
+    (setq buffer-read-only nil)
+    (erase-buffer)
+    (let ((i   0)
+          (tmp 0))
+      (insert (propertize
+               "                                [ASCII table]\n\n"
+               'face font-lock-comment-face))
+      (while (< i 32)
+        (dolist (tmp (list i (+ 32 i) (+ 64 i) (+ 96 i)))
+          (insert (concat
+                   (propertize (format "%3d " tmp)
+                               'face font-lock-function-name-face)
+                   (propertize (format "[%2x]" tmp)
+                               'face font-lock-constant-face)
+                   "    "
+                   (propertize (format "%3s" (single-key-description tmp))
+                               'face font-lock-string-face)
+                   (unless (= tmp (+ 96 i))
+                     (propertize " | " 'face font-lock-variable-name-face)))))
+        (newline)
+        (setq i (+ i 1)))
+      (goto-char (point-min)))
+    (toggle-truncate-lines 1)
+    (toggle-read-only 1)
+    (display-buffer (current-buffer))))

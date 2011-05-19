@@ -139,7 +139,7 @@
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
   (set-register ?p '(file . "~/projects/"))
-  (set-register ?d '(file . "~/Downloads/")))
+  (set-register ?d '(file . "~/Desktop/")))
 
 ;; prevent no response if click the memu in File
 (fset 'print-buffer 'ignore)
@@ -179,14 +179,11 @@
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'LaTeX-hide-environment 'disabled nil)
 
+(setq help-window-select t)
+(setq tooltip-use-echo-area nil)
+(setq folding-folding-on-startup nil)
 
 (custom-set-variables
  ;; '(confirm-kill-emacs (quote y-or-n-p))
- '(cperl-invalid-face nil)
- '(desktop-globals-to-save (quote (sql-mysql-schema bibus-formats desktop-missing-file-warning search-ring regexp-search-ring register-alist windata-named-winconf)))
- '(folding-folding-on-startup nil)
- '(help-window-select t)
- '(tooltip-use-echo-area nil)
- '(view-read-only t)
  '(user-mail-address "junist@gmail.com")
 )
