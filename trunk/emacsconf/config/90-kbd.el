@@ -7,8 +7,10 @@
 
 ;;; prefix key
 (define-prefix-command 'ctl-cc-map nil "Command prefix: C-c c")
-(define-prefix-command 'ctl-ck-map nil "one-key prefix: C-c k")
 (define-prefix-command 'ctl-z-map nil "Command prefix: C-z")
+(define-prefix-command 'one-key-prefix nil "one-key prefix: C-c k")
+(define-prefix-command 'bm-prefix nil "bm prefix: C-c b")
+(define-prefix-command 'multi-term-prefix nil "mul-term prefix: C-c t")
 
 ;;; global key binding
 (deh-define-key global-map
@@ -30,7 +32,7 @@
   ((kbd "C-\\")  . 'my-comment-or-uncomment-region)
   ((kbd "M-5")   . 'my-display-buffer-path)
   ((kbd "M-0")   . 'other-window)
-  ((kbd "C-M-0")   . 'sr-speedbar-select-window)
+  ((kbd "C-M-0") . 'sr-speedbar-select-window)
   ((kbd "M-1")   . 'sdcv-search)
   ((kbd "M-'")   . 'just-one-space)
   ((kbd "M--")   . 'delete-blank-lines)
@@ -39,6 +41,8 @@
   ((kbd "M-f")   . 'camelcase-forward-word)
   ((kbd "M-b")   . 'camelcase-backward-word)
   ((kbd "M-m")   . 'smart-mark)
+  ((kbd "M-[")   . 'recent-jump-jump-backward)
+  ((kbd "M-]")   . 'recent-jump-jump-forward)
   ((kbd "<C-M-down>") . 'my-move-line-down)
   ((kbd "<C-M-up>")   . 'my-move-line-up)
   ((kbd "<M-S-down>") . 'my-dup-line-down)
@@ -73,8 +77,10 @@
   )
 
 (deh-define-key (lookup-key global-map "\C-c")
+  ("b" . 'bm-prefix)
+  ("k" . 'one-key-prefix)
+  ("t" . 'multi-term-prefix)
   ("c" . 'ctl-cc-map)
-  ("k" . 'ctl-ck-map)
   ("$" . 'toggle-truncate-lines)
   ;; ("f" . 'comint-dynamic-complete)
   ;; ("g" . 'fold-dwim-hide-all)
@@ -107,6 +113,20 @@
   ("\t" . 'ispell-complete-word)
   )
 
+(deh-define-key bm-prefix
+  ("b" . 'bm-toggle)
+  ("n" . 'bm-next)
+  ("p" . 'bm-previous)
+  ("s" . 'bm-show)
+  ("a" . 'bm-show-all))
+
+(deh-define-key multi-term-prefix
+  ("c" . 'multi-term)
+  ("t" . 'multi-term-dedicated-open-select)
+  ("q" . 'multi-term-dedicated-close)
+  ("s" . 'multi-term-dedicated-select)
+  ("g" . 'multi-term-dedicated-toggle))
+
 (deh-define-key ctl-z-map
   ("\C-z" . (if (eq window-system 'x) 'suspend-frame 'suspend-emacs)))
 
@@ -119,7 +139,7 @@
 
 ;;; one-key settings
 (deh-require 'one-key
-  (deh-define-key ctl-ck-map
+  (deh-define-key one-key-prefix
     ("k" . 'one-key-menu-root)
     ("a" . 'one-key-menu-anything)
     ("t" . 'one-key-menu-toggle)
@@ -180,6 +200,7 @@
       (("g" . "Gdb") . my-toggle-gdb)
       (("G" . "Gnus") . my-toggle-gnus)
       (("i" . "Info") . my-toggle-info)
+      (("m" . "Mutt") . my-toggle-mutt)
       (("s" . "SpeedBar") . my-toggle-sr-speedbar)
       (("S" . "Slime") . my-toggle-slime)
       (("t" . "Multi-Term") . my-toggle-multi-term)

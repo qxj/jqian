@@ -430,8 +430,7 @@ mouse-3: Remove current window from display")
           "~/bin/"
           "~/")))
 
-(deh-require 'ibuffer
-  (require 'ibuf-ext nil t)
+(deh-section-after "ibuffer"
   (setq ibuffer-old-time 24
         ibuffer-show-empty-filter-groups nil)
   ;; keybinds
@@ -439,7 +438,7 @@ mouse-3: Remove current window from display")
   (deh-define-key ibuffer-mode-map
     ("s" . 'one-key-menu-ibuffer-sort)
     ("r" . 'ibuffer-rename-buffer)
-    ((kbd "C-x C-f") . 'ibuffer-find-file)
+    ("\C-x\C-f" . 'ibuffer-find-file)
     (" " . 'scroll-up))
 
   (defun one-key-menu-ibuffer-sort ()
@@ -482,35 +481,38 @@ mouse-3: Remove current window from display")
                                      default-directory)
                                  default-directory))))
       (call-interactively 'ido-find-file)))
-  ;; group buffers
-  (setq ibuffer-saved-filter-groups
-        '(("default"
-           ("*buffers*" (or (mode . term-mode)
-                            (name . "^\\*gud")
-                            (name . "^\\*scratch")
-                            ;; slime
-                            (name . "^\\*slime-repl")
-                            (mode . message-mode)))
-           ("programming" (or (mode . c++-mode)
-                              (mode . c-mode)
-                              (mode . makefile-mode)))
-           ("script" (or (mode . python-mode)
-                         (mode . sh-mode)
-                         (mode . perl-mode)
-                         (mode . org-mode)
-                         (mode . LaTeX-mode)))
-           ("web" (or  (mode . html-mode)
-                       (mode . css-mode)
-                       (mode . php-mode)
-                       (mode . javascript-mode)
-                       (mode . js2-mode)))
-           ("elisp" (or (mode . emacs-lisp-mode)
-                        (mode . lisp-interaction-mode)))
-           ("dired" (mode . dired-mode))
-           ("*others*" (name . "\\*.*\\*")))))
-  (set 'ibuffer-mode-hook
-       (lambda ()
-         (ibuffer-switch-to-saved-filter-groups "default")))
+
+  (deh-add-hook ibuffer-mode-hook
+    (require 'ibuf-ext nil t)
+    (ibuffer-switch-to-saved-filter-groups "default"))
+
+  (eval-after-load "ibuf-ext"
+    '(progn
+       (setq ibuffer-saved-filter-groups
+             '(("default"
+                ("*buffers*" (or (mode . term-mode)
+                                 (name . "^\\*gud")
+                                 (name . "^\\*scratch")
+                                 ;; slime
+                                 (name . "^\\*slime-repl")
+                                 (mode . message-mode)))
+                ("programming" (or (mode . c++-mode)
+                                   (mode . c-mode)
+                                   (mode . makefile-mode)))
+                ("script" (or (mode . python-mode)
+                              (mode . sh-mode)
+                              (mode . perl-mode)
+                              (mode . org-mode)
+                              (mode . LaTeX-mode)))
+                ("web" (or  (mode . html-mode)
+                            (mode . css-mode)
+                            (mode . php-mode)
+                            (mode . javascript-mode)
+                            (mode . js2-mode)))
+                ("elisp" (or (mode . emacs-lisp-mode)
+                             (mode . lisp-interaction-mode)))
+                ("dired" (mode . dired-mode))
+                ("*others*" (name . "\\*.*\\*")))))))
   )
 
 (deh-require 'uniquify
@@ -629,15 +631,7 @@ mouse-3: Remove current window from display")
   (add-to-list 'session-globals-exclude 'org-mark-ring)
   (add-hook 'after-init-hook 'session-initialize))
 
-(deh-require 'bm
-  (define-prefix-command 'bm-map-prefix nil "Bm prefix: C-c b")
-  (global-set-key (kbd "C-c b") 'bm-map-prefix)
-  (deh-define-key bm-map-prefix
-    ("b" . 'bm-toggle)
-    ("n" . 'bm-next)
-    ("p" . 'bm-previous)
-    ("s" . 'bm-show)
-    ("a" . 'bm-show-all))
+(deh-section-after "bm"
 
   (deh-define-key bm-show-mode-map
     ("n" . 'bm-show-next)
@@ -717,13 +711,10 @@ mouse-3: Remove current window from display")
   )
 
 ;; recent-jump
-(deh-require 'recent-jump
-  (deh-define-key global-map
-    ((kbd "M-[") . 'recent-jump-jump-backward)
-    ((kbd "M-]") . 'recent-jump-jump-forward)))
+(deh-require 'recent-jump)
 
 ;; recent opened files
-(deh-require 'recentf
+(deh-section "recentf"
   ;; recent finded buffers
   (setq recentf-max-saved-items 1000
         recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir)
@@ -751,10 +742,11 @@ mouse-3: Remove current window from display")
       (find-file (cdr (assoc (ido-completing-read "Open file: "
                                                   (mapcar 'car elist))
                              elist)))))
-
-  ;; Also store recent opened directories besides files
-  (add-hook 'dired-mode-hook
-            (lambda () (recentf-add-file dired-directory))))
+  (eval-after-load "recentf"
+    '(progn
+       ;; Also store recent opened directories besides files
+       (add-hook 'dired-mode-hook
+                 (lambda () (recentf-add-file dired-directory))))))
 
 (deh-require 'pager
   (global-set-key (kbd "C-v") 'pager-page-down)
@@ -917,13 +909,7 @@ mouse-3: Remove current window from display")
           (call-interactively 'w3m))))))
 
 ;;; Edit
-(deh-require 'autopair
-  (deh-add-hooks (java-mode-hook
-                  c-mode-common-hook
-                  python-mode-hook
-                  emacs-lisp-mode-hook
-                  html-mode-hook)
-    (autopair-mode))
+(deh-section "autopair"
   ;; some tricks
   (deh-add-hook c++-mode-hook
     (push ? (getf autopair-dont-pair :comment))
@@ -932,19 +918,29 @@ mouse-3: Remove current window from display")
   (deh-add-hook emacs-lisp-mode-hook
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string)))
+
+  (deh-add-hooks (java-mode-hook
+                  c-mode-common-hook
+                  python-mode-hook
+                  emacs-lisp-mode-hook
+                  html-mode-hook)
+    (require 'autopair nil t)           ; advance in hooks
+    (autopair-mode))
   )
 
-(deh-require 'moccur-edit
+(deh-section "occur"
 
   (deh-add-hook occur-mode-hook
+    (require 'moccur-edit nil t)
     (setq truncate-lines t))
 
   ;; make cursor become a line
   ;; (require 'bar-cursor)
 
-  (defadvice moccur-edit-change-file
-   (after save-after-moccur-edit-buffer activate)
-   (save-buffer))
+  (eval-after-load "moccur-edit"
+    '(progn
+       (defadvice moccur-edit-change-file (after save-after-moccur-edit-buffer activate)
+         (save-buffer))))
 
   ;; handy functions
   (defun moccur-word-all-buffers (regexp)
@@ -1246,31 +1242,31 @@ indent line."
         ))
 
 ;;; Enhanced terminal
-(deh-require 'multi-term
+(deh-section "multi-term"
   (setq multi-term-dedicated-window-height 10
         multi-term-dedicated-max-window-height 10)
-  ;; compatible with normal terminal keybinds
-  (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
-  (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
-  (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
-  (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
-  (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
-  (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
-  (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
-  (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
-  ;; Only close dedicated window
-  (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
-  ;; unbind keys
-  (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
 
-  (define-prefix-command 'multi-term-prefix nil "Multi-term prefix: C-c t")
-  (global-set-key (kbd "C-c t") 'multi-term-prefix)
-  (deh-define-key multi-term-prefix
-    ("c" . 'multi-term)
-    ("t" . 'multi-term-dedicated-open-select)
-    ("q" . 'multi-term-dedicated-close)
-    ("s" . 'multi-term-dedicated-select)
-    ("g" . 'multi-term-dedicated-toggle))
+  (eval-after-load "multi-term"
+    '(progn
+       ;; compatible with normal terminal keybinds
+       (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
+       (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
+       (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
+       (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
+       (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+       (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
+       (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
+       (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
+       ;; Only close dedicated window
+       (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
+       ;; unbind keys
+       (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
+
+       ;; hack to backward kill word as it does in terminal
+       (defun term-send-backward-kill-word ()
+         "Backward kill word in term mode."
+         (interactive)
+         (term-send-raw-string "\e\C-?"))))
 
   (defun multi-term-dedicated-open-select ()
     (interactive)
@@ -1284,14 +1280,6 @@ indent line."
     (if (multi-term-dedicated-exist-p)
         (multi-term-dedicated-close)
       (multi-term-dedicated-open-select)))
-
-  ;; hack to backward kill word as it does in terminal
-  (eval-after-load "multi-term"
-    '(progn
-       (defun term-send-backward-kill-word ()
-         "Backward kill word in term mode."
-         (interactive)
-         (term-send-raw-string "\e\C-?"))))
   )
 
 (deh-section "shell"
@@ -1314,7 +1302,7 @@ indent line."
   (add-hook 'shell-mode-hook 'ywb-shell-mode-hook)
 
   ;; shell-completion
-  (deh-require 'shell-completion
+  (deh-try-require 'shell-completion
     (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
     (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
                               (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
@@ -1326,7 +1314,7 @@ indent line."
                    ("bookmark" "add")))))
 
 ;; browse-kill-ring
-(deh-require 'browse-kill-ring
+(deh-section "browse-kill-ring"
   (browse-kill-ring-default-keybindings)
   (setq browse-kill-ring-highlight-current-entry t))
 
@@ -1578,8 +1566,7 @@ indent line."
 ;;                    (eldoc-mode t)
 ;;                    (setq eldoc-documentation-function 'emoticons-help-echo))))))
 
-(deh-require 'epa-file
-  (epa-file-enable)
+(deh-section-after "epa-file"
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
 
 (deh-require-if 'gmail-notifier

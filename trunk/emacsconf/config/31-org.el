@@ -1,82 +1,21 @@
+;; -*- mode: Emacs-Lisp -*-
 
-(deh-section-path "org-export"
+;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
+;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
+;; Hi-lock: end
+
+(deh-section-path "org-external"
   "~/src/org-mode"
   ;; load-path
   (add-to-list 'load-path (expand-file-name "lisp" deh-this-path))
   (add-to-list 'load-path (expand-file-name "contrib/lisp" deh-this-path))
   ;; load required org libraries
-  (require 'org-install)
-
-  ;;# export org documents to latex & pdf
-  (deh-require 'org-latex
-    (setq org-latex-to-pdf-process
-          '("xelatex -interaction=nonstopmode -output-directory=%o %f"
-            "xelatex -interaction=nonstopmode -output-directory=%o %f"))
-    ;; org + beamer = owesome slides
-    (setq org-export-latex-default-packages-alist ; for xelatex
-          '(("cm-default" "fontspec" t) ; provides font selecting commands
-            ("" "xunicode" t)      ; provides unicode character macros
-            ("" "xltxtra" t)       ; provides some fixes/extras
-            ("" "indentfirst" t)
-            ("english" "babel" t)
-            ("AUTO" "inputenc" t)
-            ("" "color" t)
-            ;;# donot need unicode option
-            ("" "hyperref" t)
-            ;; ("pdftex" "graphicx" t)
-            ;;# listings for source code exporting
-            ("" "listings" t)
-            ("" "xcolor" t)
-            ("" "fancyvrb" t)
-            "\\lstset{
-   fancyvrb=true,
-   %% language=C++,
-   basicstyle=\\ttfamily,
-   stringstyle=\\ttfamily\\color{green!50!black},
-   keywordstyle=\\color{blue}\\bfseries,
-   commentstyle=\\color{red!50!black}\\itshape,
-   showspaces=false,
-   showstringspaces=true,
-   fontadjust=true,
-   keepspaces=true,
-   flexiblecolumns=true,
-   frame=single,
-   upquote=true
-}"
-            "\\setmainfont[BoldFont=DejaVu Serif]{DejaVu Serif}"
-            "\\setsansfont[BoldFont=DejaVu Sans]{DejaVu Sans}"
-            "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
-            "\\defaultfontfeatures{Mapping=tex-text}"
-            "\\XeTeXlinebreaklocale \"zh\""
-            "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
-            "\\tolerance=1000"))
-    ;; Only 2 level headlines will be exported as frames
-    ;; (setq org-export-headline-levels 2)
-    ;; During HTML export, convert latex fragment
-    (setq org-export-with-LaTeX-fragments t)
-
-    ;; (setq org-export-run-in-background t) ; buggy
-
-    ;;# fontify source code with listings
-    (setq org-export-latex-listings t)
-    ;; (add-to-list 'org-export-latex-packages-alist '(\"\" \"minted\"))
-    ;; (setq org-export-latex-listings 'minted)
-
-    (defalias 'C-mode 'c-mode)
-    )
-
-  ;;# export org documents to html
-  (deh-section "org-html"
-    (setq org-export-html-inline-images t
-          org-export-html-with-timestamp t)
-
-    (setq org-export-html-style
-          "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">"))
-
+  (require 'org-install nil t)
   ;;(require 'org-export-freemind-install)
-  )
+)
 
-(deh-require 'org
+(deh-section "org"
   (setq org-CUA-compatible t)
 
   (setq org-directory my-org-dir
@@ -141,6 +80,70 @@
         (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)))
   )
 
+(deh-section-after "org-latex"
+  (setq org-latex-to-pdf-process
+        '("xelatex -interaction=nonstopmode -output-directory=%o %f"
+          "xelatex -interaction=nonstopmode -output-directory=%o %f"))
+  ;; org + beamer = owesome slides
+  (setq org-export-latex-default-packages-alist ; for xelatex
+        '(("cm-default" "fontspec" t) ; provides font selecting commands
+          ("" "xunicode" t)      ; provides unicode character macros
+          ("" "xltxtra" t)       ; provides some fixes/extras
+          ("" "indentfirst" t)
+          ("english" "babel" t)
+          ("AUTO" "inputenc" t)
+          ("" "color" t)
+          ;;# donot need unicode option
+          ("" "hyperref" t)
+          ;; ("pdftex" "graphicx" t)
+          ;;# listings for source code exporting
+          ("" "listings" t)
+          ("" "xcolor" t)
+          ("" "fancyvrb" t)
+          "\\lstset{
+   fancyvrb=true,
+   %% language=C++,
+   basicstyle=\\ttfamily,
+   stringstyle=\\ttfamily\\color{green!50!black},
+   keywordstyle=\\color{blue}\\bfseries,
+   commentstyle=\\color{red!50!black}\\itshape,
+   showspaces=false,
+   showstringspaces=true,
+   fontadjust=true,
+   keepspaces=true,
+   flexiblecolumns=true,
+   frame=single,
+   upquote=true
+}"
+          "\\setmainfont[BoldFont=DejaVu Serif]{DejaVu Serif}"
+          "\\setsansfont[BoldFont=DejaVu Sans]{DejaVu Sans}"
+          "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
+          "\\defaultfontfeatures{Mapping=tex-text}"
+          "\\XeTeXlinebreaklocale \"zh\""
+          "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
+          "\\tolerance=1000"))
+  ;; Only 2 level headlines will be exported as frames
+  ;; (setq org-export-headline-levels 2)
+  ;; During HTML export, convert latex fragment
+  (setq org-export-with-LaTeX-fragments t)
+
+  ;; (setq org-export-run-in-background t) ; buggy
+
+  ;;# fontify source code with listings
+  (setq org-export-latex-listings t)
+  ;; (add-to-list 'org-export-latex-packages-alist '(\"\" \"minted\"))
+  ;; (setq org-export-latex-listings 'minted)
+
+  (defalias 'C-mode 'c-mode)
+  )
+
+(deh-section "org-html"
+  (setq org-export-html-inline-images t
+        org-export-html-with-timestamp t)
+
+  (setq org-export-html-style
+        "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">"))
+
 (deh-section "org-agenda"
   ;; (setq org-agenda-include-diary t) ; contain calendar
   ;; (setq org-log-done t)
@@ -160,7 +163,7 @@
           (todo priority-down category-keep)
           (tags priority-down category-keep))))
 
-(deh-require-if 'org-capture
+(deh-section-after "org-capture"
   ;; org-capture supersedes org-remember
   (>= (string-to-int org-version) 7.5)
   (setq org-capture-templates
