@@ -31,6 +31,13 @@
   (autoload 'svn-status "psvn" "")
   (autoload 'svn-status-update-modeline "psvn" "")
   (autoload 'svn-status-in-vc-mode? "psvn" "")
+  ;; grep
+  (autoload 'grep-tag-default "grep")
+  (autoload 'grep-apply-setting "grep")
+  ;; anything
+  (autoload 'anything "anything" "" t)
+  ;; ffap
+  (autoload 'ffap "ffap" "Alias of find-file-at-point")
   ;; php
   (autoload 'php-mode "php-mode" "php mode" t)
   (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
@@ -40,7 +47,7 @@
   (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'python-mode "python" "Python editing mode." t)
   (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
-  ;; (autoload 'pod-mode "pod-mode" "A major mode to edit pod" t)
+  ;; whitespace
   (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
   (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
   (autoload 'sourcepair-load "sourcepair" nil t)
@@ -49,12 +56,10 @@
   ;; iimage
   (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
   (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
-  (autoload 'po-mode "po-mode" "Major mode for translators to edit PO files" t)
-  (autoload 'yaml-mode "yaml-mode" "Simple mode to edit YAML." t)
+  ;; woman
   (autoload 'woman-mode "woman")
   (add-hook 'woman-mode-hook 'view-mode)
   (autoload 'woman-decode-buffer "woman")
-  ;; (autoload 'muse-insert-list-item "muse-mode" t)
   ;; wb-line
   ;; (autoload 'wb-line-number-toggle "wb-line-number" nil t)
   ;; htmlize
@@ -78,7 +83,15 @@
   ;; minibuf-isearch
   (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
   (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
+  ;; sdcv
   (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
+  ;; flymake
+  (autoload 'flymake-find-file-hook "flymake" "" t)
+  ;; gnuplot
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
+  ;; graphviz
+  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
   )
 
 ;;; auto detect mode
@@ -197,14 +210,12 @@
   (setq gtags-mode-hook
     '(lambda ()
        (setq gtags-pop-delete t)
-       (setq gtags-path-style 'absolute)
-  ))
+       (setq gtags-path-style 'absolute)))
 
   (setq gtags-select-mode-hook
     '(lambda ()
-       (setq hl-line-face 'underline)
-       (hl-line-mode 1)
-  ))
+       (set (make-local-variable 'hl-line-face) 'underline)
+       (hl-line-mode 1)))
 
   (eval-after-load "gtags"
     '(deh-define-key gtags-mode-map
@@ -461,238 +472,231 @@ etc).  The following options will be available:
   (deh-add-hooks (change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
   (deh-add-hooks (c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
 
-(deh-section-reserved "flymake"
-  (eval-after-load "flymake"
-    '(progn
-       (autoload 'flymake-find-file-hook "flymake" "" t)
-       (defun my-flymake-find-file-hook ()
-         (condition-case nil
-             (flymake-find-file-hook)
-           (error nil)))
-       (add-hook 'find-file-hooks 'my-flymake-find-file-hook t)
+(deh-section-after "flymake"
+  ;; (flymake-mode t)
 
-       ;; (flymake-mode t)
+  (setq flymake-gui-warnings-enabled nil
+        flymake-allowed-file-name-masks '()
+        flymake-log-level 0
+        flymake-no-changes-timeout 5.0)
 
-       (setq flymake-gui-warnings-enabled nil
-             ;; flymake-allowed-file-name-masks '()
-             flymake-log-level 0
-             flymake-no-changes-timeout 5.0)
+  ;; (deh-add-hooks (c-mode-common-hook makefile-mode-hook)
+  ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
 
-       ;; (deh-add-hooks (c-mode-common-hook makefile-mode-hook)
-       ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
+  (add-hook 'find-file-hooks
+            '(lambda nil (condition-case nil (flymake-find-file-hook) (error nil)))
+            t)
 
-       (defun flymake-display-current-error ()
-         "Display errors/warnings under cursor."
-         (interactive)
-         (let ((ovs (overlays-in (point) (1+ (point)))))
-           (catch 'found
-             (dolist (ov ovs)
-               (when (flymake-overlay-p ov)
-                 (message (overlay-get ov 'help-echo))
-                 (throw 'found t))))))
-       (defun flymake-goto-next-error-disp ()
-         "Go to next error in err ring, then display error/warning."
-         (interactive)
-         (flymake-goto-next-error)
-         (flymake-display-current-error))
-       (defun flymake-goto-prev-error-disp ()
-         "Go to previous error in err ring, then display error/warning."
-         (interactive)
-         (flymake-goto-prev-error)
-         (flymake-display-current-error))
-       (defvar flymake-mode-map (make-sparse-keymap))
-       (deh-define-key flymake-mode-map
-         ((kbd "C-c <f4>")   . 'flymake-goto-next-error-disp)
-         ((kbd "C-c <S-f4>") . 'flymake-goto-prev-error-disp)
-         ((kbd "C-c <C-f4>") . 'flymake-display-err-menu-for-current-line))
-       (or (assoc 'flymake-mode minor-mode-map-alist)
-           (setq minor-mode-map-alist
-                 (cons (cons 'flymake-mode flymake-mode-map)
-                       minor-mode-map-alist)))
+  (defvar flymake-mode-map (make-sparse-keymap))
+  (deh-define-key flymake-mode-map
+    ((kbd "C-c <f4>")   . 'flymake-goto-next-error-disp)
+    ((kbd "C-c <S-f4>") . 'flymake-goto-prev-error-disp)
+    ((kbd "C-c <C-f4>") . 'flymake-display-err-menu-for-current-line))
+  (or (assoc 'flymake-mode minor-mode-map-alist)
+      (setq minor-mode-map-alist
+            (cons (cons 'flymake-mode flymake-mode-map)
+                  minor-mode-map-alist)))
 
-       ;; Directly use gcc instead of Makefile
-       (setq flymake-allowed-file-name-masks '())
-       (when (executable-find "texify")
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.tex\\'" flymake-simple-tex-init))
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("[0-9]+\\.tex\\'"
-                        flymake-master-tex-init flymake-master-cleanup)))
-       (when (executable-find "xml")
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.xml\\'" flymake-xml-init))
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.html?\\'" flymake-xml-init)))
-       (when (executable-find "perl")
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.p[ml]\\'" flymake-perl-init)))
-       (when (executable-find "php")
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.php[345]?\\'" flymake-php-init)))
-       (when (executable-find "make")
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.idl\\'" flymake-simple-make-init))
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.java\\'"
+  (defun flymake-display-current-error ()
+    "Display errors/warnings under cursor."
+    (interactive)
+    (let ((ovs (overlays-in (point) (1+ (point)))))
+      (catch 'found
+        (dolist (ov ovs)
+          (when (flymake-overlay-p ov)
+            (message (overlay-get ov 'help-echo))
+            (throw 'found t))))))
+  (defun flymake-goto-next-error-disp ()
+    "Go to next error in err ring, then display error/warning."
+    (interactive)
+    (flymake-goto-next-error)
+    (flymake-display-current-error))
+  (defun flymake-goto-prev-error-disp ()
+    "Go to previous error in err ring, then display error/warning."
+    (interactive)
+    (flymake-goto-prev-error)
+    (flymake-display-current-error))
 
-                        flymake-simple-make-java-init flymake-simple-java-cleanup))
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.cs\\'" flymake-simple-make-init)))
-       (add-to-list 'flymake-allowed-file-name-masks
-                    '("\\.el$" flymake-elisp-init))
-       ;; (add-hook 'write-file-functions (lambda nil
-       ;;                                   (when (eq major-mode 'emacs-lisp-mode)
-       ;;                                     (check-parens))))
-       (defun flymake-elisp-init ()
-         (if (string-match "^ " (buffer-name))
-             nil
-           (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                              'flymake-create-temp-inplace))
-                  (local-file (file-relative-name
-                               temp-file
-                               (file-name-directory buffer-file-name))))
-             (list
-              (expand-file-name invocation-name invocation-directory)
-              (list
-               "-Q" "--batch" "--eval"
-               (prin1-to-string
-                (quote
-                 (dolist (file command-line-args-left)
-                   (with-temp-buffer
-                     (insert-file-contents file)
-                     (emacs-lisp-mode)
-                     (condition-case data
-                         (scan-sexps (point-min) (point-max))
-                       (scan-error
-                        (goto-char(nth 2 data))
-                        (princ (format "%s:%s: error: Unmatched bracket or quote\n"
-                                       file (line-number-at-pos)))))))))
-               local-file)))))
-       (when (or (executable-find "make")
-                 (executable-find "gcc")
-                 (executable-find "g++"))
-         (defvar flymake-makefile-filenames '("Makefile" "makefile" "GNUmakefile")
-           "File names for make.")
-         (defun flymake-get-gcc-cmdline (source base-dir)
-           (let ((cc (if (string= (file-name-extension source) "c") "gcc" "g++")))
-             (list cc
-                   (list "-Wall"
-                         "-Wextra"
-                         "-pedantic"
-                         "-fsyntax-only"
-                         "-I.."
-                         "-I../include"
-                         "-I../inc"
-                         "-I../common"
-                         "-I../public"
-                         "-I../.."
-                         "-I../../include"
-                         "-I../../inc"
-                         "-I../../common"
-                         "-I../../public"
-                         source))))
-         (defun flymake-init-find-makfile-dir (source-file-name)
-           "Find Makefile, store its dir in buffer data and return its dir, if found."
-           (let* ((source-dir (file-name-directory source-file-name))
-                  (buildfile-dir nil))
-             (catch 'found
+  ;; Directly use gcc instead of Makefile
+  (when (executable-find "texify")
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.tex\\'" flymake-simple-tex-init))
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("[0-9]+\\.tex\\'"
+                   flymake-master-tex-init flymake-master-cleanup)))
+  (when (executable-find "xml")
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.xml\\'" flymake-xml-init))
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.html?\\'" flymake-xml-init)))
+  (when (executable-find "perl")
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.p[ml]\\'" flymake-perl-init)))
+  (when (executable-find "php")
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.php[345]?\\'" flymake-php-init)))
+  (when (executable-find "make")
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.idl\\'" flymake-simple-make-init))
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.java\\'"
+                   flymake-simple-make-java-init flymake-simple-java-cleanup))
+    (add-to-list 'flymake-allowed-file-name-masks
+                 '("\\.cs\\'" flymake-simple-make-init)))
+  (add-to-list 'flymake-allowed-file-name-masks
+               '("\\.el$" flymake-elisp-init))
+  ;; (add-hook 'write-file-functions (lambda nil
+  ;;                                   (when (eq major-mode 'emacs-lisp-mode)
+  ;;                                     (check-parens))))
+  (defun flymake-elisp-init ()
+    (if (string-match "^ " (buffer-name))
+        nil
+      (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                         'flymake-create-temp-inplace))
+             (local-file (file-relative-name
+                          temp-file
+                          (file-name-directory buffer-file-name))))
+        (list
+         (expand-file-name invocation-name invocation-directory)
+         (list
+          "-Q" "--batch" "--eval"
+          (prin1-to-string
+           (quote
+            (dolist (file command-line-args-left)
+              (with-temp-buffer
+                (insert-file-contents file)
+                (emacs-lisp-mode)
+                (condition-case data
+                    (scan-sexps (point-min) (point-max))
+                  (scan-error
+                   (goto-char(nth 2 data))
+                   (princ (format "%s:%s: error: Unmatched bracket or quote\n"
+                                  file (line-number-at-pos)))))))))
+          local-file)))))
 
-               (dolist (makefile flymake-makefile-filenames)
-                 (let ((found-dir (flymake-find-buildfile makefile source-dir)))
-                   (when found-dir
-                     (setq buildfile-dir found-dir)
-                     (setq flymake-base-dir buildfile-dir)
-                     (throw 'found t)))))
-             buildfile-dir))
-         (defun flymake-simple-make-gcc-init-impl (create-temp-f
-                                                   use-relative-base-dir
-                                                   use-relative-source)
-           "Create syntax check command line for a directly checked source file.
+;;;; flymake with make/gcc
+  (defvar flymake-makefile-filenames '("Makefile" "makefile" "GNUmakefile")
+    "File names for make.")
+  (defun flymake-get-gcc-cmdline (source base-dir)
+    (let ((cc (if (string= (file-name-extension source) "c") "gcc" "g++")))
+      (list cc
+            (list "-Wall"
+                  "-Wextra"
+                  "-pedantic"
+                  "-fsyntax-only"
+                  "-I.."
+                  "-I../include"
+                  "-I../inc"
+                  "-I../common"
+                  "-I../public"
+                  "-I../.."
+                  "-I../../include"
+                  "-I../../inc"
+                  "-I../../common"
+                  "-I../../public"
+                  source))))
+  (defun flymake-init-find-makfile-dir (source-file-name)
+    "Find Makefile, store its dir in buffer data and return its dir, if found."
+    (let* ((source-dir (file-name-directory source-file-name))
+           (buildfile-dir nil))
+      (catch 'found
+
+        (dolist (makefile flymake-makefile-filenames)
+          (let ((found-dir (flymake-find-buildfile makefile source-dir)))
+            (when found-dir
+              (setq buildfile-dir found-dir)
+              (setq flymake-base-dir buildfile-dir)
+              (throw 'found t)))))
+      buildfile-dir))
+  (defun flymake-simple-make-gcc-init-impl (create-temp-f
+                                            use-relative-base-dir
+                                            use-relative-source)
+    "Create syntax check command line for a directly checked source file.
 Use CREATE-TEMP-F for creating temp copy."
-           (let* ((args nil)
-                  (source-file-name buffer-file-name)
-                  (source-dir (file-name-directory source-file-name))
-                  (buildfile-dir
-                   (and (executable-find "make")
-                        (flymake-init-find-makfile-dir source-file-name)))
-                  (cc (if (string= (file-name-extension source-file-name) "c")
-                          "gcc"
-                        "g++")))
-             (if (or buildfile-dir (executable-find cc))
-                 (let* ((temp-source-file-name
-                         (ignore-errors
-                           (flymake-init-create-temp-buffer-copy create-temp-f))))
-                   (if temp-source-file-name
-                       (setq args
-                             (flymake-get-syntax-check-program-args
-                              temp-source-file-name
-                              (if buildfile-dir buildfile-dir source-dir)
-                              use-relative-base-dir
-                              use-relative-source
-                              (if buildfile-dir
-                                  'flymake-get-make-cmdline
-                                'flymake-get-gcc-cmdline)))
-                     (flymake-report-fatal-status
-                      "TMPERR"
-                      (format "Can't create temp file for %s" source-file-name))))
-               (flymake-report-fatal-status
-                "NOMK" (format "No buildfile (%s) found for %s, or can't found %s"
+    (let* ((args nil)
+           (source-file-name buffer-file-name)
+           (source-dir (file-name-directory source-file-name))
+           (buildfile-dir
+            (and (executable-find "make")
+                 (flymake-init-find-makfile-dir source-file-name)))
+           (cc (if (string= (file-name-extension source-file-name) "c")
+                   "gcc"
+                 "g++")))
+      (if (or buildfile-dir (executable-find cc))
+          (let* ((temp-source-file-name
+                  (ignore-errors
+                    (flymake-init-create-temp-buffer-copy create-temp-f))))
+            (if temp-source-file-name
+                (setq args
+                      (flymake-get-syntax-check-program-args
+                       temp-source-file-name
+                       (if buildfile-dir buildfile-dir source-dir)
+                       use-relative-base-dir
+                       use-relative-source
+                       (if buildfile-dir
+                           'flymake-get-make-cmdline
+                         'flymake-get-gcc-cmdline)))
+              (flymake-report-fatal-status
+               "TMPERR"
+               (format "Can't create temp file for %s" source-file-name))))
+        (flymake-report-fatal-status
+         "NOMK" (format "No buildfile (%s) found for %s, or can't found %s"
 
-                               "Makefile" source-file-name cc)))
-             args))
-         (defun flymake-simple-make-gcc-init ()
-           (flymake-simple-make-gcc-init-impl 'flymake-create-temp-inplace t t))
-         (defun flymake-master-make-gcc-init (get-incl-dirs-f
-                                              master-file-masks
-                                              include-regexp)
-           "Create make command line for a source file
+                        "Makefile" source-file-name cc)))
+      args))
+  (defun flymake-simple-make-gcc-init ()
+    (flymake-simple-make-gcc-init-impl 'flymake-create-temp-inplace t t))
+  (defun flymake-master-make-gcc-init (get-incl-dirs-f
+                                       master-file-masks
+                                       include-regexp)
+    "Create make command line for a source file
  checked via master file compilation."
-           (let* ((args nil)
-                  (temp-master-file-name
-                   (ignore-errors
+    (let* ((args nil)
+           (temp-master-file-name
+            (ignore-errors
 
-                     (flymake-init-create-temp-source-and-master-buffer-copy
-                      get-incl-dirs-f
-                      'flymake-create-temp-inplace
-                      master-file-masks
-                      include-regexp)))
-                  (cc (if (string= (file-name-extension buffer-file-name) "c")
-                          "gcc"
-                        "g++")))
-             (if temp-master-file-name
-                 (let* ((source-file-name buffer-file-name)
-                        (source-dir (file-name-directory source-file-name))
-                        (buildfile-dir
-                         (and (executable-find "make")
-                              (flymake-init-find-makfile-dir source-file-name))))
-                   (if (or buildfile-dir (executable-find cc))
-                       (setq args (flymake-get-syntax-check-program-args
-                                   temp-master-file-name
-                                   (if buildfile-dir buildfile-dir source-dir)
-                                   nil
-                                   nil
-                                   (if buildfile-dir
-                                       'flymake-get-make-cmdline
-                                     'flymake-get-gcc-cmdline)))
-                     (flymake-report-fatal-status
-                      "NOMK"
-                      (format "No buildfile (%s) found for %s, or can't found %s"
-                              "Makefile" source-file-name cc))))
-               (flymake-report-fatal-status
-                "TMPERR" (format "Can't create temp file for %s" source-file-name)))
-             args))
-         (defun flymake-master-make-gcc-header-init ()
-           (flymake-master-make-gcc-init
-            'flymake-get-include-dirs
-            '("\\.cpp\\'" "\\.c\\'")
-            "[ \t]*#[ \t]*include[ \t]*\"\\([[:word:]0-9/\\_.]*%s\\)\""))
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.\\(?:h\\(?:pp\\)?\\)\\'"
-                        flymake-master-make-gcc-header-init flymake-master-cleanup))
-         (add-to-list 'flymake-allowed-file-name-masks
-                      '("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'"
-                        flymake-simple-make-gcc-init)))
-       )))
+              (flymake-init-create-temp-source-and-master-buffer-copy
+               get-incl-dirs-f
+               'flymake-create-temp-inplace
+               master-file-masks
+               include-regexp)))
+           (cc (if (string= (file-name-extension buffer-file-name) "c")
+                   "gcc"
+                 "g++")))
+      (if temp-master-file-name
+          (let* ((source-file-name buffer-file-name)
+                 (source-dir (file-name-directory source-file-name))
+                 (buildfile-dir
+                  (and (executable-find "make")
+                       (flymake-init-find-makfile-dir source-file-name))))
+            (if (or buildfile-dir (executable-find cc))
+                (setq args (flymake-get-syntax-check-program-args
+                            temp-master-file-name
+                            (if buildfile-dir buildfile-dir source-dir)
+                            nil
+                            nil
+                            (if buildfile-dir
+                                'flymake-get-make-cmdline
+                              'flymake-get-gcc-cmdline)))
+              (flymake-report-fatal-status
+               "NOMK"
+               (format "No buildfile (%s) found for %s, or can't found %s"
+                       "Makefile" source-file-name cc))))
+        (flymake-report-fatal-status
+         "TMPERR" (format "Can't create temp file for %s" source-file-name)))
+      args))
+  (defun flymake-master-make-gcc-header-init ()
+    (flymake-master-make-gcc-init
+     'flymake-get-include-dirs
+     '("\\.cpp\\'" "\\.c\\'")
+     "[ \t]*#[ \t]*include[ \t]*\"\\([[:word:]0-9/\\_.]*%s\\)\""))
+  (add-to-list 'flymake-allowed-file-name-masks
+               '("\\.\\(?:h\\(?:pp\\)?\\)\\'"
+                 flymake-master-make-gcc-header-init flymake-master-cleanup))
+  (add-to-list 'flymake-allowed-file-name-masks
+               '("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'"
+                 flymake-simple-make-gcc-init))
+  )
 
 (deh-section "makefile"
   (deh-add-hook makefile-mode-hook
@@ -710,13 +714,17 @@ Use CREATE-TEMP-F for creating temp copy."
 )
 
 (deh-section "elisp"
-  ;; browse-el
-  (deh-define-key emacs-lisp-mode-map
-    ("M-." . 'browse-el-find-funtion)
-    ("M-*" . 'browse-el-go-back))
 
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
+
+  (deh-add-hook emacs-lisp-mode-hook
+    (my-mode-common-hook)
+    (turn-on-eldoc-mode)
+    (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
+      ("\M-." . 'browse-el-find-funtion)
+      ("\M-*" . 'browse-el-go-back)
+      ((kbd "C-)") . 'my-auto-insert-paren)))
 
   (defun my-auto-insert-paren ()
     "Auto close matched parentheses."
@@ -727,11 +735,6 @@ Use CREATE-TEMP-F for creating temp copy."
           (insert ")")
           (my-auto-insert-paren))
       (error (delete-char -1))))
-
-  (deh-add-hook emacs-lisp-mode-hook
-    (my-mode-common-hook)
-    (turn-on-eldoc-mode)
-    (define-key lisp-mode-shared-map (kbd "C-)") 'my-auto-insert-paren))
   )
 
 ;;; scripts setting
@@ -760,9 +763,6 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; tools
 (deh-section "gnuplot"
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-
   (deh-add-hook gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook gnuplot-comint-setup-hook
@@ -770,8 +770,6 @@ Use CREATE-TEMP-F for creating temp copy."
       ("\C-d" . 'comint-delchar-or-maybe-eof))))
 
 (deh-section "graphviz"
-  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
-
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)

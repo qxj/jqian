@@ -152,187 +152,169 @@
     )
 
 ;;;; Root
-  (defvar one-key-menu-root-alist
-    '(
-      (("a" . "Anything") . one-key-menu-anything)
-      (("t" . "Toggle") . one-key-menu-toggle)
-      (("g" . "Gtags") . one-key-menu-gtags)
-      (("c" . "Cscope") . one-key-menu-cscope)
-      (("h" . "Highlight") . one-key-menu-highlight)
-      (("s" . "Show Hide") . one-key-menu-hideshow)
-      (("v" . "Version Control") . one-key-menu-vc)
-      (("w" . "Window") . one-key-menu-window))
-    "The `one-key' menu alist for Root.")
-
   (defun one-key-menu-root ()
     "The `one-key' menu for root."
     (interactive)
-    (one-key-menu "ROOT" one-key-menu-root-alist))
+    (one-key-menu
+     "ROOT"
+     '(
+       (("a" . "Anything") . one-key-menu-anything)
+       (("t" . "Toggle") . one-key-menu-toggle)
+       (("g" . "Gtags") . one-key-menu-gtags)
+       (("c" . "Cscope") . one-key-menu-cscope)
+       (("h" . "Highlight") . one-key-menu-highlight)
+       (("s" . "Show Hide") . one-key-menu-hideshow)
+       (("v" . "Version Control") . one-key-menu-vc)
+       (("w" . "Window") . one-key-menu-window))))
 
 ;;;; Anything
-  (defvar one-key-menu-anything-alist
-    '(
-      (("a" . "Anything") . anything)
-      (("b" . "Buffers") . anything-buffers+)
-      (("B" . "Bookmarks") . anything-c-pp-bookmarks)
-      (("c" . "Commands") . anything-M-x)
-      (("f" . "Files") . anything-for-files)
-      (("i" . "Imenu") . anything-imenu)
-      (("I" . "Info") . anything-info-emacs)
-      (("k" . "Kill Ring") . anything-show-kill-ring)
-      (("o" . "Occur") . anything-occur)
-      (("r" . "Register") . anything-register)
-      (("m" . "Man Pages") . anything-man-woman)
-      (("SPC" . "Execute anything commands") . anything-execute-anything-command)
-      )
-    "The `one-key' menu alist for Anything.")
-
   (defun one-key-menu-anything ()
     "The `one-key' menu for ANYTHING."
     (interactive)
     (require 'anything-config nil t)    ; latter load
-    (one-key-menu "ANYTHING" one-key-menu-anything-alist t))
+    (one-key-menu
+     "ANYTHING"
+     '(
+       (("a" . "Anything") . anything)
+       (("b" . "Buffers") . anything-buffers+)
+       (("B" . "Bookmarks") . anything-c-pp-bookmarks)
+       (("c" . "Commands") . anything-M-x)
+       (("f" . "Files") . anything-for-files)
+       (("i" . "Imenu") . anything-imenu)
+       (("I" . "Info") . anything-info-emacs)
+       (("k" . "Kill Ring") . anything-show-kill-ring)
+       (("o" . "Occur") . anything-occur)
+       (("r" . "Register") . anything-register)
+       (("m" . "Man Pages") . anything-man-woman)
+       (("SPC" . "Execute anything commands") . anything-execute-anything-command)
+       ) t))
 
 ;;;; Toggle
-  (defvar one-key-menu-toggle-alist
-    '(
-      (("e" . "Erc") . my-toggle-erc)
-      (("g" . "Gdb") . my-toggle-gdb)
-      (("G" . "Gnus") . my-toggle-gnus)
-      (("i" . "Info") . my-toggle-info)
-      (("m" . "Mutt") . my-toggle-mutt)
-      (("s" . "SpeedBar") . my-toggle-sr-speedbar)
-      (("S" . "Slime") . my-toggle-slime)
-      (("t" . "Multi-Term") . my-toggle-multi-term)
-      (("T" . "Twitter") . my-toggle-twittering)
-      (("w" . "W3m") . my-toggle-w3m)
-      )
-    "The `one-key' menu alist for TOGGLE.")
-
   (defun one-key-menu-toggle ()
     "The `one-key' menu for TOGGLE."
     (interactive)
-    (one-key-menu "TOGGLE" one-key-menu-toggle-alist t))
+    (one-key-menu
+     "TOGGLE"
+     '(
+       (("e" . "Erc") . my-toggle-erc)
+       (("g" . "Gdb") . my-toggle-gdb)
+       (("G" . "Gnus") . my-toggle-gnus)
+       (("i" . "Info") . my-toggle-info)
+       (("m" . "Mutt") . my-toggle-mutt)
+       (("s" . "SpeedBar") . my-toggle-sr-speedbar)
+       (("S" . "Slime") . my-toggle-slime)
+       (("t" . "Multi-Term") . my-toggle-multi-term)
+       (("T" . "Twitter") . my-toggle-twittering)
+       (("w" . "W3m") . my-toggle-w3m)
+       ) t))
 
-;;;; Toggle
-  (defvar one-key-menu-gtags-alist
-    '(
-      (("," . "Find Tag Define") . xgtags-find-tag-from-here)
-      (("." . "Find Tag Reference (No Prompt)") . xgtags-find-rtag-no-prompt)
-      ((">" . "Find Tag Reference") . xgtags-find-rtag)
-      (("t" . "Search Tag Define") . xgtags-find-tag)
-      (("s" . "Find Symbol") . xgtags-find-symbol)
-      (("p" . "Find Pattern") . xgtags-find-pattern)
-      (("/" . "Pop Stack") . xgtags-pop-stack)
-      (("b" . "Switch Current Window") . xgtags-switch-to-buffer)
-      (("o" . "Switch Other Window") . xgtags-switch-to-buffer-other-window)
-      (("x" . "Parse File") . xgtags-parse-file)
-      (("f" . "Find File") . xgtags-find-file)
-      (("g" . "Find With Grep") . xgtags-find-with-grep)
-      (("i" . "Find With Idutils") . xgtags-find-with-idutils)
-      (("m" . "Make Complete List") . xgtags-make-complete-alist)
-      (("q" . "Query Replace Regexp") . xgtags-query-replace-regexp)
-      (("v" . "Visit Root Directory") . xgtags-visit-rootdir)
-      (("r" . "Return Window") . xgtags-select-tag-return-window))
-    "The `one-key' menu alist for GTAGS.")
-
+;;;; Gtags
   (defun one-key-menu-gtags ()
     "The `one-key' menu for GTAGS."
     (interactive)
-    (one-key-menu "GTAGS" one-key-menu-gtags-alist t))
+    (one-key-menu
+     "GTAGS"
+     '(
+       (("," . "Find Tag Define") . xgtags-find-tag-from-here)
+       (("." . "Find Tag Reference (No Prompt)") . xgtags-find-rtag-no-prompt)
+       ((">" . "Find Tag Reference") . xgtags-find-rtag)
+       (("t" . "Search Tag Define") . xgtags-find-tag)
+       (("s" . "Find Symbol") . xgtags-find-symbol)
+       (("p" . "Find Pattern") . xgtags-find-pattern)
+       (("/" . "Pop Stack") . xgtags-pop-stack)
+       (("b" . "Switch Current Window") . xgtags-switch-to-buffer)
+       (("o" . "Switch Other Window") . xgtags-switch-to-buffer-other-window)
+       (("x" . "Parse File") . xgtags-parse-file)
+       (("f" . "Find File") . xgtags-find-file)
+       (("g" . "Find With Grep") . xgtags-find-with-grep)
+       (("i" . "Find With Idutils") . xgtags-find-with-idutils)
+       (("m" . "Make Complete List") . xgtags-make-complete-alist)
+       (("q" . "Query Replace Regexp") . xgtags-query-replace-regexp)
+       (("v" . "Visit Root Directory") . xgtags-visit-rootdir)
+       (("r" . "Return Window") . xgtags-select-tag-return-window)) t))
 
 ;;;; Cscope
-  (defvar one-key-menu-cscope-alist
-    '(
-      (("s" . "This Symbol") . cscope-find-this-symbol)
-      (("d" . "Definition Prompt") . cscope-find-global-definition)
-      (("g" . "Definition No Prompt") . cscope-find-global-definition-no-prompting)
-      (("f" . "This File") . cscope-find-this-file)
-      (("i" . "Including This File") . cscope-find-files-including-file)
-      (("c" . "Calling This Function") . cscope-find-functions-calling-this-function)
-      (("e" . "This Function Called") . cscope-find-called-functions)
-      (("p" . "Pattern") . cscope-find-egrep-pattern)
-      (("t" . "This String") . cscope-find-this-text-string))
-    "The `one-key' menu alist for CSCOPE.")
-
   (defun one-key-menu-cscope ()
     "The `one-key' menu for CSCOPE."
     (interactive)
-    (one-key-menu "CSCOPE" one-key-menu-cscope-alist t))
+    (one-key-menu
+     "CSCOPE"
+     '(
+       (("s" . "This Symbol") . cscope-find-this-symbol)
+       (("d" . "Definition Prompt") . cscope-find-global-definition)
+       (("g" . "Definition No Prompt") . cscope-find-global-definition-no-prompting)
+       (("f" . "This File") . cscope-find-this-file)
+       (("i" . "Including This File") . cscope-find-files-including-file)
+       (("c" . "Calling This Function") . cscope-find-functions-calling-this-function)
+       (("e" . "This Function Called") . cscope-find-called-functions)
+       (("p" . "Pattern") . cscope-find-egrep-pattern)
+       (("t" . "This String") . cscope-find-this-text-string)) t))
 
 ;;;; Highlight
-  (defvar one-key-menu-highlight-alist
-    '(
-      (("h" . "Highlight At Point") . highlight-symbol-at-point)
-      (("u" . "Remote All Highlights") . highlight-symbol-remove-all)
-      (("n" . "Next Highlight") . highlight-symbol-next)
-      (("p" . "Previous Highlight") . highlight-symbol-prev)
-      (("N" . "Next Highlight In Defun") . highlight-symbol-next-in-defun)
-      (("P" . "Previous Highlight In Defun") . highlight-symbol-prev-in-defun)
-      (("q" . "Replace symbol At Point") . highlight-symbol-query-replace))
-    "The `one-key' menu alist for Highlight.")
-
   (defun one-key-menu-highlight ()
     "The `one-key' menu for Highlight."
     (interactive)
-    (one-key-menu "HIGHLIGHT" one-key-menu-highlight-alist t))
+    (one-key-menu
+     "HIGHLIGHT"
+     '(
+       (("h" . "Highlight At Point") . highlight-symbol-at-point)
+       (("u" . "Remote All Highlights") . highlight-symbol-remove-all)
+       (("n" . "Next Highlight") . highlight-symbol-next)
+       (("p" . "Previous Highlight") . highlight-symbol-prev)
+       (("N" . "Next Highlight In Defun") . highlight-symbol-next-in-defun)
+       (("P" . "Previous Highlight In Defun") . highlight-symbol-prev-in-defun)
+       (("q" . "Replace symbol At Point") . highlight-symbol-query-replace)) t))
 
 ;;;; Hideshow
-  (defvar one-key-menu-hideshow-alist
-    '(
-      (("s" . "Show Block") . hs-show-block)
-      (("h" . "Hide Block") . hs-hide-block)
-      (("c" . "Toggle Hiding") . hs-toggle-hiding)
-      (("j" . "Show All") . hs-show-all)
-      (("k" . "Hide All") . hs-hide-all))
-    "The `one-key' menu alist for HIDESHOW.")
-
   (defun one-key-menu-hideshow ()
     "The `one-key' menu for HIDESHOW."
     (interactive)
-    (one-key-menu "HIDESHOW" one-key-menu-hideshow-alist t))
+    (one-key-menu
+     "HIDESHOW"
+     '(
+       (("s" . "Show Block") . hs-show-block)
+       (("h" . "Hide Block") . hs-hide-block)
+       (("c" . "Toggle Hiding") . hs-toggle-hiding)
+       (("j" . "Show All") . hs-show-all)
+       (("k" . "Hide All") . hs-hide-all)) t))
 
 ;;;; Window
-  (defvar one-key-menu-window-alist
-    '(
-      (("b" . "Balance") . balance-windows)
-      (("l" . "Shrink If Larger") . shrink-window-if-larger-than-buffer)
-      (("e" . "Enlarge") . enlarge-window)
-      (("s" . "Shrink") . shrink-window)
-      (("h" . "Enlarge H.") . enlarge-window-horizontally)
-      (("y" . "Shrink H.") . shrink-window-horizontally))
-    "The `one-key' menu alist for WINDOW.")
-
   (defun one-key-menu-window ()
     "The `one-key' menu for WINDOW."
     (interactive)
-    (one-key-menu "WINDOW" one-key-menu-window-alist t))
+    (one-key-menu
+     "WINDOW"
+     '(
+       (("b" . "Balance") . balance-windows)
+       (("l" . "Shrink If Larger") . shrink-window-if-larger-than-buffer)
+       (("e" . "Enlarge") . enlarge-window)
+       (("s" . "Shrink") . shrink-window)
+       (("h" . "Enlarge H.") . enlarge-window-horizontally)
+       (("y" . "Shrink H.") . shrink-window-horizontally)) t))
 
 ;;;; Verson control
-  (defvar one-key-menu-vc-alist
-    '(
-      (("+" . "Update") . vc-update)
-      (("=" . "Diff Base") . vc-diff)
-      (("#" . "Diff With Other Ver.") . vc-version-diff)
-      (("~" . "View Other Ver.") . vc-revision-other-window)
-      (("a" . "Update ChangeLog") . vc-update-change-log)
-      ;; (("b" . "Switch Backend") . vc-switch-backend)
-      ;; (("c" . "Rollback") . vc-rollback)
-      (("d" . "Status") . vc-dir)
-      (("g" . "Annotate!") . vc-annotate)
-      (("h" . "Insert Headers") . vc-insert-headers)
-      ;; (("i" . "Register") . vc-register)
-      (("l" . "Print Log") . vc-print-log)
-      (("m" . "Merge") . vc-merge)
-      (("r" . "Retrieve Tag") . vc-retrieve-tag)
-      (("s" . "Create Tag") . vc-create-tag)
-      (("u" . "Revert") . vc-revert)
-      (("v" . "Commit") . vc-next-action)
-      )
-    "The `one-key' menu alist for VERSION CONTROL.")
-
   (defun one-key-menu-vc ()
     "The `one-key' menu for VERSION CONTROL."
     (interactive)
-    (one-key-menu "VERSON CONTROL" one-key-menu-vc-alist t))
+    (one-key-menu
+     "VERSON CONTROL"
+     '(
+       (("+" . "Update") . vc-update)
+       (("=" . "Diff Base") . vc-diff)
+       (("#" . "Diff With Other Ver.") . vc-version-diff)
+       (("~" . "View Other Ver.") . vc-revision-other-window)
+       (("a" . "Update ChangeLog") . vc-update-change-log)
+       ;; (("b" . "Switch Backend") . vc-switch-backend)
+       ;; (("c" . "Rollback") . vc-rollback)
+       (("d" . "Status") . vc-dir)
+       (("g" . "Annotate!") . vc-annotate)
+       (("h" . "Insert Headers") . vc-insert-headers)
+       ;; (("i" . "Register") . vc-register)
+       (("l" . "Print Log") . vc-print-log)
+       (("m" . "Merge") . vc-merge)
+       (("r" . "Retrieve Tag") . vc-retrieve-tag)
+       (("s" . "Create Tag") . vc-create-tag)
+       (("u" . "Revert") . vc-revert)
+       (("v" . "Commit") . vc-next-action)
+       ) t))
   )
