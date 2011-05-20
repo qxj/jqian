@@ -67,6 +67,7 @@
 
 (deh-define-key ctl-x-map
   ("\C-b" . 'ibuffer)
+  ("\C-j" . 'dired-jump)
   ("\C-t" . 'transpose-sexps)
   ("\C-r" . 'find-file-root)
   ("\C-k" . 'kill-this-buffer)
