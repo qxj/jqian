@@ -100,9 +100,6 @@
 (setq find-function-C-source-directory "~/src/emacs-23.2/src/"
       find-function-source-path '("~/src/emacs-23.2/lisp/"))
 
-(eval-after-load "grep"
-  '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
-
 ;; diary, todo, calendar
 (deh-section "calendar"
   (setq diary-file (expand-file-name "diary" my-org-dir)

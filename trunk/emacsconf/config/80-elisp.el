@@ -333,6 +333,7 @@ mouse-3: Remove current window from display")
         ido-enable-flex-matching t
         ido-enable-tramp-completion nil
         ido-record-ftp-work-directories nil
+        ido-enable-last-directory-history nil ; avoid tramp connect when start
         ido-use-faces t
         ;; ido-use-filename-at-point 'guess
         ;; ido-use-url-at-point t
@@ -775,7 +776,6 @@ mouse-3: Remove current window from display")
   )
 
 (deh-section "ffap"
-  (autoload 'ffap "ffap" "Alias of find-file-at-point")
   ;; (ffap-bindings)
 
   ;; for windows path recognize
@@ -971,8 +971,9 @@ mouse-3: Remove current window from display")
   )
 
 (deh-section "grep"
-  (autoload 'grep-tag-default "grep")
-  (autoload 'grep-apply-setting "grep")
+  (eval-after-load "grep"
+    '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
+
   (defun grep-current-dir (&optional prompt wd)
     "Run `grep' to find current word in current directory."
     (interactive "P")
@@ -1330,7 +1331,6 @@ indent line."
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
 
 (deh-section "anything"
-  (autoload 'anything "anything" "" t)
 
   (eval-after-load "anything"
     '(deh-define-key anything-map

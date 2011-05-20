@@ -503,8 +503,9 @@ files that match PATTERN."
 
 (defun my-byte-recompile-startup-dir ()
   "Recompile all the .el files under my-startup-dir, if they're
-not up to date. This can be run from the command line with: $
-emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
+not up to date. It can also be run from the command line:
+
+$ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
   (interactive)
   (dolist (dir (find-subdirs-containing my-startup-dir "\\.el$"))
     (byte-recompile-directory dir 0)))
