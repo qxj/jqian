@@ -14,7 +14,7 @@
 ;; :0:
 ;; inbox.spool
 ;;# ~/.gnus.el
-;; (setq mail-sources '(directory :path "~/Mail" :suffix ".spool"))
+;; (setq mail-sources '((directory :path "~/Mail" :suffix ".spool")))
 ;;;; maildir -> nnmaildir
 ;;# ~/.procmailrc
 ;; MAILDIR=$HOME/Mail
@@ -22,7 +22,7 @@
 ;; :0:
 ;; ${DEFAULT}
 ;;# ~/.gnus.el
-;; (setq mail-sources '(maildir :path "~/Mail/" :subdirs ("cur" "new")))
+;; (setq mail-sources '((maildir :path "~/Mail/" :subdirs ("cur" "new"))))
 ;; (setq gnus-secondary-select-methods '((nnmaildir "" (directory "~/Mail/"))))
 ;;;; gnus
 ;; press "^" (gnus-enter-server-mode), then enter "{nnmaildir:}", then
@@ -62,6 +62,8 @@
 ;;                                       (nnmaildir "" (directory "~/Mail/"))))
 
 ;;;; Outgoing messages
+(setq message-send-mail-function 'message-send-mail-with-sendmail
+      sendmail-program "msmtp")
 (setq gnus-outgoing-message-group
       '(nnml "archive"
              (nnml-directory   "~/Mail/archive")
@@ -102,7 +104,7 @@
          ;;(body "")
          )
         ))
-;;;; Spliting receive messages
+;;;; Splitting received messages
 (setq nnmail-treat-duplicates 'delete
       nnmail-crosspost nil
       nnmail-split-fancy-match-partial-words t
