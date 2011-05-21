@@ -6,9 +6,9 @@ host smtp.gmail.com
 tls on
 tls_certcheck off
 tls_starttls on
-# tls_trust_file /etc/ssl/certs/ca-certificates.cr
+# tls_trust_file /etc/ssl/certs/ca-certificates.crt
 auth on
-user user@gmail.com
+user junist@gmail.com
 password password
 port 587
 
