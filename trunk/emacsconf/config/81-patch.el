@@ -430,6 +430,5 @@ Using a template for inserting some text consists of:
 (defun my-toggle-mutt ()
   (interactive)
   (if (string-match "*mutt*" (buffer-name))
-      (while (string-match "*mutt*" (buffer-name))
-        (bury-buffer))
+      (bury-buffer)
     (run-in-ansi-term "mutt" t)))
