@@ -107,28 +107,22 @@ mouse-3: Remove current window from display")
 
 ;;; Directories and buffers
 (deh-section-after "dired"
-  (require 'dired-x)
-  (require 'dired-single)
-
-  ;; hooks
-  (deh-add-hook dired-load-hook
-    ;; Make the execuatable file with different color
-    (add-to-list 'dired-font-lock-keywords
-                 (list dired-re-exe
-                       '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
+  (deh-try-require 'dired-single)
 
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
     (setq dired-listing-switches "-alvh"))
+
   (setq dired-recursive-copies 'top
         dired-recursive-deletes 'top
         dired-isearch-filenames t       ; only search filename
         dired-dwim-target t)
+
   ;; No confirm operations
   (setq dired-no-confirm
         '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
 
-  ;; Keybind for dired
+  ;;# Keybind for dired
   (deh-define-key dired-mode-map
     ([return] . 'joc-dired-single-buffer)
     ([mouse-1] . 'joc-dired-single-buffer-mouse)
@@ -145,7 +139,22 @@ mouse-3: Remove current window from display")
     ("s"    . 'one-key-menu-dired-sort)
     ("/"    . 'one-key-menu-dired-filter))
 
-  ;; helper functions
+  ;;# hooks
+  (deh-add-hook dired-load-hook
+    (require 'dired-x)
+    ;; Make the execuatable file with different color
+    (add-to-list 'dired-font-lock-keywords
+                 (list dired-re-exe
+                       '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
+  (deh-add-hook dired-after-readin-hook
+    (set (make-local-variable 'truncate-lines) t)
+    (save-excursion                     ; sort directories first
+      (let (buffer-read-only)
+        (forward-line 2) ;; beyond dir. header
+        (sort-regexp-fields t "^.*$" "[ ]*." (point)
+                            (point-max)))))
+
+  ;;# helper functions
   (defun dired-compress-directory ()
     "Compress directory in `dired-mode'."
     (interactive)
@@ -192,7 +201,7 @@ mouse-3: Remove current window from display")
                                       (goto-char (point-min))))))
           (display-buffer (current-buffer))))))
 
-  ;; sort functions
+  ;;# sort functions
   (defun dired-sort-size ()
     "Dired sort by size."
     (interactive)
@@ -241,24 +250,16 @@ mouse-3: Remove current window from display")
        (("/" . "Filter match")        . my-dired-omit-expunge))
      t))
 
-  (deh-section "dired-omit"
-    (add-hook 'dired-mode-hook
-              (lambda ()
-                (dired-omit-mode t)))
-    (setq dired-omit-extensions
-          '(".o" "~" ".bak" ".obj" ".lnk" ".a"
-            ".ln" ".blg" ".bbl" ".drv" ".vxd" ".386" ".elc" ".lof"
-            ".glo" ".lot" ".fmt" ".tfm" ".class" ".lib" ".mem" ".x86f"
-            ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl"
-            ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky"
-            ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc"
-            ".pyo" ".idx" ".lof" ".lot" ".glo" ".blg" ".bbl" ".cps"
-            ".fn" ".fns" ".ky" ".kys" ".pgs" ".tp" ".tps" ".vr" ".vrs"
-            ".pdb" ".ilk"))
-    (setq dired-omit-files
-          (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
+  (deh-section-after "dired-x"
+    (deh-add-hook dired-mode-hook
+      (dired-omit-mode t))
 
-  (deh-section "dired-assoc"
+    (dolist (ext '(".bak"))
+      (add-to-list 'dired-omit-extensions ext))
+
+    ;; (setq dired-omit-files
+    ;;       (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
+
     (setq my-dired-guess-command-alist
           '(("acroread" "pdf")
             ("evince" "pdf")
@@ -309,19 +310,9 @@ mouse-3: Remove current window from display")
               (apply handler 'shell-command (list command))
             (start-process-shell-command "dired-run" nil command)))
         ;; Return nil for sake of nconc in dired-bunch-files.
-        nil)))
-
-  ;;# sort directories first
-  (defun dired-sort-directories-first ()
-    "Dired sort hook to list directories first."
-    (save-excursion
-      (let (buffer-read-only)
-        (forward-line 2) ;; beyond dir. header
-        (sort-regexp-fields t "^.*$" "[ ]*." (point)
-                            (point-max))))
-    (set-buffer-modified-p nil))
-  (add-hook 'dired-after-readin-hook 'dired-sort-directories-first)
-  (add-hook 'dired-after-readin-hook '(lambda () (setq truncate-lines t))))
+        nil))
+    )
+)
 
 (deh-require 'ido
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
@@ -333,7 +324,7 @@ mouse-3: Remove current window from display")
         ido-enable-flex-matching t
         ido-enable-tramp-completion nil
         ido-record-ftp-work-directories nil
-        ido-enable-last-directory-history nil ; avoid tramp connect when start
+        ;; ido-enable-last-directory-history nil ; avoid tramp connect when start
         ido-use-faces t
         ;; ido-use-filename-at-point 'guess
         ;; ido-use-url-at-point t
@@ -1339,22 +1330,22 @@ indent line."
        ("\M-n" . 'anything-next-source)
        ("\M-p" . 'anything-previous-source)))
 
+  ;; redefine anything-command-map-prefix-key
+  (setq anything-command-map-prefix-key "")
+
   (eval-after-load "anything-config"
     '(progn
        (setq anything-c-adaptive-history-file
              (expand-file-name "anything-c-adaptive-history" my-temp-dir)
              anything-c-yaoddmuse-cache-file
              (expand-file-name "yaoddmuse-cache.el" my-temp-dir))
-       (setq anything-command-map-prefix-key ""
-             anything-c-find-files-show-icons t
+       (setq anything-c-find-files-show-icons t
              ;; anything-c-external-programs-associations nil
              anything-c-google-suggest-url "http://www.google.com/complete/search?output=toolbar&q="
              ;; anything-google-suggest-use-curl-p t
              anything-kill-ring-threshold 50
              anything-su-or-sudo "sudo")
-       ))
-  )
-
+       )))
 
 ;;; Navigate buffer
 (deh-section "speedbar"

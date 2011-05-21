@@ -40,13 +40,16 @@
   (autoload 'ffap "ffap" "Alias of find-file-at-point")
   ;; php
   (autoload 'php-mode "php-mode" "php mode" t)
+  ;; javascript
   (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
-  (autoload 'git-status "git" "" t)
+  (autoload 'js2-mode "js2" "" t)
+  ;; css
+  (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
   (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
-  (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
-  (autoload 'python-mode "python" "Python editing mode." t)
   (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
+  ;; python
+  (autoload 'python-mode "python" "Python editing mode." t)
   ;; whitespace
   (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
   (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
@@ -60,20 +63,11 @@
   (autoload 'woman-mode "woman")
   (add-hook 'woman-mode-hook 'view-mode)
   (autoload 'woman-decode-buffer "woman")
-  ;; wb-line
-  ;; (autoload 'wb-line-number-toggle "wb-line-number" nil t)
   ;; htmlize
   (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
   ;; moccur
   (autoload 'moccur-grep "moccur-edit" "Glob search file" t)
   (autoload 'moccur "moccur-edit" "moccur" t)
-  ;; blank-mode
-  (autoload 'blank-mode-on "blank-mode" "Turn on blank visualization."   t)
-  (autoload 'blank-mode-off "blank-mode" "Turn off blank visualization."  t)
-  (autoload 'blank-mode "blank-mode" "Toggle blank visualization."    t)
-  (autoload 'blank-mode-customize "blank-mode" "Customize blank visualization." t)
-  ;; hexl editor
-  ;; (autoload 'hexl-mode "hexl+" "Edit a file in a hex dump format" t)
   ;; A visual table editor, very cool
   (autoload 'table-insert "table" "WYGIWYS table editor")
   ;; ansit
@@ -483,9 +477,8 @@ etc).  The following options will be available:
   ;; (deh-add-hooks (c-mode-common-hook makefile-mode-hook)
   ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
 
-  (add-hook 'find-file-hooks
-            '(lambda nil (condition-case nil (flymake-find-file-hook) (error nil)))
-            t)
+  ;; (deh-add-hook find-file-hook
+  ;;   (condition-case nil (flymake-find-file-hook) (error nil)))
 
   (defvar flymake-mode-map (make-sparse-keymap))
   (deh-define-key flymake-mode-map
@@ -836,7 +829,6 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;# emacs --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
-  (autoload 'js2-mode "js2" "" t)
   (deh-add-hook js2-mode-hook
     (setq forward-sexp-function nil)))
 
