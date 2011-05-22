@@ -46,7 +46,7 @@
 ;;; imap
 ;;# ~/.gnus.el
 ;; (setq gnus-secondary-select-methods
-;;       `((nnimap "gmail"
+;;       `((nnimap ""
 ;;                 (nnimap-address "imap.gmail.com")
 ;;                 (nnimap-server-port 993)
 ;;                 (nnimap-stream ssl)
@@ -54,9 +54,23 @@
 ;;# ~/.authinfo.gpg
 ;; machine imap.gmail.com login xxx@gmail.com password yyy port 993
 ;; machine smtp.gmail.com login xxx@gmail.com password yyy port 587
+;;; offlineimap
+;;# ~/.gnus.el
+;; (setq gnus-select-method
+;;       '(nnmaildir ""
+;;                   (directory "~/Gmail/")
+;;                   (directory-files nnheader-directory-files-safe)
+;;                   (get-new-mail nil)))
+
 
 ;;; my setting
-(setq gnus-select-method '(nnmaildir "" (directory "~/Mail/")))
+(setq gnus-select-method
+      '(nnmaildir ""
+                  (directory "~/Gmail/")
+                  (directory-files nnheader-directory-files-safe)
+                  (get-new-mail nil)))
+
+;; (setq gnus-select-method '(nnmaildir "" (directory "~/Mail/")))
 
 ;; (setq gnus-secondary-select-methods '((nntp "localhost") ; leafnode
 ;;                                       (nnmaildir "" (directory "~/Mail/"))))
@@ -158,23 +172,24 @@
 
 (eval-after-load "gnus"
   '(deh-define-key gnus-summary-mode-map
-     ((kbd "p") . 'gnus-summary-prev-same-subject)
-     ((kbd "n") . 'gnus-summary-next-same-subject)
-     ((kbd "q") . 'delete-other-windows)
-     ((kbd "Q") . 'gnus-summary-exit)
-     ((kbd ",") . 'gnus-summary-prev-thread)
-     ((kbd ".") . 'gnus-summary-next-thread)
-     ((kbd "<") . 'scroll-other-window-down)
-     ((kbd ">") . 'scroll-other-window)
+     ("p" . 'gnus-summary-prev-same-subject)
+     ("n" . 'gnus-summary-next-same-subject)
+     ("q" . 'delete-other-windows)
+     ("Q" . 'gnus-summary-exit)
+     ("," . 'gnus-summary-prev-thread)
+     ("." . 'gnus-summary-next-thread)
+     ("<" . 'scroll-other-window-down)
+     (">" . 'scroll-other-window)
      ((kbd "/ n") . 'gnus-summary-insert-new-articles)
-     ((kbd "r") . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
+     ("r" . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
      ((kbd "RET") . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
-     ((kbd "C-o") . nil)
+     ("\C-o" . nil)
+     ((kbd "TAB") . 'gnus-summary-show-thread)
      ;; move
-     ((kbd "k") . 'previous-line)
-     ((kbd "j") . 'next-line)
-     ((kbd "l") . 'forward-char)
-     ((kbd "h") . 'backward-char)))
+     ("k" . 'previous-line)
+     ("j" . 'next-line)
+     ("l" . 'forward-char)
+     ("h" . 'backward-char)))
 
 (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 ;;;; Article setting
