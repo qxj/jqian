@@ -1560,7 +1560,7 @@ indent line."
 (deh-section-after "epa-file"
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
 
-(deh-require-if 'gmail-notifier
+(deh-require-reserved 'gmail-notifier
   ;;# set user/passwd in ~/.authinfo.gpg
   (file-exists-p "~/.authinfo")
   (gmail-notifier-start)

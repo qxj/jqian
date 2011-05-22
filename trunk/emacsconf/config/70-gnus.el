@@ -2,11 +2,11 @@
 
 ;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
 ;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("^;;# .*" (0 (quote hi-blue) t)))
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
-;;; incoming: fetchmail -> procmail -> gnus
-;;# two kind mail backend: mbox and maildir
+;;; POP3
 ;;;; mbox -> nnmail
 ;;# ~/.procmailrc
 ;; MAILDIR=$HOME/Mail
@@ -27,7 +27,7 @@
 ;;;; gnus
 ;; press "^" (gnus-enter-server-mode), then enter "{nnmaildir:}", then
 ;; press "u" in front of "inbox" to subscribe it.
-;;; outgoing: gnus -> msmtp
+;;; SMTP
 ;;# ~/.gnus.el
 ;; (setq message-send-mail-function 'message-send-mail-with-sendmail
 ;;       sendmail-program "msmtp")
@@ -43,7 +43,7 @@
 ;; password password
 ;; port 587
 ;; logfile /home/jqian/msmtp.log
-;;; imap
+;;; remote IMAP
 ;;# ~/.gnus.el
 ;; (setq gnus-secondary-select-methods
 ;;       `((nnimap ""
@@ -54,21 +54,63 @@
 ;;# ~/.authinfo.gpg
 ;; machine imap.gmail.com login xxx@gmail.com password yyy port 993
 ;; machine smtp.gmail.com login xxx@gmail.com password yyy port 587
-;;; offlineimap
+;;; local IMAP
+;;# crontab -e
+;; */10 * * * * offlineimap
+;;;; offlineimap -> Maildir
 ;;# ~/.gnus.el
 ;; (setq gnus-select-method
 ;;       '(nnmaildir ""
 ;;                   (directory "~/Gmail/")
 ;;                   (directory-files nnheader-directory-files-safe)
 ;;                   (get-new-mail nil)))
+;;# ~/.offlineimaprc
+;; [general]
+;; ui = Noninteractive.Basic
+;; accounts = GMail
+;; [Account GMail]
+;; localrepository = Local
+;; remoterepository = Remote
+;; # maxage = 60
+;; [Repository Local]
+;; type = Maildir
+;; localfolders = ~/Gmail
+;; [Repository Remote]
+;; type = IMAP
+;; remotehost = imap.gmail.com
+;; remoteuser = junist@gmail.com
+;; remotepass = gmail_password
+;; ssl = yes
+;; maxconnections = 1
+;; realdelete = no
+;;;; offlineimap -> dovecot
+;;# ~/.gnus.el
+;; (setq gnus-select-method
+;;       '(nnimap ""
+;;                (nnimap-address "localhost")
+;;                (nnimap-authenticator login)
+;;                (nnimap-authinfo-file "~/.authinfo")))
+;; (setq gnus-ignored-from-addresses "jqian")
+;;# ~/.authinfo
+;; machine localhost login jqian password account_password
+;;# ~/.offlineimaprc
+;; [Repository Local]  # only local setting is different
+;; type = IMAP
+;; remotehost = localhost
+;; port = 143
+;; remoteuser = jqian
+;; remotepass = account_password
+;;# /etc/dovecot/dovecot.conf
+;; mail_location = maildir:%h/Maildir
 
 
 ;;; my setting
 (setq gnus-select-method
-      '(nnmaildir ""
-                  (directory "~/Gmail/")
-                  (directory-files nnheader-directory-files-safe)
-                  (get-new-mail nil)))
+      '(nnimap "Gmail"
+               (nnimap-address "localhost")
+               (nnimap-authenticator login)
+               (nnimap-authinfo-file "~/.authinfo")))
+(setq gnus-ignored-from-addresses "jqian")
 
 ;; (setq gnus-select-method '(nnmaildir "" (directory "~/Mail/")))
 
@@ -79,11 +121,13 @@
 (setq message-send-mail-function 'message-send-mail-with-sendmail
       sendmail-program "msmtp")
 (setq gnus-outgoing-message-group
-      '(nnml "archive"
-             (nnml-directory   "~/Mail/archive")
-             (nnml-active-file "~/Mail/archive/active")
-             (nnml-get-new-mail nil)
-             (nnml-inhibit-expiry t)))
+      '(lambda ()
+         (cond ((and gnus-newsgroup-name
+                     (not (message-news-p))
+                     (stringp gnus-newsgroup-name))
+                gnus-newsgroup-name)
+               (t "nnml:archive"))))
+
 ;;;; Setting
 (setq gnus-interactive-exit nil
       gnus-subscribe-newsgroup-method 'gnus-subscribe-topics
@@ -95,9 +139,11 @@
 ;;;; Gnus Parameters
 (setq gnus-parameters
       `((".*inbox.*"
-         (gcc-self . t))
+         (gcc-self . t)
+         )
         (".*important.*"
-         (gcc-self . t))
+         (gcc-self . t)
+         )
         ("trash"
          (total-expire . t))))
 ;;;; Posting styles
@@ -266,8 +312,4 @@
                   (string-match "*Summary" (buffer-name)))
         (call-interactively 'gnus)))))
 
-
 ;; (gnus-compile)
-
-
-
