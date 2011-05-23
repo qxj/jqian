@@ -116,8 +116,10 @@
           (progn
             (add-to-list 'default-frame-alist (cons 'width 100))
             (set-frame-font "DejaVu Sans Mono:pixelsize=14")
-            (set-fontset-font "fontset-default" 'han
-                              (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
+            (dolist (charset '(kana han symbol cjk-misc bopomofo))
+              (set-fontset-font "fontset-default" charset
+                                (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
+            )
         (add-to-list 'default-frame-alist (cons 'width 80))
         (set-frame-font "DejaVu Sans Mono:pixelsize=12")
         (set-fontset-font "fontset-default" 'han

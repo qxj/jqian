@@ -103,6 +103,21 @@
 ;;# /etc/dovecot/dovecot.conf
 ;; mail_location = maildir:%h/Maildir
 
+;;; Gmail Help
+;; | Action on client                                    | Result in Gmail on the web                                       | Command in Gnus                           | Elisp Command                     |
+;; |-----------------------------------------------------+------------------------------------------------------------------+-------------------------------------------+-----------------------------------|
+;; | Open a message                                      | Mark a message as read                                           | RET                                       | gnus-summary-scroll-up            |
+;; | Flag a message                                      | Apply a star to the message                                      | !                                         | gnus-summary-tick-article-forward |
+;; | Unflag a message                                    | Remove the star from the message                                 | M-u                                       | gnus-summary-clear-mark-forward   |
+;; | Move a message to a folder                          | Apply a label to the message                                     | B m                                       | gnus-summary-move-article         |
+;; | Move a message to a folder within a folder          | Apply a label showing folder hierarchy ('MainFolder /SubFolder') | B m                                       |                                   |
+;; | Create a folder                                     | Create a label                                                   | B m to nonexistent folder will create it. |                                   |
+;; | Move a message to [Gmail]/Spam                      | Report a message as spam                                         | B m [Gmail]Spam RET                       |                                   |
+;; | Move a message to [Gmail]/Trash                     | Move a message to Trash                                          | B m [Gmail]Trash RET                      |                                   |
+;; | Send a message                                      | Store message in Sent Mail                                       | m                                         | gnus-summary-mail-other-window    |
+;; | Delete a message in inbox                           | Remove the message from inbox                                    | B DEL                                     | gnus-summary-delete-article       |
+;; | Delete a message from a folder                      | Remove that label from the message                               | B DEL                                     |                                   |
+;; | Delete a message from [Gmail]/Spam or [Gmail]/Trash | Delete the message permanently                                   | B DEL                                     |                                   |
 
 ;;; my setting
 (setq gnus-select-method
@@ -249,6 +264,13 @@
                  ;; "Content-Type" "Content-Transfer-Encoding"
                  "Newsgroups"))
               "\\):"))
+(eval-after-load "gnus"
+  '(deh-define-key gnus-article-mode-map
+     ("k" . 'pager-row-up)
+     ("j" . 'pager-row-down)
+     ("l" . 'forward-char)
+     ("h" . 'backward-char)
+     ("q" . 'delete-window))
 (add-hook 'gnus-article-prepare-hook 'gnus-article-fill-long-lines)
 ;;;; sorting
 (add-hook 'message-sent-hook 'gnus-score-followup-thread)
@@ -295,21 +317,23 @@
 ;;
 ;; (setq gnus-use-cache 'passive)
 
+(defun my-check-gnus-buffer (buffer)
+  (or (string-match "^*Article*" (buffer-name buffer))
+      (string-match "^*Summary" (buffer-name buffer))
+      (string-match "^*Group*" (buffer-name buffer))))
+
 (defun my-toggle-gnus ()
   (interactive)
-  (if (or (string-match "*Group*" (buffer-name))
-          (string-match "*Summary" (buffer-name)))
+  (if (my-check-gnus-buffer (current-buffer))
       (bury-buffer)
     (let ((list (buffer-list)))
       (while list
-        (if (or (string-match "*Group*" (buffer-name (car list)))
-                (string-match "*Summary" (buffer-name (car list))))
+        (if (my-check-gnus-buffer (car list))
             (progn
               (switch-to-buffer (car list))
               (setq list nil))
           (setq list (cdr list))))
-      (unless (or (string-match "*Group*" (buffer-name))
-                  (string-match "*Summary" (buffer-name)))
+      (unless (my-check-gnus-buffer (current-buffer))
         (call-interactively 'gnus)))))
 
 ;; (gnus-compile)
