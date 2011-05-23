@@ -257,8 +257,11 @@ mouse-3: Remove current window from display")
     (dolist (ext '(".bak"))
       (add-to-list 'dired-omit-extensions ext))
 
-    ;; (setq dired-omit-files
-    ;;       (concat "^[.#]\\|^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$")))
+    (setq dired-omit-files
+          (concat "^[.#]" "\\|"
+                  "^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$" "\\|"
+                  ;; omit MSVC project files
+                  "\." (regexp-opt '("dsp" "dsw" "sln" "vcproj" "vspscc" "vssscc")) "$"))
 
     (setq my-dired-guess-command-alist
           '(("acroread" "pdf")
@@ -340,7 +343,7 @@ mouse-3: Remove current window from display")
         ido-ignore-directories
         '("^auto/" "^CVS/" "^\\.")
         ido-ignore-files
-        '("\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\|vrb\\)$"
+        '("\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\|vrb\\|dsp\\|dsw\\|sln\\|vcproj\\|vspscc\\|vssscc\\)$"
           "^\\(CVS\\|TAGS\\|GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"
           "_region_" "^[.#]")
         ido-work-directory-list-ignore-regexps

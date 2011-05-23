@@ -199,13 +199,13 @@
      '(
        (("e" . "Erc") . my-toggle-erc)
        (("g" . "Gdb") . my-toggle-gdb)
-       (("G" . "Gnus") . my-toggle-gnus)
        (("i" . "Info") . my-toggle-info)
        (("m" . "Mutt") . my-toggle-mutt)
        (("s" . "SpeedBar") . my-toggle-sr-speedbar)
        (("S" . "Slime") . my-toggle-slime)
        (("t" . "Multi-Term") . my-toggle-multi-term)
        (("T" . "Twitter") . my-toggle-twittering)
+       (("u" . "Gnus") . my-toggle-gnus)
        (("w" . "W3m") . my-toggle-w3m)
        ) t))
 

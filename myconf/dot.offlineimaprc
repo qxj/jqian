@@ -1,13 +1,16 @@
 # -*- mode: conf -*-
 
 [general]
-ui = Noninteractive.Basic       # non-interactive interface, for crontab
+# non-interactive interface, for crontab
+ui = Noninteractive.Basic
+socktimeout = 60
 accounts = GMail
 
 [Account GMail]
 localrepository = Local
 remoterepository = Remote
-maxage = 60                     # only sync the last 60 days mails
+# only sync the last 60 days mails
+maxage = 60
 
 [Repository Local]
 ### forwoard to local Maildir
