@@ -215,7 +215,7 @@
 (setq gnus-activate-level 5
       gnus-permanently-visible-groups '"nn*")
 ;;;; Sumary setting
-(setq gnus-summary-line-format "%U%R%z%(%&user-date;┃%-12,12f%* %B%s%)\n"
+(setq gnus-summary-line-format "%U%R%z%(%&user-date;┃%-10,10f┃%3L%*┃%B%s%)\n"
       gnus-user-date-format-alist '(((gnus-seconds-today) . "%H:%M")
                                     ((gnus-seconds-month) . "   %d")
                                     ((gnus-seconds-year) . "%m/%d")
