@@ -231,11 +231,11 @@
       gnus-sum-thread-tree-leaf-with-other "├─"
       gnus-sum-thread-tree-single-leaf "\\")
 
-(eval-after-load "gnus"
+(eval-after-load "gnus-sum"
   '(deh-define-key gnus-summary-mode-map
      ("p" . 'gnus-summary-prev-same-subject)
      ("n" . 'gnus-summary-next-same-subject)
-     ("q" . 'delete-other-windows)
+     ;; ("q" . 'delete-other-windows)
      ("Q" . 'gnus-summary-exit)
      ("," . 'gnus-summary-prev-thread)
      ("." . 'gnus-summary-next-thread)
@@ -252,7 +252,7 @@
      ("l" . 'forward-char)
      ("h" . 'backward-char)))
 
-(add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
+;; (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 ;;;; Article setting
 (setq gnus-visible-headers
       (concat "^\\("
@@ -268,9 +268,11 @@
   '(deh-define-key gnus-article-mode-map
      ("k" . 'pager-row-up)
      ("j" . 'pager-row-down)
+     ((kbd "<up>") . 'pager-row-up)
+     ((kbd "<down>") . 'pager-row-down)
      ("l" . 'forward-char)
      ("h" . 'backward-char)
-     ("q" . 'delete-window))
+     ("q" . 'delete-window)))
 (add-hook 'gnus-article-prepare-hook 'gnus-article-fill-long-lines)
 ;;;; sorting
 (add-hook 'message-sent-hook 'gnus-score-followup-thread)
