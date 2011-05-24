@@ -215,21 +215,19 @@
 (setq gnus-activate-level 5
       gnus-permanently-visible-groups '"nn*")
 ;;;; Sumary setting
-(setq gnus-user-date-format-alist
-      '(((gnus-seconds-today) . "%H:%M")
-        (604800               . "%a %H:%M") ; this week
-        ((gnus-seconds-month) . "%d")
-        ((gnus-seconds-year)  . "%m/%d")
-        (t                    . "%Y/%m/%d")))
-(setq gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n"
-      gnus-summary-same-subject ""
-      gnus-sum-thread-tree-indent "  "
-      gnus-sum-thread-tree-single-indent "◎ "
-      gnus-sum-thread-tree-root "● "
-      gnus-sum-thread-tree-false-root "☆"
-      gnus-sum-thread-tree-vertical "│"
-      gnus-sum-thread-tree-leaf-with-other "├─"
-      gnus-sum-thread-tree-single-leaf "\\")
+(setq gnus-summary-line-format "%U%R%z%(%&user-date;┃%-12,12f%* %B%s%)\n"
+      gnus-user-date-format-alist '(((gnus-seconds-today) . "%H:%M")
+                                    ((gnus-seconds-month) . "   %d")
+                                    ((gnus-seconds-year) . "%m/%d")
+                                    (t . " %Y"))
+      gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
+      gnus-thread-sort-functions '(gnus-thread-sort-by-date)
+      gnus-sum-thread-tree-false-root ""
+      gnus-sum-thread-tree-indent " "
+      gnus-sum-thread-tree-leaf-with-other "├► "
+      gnus-sum-thread-tree-root ""
+      gnus-sum-thread-tree-single-leaf "╰► "
+      gnus-sum-thread-tree-vertical "│")
 
 (eval-after-load "gnus-sum"
   '(deh-define-key gnus-summary-mode-map
