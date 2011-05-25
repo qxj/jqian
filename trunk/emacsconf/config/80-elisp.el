@@ -855,16 +855,13 @@ mouse-3: Remove current window from display")
             (lambda ()
               (define-key image-mode-map "I" 'image-display-info))))
 
-(deh-require-if 'w3m-load (executable-find "w3m")
+(deh-section-after "w3m"
   (setq w3m-verbose t                   ; log in *Messages*
         w3m-default-display-inline-images t)
-  (deh-add-hook w3m-mode-hook
-    (local-unset-key "\C-xb")
-    (local-unset-key (kbd "S-SPC"))
-    (deh-define-key w3m-mode-map
-      ("n" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
-      ("p" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
-      ("t" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url)))))
+  (deh-define-key w3m-mode-map
+    ("n" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
+    ("p" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
+    ("t" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url))))
   (deh-add-hook w3m-load-hook
     (add-to-list
      'w3m-relationship-estimate-rules
@@ -881,6 +878,14 @@ mouse-3: Remove current window from display")
   (defun ywb-w3m-goto-url (url)
     (if (and url (stringp url))
         (w3m-goto-url url)))
+  (defun w3m-browse-anchor-external ()
+    "Browse one w3m's anchor link with another external browser."
+    (interactive)
+    (let ((deactivate-mark nil)
+          (url (or (w3m-anchor) (w3m-image))))
+      (if url
+          (browse-url url)
+        (w3m-message "Invalid url."))))
   (defun my-toggle-w3m ()
     "Switch to a w3m buffer or return to the previous buffer."
     (interactive)
