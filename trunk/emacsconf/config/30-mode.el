@@ -432,12 +432,18 @@ etc).  The following options will be available:
         woman-use-own-frame nil)
   )
 
-(deh-section-after "info"
+(deh-section "info"
   (add-to-list 'Info-default-directory-list "~/info")
 
-  (deh-define-key Info-mode-map
-    ("j" . 'next-line)
-    ("k" . 'previous-line))
+  (eval-after-load "info"
+    '(progn
+       (deh-define-key Info-mode-map
+         ;;# useful keybind reminds
+         ;; ("i" . 'info-index)
+         ;; ("T" . 'info-toc)
+         ("j" . 'next-line)
+         ("k" . 'previous-line))
+       (require 'info+)))
 
   (defun my-toggle-info ()
     "Switch to info buffer or return to the previous buffer."
@@ -455,9 +461,7 @@ etc).  The following options will be available:
                 (setq list nil))
             (setq list (cdr list))))
         (unless (derived-mode-p 'info-mode)
-          (call-interactively 'info)))))
-
-  (require 'info+))
+          (call-interactively 'info))))))
 
 (deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
@@ -940,8 +944,10 @@ If the flag is set, only complete with local files."
   (setq common-lisp-hyperspec-root "/home/jqian/src/HyperSpec/")
   )
 
-(deh-require-if 'evernote-mode
-  (executable-find "enclient.rb")
+(deh-section-path "evernote"
+  "~/src/emacs-evernote-mode"
+  (add-to-list 'load-path deh-this-path)
+  (require 'evernote-mode nil t)
   ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
   (global-set-key "\C-cec" 'evernote-create-note)
   (global-set-key "\C-ceo" 'evernote-open-note)

@@ -100,6 +100,9 @@
 (setq find-function-C-source-directory "~/src/emacs-23.2/src/"
       find-function-source-path '("~/src/emacs-23.2/lisp/"))
 
+;; find-dired
+(setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
+
 ;; diary, todo, calendar
 (deh-section "calendar"
   (setq diary-file (expand-file-name "diary" my-org-dir)
