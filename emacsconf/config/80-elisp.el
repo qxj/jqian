@@ -1353,6 +1353,11 @@ indent line."
              ;; anything-google-suggest-use-curl-p t
              anything-kill-ring-threshold 50
              anything-su-or-sudo "sudo")
+
+       (defun anything-info-pages ()
+         "Preconfigured anything for info pages."
+         (interactive)
+         (anything-other-buffer 'anything-c-source-info-pages "*info pages*"))
        )))
 
 ;;; Navigate buffer

@@ -182,7 +182,7 @@
        (("c" . "Commands") . anything-M-x)
        (("f" . "Files") . anything-for-files)
        (("i" . "Imenu") . anything-imenu)
-       (("I" . "Info") . anything-info-emacs)
+       (("I" . "Info") . anything-info-pages)
        (("k" . "Kill Ring") . anything-show-kill-ring)
        (("o" . "Occur") . anything-occur)
        (("r" . "Register") . anything-register)
