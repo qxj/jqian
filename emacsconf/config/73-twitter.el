@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; 73-twitter.el ---
-;; Time-stamp: <Julian Qian 2011-05-19 16:56:34>
+;; Time-stamp: <Julian Qian 2011-05-30 13:45:02>
 ;; Created: 2011 Julian Qian
 ;; Version: $Id: 73-twitter.el,v 0.0 2011/05/19 08:29:04 jqian Exp $
 
@@ -17,10 +17,13 @@
   (twittering-enable-unread-status-notifier)
   (setq-default twittering-icon-mode t)
 
-  (setq twittering-initial-timeline-spec-string
-        `(":home@sina"
-          ;; ":home@douban"
-          ))
+  (setq twittering-initial-timeline-spec-string ":home"
+        twittering-api-host "twip/override-mode-url"
+        twittering-api-search-host twittering-api-host
+        twittering-username "jqian"
+        twittering-password "password"
+        twittering-auth-method 'basic
+        )
 
   (defun my-toggle-twittering ()
     "Switch to a twittering buffer or return to the previous buffer."
