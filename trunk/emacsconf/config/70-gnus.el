@@ -142,7 +142,6 @@
                      (stringp gnus-newsgroup-name))
                 gnus-newsgroup-name)
                (t "nnml:archive"))))
-
 ;;;; Setting
 (setq gnus-interactive-exit nil
       gnus-subscribe-newsgroup-method 'gnus-subscribe-topics
@@ -151,6 +150,7 @@
       gnus-nov-is-evil nil
       gnus-use-cross-reference nil
       gnus-gcc-mark-as-read t)
+(setq message-alternative-emails (regexp-opt `(,user-mail-address)))
 ;;;; Gnus Parameters
 (setq gnus-parameters
       `((".*inbox.*"
