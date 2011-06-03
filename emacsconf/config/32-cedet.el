@@ -86,9 +86,7 @@
   (deh-section "hippie-semantic"
     (autoload 'senator-try-expand-semantic "senator")
     ;; hippie-try-expand setting
-    (dolist (hook (list
-                   c-mode-common-hook
-                   emacs-lisp-mode-hook))
+    (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook)
       (add-to-list 'hippie-expand-try-functions-list
                    'senator-try-expand-semantic
                    'semantic-ia-complete-symbol)))
