@@ -1,0 +1,25 @@
+;	From: @(#)localhost.rev	5.1 (Berkeley) 6/30/90
+; $FreeBSD: src/etc/namedb/PROTO.localhost.rev,v 1.6 2000/01/10 15:31:40 peter Exp $
+;
+; This file is automatically edited by the `make-localhost' script in
+; the /etc/namedb directory.
+;
+
+$TTL	3600
+
+@	IN	SOA	dns.pd.fsc. dns.root.pd.fsc.  (
+				20050906	; Serial
+				3600	; Refresh
+				900	; Retry
+				3600000	; Expire
+				3600 )	; Minimum
+; DNS Servers
+	IN	NS	pd.fsc.
+	IN	NS	192.168.0.3
+	IN	NS	159.226.5.65
+
+; Well know service
+	IN	MX	10	mail
+localhost	IN	A	127.0.0.1
+www	IN	A	192.168.0.23
+mail	IN	A	192.168.0.23
