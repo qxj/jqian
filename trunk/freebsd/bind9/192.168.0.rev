@@ -1,0 +1,22 @@
+;	From: @(#)localhost.rev	5.1 (Berkeley) 6/30/90
+; $FreeBSD: src/etc/namedb/PROTO.localhost.rev,v 1.6 2000/01/10 15:31:40 peter Exp $
+;
+; 这个是反解文件，可以根据ip查询出主机域名
+; This is a reverse-mapping file, which can tell you the domain name
+; by its ip address.
+
+$TTL	3600
+
+@	IN	SOA	pd.fsc. root.pd.fsc.  (
+				20050906	; Serial
+				3600	; Refresh
+				900	; Retry
+				3600000	; Expire
+				3600 )	; Minimum
+
+	IN	NS	dns.pd.fsc.
+;53	IN	PTR	dns.pd.fsc.
+;80	IN	PTR	www.pd.fsc.
+;80	IN	PTR	mail.pd.fsc.
+;80	IN	PTR	pd.fsc.
+23	IN	PTR	pd.fsc.
