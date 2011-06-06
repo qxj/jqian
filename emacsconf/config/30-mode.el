@@ -85,7 +85,7 @@
   (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
   (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
   ;; graphviz
-  (autoload 'graphviz-dot-mode "graphviz-dot-mode" "graphviz mode" t)
+  (autoload 'graphviz-dot-mode "graphviz-dot" "graphviz mode" t)
   )
 
 ;;; auto detect mode
@@ -102,12 +102,13 @@
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
   (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\)" . makefile-mode))
-  (add-to-list 'auto-mode-alist '("\.schemas" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.schemas" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
   (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
   (add-to-list 'auto-mode-alist '(".vim\\(rc\\)?$" . vimrc-mode))
+  (add-to-list 'auto-mode-alist '("\\.dot$" . vimrc-mode))
   )
 
 (deh-section "magic-mode"
