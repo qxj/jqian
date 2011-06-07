@@ -107,8 +107,6 @@ mouse-3: Remove current window from display")
 
 ;;; Directories and buffers
 (deh-section-after "dired"
-  (deh-try-require 'dired-single)
-
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
     (setq dired-listing-switches "-alvh"))
@@ -124,12 +122,9 @@ mouse-3: Remove current window from display")
 
   ;;# Keybind for dired
   (deh-define-key dired-mode-map
-    ([return] . 'joc-dired-single-buffer)
-    ([mouse-1] . 'joc-dired-single-buffer-mouse)
-    ;; ("^"    . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-    ;; ("\M-u"  . '(lambda () (interactive) (joc-dired-single-buffer "..")))
-    ;; ("\M-=" . 'dired-backup-diff)
+    ([return] . 'dired-find-file-single-buffer)
     ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
+    ;; ("\M-=" . 'dired-backup-diff)
     ("b"    . 'browse-url-of-dired-file)
     ("J"    . 'woman-dired-find-file)
     ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
@@ -155,6 +150,15 @@ mouse-3: Remove current window from display")
                             (point-max)))))
 
   ;;# helper functions
+  (defun dired-fild-file-single-buffer ()
+    "kill current buffer when moving to subdirectory"
+    (interactive)
+    (let ((previous-dired-buffer (current-buffer))
+          (file (dired-get-file-for-visit)))
+      (if (file-directory-p file)
+          (progn (dired-find-file)
+                 (kill-buffer previous-dired-buffer))
+        (dired-find-file))))
   (defun dired-compress-directory ()
     "Compress directory in `dired-mode'."
     (interactive)
