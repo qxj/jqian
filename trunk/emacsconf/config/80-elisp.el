@@ -150,7 +150,7 @@ mouse-3: Remove current window from display")
                             (point-max)))))
 
   ;;# helper functions
-  (defun dired-fild-file-single-buffer ()
+  (defun dired-find-file-single-buffer ()
     "kill current buffer when moving to subdirectory"
     (interactive)
     (let ((previous-dired-buffer (current-buffer))
