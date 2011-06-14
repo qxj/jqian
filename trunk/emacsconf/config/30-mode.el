@@ -698,7 +698,8 @@ Use CREATE-TEMP-F for creating temp copy."
 
 (deh-section "makefile"
   (deh-add-hook makefile-mode-hook
-    (my-mode-common-hook)))
+    ;; (my-mode-common-hook)
+    ))
 
 (deh-section "change-log"
   (deh-add-hook change-log-mode-hook

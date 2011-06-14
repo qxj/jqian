@@ -322,7 +322,8 @@ path."
   (setq compilation-finish-functions
         (lambda (buf str)
           (when (and (string= (buffer-name buf) "*compilation*")
-                     (not (string-match "exited abnormally" str)))
+                     (not (string-match "exited abnormally" str))
+                     (not (string-match "warning:" str)))
             (run-at-time 0.5 nil 'delete-windows-on buf))))
   )
 
