@@ -80,6 +80,7 @@
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
     (eldoc-mode 1)
+    (hide-ifdef-mode 1)
     ;; (cwarn-mode 1)
     ;; (smart-operator-mode 1)
     (set (make-local-variable 'comment-style) 'extra-line)
@@ -323,7 +324,11 @@ path."
         (lambda (buf str)
           (when (and (string= (buffer-name buf) "*compilation*")
                      (not (string-match "exited abnormally" str))
-                     (not (string-match "warning:" str)))
+                     (not (string-match "warning" str)))
             (run-at-time 0.5 nil 'delete-windows-on buf))))
   )
+
+(deh-section-after "hideif"
+  (setq hide-ifdef-initially t
+        hide-ifdef-shadow t))
 
