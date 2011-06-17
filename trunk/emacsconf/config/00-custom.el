@@ -187,3 +187,7 @@
  ;; '(confirm-kill-emacs (quote y-or-n-p))
  '(user-mail-address "junist@gmail.com")
 )
+(custom-set-faces
+ '(one-key-keystroke ((t (:foreground "DarkRed" :weight bold))))
+ '(one-key-prompt ((t (:foreground "navy"))))
+ '(one-key-title ((t (:foreground "blue")))))
