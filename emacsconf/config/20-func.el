@@ -542,3 +542,19 @@ $ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
           total-byte (+ cn-word (abs (- beg end))))
     (message (format "Total: %d (cn: %d, en: %d) words, %d bytes."
                      total-word cn-word en-word total-byte))))
+
+(defun print-to-pdf (file)
+  "Print current buffer to a pdf file."
+  (interactive
+   (list (read-file-name "Choose a filename: ")))
+  (let ((psfile (make-temp-file "ps"))
+        (pdffile (if (string= "pdf" (file-name-extension file))
+                     file
+                   (format "%s.pdf" file))))
+    (ps-spool-buffer-with-faces)
+    (switch-to-buffer ps-spool-buffer-name)
+    (write-file psfile)
+    (shell-command (format "ps2pdf %s %s" psfile pdffile))
+    (kill-buffer (file-name-nondirectory psfile))
+    (delete-file psfile)
+    (message "Saved to: %s" pdffile)))
