@@ -126,7 +126,7 @@ mouse-3: Remove current window from display")
     ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
     ;; ("\M-=" . 'dired-backup-diff)
     ("b"    . 'browse-url-of-dired-file)
-    ("J"    . 'woman-dired-find-file)
+    ("W"    . 'woman-dired-find-file)
     ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
     (" "    . 'dired-count-directory-size)
     ("E"    . 'dired-w3m-visit)
