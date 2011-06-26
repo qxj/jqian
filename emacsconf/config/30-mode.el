@@ -744,12 +744,11 @@ Use CREATE-TEMP-F for creating temp copy."
     (make-local-hook 'after-save-hook)
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p))
 
-  (deh-try-require 'pymacs
-    (pymacs-load "ropemacs" "rope-")
-    ;;(setq ropemacs-enable-shortcuts nil)
-    ;;(setq ropemacs-local-prefix "C-c C-p")
-    (setq ropemacs-confirm-saving 'nil)
-    (ropemacs-mode t)))
+  ;; (deh-try-require 'pymacs
+  ;;   (pymacs-load "ropemacs" "rope-")
+  ;;   (setq ropemacs-confirm-saving 'nil)
+  ;;   (ropemacs-mode t))
+  )
 
 (deh-section "sh-mode"
   (deh-add-hook sh-mode-hook
