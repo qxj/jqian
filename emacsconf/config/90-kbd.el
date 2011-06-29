@@ -37,7 +37,7 @@
   ((kbd "M-'")   . 'just-one-space)
   ((kbd "M--")   . 'delete-blank-lines)
   ((kbd "M-J")   . 'vi-join-lines)
-  ((kbd "M-M")   . 'vi-merge-lines)
+  ((kbd "C-M-j") . 'vi-merge-lines)
   ((kbd "M-f")   . 'camelcase-forward-word)
   ((kbd "M-b")   . 'camelcase-backward-word)
   ((kbd "M-m")   . 'smart-mark)
