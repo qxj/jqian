@@ -15,7 +15,7 @@
   (require 'generic-x)
 
   ;; smart mark, useful when edit markuped documents
-  (require 'smart-mark)
+;  (require 'smart-mark)
   ;; visible-line
   (require 'visible-lines nil t)
   ;; for normal term
@@ -114,7 +114,8 @@ mouse-3: Remove current window from display")
   (setq dired-recursive-copies 'top
         dired-recursive-deletes 'top
         dired-isearch-filenames t       ; only search filename
-        dired-dwim-target t)
+        dired-dwim-target t
+        dired-auto-revert-buffer t)
 
   ;; No confirm operations
   (setq dired-no-confirm

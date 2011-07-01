@@ -83,6 +83,8 @@
 and `deh-section-if' can't find.")
 
 (defmacro deh-try-require (feature &rest forms)
+  "Almost identical to (require FEATURE nil t). if failed, record
+missing packages into `deh-missing-packages-list'."
   (declare (indent 1))
   `(progn
      (if (require ,feature nil t)
@@ -90,6 +92,8 @@ and `deh-section-if' can't find.")
        (add-to-list 'deh-missing-packages-list ,feature 'append))))
 
 (defmacro deh-require-maybe (feature &rest forms)
+  "Besides `deh-try-require', it records required packages into
+`deh-secionts'."
   (declare (indent 1))
   `(progn
      (if ,load-file-name
@@ -99,11 +103,107 @@ and `deh-section-if' can't find.")
 (put 'deh-require 'lisp-indent-function 1)
 
 (defmacro deh-section (section &rest forms)
+  "A section placeholder to arrange lisp codes."
   (declare (indent 1))
   `(progn
      (if ,load-file-name
          (add-to-list 'deh-sections (cons ,section ,load-file-name)))
      ,@forms))
+
+(defmacro deh-require-if (feature cond &rest forms)
+  "If COND is true, require this FEATURE.
+
+Example:
+  (deh-require-if 'org-capture
+    (>= (string-to-int org-version) 7.5)
+    (setq org-capture-templates '(
+    )))
+"
+  (declare (indent 1))
+  `(progn
+     (when ,cond
+       (if ,load-file-name
+           (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
+       (deh-try-require ,feature ,@forms))))
+
+(defmacro deh-require-reserved (feature &rest forms)
+  "Put some elisp into `deh-enable-list' and reserved. You can
+use `deh-enable' to active these elisp.
+
+Example:
+  (deh-require-reserved 'w3m-load
+    (load \"preview-latex.el\" t t t)
+    (load \"auctex.el\" t t t))
+"
+  (declare (indent 1))
+  `(progn
+     (if ,load-file-name
+         (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
+     (add-to-list 'deh-enable-list '(,feature
+                                     (deh-try-require ,feature
+                                       ,@forms)))))
+
+(defmacro deh-section-path (section path &rest forms)
+  "If path exists, call `deh-section'. One internal variable
+`deh-this-path' indicates the argument path, which you can use in
+forms.
+
+Example:
+  (deh-section-path \"org\" \"~/src/org-7.01h\"
+    (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))
+"
+  (declare (indent 1))
+  `(let ((deh-this-path ,path))
+     (if (not (file-exists-p deh-this-path))
+         (add-to-list 'deh-missing-packages-list deh-this-path 'append)
+       (if (file-directory-p deh-this-path)
+           (add-to-list 'load-path deh-this-path))
+       (deh-section ,section ,@forms))))
+
+(defmacro deh-section-after (section &rest forms)
+  "Eval forms after section file is loaded.
+
+Example:
+  (deh-section-after \"outline\"
+    (setq outline-minor-mode-prefix (kbd \"C-c C-o\")))
+"
+  (declare (indent 1))
+  `(progn
+     (if ,load-file-name
+         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
+     (eval-after-load ,section
+       '(progn ,@forms))))
+
+(defmacro deh-section-reserved (section &rest forms)
+  "Put some elisp into `deh-enable-list' and reserved. You can
+use `deh-enable' to active these elisp.
+
+Example:
+  (deh-section-reserved \"latex\"
+    (load \"preview-latex.el\" t t t)
+    (load \"auctex.el\" t t t))
+"
+  (declare (indent 1))
+  `(progn
+     (if ,load-file-name
+         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
+     (add-to-list 'deh-enable-list '(,section ,@forms))))
+
+
+(defmacro deh-section-if (section cond &rest forms)
+  "If COND is true, SECTION will be enabled.
+
+Example:
+  (deh-section-if \"cedet\"
+    cedet-enable
+    (require 'cedet nil 'noerror))
+"
+  (declare (indent 1))
+  `(progn
+     (when ,cond
+       (if ,load-file-name
+           (add-to-list 'deh-sections (cons ,section ,load-file-name)))
+       ,@forms)))
 
 (defun deh-customize-inplace (name)
   "Configuration the section directly in file"
@@ -301,6 +401,7 @@ With prefix argument sort section by file."
   (eval (cons 'progn
               (assoc-default feature deh-enable-list))))
 
+;;; Other helper functions, eg: define-key, local-set-key, add-hook, etc.
 (defmacro deh-define-key (map &rest keypairs)
   "Define a batch of keys.
 
@@ -314,102 +415,6 @@ Example:
         (mapcar (lambda (pair)
                   `(define-key ,map ,(car pair) ,(cdr pair)))
                 keypairs)))
-
-;;; added by julian <jqian@jqian.net>
-(defmacro deh-section-path (section path &rest forms)
-  "If path exists, call `deh-section'. One internal variable
-`deh-this-path' indicates the argument path, which you can use in
-forms.
-
-Example:
-  (deh-section-path \"org\" \"~/src/org-7.01h\"
-    (add-to-list 'load-path (expand-file-name \"lisp\" deh-this-path)))
-"
-  (declare (indent 1))
-  `(let ((deh-this-path ,path))
-     (if (not (file-exists-p deh-this-path))
-         (add-to-list 'deh-missing-packages-list deh-this-path 'append)
-       (if (file-directory-p deh-this-path)
-           (add-to-list 'load-path deh-this-path))
-       (deh-section ,section ,@forms))))
-
-(defmacro deh-section-after (section &rest forms)
-  "Eval forms after section file is loaded.
-
-Example:
-  (deh-section-after \"outline\"
-    (setq outline-minor-mode-prefix (kbd \"C-c C-o\")))
-"
-  (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-     (eval-after-load ,section
-       '(progn ,@forms))))
-
-(defmacro deh-section-reserved (section &rest forms)
-  "Put some elisp into `deh-enable-list' and reserved. You can
-use `deh-enable' to active these elisp.
-
-Example:
-  (deh-section-reserved \"latex\"
-    (load \"preview-latex.el\" t t t)
-    (load \"auctex.el\" t t t))
-"
-  (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-     (add-to-list 'deh-enable-list '(,section ,@forms))))
-
-
-(defmacro deh-section-if (section cond &rest forms)
-  "If COND is true, SECTION will be enabled.
-
-Example:
-  (deh-section-if \"cedet\"
-    cedet-enable
-    (require 'cedet nil 'noerror))
-"
-  (declare (indent 1))
-  `(progn
-     (when ,cond
-       (if ,load-file-name
-           (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-       ,@forms)))
-
-(defmacro deh-require-if (feature cond &rest forms)
-  "If COND is true, require this FEATURE.
-
-Example:
-  (deh-require-if 'org-capture
-    (>= (string-to-int org-version) 7.5)
-    (setq org-capture-templates '(
-    )))
-"
-  (declare (indent 1))
-  `(progn
-     (when ,cond
-       (if ,load-file-name
-           (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-       (deh-try-require ,feature ,@forms))))
-
-(defmacro deh-require-reserved (feature &rest forms)
-  "Put some elisp into `deh-enable-list' and reserved. You can
-use `deh-enable' to active these elisp.
-
-Example:
-  (deh-require-reserved 'w3m-load
-    (load \"preview-latex.el\" t t t)
-    (load \"auctex.el\" t t t))
-"
-  (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-     (add-to-list 'deh-enable-list '(,feature
-                                     (deh-try-require ,feature
-                                       ,@forms)))))
 
 (defmacro deh-local-set-key (hook &rest keypairs)
   "Set a batch of local keys for a hook.
@@ -489,6 +494,10 @@ Example:
   (declare (indent 1))
   `(dolist (hook ',hooks)
      (remove-hook hook (lambda () ,@forms))))
+
+(font-lock-add-keywords
+ 'emacs-lisp-mode
+ '(("\\<deh-\\(section\\|\\(try-\\)?require\\)\\(-[a-z]+\\)?\\>" . font-lock-keyword-face)))
 
 (provide 'dot-emacs-helper)
 ;;; dot-emacs-helper.el ends here

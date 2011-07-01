@@ -345,10 +345,34 @@ indirect buffer. bind to \\[ywb-clone-buffer]."
   (camelcase-forward-word (- arg)))
 ;;}}}
 
-(defun ywb-uniq-region (beg end)
-  "Apply `sort | uniq' to selected region."
-  (interactive "r")
-  (shell-command-on-region beg end "sort | uniq" nil t))
+;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
+(defun extend-selection (arg &optional incremental)
+  "Select the current word.
+Subsequent calls expands the selection to larger semantic unit."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     (or (and transient-mark-mode mark-active)
+                         (eq last-command this-command))))
+  (if incremental
+      (progn
+        (when (nth 3 (syntax-ppss))
+          (if (< arg 0)
+              (progn
+                (skip-syntax-forward "^\"")
+                (goto-char (1+ (point)))
+                (incf arg))
+            (skip-syntax-backward "^\"")
+            (goto-char (1- (point)))
+            (decf arg)))
+        (up-list (- arg))
+        (forward-sexp)
+        (mark-sexp -1))
+    (if (> arg 1)
+        (extend-selection (1- arg) t)
+      (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
+          (goto-char (match-end 0))
+        (unless (memq (char-before) '(?\) ?\"))
+          (forward-sexp)))
+      (mark-sexp -1))))
 
 (defun my-switch-scratch ()
   "switch to *scratch* buffer, bind to \\[my-switch-scratch]."
@@ -370,7 +394,8 @@ With argument, do this that many times.
 
 This command does not push erased text to `kill-ring'."
   (interactive "p")
-  (delete-region (point) (progn (forward-word arg) (point))))
+  (delete-region (point) (if subword-mode (subword-forward arg)
+                           (progn (forward-word arg) (point)))))
 
 (defun my-backward-delete-word (arg)
   "Delete characters backward until encountering the beginning of a word.
@@ -403,6 +428,71 @@ If cursor at beginning or end of a line, delete the previous RET."
      (save-excursion (move-beginning-of-line 1) (point)))
   (if be (delete-char -1))))
 ;;}}}
+
+(defun compact-uncompact-block ()
+  "Remove or add line endings on the current block of text.
+This command similar to a toggle for `fill-paragraph' and `unfill-paragraph'
+When there is a text selection, act on the region.
+
+When in text modes, the “current block” is equivalent to the
+current paragraph.  When in programing language modes, “current block”
+is defined by between empty lines.
+
+Todo: when in a programing lang mode, make the function more
+smart, so that it doesn't cut strings.  Right now, the code uses
+fill* functions. A proper implementation to compact is replacing
+newline chars by space when the newline char is not inside
+string. To uncompact, a proper solution needs to know the basic
+syntax of each lang. A simple implementation is to simply insert
+newline after “}” or “;” for c-like syntaxes."
+  (interactive)
+
+  ;; This command symbol has a property “'stateIsCompact-p”, the
+  ;; possible values are t and nil. This property is used to easily
+  ;; determine whether to compact or uncompact, when this command is
+  ;; called again
+
+  (let (bds currentLineCharCount currentStateIsCompact
+            (bigFillColumnVal 4333999) (deactivate-mark nil))
+
+    (save-excursion
+      ;; currentLineCharCount is used to determine whether current state
+      ;; is compact or not, when the command is run for the first time
+      (setq currentLineCharCount
+            (progn
+              (setq bds (bounds-of-thing-at-point 'line))
+              (length (buffer-substring-no-properties (car bds) (cdr bds)))
+              ;; Note: 'line includes eol if it is not buffer's last line
+              )
+            )
+
+      ;; Determine whether the text is currently compact.  when the last
+      ;; command is this, then symbol property easily tells, but when
+      ;; this command is used fresh, right now we use num of chars of
+      ;; the cursor line as a way to define current compatness state
+      (setq currentStateIsCompact
+            (if (eq last-command this-command)
+                (get this-command 'stateIsCompact-p)
+              (if (> currentLineCharCount fill-column) t nil)
+              )
+            )
+
+      (if (and transient-mark-mode mark-active)
+          (if currentStateIsCompact
+              (fill-region (region-beginning) (region-end))
+            (let ((fill-column bigFillColumnVal))
+              (fill-region (region-beginning) (region-end)))
+            )
+        (if currentStateIsCompact
+            (fill-paragraph nil)
+          (let ((fill-column bigFillColumnVal))
+            (fill-paragraph nil))
+          )
+        )
+
+      (put this-command 'stateIsCompact-p
+           (if currentStateIsCompact
+               nil t)) ) ) )
 
 (defvar switch-major-mode-history nil)
 (defun switch-major-mode (mode)
