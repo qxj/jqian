@@ -19,7 +19,7 @@
   (global-semantic-decoration-mode 1)
 
   ;; semantic cache directory
-  (setq semanticdb-default-save-directory my-temp-dir)
+  (setq semanticdb-default-save-directory (expand-file-name "semanticdb" my-temp-dir))
 
   ;; CEDET tweaks: http://stackoverflow.com/questions/3807345/cedet-scalability-tips/3808830#3808830
   (setq semantic-idle-scheduler-idle-time 5

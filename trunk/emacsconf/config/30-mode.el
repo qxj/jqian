@@ -444,7 +444,8 @@ etc).  The following options will be available:
          ;; ("T" . 'info-toc)
          ("j" . 'next-line)
          ("k" . 'previous-line))
-       (require 'info+)))
+       (deh-try-require 'info+
+         (setq Info-fit-frame-flag nil))))
 
   (defun my-toggle-info ()
     "Switch to info buffer or return to the previous buffer."

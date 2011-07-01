@@ -77,9 +77,17 @@
       dired-kept-versions 1
       backup-by-copying t)
 ;;; DO NOT depends on the backup, it is not really useful
-(add-to-list 'backup-directory-alist
-             (cons "." (expand-file-name "backup" my-temp-dir)))
-(setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-temp-dir))
+;; (add-to-list 'backup-directory-alist
+;;              (cons "." (expand-file-name "backup" my-temp-dir)))
+;; (setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-temp-dir))
+(setq make-backup-file-name-function
+      (lambda (fpath)
+        "Return a new file path of a given file path.
+If the new path's directories does not exist, create them."
+        (let* ((backup-root (expand-file-name "backup" my-temp-dir))
+               (bpath (concat backup-root fpath "~")))
+          (make-directory (file-name-directory bpath) bpath)
+          bpath)))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
