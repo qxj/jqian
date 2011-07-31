@@ -90,12 +90,13 @@
           ("" "xunicode" t)      ; provides unicode character macros
           ("" "xltxtra" t)       ; provides some fixes/extras
           ("" "indentfirst" t)
+          ("" "tikz" t)
           ("english" "babel" t)
           ("AUTO" "inputenc" t)
           ("" "color" t)
           ;;# donot need unicode option
           ("" "hyperref" t)
-          ;; ("pdftex" "graphicx" t)
+          ;; ("pdftex" "graphicx" t) ; works for pdflatex
           ;;# listings for source code exporting
           ("" "listings" t)
           ("" "xcolor" t)
@@ -115,9 +116,9 @@
    frame=single,
    upquote=true
 }"
-          "\\setmainfont[BoldFont=DejaVu Serif]{DejaVu Serif}"
-          "\\setsansfont[BoldFont=DejaVu Sans]{DejaVu Sans}"
-          "\\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
+          "\\setmainfont[BoldFont=DejaVu Serif]{WenQuanYi Micro Hei}"
+          "\\setsansfont[BoldFont=DejaVu Sans]{WenQuanYi Micro Hei}"
+          "\\setmonofont[BoldFont=DejaVu Sans Mono]{WenQuanYi Micro Hei Mono}"
           "\\defaultfontfeatures{Mapping=tex-text}"
           "\\XeTeXlinebreaklocale \"zh\""
           "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
