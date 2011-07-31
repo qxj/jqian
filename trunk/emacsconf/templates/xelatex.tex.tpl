@@ -42,9 +42,9 @@
 \providecommand{\alert}[1]{\textbf{#1}}
 \begin{document}
 
-\title{>>>FILE_SANS<<<}
-\author{>>>LOGIN_NAME<<<}
-\date{>>>VC_DATE<<<}
+\title{(>>>FILE_SANS<<<)}
+\author{(>>>LOGIN_NAME<<<)}
+\date{(>>>VC_DATE<<<)}
 \maketitle
 
 \setcounter{tocdepth}{3}
