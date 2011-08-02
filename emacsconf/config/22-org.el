@@ -92,7 +92,7 @@
           ("" "indentfirst" t)
           ("" "tikz" t)
           ("english" "babel" t)
-          ("AUTO" "inputenc" t)
+          ;; ("AUTO" "inputenc" t)
           ("" "color" t)
           ;;# donot need unicode option
           ("" "hyperref" t)
