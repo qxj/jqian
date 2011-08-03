@@ -83,20 +83,27 @@
 (deh-section-after "org-latex"
   (setq org-latex-to-pdf-process
         '("xelatex -interaction=nonstopmode -output-directory=%o %f"
+          "xelatex -interaction=nonstopmode -output-directory=%o %f"
           "xelatex -interaction=nonstopmode -output-directory=%o %f"))
   ;; org + beamer = owesome slides
   (setq org-export-latex-default-packages-alist ; for xelatex
-        '(("cm-default" "fontspec" t) ; provides font selecting commands
-          ("" "xunicode" t)      ; provides unicode character macros
-          ("" "xltxtra" t)       ; provides some fixes/extras
-          ("" "indentfirst" t)
-          ("" "tikz" t)
+        '(("" "indentfirst" t)
+          ("" "tikz" t)                 ; tikz
           ("english" "babel" t)
           ;; ("AUTO" "inputenc" t)
           ("" "color" t)
+          ("" "float" t)                ; for figure placement
+          ("" "wrapfig" t)
           ;;# donot need unicode option
-          ("" "hyperref" t)
-          ;; ("pdftex" "graphicx" t) ; works for pdflatex
+          ("" "longtable" t)            ; for long tables
+          ("" "hyperref" t)             ; for cross reference
+          ;; ("pdftex" "graphicx" t)       ; works for pdflatex
+          )
+        org-export-latex-packages-alist
+        '(;;# xelatex related packages
+          ("cm-default" "fontspec" t) ; provides font selecting commands
+          ("" "xunicode" t)       ; provides unicode character macros
+          ("" "xltxtra" t)        ; provides some fixes/extras
           ;;# listings for source code exporting
           ("" "listings" t)
           ("" "xcolor" t)
@@ -116,6 +123,7 @@
    frame=single,
    upquote=true
 }"
+          ;;# default font settings
           "\\setmainfont[BoldFont=DejaVu Serif]{WenQuanYi Micro Hei}"
           "\\setsansfont[BoldFont=DejaVu Sans]{WenQuanYi Micro Hei}"
           "\\setmonofont[BoldFont=DejaVu Sans Mono]{WenQuanYi Micro Hei Mono}"
@@ -123,6 +131,18 @@
           "\\XeTeXlinebreaklocale \"zh\""
           "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
           "\\tolerance=1000"))
+  ;;# for org-preview-latex-fragment template
+  (setq org-format-latex-header "\\documentclass{article}
+\\usepackage[usenames]{color}
+\\usepackage{amsmath}
+\\usepackage[mathscr]{eucal}
+\[NO-PACKAGES]
+\[DEFAULT-PACKAGES]
+\\pagestyle{empty}             % do not remove
+\\usepackage{fullpage}")
+
+
+
   ;; Only 2 level headlines will be exported as frames
   ;; (setq org-export-headline-levels 2)
   ;; During HTML export, convert latex fragment

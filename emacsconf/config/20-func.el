@@ -394,7 +394,8 @@ With argument, do this that many times.
 
 This command does not push erased text to `kill-ring'."
   (interactive "p")
-  (delete-region (point) (if subword-mode (subword-forward arg)
+  (delete-region (point) (if (and (boundp 'subword-mode) subword-mode)
+                             (subword-forward arg)
                            (progn (forward-word arg) (point)))))
 
 (defun my-backward-delete-word (arg)
