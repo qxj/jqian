@@ -86,7 +86,7 @@
           "xelatex -interaction=nonstopmode -output-directory=%o %f"
           "xelatex -interaction=nonstopmode -output-directory=%o %f"))
   ;; org + beamer = owesome slides
-  (setq org-export-latex-default-packages-alist ; for xelatex
+  (setq org-export-latex-default-packages-alist
         '(("" "indentfirst" t)
           ("" "tikz" t)                 ; tikz
           ("english" "babel" t)
@@ -132,16 +132,15 @@
           "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
           "\\tolerance=1000"))
   ;;# for org-preview-latex-fragment template
-  (setq org-format-latex-header "\\documentclass{article}
+  (setq org-format-latex-header "\\documentclass{minimal}
 \\usepackage[usenames]{color}
 \\usepackage{amsmath}
 \\usepackage[mathscr]{eucal}
 \[NO-PACKAGES]
 \[DEFAULT-PACKAGES]
-\\pagestyle{empty}             % do not remove
-\\usepackage{fullpage}")
-
-
+%\\pagestyle{empty}             % do not remove
+%\\usepackage{fullpage}
+")
 
   ;; Only 2 level headlines will be exported as frames
   ;; (setq org-export-headline-levels 2)
