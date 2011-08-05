@@ -35,3 +35,7 @@ M-x sunrise-sunset
 
 * How long did you run this Emacs
 M-x emacs-uptime
+
+* org-mode 7.0+ support easy-template
+ex: input <s then press TAB, it will be expand automatically.
+
