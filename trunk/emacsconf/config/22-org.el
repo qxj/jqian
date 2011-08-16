@@ -132,7 +132,7 @@
           "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
           "\\tolerance=1000"))
   ;;# for org-preview-latex-fragment template
-  (setq org-format-latex-header "\\documentclass{minimal}
+  (setq org-format-latex-header "\\documentclass{minimal}       % instead of article
 \\usepackage[usenames]{color}
 \\usepackage{amsmath}
 \\usepackage[mathscr]{eucal}
