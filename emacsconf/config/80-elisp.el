@@ -1086,6 +1086,28 @@ indent line."
     (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
   (add-hook 'org-mode-hook 'ac-org-mode-setup)
 
+  ;; Slime
+  (defun ac-slime-candidates ()
+    "Complete candidates of the symbol at point."
+    (if (memq major-mode '(lisp-mode))
+        (let* ((end (point))
+               (beg (slime-symbol-start-pos))
+               (prefix (buffer-substring-no-properties beg end))
+               (result (slime-simple-completions prefix)))
+          (destructuring-bind (completions partial) result
+            completions))))
+
+  (ac-define-source slime
+    '((candidates . ac-slime-candidates)
+      (requires . 3)
+      (symbol . "s")))
+
+  (defun ac-slime-setup ()
+    (slime-mode t)
+    (push 'ac-source-slime ac-sources))
+
+  (add-hook 'lisp-mode-hook 'ac-slime-setup)
+
   ;; for autopair
   (defun ac-settings-4-autopair ()
     "`auto-complete' settings for `autopair'."

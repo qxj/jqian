@@ -119,3 +119,12 @@ of starting a new instance."
                     (let ((buf (get-buffer bufname)))
                       (and buf (buffer-name (switch-to-buffer bufname))))))
       (ansi-term prg prg))))
+
+(setq my-default-mode-line-modes mode-line-modes)
+(defun my-toggle-mode-line ()
+  "toggle minor modes display on mode-line"
+  (interactive)
+  (if (not (equal mode-line-modes (concat "(" mode-name ")")))
+      (setq mode-line-modes (concat "(" mode-name ")"))
+    (setq mode-line-modes my-default-mode-line-modes))
+  (force-mode-line-update))
