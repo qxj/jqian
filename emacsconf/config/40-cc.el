@@ -68,6 +68,35 @@
                (goto-char (point-min))
                (search-forward-regexp "^class" nil t)))
         (c++-mode)))
+        
+  ;;# change face of code in #if 0...#endif
+  ;; http://stackoverflow.com/questions/4549015/in-c-c-mode-in-emacs-change-face-of-code-in-if-0-endif-block-to-comment-fa
+  (defun my-c-mode-font-lock-if0 (limit)
+    (save-restriction
+      (widen)
+      (save-excursion
+        (goto-char (point-min))
+        (let ((depth 0) str start start-depth)
+          (while (re-search-forward "^\\s-*#\\s-*\\(if\\|else\\|endif\\)" limit 'move)
+            (setq str (match-string 1))
+            (if (string= str "if")
+                (progn
+                  (setq depth (1+ depth))
+                  (when (and (null start) (looking-at "\\s-+0"))
+                    (setq start (match-end 0)
+                          start-depth depth)))
+              (when (and start (= depth start-depth))
+                (c-put-font-lock-face start (match-beginning 0) 'font-lock-comment-face)
+                (setq start nil))
+              (when (string= str "endif")
+                (setq depth (1- depth)))))
+          (when (and start (> depth 0))
+            (c-put-font-lock-face start (point) 'font-lock-comment-face)))))
+    nil)
+  (defun my-c-mode-common-hook-if0 ()
+    (font-lock-add-keywords
+     nil
+     '((my-c-mode-font-lock-if0 (0 font-lock-comment-face prepend))) 'add-to-end))
 
   (defun my-c-mode-common-hook ()
     (my-mode-common-hook)
@@ -76,6 +105,7 @@
     ;; (call-interactively 'google-set-c-style)
     (my-c-indent-lineup-arglist)
     (my-c-correct-hpp-mode)
+    (my-c-mode-common-hook-if0)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
