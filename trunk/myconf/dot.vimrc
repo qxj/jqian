@@ -18,7 +18,20 @@ set gdefault
 set copyindent
 set showbreak=\ \ \ \ \  "indicator for wrapped lines
 set shellslash
-
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Theme/Colors
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syntax on " syntax highlighting on
+if (has("gui_running"))
+	set background=dark " we are using a dark background
+	set nowrap
+    set guifont=Consolas:h11
+ 	colorscheme morning
+else
+	set paste "this option is useful when using Vim in a terminal
+	set wrap
+	colo ron
+endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -71,7 +84,6 @@ set titlestring=%F
 set statusline=%k(%02n)%t%m%r%h%w\ \[%{&ff}:%{&fenc}:%Y]\ \[line=%04l/%04L\ col=%03c/%03{col(\"$\")-1}]\ [%p%%]
 set laststatus=2 " always show the status line
 "set cursorline
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -81,6 +93,58 @@ set tabstop=4 " tab spacing (settings below are just to unify it)
 set softtabstop=4 " unify
 set shiftwidth=4 " unify
 set noexpandtab " real tabs please!
-"set nowrap
-set wrap " do not wrap lines
+"set nowrap " do not wrap lines
 set smarttab " use tabs at the start of a line,spaces elsewhere
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" File encoding
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" {{{  multi-encoding setting
+if has("multi_byte")
+"set bomb
+set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1
+" CJK environment detection and corresponding setting
+if v:lang =~ "^zh_CN"
+" Use cp936 to support GBK, euc-cn == gb2312
+set encoding=cp936
+set termencoding=cp936
+set fileencoding=cp936
+endif
+" Detect UTF-8 locale, and replace CJK setting if needed
+if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+endif
+else
+echoerr "Sorry, this version of (g)vim was not compiled with multi_byte"
+endif
+" }}}
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Folding
+"    Enable folding,but by default make it act like folding is off,because folding is annoying in anything but a few rare cases
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set foldenable " Turn on folding
+"set foldmethod=indent " Make folding indent sensitive
+set foldmethod=manual " Make folding indent sensitive
+set foldlevel=100 " Don't autofold anything (but I can still fold manually)
+set foldopen-=search " don't open folds when you search into them
+set foldopen-=undo " don't open folds when you undo stuff
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Win Manager
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:winManagerWidth=35 " How wide should it be( pixels)
+let g:winManagerWindowLayout='FileExplorer' " What windows should it
+"let g:winManagerWindowLayout='TagList,FileExplorer|BufExplorer' " What windows should it
+let g:persistentBehaviour=0 "vim will quit if only the explorers window are the one left
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Buffer Explorer
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let bufExplorerDefaultHelp=0
+let bufExplorerDetailedHelp=0
+let bufExplorerMaxHeight=15
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Keybind
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"cursor move
+inoremap <C-a> <Home>
+inoremap <C-e> <End>
