@@ -110,7 +110,7 @@
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
     (eldoc-mode 1)
-    (hide-ifdef-mode 1)
+    ;; (hide-ifdef-mode 1)
     (subword-mode 1)
     ;; (cwarn-mode 1)
     ;; (smart-operator-mode 1)
