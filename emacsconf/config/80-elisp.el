@@ -1542,7 +1542,7 @@ indent line."
     (which-func-mode 1)
     (setq which-func-unknown "unknown")))
 
-(deh-section "imenu"
+(deh-section-after "imenu"
   (add-to-list 'imenu-after-jump-hook 'recenter)
   (setq imenu-max-item-length 60
         imenu-max-items 500))
