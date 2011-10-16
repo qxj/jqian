@@ -145,7 +145,6 @@
     ;;                      (newline-and-indent)))))
 
     ;; untabify source code
-    (make-local-hook 'write-contents-hooks)
     (add-hook 'write-contents-hooks 'my-untabify nil t)
     )
 
@@ -160,14 +159,12 @@
  and improved by Claus Brunzema:
  - return nil to get `write-contents-hooks' to work correctly
    (see documentation there)
- - `make-local-hook' instead of `make-local-variable'
  - when instead of if
  Use some lines along the following for getting this to work in the
  modes you want it to:
 
  \(add-hook 'some-mode-hook
            '(lambda ()
-               (make-local-hook 'write-contents-hooks)
                 (add-hook 'write-contents-hooks 'my-untabify nil t)))"
     (save-excursion
       (goto-char (point-min))
@@ -742,8 +739,8 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook python-mode-hook
     (my-mode-common-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
-    (make-local-hook 'after-save-hook)
-    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p))
+    ;; (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
+    )
 
   ;; (deh-try-require 'pymacs
   ;;   (pymacs-load "ropemacs" "rope-")
@@ -755,8 +752,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook sh-mode-hook
     ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
     (my-mode-common-hook)
-    (make-local-hook 'after-save-hook)
-    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     ))
 
 
