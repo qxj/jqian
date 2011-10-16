@@ -121,26 +121,30 @@
       ;; use 120 char wide window for largeish displays and smaller 80
       ;; column windows for smaller displays pick whatever numbers make
       ;; sense for you
-      (if (> (x-display-pixel-width) 1280)
-          (progn
-            (add-to-list 'default-frame-alist (cons 'width 100))
-            (set-frame-font "DejaVu Sans Mono:pixelsize=14")
-            (dolist (charset '(kana han symbol cjk-misc bopomofo))
-              (set-fontset-font "fontset-default" charset
-                                (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
-            )
-        (add-to-list 'default-frame-alist (cons 'width 80))
-        (set-frame-font "DejaVu Sans Mono:pixelsize=12")
-        (set-fontset-font "fontset-default" 'han
-                          (font-spec :family "WenQuanYi Micro Hei Mono" :size 14)))
+      (let ((en-font "DejaVu Sans Mono")
+            (zh-font "WenQuanYi Micro Hei Mono"))
+        (if (eq window-system 'ns)
+            (setq en-font "Monaco"
+                  zh-font "Hei"))
+        (if (> (x-display-pixel-width) 1280)
+            (progn
+              (add-to-list 'default-frame-alist (cons 'width 100))
+              (set-frame-font (concat en-font ":pixelsize=14"))
+              (dolist (charset '(kana han symbol cjk-misc bopomofo))
+                (set-fontset-font "fontset-default" charset
+                                  (font-spec :family zh-font :size 16))))
+          (add-to-list 'default-frame-alist (cons 'width 80))
+          (set-frame-font (concat en-font ":pixelsize=12"))
+          (set-fontset-font "fontset-default" 'han
+                            (font-spec :family zh-font :size 14))))
       ;; for the height, subtract a couple hundred pixels from the
       ;; screen height (for panels, menubars and whatnot), then divide
       ;; by the height of a char to get the height we want
       (add-to-list 'default-frame-alist
-                   (cons 'height (/ (- (x-display-pixel-height) 50)
+                   (cons 'height (/ (- (x-display-pixel-height) 100)
                                     (frame-char-height))))))
-  (add-hook 'after-make-frame-functions 'init-window-frame)
-  (add-hook 'after-init-hook 'init-window-frame))
+    (add-hook 'after-make-frame-functions 'init-window-frame)
+    (add-hook 'after-init-hook 'init-window-frame))
 
 ;; (deh-add-hook find-file-hook
 ;;   (if (string-match (expand-file-name "~/src/") (buffer-file-name))
