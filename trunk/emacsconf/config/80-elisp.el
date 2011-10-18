@@ -266,7 +266,7 @@ mouse-3: Remove current window from display")
           (concat "^[.#]" "\\|"
                   "^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$" "\\|"
                   ;; omit MSVC project files
-                  "\." (regexp-opt '("dsp" "dsw" "sln" "vcproj" "vspscc" "vssscc")) "$"))
+                  "\." (regexp-opt '("git" "svn" "dsp" "dsw" "sln" "vcproj" "vspscc" "vssscc")) "$"))
 
     (setq my-dired-guess-command-alist
           '(("acroread" "pdf")
