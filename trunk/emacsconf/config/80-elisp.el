@@ -142,8 +142,6 @@ mouse-3: Remove current window from display")
     (add-to-list 'dired-font-lock-keywords
                  (list dired-re-exe
                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
-  (deh-add-hook dired-mode-hook
-    (dired-omit-mode t))
   (deh-add-hook dired-after-readin-hook
     (set (make-local-variable 'truncate-lines) t)
     (save-excursion                     ; sort directories first
@@ -255,71 +253,73 @@ mouse-3: Remove current window from display")
      '((("r" . "Filter by regexp")    . ywb-dired-filter-regexp)
        (("." . "Filter by extension") . ywb-dired-filter-extension)
        (("/" . "Filter match")        . my-dired-omit-expunge))
-     t))
+     t)))
 
-  (deh-section-after "dired-x"
-    (dolist (ext '(".bak"))
-      (add-to-list 'dired-omit-extensions ext))
+(deh-section-after "dired-x"
+  (deh-add-hook dired-mode-hook
+    (dired-omit-mode t))
 
-    (setq dired-omit-files
-          (concat "^[.#]" "\\|"
-                  "^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$" "\\|"
-                  ;; omit MSVC project files
-                  "\." (regexp-opt '("git" "svn" "dsp" "dsw" "sln" "vcproj" "vspscc" "vssscc")) "$"))
+  (dolist (ext '(".bak"))
+    (add-to-list 'dired-omit-extensions ext))
 
-    (setq my-dired-guess-command-alist
-          '(("acroread" "pdf")
-            ("evince" "pdf")
-            ;; ("xpdf" "pdf")
-            ("xdvi" "dvi")
-            ("dvipdf" "dvi")
-            ("zxpdf" "pdf.gz")
-            ("ps2pdf" "ps" "eps")
-            ("gv" "ps" "eps")
-            ("unrar x" "rar")
-            ("kchmviewer" "chm")
-            ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
-            ("mplayer -playlist" "list")
-            ("display" "gif" "jpeg" "jpg" "tif" "png" )
-            ("eog" "gif" "jpeg" "jpg" "tif" "png")
-            ("docview.pl" "doc")
-            ("ooffice -writer" "ods" "doc")
-            ("ooffice -calc"  "xls")
-            ("ooffice -impress" "odt" "ppt")
-            ("gnumeric" "xls")
-            ("7z x" "7z")
-            ("djview" "djvu")
-            ("perl" "pl")
-            ("firefox" "xml" "html" "htm" "mht")))
-    ;; Based upon the name of a file, Dired tries to guess what shell
-    ;; command you might want to apply to it. For example, if you have
-    ;; point on a file named foo.tar and you press !, Dired will guess
-    ;; you want to ‘tar xvf’ it and suggest that as the default shell
-    ;; command.
-    (dolist (file my-dired-guess-command-alist)
-      (add-to-list 'dired-guess-shell-alist-default
-                   (list (concat "\\." (regexp-opt (cdr file) t) "$")
-                         (car file))))
-    ;;# Dired Association
-    (if (eq system-type 'windows-nt)
-        (progn
-          (defun dired-custom-execute-file (&optional arg)
-            (interactive "P")
-            (mapcar #'(lambda (file)
-                        (w32-shell-execute "open" (convert-standard-filename file)))
-                    (dired-get-marked-files nil arg))))
-      ;; Redefine of this function
-      (defun dired-run-shell-command (command)
-        (let ((handler
-               (find-file-name-handler (directory-file-name default-directory)
-                                       'shell-command)))
-          (if handler
-              (apply handler 'shell-command (list command))
-            (start-process-shell-command "dired-run" nil command)))
-        ;; Return nil for sake of nconc in dired-bunch-files.
-        nil))
-    )
-)
+  (setq dired-omit-files
+        (concat "^[.#]" "\\|"
+                "^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$" "\\|"
+                ;; omit MSVC project files
+                "\." (regexp-opt '("git" "svn" "dsp" "dsw" "sln" "vcproj" "vspscc" "vssscc")) "$"))
+
+  (setq my-dired-guess-command-alist
+        '(("acroread" "pdf")
+          ("evince" "pdf")
+          ;; ("xpdf" "pdf")
+          ("xdvi" "dvi")
+          ("dvipdf" "dvi")
+          ("zxpdf" "pdf.gz")
+          ("ps2pdf" "ps" "eps")
+          ("gv" "ps" "eps")
+          ("unrar x" "rar")
+          ("kchmviewer" "chm")
+          ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
+          ("mplayer -playlist" "list")
+          ("display" "gif" "jpeg" "jpg" "tif" "png" )
+          ("eog" "gif" "jpeg" "jpg" "tif" "png")
+          ("docview.pl" "doc")
+          ("ooffice -writer" "ods" "doc")
+          ("ooffice -calc"  "xls")
+          ("ooffice -impress" "odt" "ppt")
+          ("gnumeric" "xls")
+          ("7z x" "7z")
+          ("djview" "djvu")
+          ("perl" "pl")
+          ("firefox" "xml" "html" "htm" "mht")))
+  ;; Based upon the name of a file, Dired tries to guess what shell
+  ;; command you might want to apply to it. For example, if you have
+  ;; point on a file named foo.tar and you press !, Dired will guess
+  ;; you want to ‘tar xvf’ it and suggest that as the default shell
+  ;; command.
+  (dolist (file my-dired-guess-command-alist)
+    (add-to-list 'dired-guess-shell-alist-default
+                 (list (concat "\\." (regexp-opt (cdr file) t) "$")
+                       (car file))))
+  ;;# Dired Association
+  (if (eq system-type 'windows-nt)
+      (progn
+        (defun dired-custom-execute-file (&optional arg)
+          (interactive "P")
+          (mapcar #'(lambda (file)
+                      (w32-shell-execute "open" (convert-standard-filename file)))
+                  (dired-get-marked-files nil arg))))
+    ;; Redefine of this function
+    (defun dired-run-shell-command (command)
+      (let ((handler
+             (find-file-name-handler (directory-file-name default-directory)
+                                     'shell-command)))
+        (if handler
+            (apply handler 'shell-command (list command))
+          (start-process-shell-command "dired-run" nil command)))
+      ;; Return nil for sake of nconc in dired-bunch-files.
+      nil))
+  )
 
 (deh-require 'ido
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
