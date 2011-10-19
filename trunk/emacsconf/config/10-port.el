@@ -123,9 +123,12 @@
       ;; sense for you
       (let ((en-font "DejaVu Sans Mono")
             (zh-font "WenQuanYi Micro Hei Mono"))
-        (if (eq window-system 'ns)
-            (setq en-font "Monaco"
-                  zh-font "Hei"))
+        (cond ((eq window-system 'ns)
+               (setq en-font "Monaco"
+                     zh-font "Hei"))
+              ((eq window-system 'w32)
+               (setq en-font "Consolas"
+                     zh-font "SimSun")))
         (if (> (x-display-pixel-width) 1280)
             (progn
               (add-to-list 'default-frame-alist (cons 'width 100))

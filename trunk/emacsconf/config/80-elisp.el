@@ -137,11 +137,13 @@ mouse-3: Remove current window from display")
 
   ;;# hooks
   (deh-add-hook dired-load-hook
-    (require 'dired-x)
+    (load "dired-x")
     ;; Make the execuatable file with different color
     (add-to-list 'dired-font-lock-keywords
                  (list dired-re-exe
                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
+  (deh-add-hook dired-mode-hook
+    (dired-omit-mode t))
   (deh-add-hook dired-after-readin-hook
     (set (make-local-variable 'truncate-lines) t)
     (save-excursion                     ; sort directories first
@@ -256,9 +258,6 @@ mouse-3: Remove current window from display")
      t))
 
   (deh-section-after "dired-x"
-    (deh-add-hook dired-mode-hook
-      (dired-omit-mode t))
-
     (dolist (ext '(".bak"))
       (add-to-list 'dired-omit-extensions ext))
 
