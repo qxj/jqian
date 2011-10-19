@@ -12,14 +12,10 @@
   "Default templates for creating different files")
 (defconst my-snippet-dir (expand-file-name "snippets" my-startup-dir)
   "snippets from YASnippets")
-(defconst my-org-dir (expand-file-name
-                      (if (eq window-system 'w32)
-                          "d:/My Dropbox/Notes/" "~/Dropbox/Notes/")
-   "Put my temporary notes here, eg: in dropbox directory"))
-(defconst my-temp-dir (expand-file-name
-                       (if (eq window-system 'w32)
-                           "c:/windows/temp/emacs/" "~/.tmp-emacs")
-   "Temporary directory to store autosave, desktop, session, backup files."))
+(defconst my-org-dir (expand-file-name "~/Dropbox/Notes/")
+   "Put my temporary notes here, eg: in dropbox directory")
+(defconst my-temp-dir (expand-file-name "~/.tmp-emacs")
+   "Temporary directory to store autosave, desktop, session, backup files.")
 
 ;;; Load-path
 (add-to-list 'load-path my-config-dir)
