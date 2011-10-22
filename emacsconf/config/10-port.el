@@ -71,13 +71,6 @@
 
   (setq explicit-shell-file-name "bash.exe")
 
-  (defun ywb-convert-to-cygwin-path (path)
-    (concat "file:///cygdrive/" (substring path 0 1) (substring path 2)))
-
-  (defun ywb-convert-cygwin-path (path)
-    (setq path (substring path 17))
-    (concat (substring path 0 1) ":" (substring path 1)))
-
   (setq ffap-c-path '("d:/Programs/MSYS/mingw/include/"
                       "d:/Programs/MSYS/mingw/include/c++/3.4.0/"))
   (add-hook 'shell-mode-hook
@@ -99,6 +92,7 @@
 
 (deh-section "window-system"
   (when (eq window-system 'x) (setq x-select-enable-clipboard t))
+  (when (eq window-system 'ns) (setq ns-command-modifier 'meta))
 
   ;; If terminal and X is sharing the same emacs server, color-theme
   ;; will affect terminal display. Below function will resolve this
@@ -123,12 +117,6 @@
       ;; sense for you
       (let ((en-font "DejaVu Sans Mono")
             (zh-font "WenQuanYi Micro Hei Mono"))
-        (cond ((eq window-system 'ns)
-               (setq en-font "Monaco"
-                     zh-font "Hei"))
-              ((eq window-system 'w32)
-               (setq en-font "Consolas"
-                     zh-font "SimSun")))
         (if (> (x-display-pixel-width) 1280)
             (progn
               (add-to-list 'default-frame-alist (cons 'width 100))
