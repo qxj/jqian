@@ -7,14 +7,18 @@
                                     global-semantic-idle-summary-mode
                                     global-semantic-idle-completions-mode
                                     global-semantic-idle-scheduler-mode
-                                    ;; global-semantic-highlight-func-mode
+                                    global-semantic-highlight-func-mode
                                     global-semantic-decoration-mode
                                     ;; global-semantic-stickyfunc-mode
                                     global-semantic-mru-bookmark-mode))
 
+  (semantic-mode 1)
+
   (global-semantic-highlight-edits-mode (if window-system 1 -1))
   (global-semantic-show-unmatched-syntax-mode 1)
   (global-semantic-show-parser-state-mode 1)
+  ;; (global-semantic-idle-breadcrumbs-mode (if window-system 1 -1))
+  (global-semantic-idle-local-symbol-highlight-mode 1)
 
   ;; semantic cache directory
   (setq semanticdb-default-save-directory my-temp-dir
@@ -32,8 +36,6 @@
 
   (setq semantic-which-function-use-color t)
 
-  (semantic-mode 1)
-
   (add-hook 'speedbar-load-hook (lambda () (require 'semantic/sb)))
 
   (require 'semantic/decorate/include nil 'noerror)
@@ -50,6 +52,9 @@
   ;; WORKAROUND: it should be unnecessary, maybe it's a bug of internal
   ;; semantic
   (require 'semantic/analyze/refs)
+
+  ;;# include path
+  ;; (add-to-list 'semantic-c-dependency-system-include-path "/usr/local/include")
 
   (deh-define-key semantic-mode-map
     ("\C-c,c" . 'semantic-ia-complete-symbol)
