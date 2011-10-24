@@ -142,6 +142,8 @@ mouse-3: Remove current window from display")
     (add-to-list 'dired-font-lock-keywords
                  (list dired-re-exe
                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
+  (deh-add-hook dired-mode-hook
+    (dired-omit-mode t))
   (deh-add-hook dired-after-readin-hook
     (set (make-local-variable 'truncate-lines) t)
     (save-excursion                     ; sort directories first
@@ -256,9 +258,6 @@ mouse-3: Remove current window from display")
      t)))
 
 (deh-section-after "dired-x"
-  (deh-add-hook dired-mode-hook
-    (dired-omit-mode t))
-
   (dolist (ext '(".bak"))
     (add-to-list 'dired-omit-extensions ext))
 
@@ -928,7 +927,7 @@ mouse-3: Remove current window from display")
                   emacs-lisp-mode-hook
                   html-mode-hook)
     (require 'autopair nil t)           ; advance in hooks
-    (autopair-mode))
+    (autopair-mode 1))
   )
 
 (deh-section "occur"
