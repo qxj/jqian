@@ -2,7 +2,7 @@
 ;; This config is for portable. The platform relate configuration
 ;; should appear here.
 
-(defvar  user-include-dirs
+(defvar user-include-dirs
   '(".." "../include" "../inc" "../common" "../public" "../hdr"
     "../.." "../../include" "../../inc" "../../common" "../../public"
     "../../hdr"))
@@ -23,8 +23,9 @@
   (add-to-list 'auto-coding-alist '("\\.nfo\\'" . cp437))
   (dolist (char (append
                  "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
-    (modify-syntax-entry char "." (standard-syntax-table)))
+    (modify-syntax-entry char "." (standard-syntax-table))))
 
+(deh-section "abbrev-table"
   (define-abbrev-table 'global-abbrev-table
     '(("alpha" "α" nil 0)
       ("beta" "β" nil 0)
@@ -35,17 +36,17 @@
       ("ar2" "⇒" nil 0))))
 
 (deh-section "PATH"
-  ;; add more directory to environment variable PATH
+  ;; add more directory to environment variable PATH and exec-path
   (let ((path (split-string (getenv "PATH") path-separator)))
     (mapc (lambda (p)
-              (setq p (convert-standard-filename
-                       (expand-file-name p)))
-              (add-to-list 'exec-path p)
-              (add-to-list 'path p))
-            (append
-             '("~/bin")
-             (when (eq system-type 'windows-nt)
-               '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin"))))
+            (setq p (convert-standard-filename
+                     (expand-file-name p)))
+            (add-to-list 'exec-path p)
+            (add-to-list 'path p))
+          (append
+           '("~/bin" "/usr/local/bin" "/usr/local/sbin" "/usr/texbin" "/usr/X11/bin")
+           (when (eq system-type 'windows-nt)
+             '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin"))))
     (setenv "PATH" (mapconcat 'identity path path-separator))))
 
 (deh-section-if "win32"
@@ -90,9 +91,18 @@
                    "/usr/gnu/lib/emacs/info"))
       (add-to-list 'Info-default-directory-list dir)))
 
+(deh-section-if "macosx"
+  (eq system-type 'darwin)
+  (setq ns-command-modifier 'meta)
+  (dolist (dir '("/usr/include/c++/v1"))
+    (add-to-list 'user-include-dirs dir))
+  ;; fix launching from spotlight
+  ;; $ cat > $HOME/.launchd.conf
+  ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
+  )
+
 (deh-section "window-system"
   (when (eq window-system 'x) (setq x-select-enable-clipboard t))
-  (when (eq window-system 'ns) (setq ns-command-modifier 'meta))
 
   ;; If terminal and X is sharing the same emacs server, color-theme
   ;; will affect terminal display. Below function will resolve this

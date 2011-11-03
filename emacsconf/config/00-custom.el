@@ -68,26 +68,29 @@
 (transient-mark-mode t)
 ;; Make typing overwrite text selection
 (setq delete-selection-mode t)
-;; Store all backup files into a separated directories
-(setq make-backup-files t
-      version-control t
-      kept-new-versions 3
-      delete-old-versions t
-      kept-old-versions 2
-      dired-kept-versions 1
-      backup-by-copying t)
-;;; DO NOT depends on the backup, it is not really useful
-(add-to-list 'backup-directory-alist
-             (cons "." (expand-file-name "backup" my-temp-dir)))
+
+(deh-section "backup"
+  (setq make-backup-files t
+        version-control t
+        kept-new-versions 3
+        delete-old-versions t
+        kept-old-versions 2
+        dired-kept-versions 1
+        backup-by-copying t)
+  ;; DO NOT depends on the backup, it is not really useful
+  (add-to-list 'backup-directory-alist
+               (cons "." (expand-file-name "backup" my-temp-dir)))
+  ;; (setq make-backup-file-name-function
+  ;;       (lambda (fpath)
+  ;;         "Return a new file path of a given file path.
+  ;; If the new path's directories does not exist, create them."
+  ;;         (let* ((backup-root (expand-file-name "backup" my-temp-dir))
+  ;;                (bpath (concat backup-root fpath "~")))
+  ;;           (make-directory (file-name-directory bpath) bpath)
+  ;;           bpath)))
+  )
+
 (setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-temp-dir))
-;; (setq make-backup-file-name-function
-;;       (lambda (fpath)
-;;         "Return a new file path of a given file path.
-;; If the new path's directories does not exist, create them."
-;;         (let* ((backup-root (expand-file-name "backup" my-temp-dir))
-;;                (bpath (concat backup-root fpath "~")))
-;;           (make-directory (file-name-directory bpath) bpath)
-;;           bpath)))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
@@ -110,6 +113,13 @@
 
 ;; find-dired
 (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
+
+(deh-section "abbrev"
+  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-temp-dir))
+  (if (file-exists-p abbrev-file-name)
+      (read-abbrev-file abbrev-file-name))
+  (setq save-abbrevs t)
+  (put 'define-abbrev-table 'lisp-indent-function 1))
 
 ;; diary, todo, calendar
 (deh-section "calendar"
@@ -147,19 +157,13 @@
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
   (set-register ?p '(file . "~/projects/"))
+  (set-register ?w '(file . "~/works/"))
   (set-register ?d '(file . "~/Desktop/")))
 
 ;; prevent no response if click the memu in File
 (fset 'print-buffer 'ignore)
 (setq lpr-command "")
 (setq printer-name "")
-
-;; abbrevation setting
-(setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-temp-dir))
-(if (file-exists-p abbrev-file-name)
-    (read-abbrev-file abbrev-file-name))
-(setq save-abbrevs t)
-(put 'define-abbrev-table 'lisp-indent-function 1)
 ;;}}}
 
 ;;{{{ Customized keywords

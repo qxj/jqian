@@ -1,7 +1,8 @@
 #+LaTeX_CLASS: beamer
-#+TITLE: (>>>FILE<<<)
-#+AUTHOR: (>>>AUTHOR<<<)
-#+EMAIL: (>>>EMAIL<<<)
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+TITLE: (>>>FILE_SANS<<<)
+#+AUTHOR: (>>>USERNAME<<<)
+#+EMAIL: (>>>AUTHOR<<<)
 #+DATE: (>>>VC_DATE<<<)
 #+LaTeX_CLASS_OPTIONS: [presentation]
 #+BEAMER_FRAME_LEVEL: 2

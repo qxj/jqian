@@ -22,7 +22,7 @@
         org-default-notes-file (concat my-org-dir "Notes.org"))
 
   ;; Single keys to execute commands at the beginning of a headline
-  (setq org-use-speed-commands t
+  (setq org-use-speed-commands nil
         ;; org-special-ctrl-k t
         org-special-ctrl-a/e 'reserved
         org-export-with-sub-superscripts nil
@@ -55,7 +55,7 @@
     ("\M-\C-y" . 'org-table-paste-rectangle)
     ("\M-I" . 'org-toggle-iimage-in-org)
     ;;## Org Keybinds Reminds ;;;;;;;;;;;;;;;;;;;
-    ;; ((kbd "C-c C-b") . 'org-beamer-select-environment)
+    ((kbd "C-c C-b") . 'org-beamer-select-environment)
     ;; ((kbd "C-c C-x p") . 'org-set-property)
     ;; ((kbd "C-c /") . 'org-sparse-tree)
     ;; ((kbd "C-c C-x C-c") . 'org-columns)
@@ -85,7 +85,9 @@
         '("xelatex -interaction=nonstopmode -output-directory=%o %f"
           "xelatex -interaction=nonstopmode -output-directory=%o %f"
           "xelatex -interaction=nonstopmode -output-directory=%o %f"))
-  ;; org + beamer = owesome slides
+  ;;# org + beamer = owesome slides
+  ;; useful packages:
+  ;; sudo tlmgr install wrapfig xecjk
   (setq org-export-latex-default-packages-alist
         '(("" "indentfirst" t)
           ("" "tikz" t)                 ; tikz
@@ -109,24 +111,32 @@
           ("" "xcolor" t)
           ("" "fancyvrb" t)
           "\\lstset{
+   numbers=none,
+   tabsize=2,
    fancyvrb=true,
    %% language=C++,
-   basicstyle=\\ttfamily,
-   stringstyle=\\ttfamily\\color{green!50!black},
+   %% basicstyle=\\tiny\\ttfamily,
+   basicstyle=\\scriptsize\\ttfamily,
+   stringstyle=\\color{green!50!black},
    keywordstyle=\\color{blue}\\bfseries,
+   identifierstyle=,
    commentstyle=\\color{red!50!black}\\itshape,
+   showtabs=false,
    showspaces=false,
-   showstringspaces=true,
+   showstringspaces=false,
    fontadjust=true,
    keepspaces=true,
    flexiblecolumns=true,
    frame=single,
-   upquote=true
+   upquote=false
 }"
           ;;# default font settings
-          "\\setmainfont[BoldFont=DejaVu Serif]{WenQuanYi Micro Hei}"
-          "\\setsansfont[BoldFont=DejaVu Sans]{WenQuanYi Micro Hei}"
-          "\\setmonofont[BoldFont=DejaVu Sans Mono]{WenQuanYi Micro Hei Mono}"
+          "%% \\setmainfont[BoldFont=DejaVu Serif]{DejaVu Serif}"
+          "%% \\setsansfont[BoldFont=DejaVu Sans]{DejaVu Sans}"
+          "%% \\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}"
+          "%% \\setCJKmainfont[BoldFont=WenQuanYi Micro Hei]{WenQuanYi Micro Hei}"
+          "%% \\setCJKsansfont[BoldFont=WenQuanYi Micro Hei]{WenQuanYi Micro Hei}"
+          "%% \\setCJKmonofont[BoldFont=WenQuanYi Micro Hei Mono]{WenQuanYi Micro Hei Mono}"
           "\\defaultfontfeatures{Mapping=tex-text}"
           "\\XeTeXlinebreaklocale \"zh\""
           "\\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt"
