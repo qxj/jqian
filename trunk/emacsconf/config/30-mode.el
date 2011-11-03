@@ -129,11 +129,11 @@
     (setq tab-width 4)
     (setq c-basic-offset tab-width)
     (setq indent-tabs-mode nil)
-    ;; (abbrev-mode t)
     (set (make-local-variable 'comment-style) 'indent)
     (set (make-local-variable 'tab-stop-list)
          (number-sequence tab-width 80 tab-width))
 
+    (abbrev-mode 1)
     ;; (when (fboundp 'whitespace-mode) (whitespace-mode t))
     (hs-minor-mode 1)
     (ignore-errors (imenu-add-menubar-index))

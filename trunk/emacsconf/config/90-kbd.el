@@ -27,6 +27,7 @@
   ((kbd "C-k")   . 'my-delete-line)
   ((kbd "M-d")   . 'my-delete-word)
   ((kbd "<M-backspace>") . 'my-backward-delete-word)
+  ((kbd "M-DEL") . 'my-backward-delete-word) ; mac os x
   ((kbd "C-o")   . 'vi-open-next-line)
   ((kbd "C-'")   . 'redo)
   ((kbd "C-\\")  . 'my-comment-or-uncomment-region)
