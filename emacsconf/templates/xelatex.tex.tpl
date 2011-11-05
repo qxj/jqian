@@ -3,42 +3,52 @@
 %% Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp$
 
 \documentclass[11pt]{article}
+\usepackage{indentfirst}
+\usepackage{tikz}
+\usepackage[english]{babel}
+\usepackage{color}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage[slantfont,boldfont]{xeCJK}
 \usepackage[cm-default]{fontspec}
 \usepackage{xunicode}
 \usepackage{xltxtra}
-\usepackage{indentfirst}
-\usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage{color}
-\usepackage{hyperref}
+\usepackage[slantfont,boldfont]{xeCJK}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{fancyvrb}
 \lstset{
+   numbers=none,
+   tabsize=2,
    fancyvrb=true,
    %% language=C++,
-   basicstyle=\ttfamily,
-   stringstyle=\ttfamily\color{green!50!black},
+   %% basicstyle=\tiny\ttfamily,
+   basicstyle=\scriptsize\ttfamily,
+   stringstyle=\color{green!50!black},
    keywordstyle=\color{blue}\bfseries,
+   identifierstyle=,
    commentstyle=\color{red!50!black}\itshape,
+   showtabs=false,
    showspaces=false,
-   showstringspaces=true,
+   showstringspaces=false,
    fontadjust=true,
    keepspaces=true,
    flexiblecolumns=true,
    frame=single,
-   upquote=true
+   upquote=false
 }
-\setmainfont[BoldFont=DejaVu Serif]{DejaVu Serif}
-\setsansfont[BoldFont=DejaVu Sans]{DejaVu Sans}
-\setmonofont[BoldFont=DejaVu Sans Mono]{DejaVu Sans Mono}
+\setmainfont{Big Caslon}
+\setsansfont{Optima}
+\setmonofont{American Typewriter}
+\setCJKmainfont{Kai}
+\setCJKsansfont{Hei}
+\setCJKmonofont{STFangsong}
 \defaultfontfeatures{Mapping=tex-text}
 \XeTeXlinebreaklocale "zh"
 \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
 \tolerance=1000
-\setmainfont[BoldFont=Microsoft YaHei]{WenQuanYi Micro Hei}
-\setsansfont[BoldFont=Microsoft YaHei]{Microsoft YaHei}
-\setmonofont[BoldFont=Consolas]{Consolas}
 \providecommand{\alert}[1]{\textbf{#1}}
 \begin{document}
 
