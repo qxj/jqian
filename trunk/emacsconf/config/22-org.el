@@ -103,6 +103,7 @@
           )
         org-export-latex-packages-alist
         '(;;# xelatex related packages
+          ("slantfont,boldfont" "xeCJK" t)
           ("cm-default" "fontspec" t) ; provides font selecting commands
           ("" "xunicode" t)       ; provides unicode character macros
           ("" "xltxtra" t)        ; provides some fixes/extras
@@ -158,6 +159,7 @@
   (setq org-export-with-LaTeX-fragments t)
 
   ;; (setq org-export-run-in-background t) ; buggy
+  (setq org-export-copy-to-kill-ring nil) ; cause pasteboard error on some Mac version
 
   ;;# fontify source code with listings
   (setq org-export-latex-listings t)
