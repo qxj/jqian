@@ -1,5 +1,5 @@
 /* @(#)(>>>FILE<<<)
- * Time-stamp: < 2011-10-24 10:00:39>
+ * Time-stamp: < 2011-10-28 11:17:18>
  * Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
  * Author: (>>>AUTHOR<<<)
  * Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
@@ -43,6 +43,13 @@ public class (>>>FILE_SANS<<<) extends Configured implements Tool {
         }
     }
 
+    public static class KeyPartitioner extends Partitioner<${MapOutKey}, ${MapOutValue}> {
+		@Override
+		public int getPartition(${MapOutKey} key, ${MapOutValue} value, int numPartitions) {
+			return ( key.getFirst().hashCode() & Integer.MAX_VALUE) % numPartitions;
+		}
+	}
+
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = getConf();
@@ -63,6 +70,9 @@ public class (>>>FILE_SANS<<<) extends Configured implements Tool {
         MultipleInputs.addInputPath(job, secondPath,
                                     TextInputFormat.class, (>>>FILE_SANS<<<)SecondMapper.class);
         FileOutputFormat.setOutputPath(job, outputPath);
+
+        job.setPartitionerClass(KeyPartitioner.class);
+        job.setGroupingComparatorClass(TextPair.FirstComparator.class);
 
         job.setMapOutputKeyClass(${MapOutKey}.class);
         job.setMapOutputValueClass(${MapOutValue}.class);
