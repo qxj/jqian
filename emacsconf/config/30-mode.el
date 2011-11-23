@@ -96,12 +96,12 @@
   (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
   (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
   (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
-  (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\)" . makefile-mode))
+  (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\|\\.mak\\)$" . makefile-mode))
   (add-to-list 'auto-mode-alist '("\\.schemas" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
@@ -116,11 +116,11 @@
   (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@interface" . objc-mode))
   (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@protocol" . objc-mode))
   ;; (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*class" . c++-mode))
-  (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
+  ;; (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
   )
 
 (deh-section "interpreter-mode"
-  (add-to-list 'interpreter-mode-alist '("php" . php-mode))
+  ;; (add-to-list 'interpreter-mode-alist '("php" . php-mode))
   )
 
 ;;; common mode hook
@@ -857,7 +857,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (setq mumamo-chunk-coloring 5)        ; disable background colors
   )
 
-;;# emacs --batch --eval '(byte-compile-file "js2.el")'
+;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
   (deh-add-hook js2-mode-hook
     (setq forward-sexp-function nil)))
