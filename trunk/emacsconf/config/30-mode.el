@@ -742,10 +742,38 @@ Use CREATE-TEMP-F for creating temp copy."
     ;; (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
 
-  ;; (deh-try-require 'pymacs
-  ;;   (pymacs-load "ropemacs" "rope-")
-  ;;   (setq ropemacs-confirm-saving 'nil)
-  ;;   (ropemacs-mode t))
+  ;;# Install rope, pymacs, ropemode, ropemacs
+  ;;
+  ;; If install from tarball, after uncompress all can be installed by
+  ;; `python setup.py install`, but pymacs needs a bit more steps:
+  ;;
+  ;; 1. make test
+  ;; 2. make install
+  ;; 3. byte-compile pymacs.el and put it into load-path
+  ;;
+  ;; http://pymacs.progiciels-bpi.ca/pymacs.html#check-if-pymacs-would-work
+  ;;
+  ;; some useful feature of ropemacs
+  ;; 1. full code completion of modules/classes/methods (M-/)
+  ;; 2. instant documentation for element under cursor (C-c d)
+  ;; 3. jump to modules/classes/methods definition (C-c g)
+  ;; 4. refactor (rename: C-c r r)
+  ;; 5. list all occurences of a name in your entire project
+  ;;
+  ;; http://rope.sourceforge.net/ropemacs.html
+  ;;
+  (deh-try-require 'pymacs
+    (pymacs-load "ropemacs" "rope-")
+    (autoload 'pymacs-apply "pymacs")
+    (autoload 'pymacs-call "pymacs")
+    (autoload 'pymacs-eval "pymacs" nil t)
+    (autoload 'pymacs-exec "pymacs" nil t)
+    (autoload 'pymacs-load "pymacs" nil t)
+    (setq ropemacs-confirm-saving nil
+          ropemacs-enable-autoimport t)
+    (ropemacs-mode t)
+
+    (deh-try-require 'pycomplete))
   )
 
 (deh-section "sh-mode"
@@ -824,7 +852,7 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;; nxhtml: javascript + php + html + css
 (deh-section-path "nxhtml"
-  "~/src/nxhtml/autostart.el"
+  "~/tools/nxhtml/autostart.el"
   (load-file deh-this-path)
   (setq mumamo-chunk-coloring 5)        ; disable background colors
   )

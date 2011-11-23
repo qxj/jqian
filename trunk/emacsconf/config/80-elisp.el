@@ -264,9 +264,7 @@ mouse-3: Remove current window from display")
 
   (setq dired-omit-files
         (concat "^[.#]" "\\|"
-                "^" (regexp-opt '(".." "." "CVS" "_darcs" "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$" "\\|"
-                ;; omit MSVC project files
-                "\." (regexp-opt '("git" "svn" "dsp" "dsw" "sln" "vcproj" "vspscc" "vssscc")) "$"))
+                "^" (regexp-opt '(".." "." "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$"))
 
   (setq my-dired-guess-command-alist
         '(("acroread" "pdf")
