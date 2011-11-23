@@ -99,6 +99,7 @@
   ;; fix launching from spotlight
   ;; $ cat > $HOME/.launchd.conf
   ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
+  (setq browse-url-generic-program "open")
   )
 
 (deh-section "window-system"
