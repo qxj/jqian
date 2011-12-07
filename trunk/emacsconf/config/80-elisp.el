@@ -816,22 +816,29 @@ mouse-3: Remove current window from display")
   (setq view-read-only t)
 
   (deh-define-key view-mode-map
+    ;; simulate vi keybinds
     ("h" . 'backward-char)
     ("l" . 'forward-char)
     ("j" . 'next-line)
     ("k" . 'previous-line)
     ("c" . 'recenter-top-bottom)
+    ("0" . 'beginning-of-line)
+    ("$" . 'end-of-line)
+    ("g" . 'beginning-of-buffer)
+    ("G" . 'end-of-buffer)
     ("n" . 'View-scroll-line-forward)
     ("p" . 'View-scroll-line-backward)
-    ("g" . 'View-goto-line)
-    ("G" . 'View-goto-line-last)
     ((kbd "<backspace>") . 'View-scroll-page-backward)
     ((kbd "SPC") . 'View-scroll-page-forward)
     ("?" . 'View-search-regexp-backward)
+    ;; register
     ("m" . 'point-to-register)
     ("'" . 'register-to-point)
+    ;; gtags
     ("." . 'gtags-find-tag)
-    ("," . 'gtags-pop-stack)))
+    ("," . 'gtags-pop-stack)
+    ("i" . 'gtags-find-tag)
+    ("u" . 'gtags-pop-stack)))
 
 (deh-section "doc-view"
   (deh-add-hook doc-view-mode-hook

@@ -1,6 +1,4 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" General
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""" General
 set nocompatible " get out of horrible vi - compatible mode
 filetype on " detect the type of file
 filetype plugin on " load filetype plugins
@@ -18,9 +16,8 @@ set gdefault
 set copyindent
 set showbreak=\ \ \ \ \  "indicator for wrapped lines
 set shellslash
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Theme/Colors
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""" Theme/Colors
 syntax on " syntax highlighting on
 if (has("gui_running"))
 	set background=dark " we are using a dark background
@@ -32,9 +29,8 @@ else
 	set wrap
 	colo ron
 endif
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Vim UI
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""" Vim UI
 set wmh=0 "This sets the minimum window height to 0
 set lsp=0 " space it out a little more (easier to read)
 set wildmenu " turn on wild menu
@@ -64,9 +60,7 @@ if version>=700
 	set showtabline=2
 endif
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Visual Cues
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""" Visual Cues
 set showcmd
 set showmatch " show matching brackets
 set matchpairs=(:),{:},[:],<:>
@@ -84,9 +78,8 @@ set titlestring=%F
 set statusline=%k(%02n)%t%m%r%h%w\ \[%{&ff}:%{&fenc}:%Y]\ \[line=%04l/%04L\ col=%03c/%03{col(\"$\")-1}]\ [%p%%]
 set laststatus=2 " always show the status line
 "set cursorline
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Text Formatting/Layout
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""" Text Formatting/Layout
 set fo=tcrqn " See Help (complex)
 set si " smartindent
 set tabstop=4 " tab spacing (settings below are just to unify it)
@@ -95,56 +88,56 @@ set shiftwidth=4 " unify
 set noexpandtab " real tabs please!
 "set nowrap " do not wrap lines
 set smarttab " use tabs at the start of a line,spaces elsewhere
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" File encoding
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" {{{  multi-encoding setting
+
+"""" File encoding
 if has("multi_byte")
-"set bomb
-set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1
-" CJK environment detection and corresponding setting
-if v:lang =~ "^zh_CN"
-" Use cp936 to support GBK, euc-cn == gb2312
-set encoding=cp936
-set termencoding=cp936
-set fileencoding=cp936
-endif
-" Detect UTF-8 locale, and replace CJK setting if needed
-if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
-set encoding=utf-8
-set termencoding=utf-8
-set fileencoding=utf-8
-endif
+    set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1
+    if v:lang =~ "^zh_CN"
+        " Use cp936 to support GBK, euc-cn == gb2312
+        set encoding=cp936
+        set termencoding=cp936
+        set fileencoding=cp936
+    endif
+    " Detect UTF-8 locale, and replace CJK setting if needed
+    if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+        set encoding=utf-8
+        set termencoding=utf-8
+        set fileencoding=utf-8
+    endif
 else
-echoerr "Sorry, this version of (g)vim was not compiled with multi_byte"
+    echoerr "Sorry, this version of (g)vim was not compiled with multi_byte"
 endif
-" }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Folding
-"    Enable folding,but by default make it act like folding is off,because folding is annoying in anything but a few rare cases
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""" Folding
 set foldenable " Turn on folding
 "set foldmethod=indent " Make folding indent sensitive
 set foldmethod=manual " Make folding indent sensitive
 set foldlevel=100 " Don't autofold anything (but I can still fold manually)
 set foldopen-=search " don't open folds when you search into them
 set foldopen-=undo " don't open folds when you undo stuff
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Win Manager
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""" Win Manager
 let g:winManagerWidth=35 " How wide should it be( pixels)
 let g:winManagerWindowLayout='FileExplorer' " What windows should it
 "let g:winManagerWindowLayout='TagList,FileExplorer|BufExplorer' " What windows should it
 let g:persistentBehaviour=0 "vim will quit if only the explorers window are the one left
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Buffer Explorer
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""" Buffer Explorer
 let bufExplorerDefaultHelp=0
 let bufExplorerDetailedHelp=0
 let bufExplorerMaxHeight=15
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Keybind
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"cursor move
+
+"""" Remember certain things when we exit
+"  '10  :  marks will be remembered for up to 10 previously edited files
+"  "100 :  will save up to 100 lines for each register
+"  :20  :  up to 20 lines of command-line history will be remembered
+"  %    :  saves and restores the buffer list
+"  n... :  where to save the viminfo files
+set viminfo='10,\"100,:20,%,n~/.viminfo
+if has("autocmd")
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+endif
+
+"""" Keybind
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
