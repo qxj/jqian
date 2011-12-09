@@ -149,8 +149,9 @@
     (add-hook 'after-init-hook 'init-window-frame))
 
 ;; (deh-add-hook find-file-hook
-;;   (if (string-match (expand-file-name "~/src/") (buffer-file-name))
-;;       (view-mode)))
+;;   (if (and (buffer-file-name)
+;;            (string-match (expand-file-name "~/src/") (buffer-file-name)))
+;;       (toggle-read-only 1)))
 
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)
