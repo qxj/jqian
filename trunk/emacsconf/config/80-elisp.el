@@ -838,7 +838,13 @@ mouse-3: Remove current window from display")
     ("." . 'gtags-find-tag)
     ("," . 'gtags-pop-stack)
     ("i" . 'gtags-find-tag)
-    ("u" . 'gtags-pop-stack)))
+    ("u" . 'gtags-pop-stack)
+    ;; sourcepair
+    ("a" . 'sourcepair-load)
+    ;; generic
+    ("f" . 'ido-find-file)
+    ("d" . 'dired-jump)
+    ))
 
 (deh-section "doc-view"
   (deh-add-hook doc-view-mode-hook
