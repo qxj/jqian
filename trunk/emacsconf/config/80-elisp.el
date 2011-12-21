@@ -1555,10 +1555,9 @@ indent line."
         (narrow-to-region (point) end))))
   )
 
-(deh-section "which-func"
-  (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook python-mode-hook)
-    (which-func-mode 1)
-    (setq which-func-unknown "unknown")))
+(deh-require 'which-func
+  (add-to-list 'which-func-modes 'org-mode)
+  (which-func-mode 1))
 
 (deh-section-after "imenu"
   (add-to-list 'imenu-after-jump-hook 'recenter)
