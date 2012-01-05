@@ -134,11 +134,12 @@
               (set-frame-font (concat en-font ":pixelsize=14"))
               (dolist (charset '(kana han symbol cjk-misc bopomofo))
                 (set-fontset-font "fontset-default" charset
-                                  (font-spec :family zh-font :size 16))))
+                                  (font-spec :family zh-font))))
+                                  ;; (font-spec :family zh-font :size 16))))
           (add-to-list 'default-frame-alist (cons 'width 80))
           (set-frame-font (concat en-font ":pixelsize=12"))
           (set-fontset-font "fontset-default" 'han
-                            (font-spec :family zh-font :size 14))))
+                            (font-spec :family zh-font))))
       ;; for the height, subtract a couple hundred pixels from the
       ;; screen height (for panels, menubars and whatnot), then divide
       ;; by the height of a char to get the height we want

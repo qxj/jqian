@@ -137,8 +137,8 @@
 
 (deh-define-key minibuffer-local-map
   ("\t" . 'comint-dynamic-complete))
-(deh-define-key read-expression-map
-  ("\t" . 'PC-lisp-complete-symbol))
+;; (deh-define-key read-expression-map
+;;   ("\t" . 'PC-lisp-complete-symbol))
 
 ;;; one-key settings
 (deh-require 'one-key

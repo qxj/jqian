@@ -71,9 +71,11 @@
   ;; A visual table editor, very cool
   (autoload 'table-insert "table" "WYGIWYS table editor")
   ;; ansit
-  (autoload 'ansit-ansify-this "ansit"  "Ansi the region." t)
+  (autoload 'ansit-ansify-this "ansit" "Ansi the region." t)
   ;; rst-mode
-  (autoload 'rst-mode "rst" "" t)
+  (autoload 'rst-mode "rst" "Major mode for editing reStructuredText documents." t)
+  ;; markdown mode
+  (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
   ;; minibuf-isearch
   (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
   (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
@@ -861,6 +863,8 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-section "js2"
   (deh-add-hook js2-mode-hook
     (setq forward-sexp-function nil)))
+
+(deh-section "markdown")
 
 (deh-section-reserved "php"
   (deh-try-require 'php-doc
