@@ -530,6 +530,12 @@ mouse-3: Remove current window from display")
   ;; ControlPath ~/.ssh/master-%r@%h:%p
   ;;
 
+  ;; TODO: if prompted to input password for some tramped hosts when
+  ;; emacs start, it'd be caused by the variables
+  ;; ido-last-directory-list, etc. in .ido-last. A workaound is to
+  ;; delete it away from emacs. To be fixed.
+  ;;
+
   ;; (setq tramp-mode nil)                  ; disable tramp
   (setq tramp-auto-save-directory my-temp-dir
         tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)
