@@ -340,55 +340,6 @@ User will be queried, if no fileset name is provided."
      ))
 ;;}}}
 
-;;{{{ sourcepair, auto create paired source code
-(eval-after-load "sourcepair"
-  '(progn
-     (defun sourcepair-load ()
-       "Load the corresponding C/C++ header or source file for the current buffer.
-
-This function can be invoked by \\[sourcepair-load].  It will load the the
-corresponding header or source file for the current buffer.  For example, if
-you are looking at the file FooParser.cpp and press \\[sourcepair-load], the
-file FooParser.h will be loaded.  It also works the other way as well.
-
-There are five global variables that can be used to adjust how the function
-works:
-
- `sourcepair-source-extensions'
- `sourcepair-header-extensions'
- `sourcepair-source-path'
- `sourcepair-header-path'
- `sourcepair-recurse-ignore'
-
-See the documentation for these variables for more info.
-"
-       (interactive)
-       (catch 'found-matching-file
-         (let* ((temp (sourcepair-analyze-filename (file-name-nondirectory (buffer-file-name))))
-                (search-path (car temp))
-                (possible-filenames (cdr temp)))
-           (if (= (length possible-filenames) 0)
-               (message "%s is not a recognized source or header file (consider \
-updating sourcepair-source-extensions or sourcepair-header-extensions)"
-                        (buffer-name))
-             (progn
-               (while search-path
-                 (let ((path-to-check (car search-path))
-                       (matching-filename nil))
-                   (if (and (> (length path-to-check) 3)
-                            (equal (substring path-to-check -2) "/*"))
-                       (setq matching-filename (sourcepair-find-one-of (substring path-to-check 0 -2)
-                                                                       possible-filenames
-                                                                       t))
-                     (setq matching-filename
-                           (sourcepair-find-one-of path-to-check possible-filenames nil)))
-
-                   (if (eq matching-filename nil)
-                       (setq search-path (cdr search-path))
-                     (throw 'found-matching-file (find-file matching-filename)))))
-               (if (y-or-n-p "No matching file found. Create one? ")
-                   (find-file (completing-read "file name: " possible-filenames))))))))))
-;;}}}
 
 ;;{{{ template-expand-template
 (eval-after-load "template"
