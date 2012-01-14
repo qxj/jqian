@@ -184,27 +184,21 @@ mouse-3: Remove current window from display")
   (defun dired-w3m-visit (file)
     (interactive (list (dired-get-filename nil t)))
     (w3m-goto-url (concat "file://" file)))
-  (defun dired-count-directory-size (arg)
-    (interactive "P")
-    (let ((dir (dired-get-filename nil t))
-          proc)
-      (when (file-directory-p dir)
-        (with-current-buffer (get-buffer-create "*Shell Command Output*")
-          (setq default-directory "~/")
-          (erase-buffer)
-          (setq proc
-                (start-process-shell-command "dirsize" (current-buffer)
-                                             ;; "/home/ywb/bin/dirsize"
-                                             "du" "-h"
-                                             (if arg "-s" "")
-                                             (format "\"%s\"" dir)))
-          (set-process-sentinel proc
-                                (lambda (proc event)
-                                  (let ((buf (process-buffer proc)))
-                                    (with-selected-window
-                                        (get-buffer-window buf)
-                                      (goto-char (point-min))))))
-          (display-buffer (current-buffer))))))
+  (defun dired-count-directory-size ()
+    (interactive)
+    (let* ((file (dired-get-filename nil t))
+           (dir (if (file-directory-p file) file
+                  (file-name-directory file)))
+           (buf (get-buffer-create "*dired-count-directory-size*"))
+           (proc (start-process-shell-command "dirsize" buf
+                                              (format "du -hs \"%s\"" dir))))
+      (set-process-sentinel
+       proc
+       (lambda (proc event)
+         (let ((buf (process-buffer proc)))
+           (with-current-buffer buf
+             (message "%s" (buffer-substring-no-properties (point-min) (point-max))))
+           (kill-buffer buf))))))
 
   ;;# sort functions
   (defun dired-sort-size ()
