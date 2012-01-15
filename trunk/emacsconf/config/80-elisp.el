@@ -1573,16 +1573,18 @@ indent line."
 ;;; highlight
 (deh-require 'highlight-parentheses
   ;; colors is applied by reversed order
-  (setq hl-paren-colors (make-list 20 "magenta1"))
-  (deh-add-hooks (emacs-lisp-mode-hook
-                  java-mode-hook
-                  c-mode-common-hook)
+  (setq hl-paren-colors
+        '("orange1" "yellow1" "greenyellow" "green1"
+          "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
+  (deh-add-hooks (emacs-lisp-mode-hook)
     (highlight-parentheses-mode 1)
+    ;; compatible with autopair-mode
     (setq autopair-handle-action-fns
-          (list 'autopair-default-handle-action
-                '(lambda (action pair pos-before)
-                   (hl-paren-color-update)))))
-  )
+          (append (if autopair-handle-action-fns
+                      autopair-handle-action-fns
+                    '(autopair-default-handle-action))
+                  '((lambda (action pair pos-before)
+                      (hl-paren-color-update)))))))
 
 (deh-section "highlight-line"
   ;; (global-hl-line-mode 1)
