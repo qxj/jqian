@@ -229,8 +229,7 @@
        ("\C-cga" . 'gtags-parse-file)
        ("\C-cgb" . 'gtags-append-tags)
        ("\C-cgd" . 'gtags-display-tag)
-       ("\C-cgq" . 'gtags-display-tag-quit)
-       ("q"      . 'gtags-display-tag-quit)))
+       ("\C-cgq" . 'gtags-display-tag-quit)))
   (defun gtags-append-tags ()
     (interactive)
     (if gtags-mode

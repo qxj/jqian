@@ -841,10 +841,14 @@ mouse-3: Remove current window from display")
     ("u" . 'gtags-pop-stack)
     ;; sourcepair
     ("a" . 'sourcepair-load)
+    ;; eassist
+    ("L" . 'eassist-list-methods)
     ;; generic
     ("f" . 'ido-find-file)
     ("d" . 'dired-jump)
-    ))
+    ("o" . 'my-switch-recent-buffer)
+    ("q" . 'bury-buffer)
+    ("\C-k" . 'kill-this-buffer)))
 
 (deh-section "doc-view"
   (deh-add-hook doc-view-mode-hook
@@ -1576,15 +1580,19 @@ indent line."
   (setq hl-paren-colors
         '("orange1" "yellow1" "greenyellow" "green1"
           "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
-  (deh-add-hooks (emacs-lisp-mode-hook)
+  (deh-add-hooks (emacs-lisp-mode-hook
+                  c-mode-common-hook)
     (highlight-parentheses-mode 1)
     ;; compatible with autopair-mode
-    (setq autopair-handle-action-fns
-          (append (if autopair-handle-action-fns
-                      autopair-handle-action-fns
-                    '(autopair-default-handle-action))
-                  '((lambda (action pair pos-before)
-                      (hl-paren-color-update)))))))
+    (eval-after-load "autopair"
+      '(progn
+         (setq autopair-handle-action-fns
+               (append (if (boundp 'autopair-handle-action-fns)
+                           autopair-handle-action-fns
+                         '(autopair-default-handle-action))
+                       '((lambda (action pair pos-before)
+                           (hl-paren-color-update)))))))
+    ))
 
 (deh-section "highlight-line"
   ;; (global-hl-line-mode 1)
