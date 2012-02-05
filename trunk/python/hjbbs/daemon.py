@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# daemon.py --- Time-stamp: <2010-07-08 14:23:24 Thursday by julian>
+# daemon.py --- Time-stamp: <Qian Julian 2012-02-05 18:44:08>
 # Copyright 2010 Julian Qian
 # Author: jqian@desktop
 # Version: $Id: daemon.py,v 0.0 2010/07/03 19:49:20 jqian Exp $
-# Keywords: 
+# Keywords:
 
 
 import os               # Miscellaneous OS interfaces.
@@ -20,7 +20,8 @@ else:
    REDIRECT_TO = "/dev/null"
 
 def createDaemon():
-   """Detach a process from the controlling terminal and run it in the
+   """
+   Detach a process from the controlling terminal and run it in the
    background as a daemon.
    """
 
@@ -29,39 +30,39 @@ def createDaemon():
    except OSError, e:
       raise Exception, "%s [%d]" % (e.strerror, e.errno)
 
-   if (pid == 0):	# The first child.
+   if (pid == 0):   # The first child.
       os.setsid()
       # import signal           # Set handlers for asynchronous events.
       # signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
       try:
-         pid = os.fork()	# Fork a second child.
+         pid = os.fork()    # Fork a second child.
       except OSError, e:
          raise Exception, "%s [%d]" % (e.strerror, e.errno)
 
-      if (pid == 0):	# The second child.
+      if (pid == 0):    # The second child.
          os.chdir(WORKDIR)
          os.umask(UMASK)
       else:
-         os._exit(0)	# Exit parent (the first child) of the second child.
+         os._exit(0)    # Exit parent (the first child) of the second child.
    else:
-      os._exit(0)	# Exit parent of the first child.
+      os._exit(0)   # Exit parent of the first child.
 
-   import resource		# Resource usage information.
+   import resource      # Resource usage information.
    maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
    if (maxfd == resource.RLIM_INFINITY):
       maxfd = MAXFD
-  
+
    # Iterate through and close all file descriptors.
    for fd in range(0, maxfd):
       try:
          os.close(fd)
-      except OSError:	# ERROR, fd wasn't open to begin with (ignored)
+      except OSError:   # ERROR, fd wasn't open to begin with (ignored)
          pass
 
-   os.open(REDIRECT_TO, os.O_RDWR)	# standard input (0)
-   os.dup2(0, 1)			# standard output (1)
-   os.dup2(0, 2)			# standard error (2)
+   os.open(REDIRECT_TO, os.O_RDWR)  # standard input (0)
+   os.dup2(0, 1)            # standard output (1)
+   os.dup2(0, 2)            # standard error (2)
 
    return(0)
 

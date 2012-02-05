@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# hjbbs.py --- Time-stamp: <2010-07-09 10:51:13 Friday by julian>
+# hjbbs.py --- Time-stamp: <Qian Julian 2012-02-05 18:49:11>
 # Copyright 2010 Julian Qian
 # Author: jqian@desktop
 # Version: $Id: hjbbs.py,v 0.0 2010/06/23 09:45:25 jqian Exp $
-# Keywords: 
+# Keywords:
 
 # How to run:
 # $ python hjbbs.py 8000
@@ -39,96 +39,96 @@ class Index:
 
 class Check:
     def POST(self):
-	email = web.input(email=None).email
-	pidlist = model.get_pid_by_email(email)
-	pids = {}
-	for itr in pidlist:
-	    pids[itr.pid] = True
-	sublist = model.get_pattern()
-	subs = []
-	for pat in sublist:
-	    if pids.get(pat.pid):
-		subs.append({"name": pat.name,
-			     "pattern": pat.pattern,
-			     "pid": pat.pid,
-			     "cid": pat.cid,
-			     "checked": " checked "})
-	    else:
-		subs.append({"name": pat.name,
-			     "pattern": pat.pattern,
-			     "pid": pat.pid,
-			     "cid": pat.cid,
-			     "checked": ""})
+        email = web.input(email=None).email
+        pidlist = model.get_pid_by_email(email)
+        pids = {}
+        for itr in pidlist:
+            pids[itr.pid] = True
+        sublist = model.get_pattern()
+        subs = []
+        for pat in sublist:
+            if pids.get(pat.pid):
+                subs.append({"name": pat.name,
+                             "pattern": pat.pattern,
+                             "pid": pat.pid,
+                             "cid": pat.cid,
+                             "checked": " checked "})
+            else:
+                subs.append({"name": pat.name,
+                             "pattern": pat.pattern,
+                             "pid": pat.pid,
+                             "cid": pat.cid,
+                             "checked": ""})
 
-	category = model.get_category()
+        category = model.get_category()
 
-	return snippet.sublist(category, subs)
+        return snippet.sublist(category, subs)
 
 class Subscribe:
     def POST(self):
-	"""
-	"""
-	# pidlist = web.input(pid=[]).pid
-	pid = web.input(patid=None).patid
-	email = web.input(email=None).email
-	model.new_pat2mail(email, pid)
-	return "ok"
+        """
+        """
+        # pidlist = web.input(pid=[]).pid
+        pid = web.input(patid=None).patid
+        email = web.input(email=None).email
+        model.new_pat2mail(email, pid)
+        return "ok"
 
 class Delete:
     def POST(self):
-	"""
-	"""
-	# pidlist = web.input(pid=[]).pid
-	pid = web.input(patid=None).patid
-	email = web.input(email=None).email
-	model.del_pat2mail(email, pid)
-	return "ok"    
+        """
+        """
+        # pidlist = web.input(pid=[]).pid
+        pid = web.input(patid=None).patid
+        email = web.input(email=None).email
+        model.del_pat2mail(email, pid)
+        return "ok"
 
 class Pattern:
     """
     manager all pattern strings
     """
     def GET(self, action):
-	patlist = self.patlist()
-	category = model.get_category()
-	return render.pattern(category, patlist)
+        patlist = self.patlist()
+        category = model.get_category()
+        return render.pattern(category, patlist)
 
     def POST(self, action):
-	if action == "add":
-	    patname = web.input(patname=None).patname
-	    pattern = web.input(pattern=None).pattern
-	    category = web.input(category=None).category
+        if action == "add":
+            patname = web.input(patname=None).patname
+            pattern = web.input(pattern=None).pattern
+            category = web.input(category=None).category
 
-	    # if isinstance(patname, str):
-	    #     patname = patname.decode("utf-8")
-	    # if isinstance(pattern, str):
-	    #     pattern = pattern.decode("utf-8")
-	
-	    model.new_pattern(patname, pattern, category)
-	elif action == "del":
-	    pid = web.input(pid=None).pid
-	    model.del_pattern(pid)
-	return self.patlist()
+            # if isinstance(patname, str):
+            #     patname = patname.decode("utf-8")
+            # if isinstance(pattern, str):
+            #     pattern = pattern.decode("utf-8")
+
+            model.new_pattern(patname, pattern, category)
+        elif action == "del":
+            pid = web.input(pid=None).pid
+            model.del_pattern(pid)
+        return self.patlist()
 
     def patlist(self):
-	patterns = [{"name": pat.name,
-		     "pattern": pat.pattern,
-		     "pid": pat.pid,
-		     "cid": pat.cid}
-		    for pat in model.get_pattern()]
-	return snippet.patlist(model.get_category(), patterns)
+        patterns = [{"name": pat.name,
+                     "pattern": pat.pattern,
+                     "pid": pat.pid,
+                     "cid": pat.cid}
+                    for pat in model.get_pattern()]
+        return snippet.patlist(model.get_category(), patterns)
 
 class Email:
     def GET(self, action):
-	emails = model.get_maillist()
-	return render.maillist(emails)
+        emails = model.get_maillist()
+        return render.maillist(emails)
 
     def POST(self, action):
-	if action == "del":
-	    email = web.input(email=None).email
-	    model.del_mail(email)
-	    
-	return render.maillist(model.get_maillist())
+        if action == "del":
+            email = web.input(email=None).email
+            model.del_mail(email)
+
+        return render.maillist(model.get_maillist())
 
 app = web.application(urls, globals())
 
