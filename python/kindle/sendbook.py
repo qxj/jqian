@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# sendbook.py --- Time-stamp: <Qian Julian 2012-02-05 19:46:02>
+# sendbook.py --- Time-stamp: <Qian Julian 2012-02-05 20:49:55>
 # Copyright 2012 Qian Julian
 # Author: junist@gmail.com
 # Version: $Id: sendbook.py,v 0.0 2012/02/05 10:34:09 jqian Exp $
@@ -9,14 +9,14 @@
 Send book to xxx@free.kindle.com with your gmail account
 """
 
-import smtplib, mimetypes, sys, os
+import smtplib, mimetypes, sys, os, pdb
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 
 # setting
-KINDLEID  = 'xxx@free.kindle.com'
-USERNAME = 'username@gmail.com'
+KINDLEID = 'xxx@free.kindle.com'
+USERNAME = 'user@gmail.com'
 PASSWORD = 'password'
 
 class SendBook(object):
@@ -27,13 +27,13 @@ class SendBook(object):
         self.fromaddr = username
         self.toaddr = kindleid
 
-        self.server = smtplib.SMTP('smtp.gmail.com:587')
+        self.server = smtplib.SMTP('smtp.gmail.com', 587)
         self.server.starttls()
         self.server.login(username, passwd)
 
     def __enter__(self):
         print 'Begin to send book ...'
-        return 1
+        return self
 
     def __exit__(self, type, value, traceback):
         self.server.quit()
@@ -41,6 +41,7 @@ class SendBook(object):
         return True
 
     def send(self, filename):
+        # pdb.set_trace()
         msg = MIMEMultipart()
 
         msg['From'] = self.fromaddr
