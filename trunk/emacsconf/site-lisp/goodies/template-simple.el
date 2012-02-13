@@ -322,7 +322,8 @@ template is translated by `template-expansion'"
   "Return matched files in a directory."
   (let (results)
     (dolist (file (directory-files directory nil nil t))
-      (let ((fullname (expand-file-name file directory)))
+      (let ((fullname (expand-file-name file directory))
+            (case-fold-search t))
         (when (file-readable-p fullname)
           (if (string-match regexp file)
               (if results
@@ -339,7 +340,7 @@ template is translated by `template-expansion'"
              (mapcar (lambda (dir)
                        (template-simple-find-templates
                         dir
-                        (concat  "^\\(\\w+\\.\\)?" ext "\\.tpl$")))
+                        (concat "^" ext "\\(([^()]+)\\)?" "\\.tpl$")))
                      (list my-template-dir))))))
 
 ;; (defun template-include (name)
