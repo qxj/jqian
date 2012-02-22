@@ -103,7 +103,12 @@
   )
 
 (deh-section "window-system"
-  (when (eq window-system 'x) (setq x-select-enable-clipboard t))
+  (when (eq window-system 'x)
+    (setq x-select-enable-clipboard t)
+    ;; fix issue that ibus input method issue cannot be started in emacs
+    ;; firstly, $ sudo apt-get install ibus-el
+    (deh-require-maybe 'ibus
+      (add-hook 'after-init-hook 'ibus-mode-on)) )
 
   ;; If terminal and X is sharing the same emacs server, color-theme
   ;; will affect terminal display. Below function will resolve this
