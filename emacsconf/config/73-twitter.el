@@ -1,16 +1,13 @@
 ;; -*- coding: utf-8 mode: Emacs-Lisp -*-
 ;; 73-twitter.el ---
-;; Time-stamp: <Julian Qian 2011-05-31 00:33:37>
+;; Time-stamp: <Julian Qian 2012-02-22 23:10:39>
 ;; Created: 2011 Julian Qian
 ;; Version: $Id: 73-twitter.el,v 0.0 2011/05/19 08:29:04 jqian Exp $
 
 ;;
 
 
-(deh-section-path "twitter"
-  "~/src/twittering-mode"
-  (add-to-list 'load-path deh-this-path)
-  (require 'twittering-mode nil t)
+(deh-require 'twittering-mode
   (setq twittering-use-master-password t
         twittering-allow-insecure-server-cert t
         twittering-oauth-use-ssl nil
@@ -27,13 +24,15 @@
         twittering-auth-method 'basic
         )
 
+  ;; frequently used keybinds
   (deh-define-key twittering-mode-map
-    ("F" . 'twittering-favorite)                  ; favorite tweet
-    ("u" . 'twittering-update-status-interactive) ; twit tweet
+    ("u" . 'twittering-update-status-interactive) ; send a new tweet
     ("R" . 'twittering-reply-to-user)             ; reply
     ("\C-cr" . 'twittering-organic-retweet)       ; reply and RT
     ((kbd "C-c RET") . 'twittering-retweet)       ; offical RT
     ("V" . 'twittering-visit-timeline)            ; timeline
+    ("F" . 'twittering-favorite)                  ; favorite tweet
+    ("g" . 'twittering-current-timeline)          ; fetch timeline
     )
 
   (defun my-toggle-twittering ()
