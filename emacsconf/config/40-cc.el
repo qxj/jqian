@@ -7,6 +7,8 @@
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
+(eval-when-compile (require 'cl))
+
 (defconst my-c-style
   ;; Always indent c/c++ sources, never insert tabs
   '((c-basic-offset             . 4)
@@ -68,7 +70,7 @@
                (goto-char (point-min))
                (search-forward-regexp "^class" nil t)))
         (c++-mode)))
-        
+
   ;;# change face of code in #if 0...#endif
   ;; http://stackoverflow.com/questions/4549015/in-c-c-mode-in-emacs-change-face-of-code-in-if-0-endif-block-to-comment-fa
   (defun my-c-mode-font-lock-if0 (limit)
@@ -136,16 +138,30 @@
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 
 (deh-section "c++-mode"
-  (defun my-c++-mode-hook ()
+  (deh-add-hook c++-mode-hook
     (my-c-mode-common-hook)
     (setq local-abbrev-table c-mode-abbrev-table)
-    )
-  (add-hook 'c++-mode-hook 'my-c++-mode-hook)
+    ;; key binding
+    (local-set-key "\C-cm" 'expand-member-functions))
+
+  ;;expand member functions automatically when entering a cpp file
+  (defun cpp-file-enter ()
+    "Expands all member functions in the corresponding .h file"
+    (let* ((c-file (buffer-file-name (current-buffer)))
+           (h-file-list (list (concat (substring c-file 0 -3 ) "h")
+                              (concat (substring c-file 0 -3 ) "hpp")
+                              (concat (substring c-file 0 -1 ) "h")
+                              (concat (substring c-file 0 -1 ) "hpp"))))
+      (if (or (equal (substring c-file -2 ) ".c")
+              (equal (substring c-file -4 ) ".cpp"))
+          (mapcar (lambda (h-file)
+                    (if (file-exists-p h-file)
+                        (expand-member-functions h-file c-file)))
+                  h-file-list))))
 
   ;; Unfortunately many standard c++ header files have no file
   ;; extension, and so will not typically be identified by emacs as c++
   ;; files. The following code is intended to solve this problem.
-  (eval-when-compile (require 'cl))
   (defun file-in-directory-list-p (file dirlist)
     "Returns true if the file specified is contained within one of
 the directories in the list. The directories must also exist."
