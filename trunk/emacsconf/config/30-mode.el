@@ -7,6 +7,8 @@
 
 ;;; autoload
 (deh-section "autoloads"
+  ;; c++ member function
+  (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
   (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
   ;; multi-term
   (autoload 'multi-term "multi-term" "")

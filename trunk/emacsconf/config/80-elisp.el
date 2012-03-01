@@ -1167,7 +1167,15 @@ indent line."
         (yas/load-snippet-buffer)))) )
 
 (deh-require 'autopair
-  (autopair-global-mode 1)
+  ;; It's not an ideal way to turn on autopair-global-mode, because it's
+  ;; unstable and its keybinds often works in unexcepted manner.
+  (deh-add-hooks (java-mode-hook
+                  sh-mode-hook
+                  c-mode-common-hook
+                  python-mode-hook
+                  emacs-lisp-mode-hook
+                  html-mode-hook)
+    (autopair-mode 1))
   ;; some tricks
   (deh-add-hook c++-mode-hook
     (push ? (getf autopair-dont-pair :comment))
@@ -1177,7 +1185,7 @@ indent line."
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-require 'template-simple
+(deh-require-reserved 'template-simple
   (setq template-directory-list (list my-template-dir)
         template-skip-directory-list (list my-temp-dir my-template-dir))
   (defadvice ido-find-file (after ido-file-file-template activate)
