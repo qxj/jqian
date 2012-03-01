@@ -935,17 +935,6 @@ mouse-3: Remove current window from display")
           (call-interactively 'w3m))))))
 
 ;;; Edit
-(deh-require 'autopair
-  (autopair-global-mode 1)
-  ;; some tricks
-  (deh-add-hook c++-mode-hook
-    (push ? (getf autopair-dont-pair :comment))
-    ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
-    )
-  (deh-add-hook emacs-lisp-mode-hook
-    (push '(?` . ?') (getf autopair-extra-pairs :comment))
-    (push '(?` . ?') (getf autopair-extra-pairs :string))) )
-
 (deh-section "occur"
   (deh-add-hook occur-mode-hook
     (require 'moccur-edit nil t)
@@ -1175,8 +1164,18 @@ indent line."
     (let* ((bfn (expand-file-name (buffer-file-name)))
            (root (expand-file-name yas/root-directory)))
       (when (string-match (concat "^" root) bfn)
-        (yas/load-snippet-buffer))))
-)
+        (yas/load-snippet-buffer)))) )
+
+(deh-require 'autopair
+  (autopair-global-mode 1)
+  ;; some tricks
+  (deh-add-hook c++-mode-hook
+    (push ? (getf autopair-dont-pair :comment))
+    ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
+    )
+  (deh-add-hook emacs-lisp-mode-hook
+    (push '(?` . ?') (getf autopair-extra-pairs :comment))
+    (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
 (deh-require 'template-simple
   (setq template-directory-list (list my-template-dir)

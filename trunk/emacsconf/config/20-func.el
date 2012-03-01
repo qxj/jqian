@@ -661,3 +661,17 @@ $ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
     (kill-buffer (file-name-nondirectory psfile))
     (delete-file psfile)
     (message "Saved to: %s" pdffile)))
+
+(defun my-auto-pair ()
+  "One rough alternative for the unstable auto-pair.el :("
+  (interactive)
+  (set (make-local-variable 'skeleton-pair-alist)
+       '((?( _ ?)) (?\))
+         (?[ _ ?]) (?\])
+         (?{ _ ?}) (?\})
+         (?\" _ "\"")
+         (?` _ ?')))
+  (setq skeleton-pair t)
+  (dolist (pair skeleton-pair-alist)
+    (and (and (> (length pair) 1) (integerp (car pair)))
+         (local-set-key (string (car pair)) 'skeleton-pair-insert-maybe))))
