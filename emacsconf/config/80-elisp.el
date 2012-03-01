@@ -935,7 +935,8 @@ mouse-3: Remove current window from display")
           (call-interactively 'w3m))))))
 
 ;;; Edit
-(deh-section "autopair"
+(deh-require 'autopair
+  (autopair-global-mode 1)
   ;; some tricks
   (deh-add-hook c++-mode-hook
     (push ? (getf autopair-dont-pair :comment))
@@ -943,19 +944,9 @@ mouse-3: Remove current window from display")
     )
   (deh-add-hook emacs-lisp-mode-hook
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
-    (push '(?` . ?') (getf autopair-extra-pairs :string)))
-
-  (deh-add-hooks (java-mode-hook
-                  c-mode-common-hook
-                  python-mode-hook
-                  emacs-lisp-mode-hook
-                  html-mode-hook)
-    (require 'autopair nil t)           ; advance in hooks
-    (autopair-mode 1))
-  )
+    (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
 (deh-section "occur"
-
   (deh-add-hook occur-mode-hook
     (require 'moccur-edit nil t)
     (setq truncate-lines t))
@@ -1299,6 +1290,8 @@ indent line."
     '(progn
        ;; compatible with normal terminal keybinds
        (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
+       (add-to-list 'term-bind-key-alist '("<C-backspace>" . term-send-backward-kill-word))
+       (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
        (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
        (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
        (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
