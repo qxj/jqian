@@ -1,0 +1,7 @@
+#name: die function
+#key: die
+# --
+die() {
+    echo "Error: ${1}. Abort."
+    exit 1
+}
