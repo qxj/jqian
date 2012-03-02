@@ -307,9 +307,9 @@ leaving. bind to \\[vi-merge-lines]."
 ;;}}}
 
 ;;{{{ clone-buffer, bind to "C-x c"
-(defun ywb-clone-buffer (non-indirect)
+(defun my-clone-buffer (non-indirect)
   "If with prefix argument, clone buffer, other wise, clone
-indirect buffer. bind to \\[ywb-clone-buffer]."
+indirect buffer. bind to \\[my-clone-buffer]."
   (interactive "P")
   (if non-indirect
       (call-interactively 'clone-buffer)
@@ -322,39 +322,6 @@ indirect buffer. bind to \\[ywb-clone-buffer]."
             (select-window (display-buffer (car buf)))
           (setq current-prefix-arg nil)
           (call-interactively 'clone-indirect-buffer-other-window))))))
-;;}}}
-
-;;{{{ camelcase move, rebind "M-f/M-b"
-(defun camelcase-move-word (fw)
-  (let ((case-fold-search nil)
-        wordpos casepos)
-    (save-excursion
-      (forward-word fw)
-      (setq wordpos (point)))
-    (save-excursion
-      (and (re-search-forward "\\w[A-Z][a-z]" nil t fw)
-           (setq casepos (- (point) (if (> fw 0) 2 -1)))))
-    (cond ((and wordpos casepos)
-           (goto-char
-            (if (< (abs (- casepos (point)))
-                   (abs (- wordpos (point))))
-                casepos
-              wordpos)))
-          (wordpos (goto-char wordpos))
-          (casepos (goto-char casepos))
-          (t (goto-char (if (> fw 0) (point-max) (point-min)))))))
-
-(defun camelcase-forward-word (arg)
-  "Camelcase forward word, rebind to \\[camelcase-forward-word]."
-  (interactive "p")
-  (let ((fw (signum arg)))
-    (dotimes (i (abs arg))
-      (camelcase-move-word fw))))
-
-(defun camelcase-backward-word (arg)
-  "Camelcase backward word, rebind to \\[camelcase-move-word]."
-  (interactive "p")
-  (camelcase-forward-word (- arg)))
 ;;}}}
 
 ;; by Nikolaj Schumacher, 2008-10-20. Released under GPL.
@@ -563,13 +530,13 @@ into `kill-ring'."
     (kill-new file)
     (message "File `%s' copied." file)))
 
-(defun ywb-set-paste ()
+(defun my-set-paste ()
   "Avoid content indent when paste from clipboard."
   (interactive)
   (fundamental-mode)
   (setq indent-line-function 'ignore))
 
-(defun ywb-generate-loaddefs ()
+(defun my-generate-loaddefs ()
   "Auto generate autoloads into '100-loaddefs.el'."
   (interactive)
   (require 'autoload)
@@ -662,16 +629,3 @@ $ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
     (delete-file psfile)
     (message "Saved to: %s" pdffile)))
 
-(defun my-auto-pair ()
-  "One rough alternative for the unstable auto-pair.el :("
-  (interactive)
-  (set (make-local-variable 'skeleton-pair-alist)
-       '((?( _ ?)) (?\))
-         (?[ _ ?]) (?\])
-         (?{ _ ?}) (?\})
-         (?\" _ "\"")
-         (?` _ ?')))
-  (setq skeleton-pair t)
-  (dolist (pair skeleton-pair-alist)
-    (and (and (> (length pair) 1) (integerp (car pair)))
-         (local-set-key (string (car pair)) 'skeleton-pair-insert-maybe))))

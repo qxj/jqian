@@ -1,0 +1,357 @@
+;; -*- mode: Emacs-Lisp -*-
+
+;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
+;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
+;; Hi-lock: end
+
+
+;; disable autopair, looking forward electric-pair-mode in emacs24
+(deh-require-reserved 'autopair
+  ;; It's not an ideal way to turn on autopair-global-mode, because it's
+  ;; unstable and its keybinds often works in unexcepted manner.
+  (deh-add-hooks (java-mode-hook
+                  sh-mode-hook
+                  c-mode-common-hook
+                  python-mode-hook
+                  emacs-lisp-mode-hook
+                  html-mode-hook)
+    (autopair-mode 1))
+  ;; some tricks
+  (deh-add-hook c++-mode-hook
+    (push ? (getf autopair-dont-pair :comment))
+    ;; (push '(?< . ?>) (getf autopair-extra-pairs :code))
+    )
+  (deh-add-hook emacs-lisp-mode-hook
+    (push '(?` . ?') (getf autopair-extra-pairs :comment))
+    (push '(?` . ?') (getf autopair-extra-pairs :string))) )
+
+(deh-require 'template-simple
+  (setq template-directory-list (list my-template-dir)
+        template-skip-directory-list (list my-temp-dir my-template-dir))
+  ;; (defadvice ido-find-file (after ido-file-file-template activate)
+  ;;   (funcall 'template-auto-insert))
+  (add-hook 'write-file-functions 'template-simple-update-header)
+  )
+
+(deh-section "auto-complete"
+  (require 'auto-complete-config)
+  ;; specify a file stores data of candidate suggestion
+  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
+  (setq ac-auto-start 3
+        ac-auto-show-menu 1.5
+        ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
+        ac-ignore-case nil
+        ac-show-menu-immediately-on-auto-complete nil
+        ;; ac-expand-on-auto-complete nil
+        ;; ac-trigger-key nil
+        ac-quick-help-delay 1.5
+        ac-disable-faces nil
+        ac-dwim t)
+
+  ;; disable auto-complete in comments
+  ;; (setq ac-disable-faces
+  ;;       '(font-lock-string-face font-lock-doc-face))
+  (setq ac-disable-faces '(font-lock-string-face))
+
+  ;; for terminal, works well with `global-hl-line-mode'
+  (if (null window-system)
+      (set-face-background 'ac-completion-face "blue"))
+
+  (add-to-list 'ac-dictionary-directories
+               (expand-file-name "ac-dict" my-startup-dir))
+  (add-to-list 'ac-user-dictionary-files
+               (expand-file-name "ac.dict" my-startup-dir))
+
+  ;;# enable auto-complete in some modes
+  (add-to-list 'ac-modes 'org-mode)
+  (add-to-list 'ac-modes 'LaTeX-mode)
+
+  (ac-config-default)
+
+  ;; donot use RET for auto complete, only TAB
+  (deh-define-key ac-completing-map
+    ((kbd "<return>") . nil)
+    ((kbd "RET") . nil)
+    ((kbd "TAB") . 'ac-complete)
+    ;; ((kbd "M-/") . 'ac-stop)
+    )
+  ;; when completion menu is displayed
+  (setq ac-use-menu-map t)
+  (deh-define-key ac-menu-map
+    ("\C-n" . 'ac-next)
+    ("\C-p" . 'ac-previous))
+
+  (ac-set-trigger-key "TAB")
+
+  ;; press <TAB> to active `auto-complete'
+  ;; (deh-local-set-key auto-complete-mode-hook
+  ;;   ((kbd "TAB") . 'auto-complete-tab-action))
+  (defun auto-complete-tab-action ()
+    "If cursor at one word end, try auto complete it. Otherwise,
+indent line."
+    (interactive)
+    (if (looking-at "\\>")
+        (auto-complete)
+      (indent-for-tab-command)))
+
+  ;; c/c++
+  ;; hack auto-complete.el (deperated)
+  ;; add ac-prefix "->" to function `ac-prefix-c-dot'
+  (defun ac-cc-mode-setup ()
+    "customized setup for `c-mode-common-hook'"
+    (dolist (command `(c-electric-backspace
+                       c-electric-backspace-kill))
+      (add-to-list 'ac-trigger-commands-on-completing command))
+    (setq ac-sources (append '(ac-source-yasnippet
+                               ;; ac-source-gtags
+                               ac-source-semantic
+                               ac-source-imenu) ac-sources))
+    ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
+    (when (executable-find "clang")
+      (require 'auto-complete-clang)
+      (add-to-list 'ac-sources 'ac-source-clang))
+    )
+
+  ;; python
+  (defun ac-python-mode-setup ()
+    (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+  (add-hook 'python-mode-hook 'ac-python-mode-setup)
+
+  ;; Org
+  (defun ac-org-mode-setup ()
+    (setq ac-sources (append '(ac-source-yasnippet) ac-sources)))
+  (add-hook 'org-mode-hook 'ac-org-mode-setup)
+
+  ;; Slime
+  (defun ac-slime-candidates ()
+    "Complete candidates of the symbol at point."
+    (if (memq major-mode '(lisp-mode))
+        (let* ((end (point))
+               (beg (slime-symbol-start-pos))
+               (prefix (buffer-substring-no-properties beg end))
+               (result (slime-simple-completions prefix)))
+          (destructuring-bind (completions partial) result
+            completions))))
+
+  (ac-define-source slime
+    '((candidates . ac-slime-candidates)
+      (requires . 3)
+      (symbol . "s")))
+
+  (defun ac-slime-setup ()
+    (slime-mode t)
+    (push 'ac-source-slime ac-sources))
+
+  (add-hook 'lisp-mode-hook 'ac-slime-setup)
+
+  ;; for autopair
+  (defun ac-settings-4-autopair ()
+    "`auto-complete' settings for `autopair'."
+    (defun ac-trigger-command-p (command)
+      "Return non-nil if `this-command' is a trigger command."
+      (or
+       (and
+        (symbolp command)
+        (or (memq command ac-trigger-commands)
+            (string-match "self-insert-command" (symbol-name command))
+            (string-match "electric" (symbol-name command))
+            (let* ((autopair-emulation-alist nil)
+                   (key (this-single-command-keys))
+                   (beyond-autopair (or (key-binding key)
+                                        (key-binding (lookup-key local-function-key-map key)))))
+              (or
+               (memq beyond-autopair ac-trigger-commands)
+               (and ac-completing
+                    (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
+  (eval-after-load "autopair"
+    '(ac-settings-4-autopair)) )
+
+(deh-require 'yasnippet
+  (setq yas/root-directory my-snippet-dir)
+  (yas/load-directory yas/root-directory)
+  ;; (yas/initialize)     ;; enable yas/minor-mode globally
+  (yas/global-mode 1)
+
+  (setq yas/wrap-around-region t)
+
+  (require 'dropdown-list)
+  (setq yas/prompt-functions '(yas/dropdown-prompt
+                               yas/ido-prompt
+                               yas/completing-prompt))
+
+  ;; FOR `hippie-try-expand' setting
+  (add-to-list 'hippie-expand-try-functions-list 'yas/hippie-try-expand)
+
+  ;; FOR `auto-complete-mode', so disable default yasnippet expand action
+  (if (fboundp 'auto-complete-mode)
+      (progn
+        ;; (setq yas/trigger-key nil) ; deperecated tweak
+        (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
+        (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
+
+  ;; List all snippets for current mode
+  (define-key yas/minor-mode-map (kbd "C-c y") 'yas/insert-snippet)
+
+;;;###autoload
+  (defun yasnippet-reload-after-save ()
+    (let* ((bfn (expand-file-name (buffer-file-name)))
+           (root (expand-file-name yas/root-directory)))
+      (when (string-match (concat "^" root) bfn)
+        (yas/load-snippet-buffer)))) )
+
+
+;;; abbrev
+
+;;; skeleton
+;;;; autopair
+(deh-section "skeleton-pair"
+  (setq skeleton-pair t
+        skeleton-pair-on-word nil)
+
+  (setq skeleton-pair-alist
+        '((?( _ ?)) (?\))
+          (?[ _ ?]) (?\])
+          (?{ _ ?}) (?\})
+          ;; (?` _ ?')
+          (?\" _ "\"")))
+
+  (setq skeleton-pair-filter-function
+        '(lambda ()
+           (cond
+            ((eq last-command-char ?\")
+             (or (looking-at   (regexp-quote (string last-command-char)))
+                 (looking-back (regexp-quote (string last-command-char)))
+                 (looking-back "[[:graph:]]")))
+            (t
+             (looking-at (regexp-quote (string last-command-char)))))))
+
+  (global-set-key "("  'autopair-insert)
+  (global-set-key ")"  'autopair-insert)
+  (global-set-key "["  'autopair-insert)
+  (global-set-key "]"  'autopair-insert)
+  (global-set-key "{"  'autopair-insert)
+  (global-set-key "}"  'autopair-insert)
+  (global-set-key "\"" 'autopair-insert)
+
+  (defun autopair-insert (arg)
+    (interactive "P")
+    (let (pair)
+      (cond
+       ((assq last-command-char skeleton-pair-alist)
+        (autopair-open arg))
+       (t
+        (autopair-close arg)))))
+
+  (defun autopair-open (arg)
+    (interactive "P")
+    (let ((pair (assq last-command-char
+                      skeleton-pair-alist)))
+      (cond
+       ((and (not mark-active)
+             (eq (car pair) (car (last pair)))
+             (eq (car pair) (char-after)))
+        (autopair-close arg))
+       (t
+        (skeleton-pair-insert-maybe arg)))))
+
+  (defun autopair-close (arg)
+    (interactive "P")
+    (cond
+     (mark-active
+      (let (pair open)
+        (dolist (pair skeleton-pair-alist)
+          (when (eq last-command-char (car (last pair)))
+            (setq open (car pair))))
+        (setq last-command-char open)
+        (skeleton-pair-insert-maybe arg)))
+     ((looking-at
+       (concat "[ \t\n]*"
+               (regexp-quote (string last-command-char))))
+      (replace-match (string last-command-char))
+      (indent-according-to-mode))
+     (t
+      (self-insert-command (prefix-numeric-value arg))
+      (indent-according-to-mode))))
+
+  (defadvice delete-backward-char (before autopair activate)
+    (when (and (char-after)
+               (eq this-command 'delete-backward-char)
+               (eq (char-after)
+                   (car (last (assq (char-before) skeleton-pair-alist)))))
+      (delete-char 1))))
+
+;;; tempo
+;; skeleton and tempo can be replaced by yasnippet now
+(deh-require-reserved 'tempo
+  (setq tempo-interactive t)
+  (tempo-define-template "lambda"
+                         '(> "(lambda (" p ")" n> r> ")">)
+                         nil            ; tag
+                         "Insert a template for an anonymous procedure"
+                         nil            ; taglist
+                         )
+  ;; combine with abbrev
+  (define-abbrev lisp-mode-abbrev-table "lambda" "" 'tempo-template-lambda)
+  (global-set-key (kbd "<C-tab>") 'tempo-complete-tag)
+  (global-set-key "\C-c\C-f" 'tempo-forward-mark)
+  )
+
+;;; auto insert
+(deh-section "autoinsert"
+  (auto-insert-mode 1)
+  (setq auto-insert-directory my-template-dir
+        auto-insert 'other)
+  (define-auto-insert "\\.h$" '(lambda () (my-expand-template-by-ext "h")))
+  (define-auto-insert "\\.c$" '(lambda () (my-expand-template-by-ext "c")))
+  (define-auto-insert "\\.cpp$" '(lambda () (my-expand-template-by-ext "cpp")))
+  (define-auto-insert 'sh-mode '(lambda () (my-expand-template-by-ext "sh")))
+  (define-auto-insert 'java-mode '(lambda () (my-expand-template-by-ext "java")))
+  (define-auto-insert 'makefile-mode '(lambda () (my-expand-template-by-ext "makefile")))
+  (define-auto-insert "[Mm]akefile.am$" '(lambda () (my-expand-template-by-ext "am")))
+  (define-auto-insert 'python-mode '(lambda () (my-expand-template-by-ext "py")))
+
+  (defun my-expand-template-by-ext (ext)
+    "Bridge template-simple with auto-insert."
+    (interactive)
+    (let* ((files (apply 'append
+                         (mapcar (lambda (dir)
+                                   (template-simple-find-templates
+                                    dir (template-simple-search-pattern ext) ))
+                                 template-directory-list)))
+           (filenames (mapcar (lambda (x) (file-name-nondirectory x)) files))
+           (defname (car filenames))
+           (filename (if (> (length filenames) 1)
+                         (ido-completing-read
+                          (if defname
+                              (format "Insert template(default %s): " defname)
+                            "Insert template: ")
+                          filenames nil nil nil nil defname)
+                       defname))
+           (selected (expand-file-name filename my-template-dir))
+           (template-expand-function template-expand-function))
+      (template-simple-expand
+       (with-temp-buffer
+         (insert-file-contents selected)
+         (template-compile)))))
+)
+
+;;; hippie
+(deh-section "hippie-expand"
+  ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
+  (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-visible
+          yas/hippie-try-expand
+          try-expand-list
+          try-expand-line
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          ;; try-expand-list-all-buffers
+          ;; try-expand-line-all-buffers
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-complete-lisp-symbol
+          try-complete-lisp-symbol-partially
+          try-expand-whole-kill)))

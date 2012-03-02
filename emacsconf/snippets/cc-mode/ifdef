@@ -1,8 +1,8 @@
 # -*- mode: snippet -*-
 #name : #ifdef ... #endif
 # --
-#ifdef $1
-$2${3:
+#ifdef ${1:MACRO}
+$0${2:
 #else
-$4}
+}
 #endif /* $1 */
