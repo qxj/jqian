@@ -26,7 +26,7 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-require 'template-simple
+(deh-require-reserved 'template-simple
   (setq template-directory-list (list my-template-dir)
         template-skip-directory-list (list my-temp-dir my-template-dir))
   ;; (defadvice ido-find-file (after ido-file-file-template activate)
@@ -301,39 +301,96 @@ indent line."
 (deh-section "autoinsert"
   (auto-insert-mode 1)
   (setq auto-insert-directory my-template-dir
+        auto-insert-query 'function
         auto-insert 'other)
-  (define-auto-insert "\\.h$" '(lambda () (my-expand-template-by-ext "h")))
-  (define-auto-insert "\\.c$" '(lambda () (my-expand-template-by-ext "c")))
-  (define-auto-insert "\\.cpp$" '(lambda () (my-expand-template-by-ext "cpp")))
-  (define-auto-insert 'sh-mode '(lambda () (my-expand-template-by-ext "sh")))
-  (define-auto-insert 'java-mode '(lambda () (my-expand-template-by-ext "java")))
-  (define-auto-insert 'makefile-mode '(lambda () (my-expand-template-by-ext "makefile")))
-  (define-auto-insert "[Mm]akefile.am$" '(lambda () (my-expand-template-by-ext "am")))
-  (define-auto-insert 'python-mode '(lambda () (my-expand-template-by-ext "py")))
 
-  (defun my-expand-template-by-ext (ext)
-    "Bridge template-simple with auto-insert."
-    (interactive)
-    (let* ((files (apply 'append
-                         (mapcar (lambda (dir)
-                                   (template-simple-find-templates
-                                    dir (template-simple-search-pattern ext) ))
-                                 template-directory-list)))
-           (filenames (mapcar (lambda (x) (file-name-nondirectory x)) files))
-           (defname (car filenames))
-           (filename (if (> (length filenames) 1)
-                         (ido-completing-read
-                          (if defname
-                              (format "Insert template(default %s): " defname)
-                            "Insert template: ")
-                          filenames nil nil nil nil defname)
-                       defname))
-           (selected (expand-file-name filename my-template-dir))
-           (template-expand-function template-expand-function))
-      (template-simple-expand
-       (with-temp-buffer
-         (insert-file-contents selected)
-         (template-compile)))))
+  (defun my-copyright ()
+    (concat "Copyright " (substring (current-time-string) -4) " "
+            (if (getenv "ORGANIZATION")
+                (getenv "ORGANIZATION")
+              (concat user-full-name
+                      " <" user-mail-address ">"))))
+  (defun my-datetime ()
+    (format-time-string "%Y-%m-%d %H:%M:%S"))
+
+  (define-auto-insert '("\\.h$" . "C/C++ header")
+    '((let* ((modes '("c-mode" "c++-mode"))
+             (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
+        selected)
+      "/* -*- mode: " str " -*-" ?\n
+      " * @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
+      " * Time-stamp: <>" ?\n
+      " * " (my-copyright) ?\n
+      " * Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+      " */" ?\n ?\n
+      "#ifndef "
+      (setq v2 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
+                               "_"
+                               (file-name-extension buffer-file-name))))
+      ?\n
+      "#define " v2 "\n\n"
+      _
+      "\n\n#endif"))
+
+  (define-auto-insert '("\\.c$" . "C program")
+    '(nil
+      "/* -*- mode: c-mode -*-" ?\n
+       " * @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
+       " * Time-stamp: <>" ?\n
+       " * " (my-copyright) ?\n
+       " * Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+       " */" ?\n ?\n
+      "#include \""
+      (let ((stem (file-name-sans-extension buffer-file-name)))
+        (if (file-exists-p (concat stem ".h"))
+         (file-name-nondirectory (concat stem ".h"))))
+      & ?\" | -10))
+
+  (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
+    '(nil
+      "// -*- mode: c++-mode -*-" ?\n
+      "// @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
+      "// Time-stamp: <>" ?\n
+      "// " (my-copyright) ?\n
+      "// Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+      "//" ?\n ?\n
+      "#include \""
+      (let ((stem (file-name-sans-extension buffer-file-name)))
+        (cond ((file-exists-p (concat stem ".h"))
+               (file-name-nondirectory (concat stem ".h")))
+              ((file-exists-p (concat stem ".hpp"))
+               (file-name-nondirectory (concat stem ".hpp")))
+              ((file-exists-p (concat stem ".hh"))
+               (file-name-nondirectory (concat stem ".hh"))))
+        )
+      & "\"" | -10 ?\n ?\n
+      _))
+
+  (define-auto-insert '(python-mode . "Python script")
+    '(nil
+      "#!/usr/bin/env python" ?\n
+      "# @(#) " (setq v1 (file-name-nondirectory (buffer-file-name))) " -*- coding: utf-8 -*-" ?\n
+      "# Time-stamp: <>" ?\n
+      "# " (my-copyright) ?\n
+      "# Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+      "#" ?\n ?\n
+      "import sys" ?\n ?\n
+      "def main():" ?\n
+      > _ ?\n ?\n
+      "if __name__ == \"__main__\":" ?\n
+      > "main()"
+      ))
+
+  (define-auto-insert '(sh-mode . "Shell script")
+    '(nil
+      "#!/bin/sh" ?\n
+      "# @(#) " (setq v1 (file-name-nondirectory (buffer-file-name))) " -*- coding: utf-8 -*-" ?\n
+      "# Time-stamp: <>" ?\n
+      "# " (my-copyright) ?\n
+      "# Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+      "#" ?\n ?\n
+       _
+      ))
 )
 
 ;;; hippie
