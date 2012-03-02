@@ -1,6 +1,6 @@
 ;;; template-simple.el --- Simple template functions and utils
 
-;; Copyright (C) 2007  Ye Wenbin
+;; Copyright (C) 2007, 2012  Ye Wenbin
 
 ;; Author: Ye Wenbin <wenbinye@gmail.com>
 ;; Update: 22 Oct 2010 by Julian Qian <junist@gmail.com>
@@ -11,7 +11,7 @@
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 
 ;; This file is distributed in the hope that it will be useful,
@@ -331,6 +331,9 @@ template is translated by `template-expansion'"
                 (setq results (list fullname)))))))
     results))
 
+(defun template-simple-search-pattern (ext)
+  (concat "^" ext "\\(([^()]+)\\)?" "\\.tpl$"))
+
 (defun template-simple-derivation ()
   "Return a list contained matched template absolute path."
   (when buffer-file-name
@@ -338,8 +341,7 @@ template is translated by `template-expansion'"
       (apply 'append
              (mapcar (lambda (dir)
                        (template-simple-find-templates
-                        dir
-                        (concat "^" ext "\\(([^()]+)\\)?" "\\.tpl$")))
+                        dir (template-simple-search-pattern ext) ))
                      template-directory-list)))))
 
 ;; (defun template-include (name)
@@ -353,19 +355,16 @@ Parse the template to parsed templates with `template-compile'.
 Use `template-expand-function' to expand the parsed template."
   (interactive
    (list
-    (let* ((cas (template-simple-derivation))
-           (cak (mapcar (lambda (x) (file-name-nondirectory x)) cas))
-           ;; (cah (mapcar (lambda (x) (cons (file-name-nondirectory x) x)) cas))
-           (def (car cas))
-          file)
-      (and def (setq def (file-name-nondirectory def)))
-      (setq file
-            (ido-completing-read
-             (if def
-                 (format "Insert template(default %s): " def)
-               "Insert template: ")
-             cak nil nil nil nil def))
-      (locate-file file template-directory-list))))
+    (let* ((files (template-simple-derivation))
+           (filenames (mapcar (lambda (x) (file-name-nondirectory x)) files))
+           (defname (car filenames))
+           (filename (if (> (length filenames) 1)
+                         (ido-completing-read
+                          (if defname
+                              (format "Insert template(default %s): " defname)
+                            "Insert template: ")
+                          filenames nil nil nil nil defname) defname) ))
+      (locate-file filename template-directory-list))))
   (let ((template-expand-function template-expand-function))
     (template-simple-expand
      (with-temp-buffer
