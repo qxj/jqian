@@ -191,7 +191,6 @@
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'LaTeX-hide-environment 'disabled nil)
 
-(setq help-window-select t)
 (setq tooltip-use-echo-area nil)
 (setq folding-folding-on-startup nil)
 
