@@ -79,14 +79,14 @@
           ;; semantic-imenu-auto-rebuild-directory-indexes t
           ;; semantic-imenu-index-directory t
           semantic-which-function-use-color t)
-    ;; (deh-add-hook c-mode-common-hook
+    ;; (deh-add-hook 'c-mode-common-hook
     ;;   (setq imenu-create-index-function 'semantic-create-imenu-index))
     )
 
   (deh-section "hippie-semantic"
     (autoload 'senator-try-expand-semantic "senator")
     ;; hippie-try-expand setting
-    (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook)
+    (deh-add-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
       (add-to-list 'hippie-expand-try-functions-list
                    'senator-try-expand-semantic
                    'semantic-ia-complete-symbol)))

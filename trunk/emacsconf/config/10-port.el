@@ -154,7 +154,7 @@
     (add-hook 'after-make-frame-functions 'init-window-frame)
     (add-hook 'after-init-hook 'init-window-frame))
 
-;; (deh-add-hook find-file-hook
+;; (deh-add-hook 'find-file-hook
 ;;   (if (and (buffer-file-name)
 ;;            (string-match (expand-file-name "~/src/") (buffer-file-name)))
 ;;       (toggle-read-only 1)))

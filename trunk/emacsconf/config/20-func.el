@@ -176,6 +176,7 @@ Like eclipse's Ctrl+Alt+F."
            (progn
              (end-of-line)
              (newline-and-indent))))))
+
 (defun my-sync-item ()
   (interactive)
   (save-excursion

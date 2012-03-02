@@ -41,3 +41,6 @@ ex: input <s then press TAB, it will be expand automatically.
 
 * edit dired buffer with wdired
 C-x C-q
+
+* expand a defmacro
+macroexpand & macroexpand-all

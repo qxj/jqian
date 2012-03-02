@@ -35,9 +35,6 @@
 ;; highlight trailing whitespace
 (setq show-trailing-whitespace t)
 
-;; no trailing whitespace
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
 ;; Wrap too long lines
 (toggle-truncate-lines nil)
 (setq hscroll-margin 1)
@@ -145,7 +142,6 @@
           (:eval (or (buffer-file-name) (buffer-name))))))
 
 (deh-section "timestamp"
-  (add-hook 'before-save-hook 'time-stamp)
   (setq time-stamp-active t
         time-stamp-warn-inactive t
         time-stamp-format "%U %:y-%02m-%02d %02H:%02M:%02S"))
@@ -164,6 +160,15 @@
 (fset 'print-buffer 'ignore)
 (setq lpr-command "")
 (setq printer-name "")
+;;;}}}
+
+;;{{{ Hooks
+;; no trailing whitespace
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; update copyright
+(add-hook 'before-save-hook 'copyright-update)
+;; update timestamp
+(add-hook 'before-save-hook 'time-stamp)
 ;;}}}
 
 ;;{{{ Customized keywords

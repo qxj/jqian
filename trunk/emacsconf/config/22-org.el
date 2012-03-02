@@ -28,7 +28,7 @@
         org-export-with-sub-superscripts nil
         org-file-apps-defaults-gnu '((t . emacs)))
 
-  (deh-add-hook org-load-hook
+  (deh-add-hook 'org-load-hook
     (add-to-list 'org-link-frame-setup
                  '(file . my-find-file-function)))
   (defun my-find-file-function (file)
@@ -37,14 +37,14 @@
                                 'string-match)
                  'find-file) file))
 
-  (deh-add-hook org-mode-hook
+  (deh-add-hook 'org-mode-hook
     (org-set-local 'comment-start "#+COMMENT:")
     (toggle-truncate-lines nil)
     (auto-fill-mode 1)
     (outline-minor-mode t))
 
   ;; org keybinds
-  (deh-local-set-key org-mode-hook
+  (deh-local-set-key 'org-mode-hook
     ((kbd "C-c o l") . 'org-store-link)
     ((kbd "C-c o a") . 'org-agenda)
     ((kbd "C-c o b") . 'org-iswitchb)
@@ -74,7 +74,7 @@
 
   ;;# Compatible with yasnippet.el
   (if (featurep 'yasnippet)
-      (deh-add-hook org-mode-hook
+      (deh-add-hook 'org-mode-hook
         (org-set-local 'yas/trigger-key [tab])
         (define-key yas/keymap [tab] 'yas/next-field-or-maybe-expand)
         (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)))
@@ -331,6 +331,6 @@
 (deh-section "rst"
   (add-hook 'rst-adjust-hook 'rst-toc-update)
   ;; Auto fill and outline mode
-  (deh-add-hook rst-mode-hook
+  (deh-add-hook 'rst-mode-hook
     (auto-fill-mode 1)
     (outline-minor-mode t)))
