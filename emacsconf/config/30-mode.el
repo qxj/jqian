@@ -200,7 +200,7 @@
 (deh-section-if "gtags" (executable-find "global")
   (autoload 'gtags-mode "gtags" "" t)
 
-  (deh-add-hooks (c-mode-common-hook)
+  (deh-add-hooks '(c-mode-common-hook)
     (gtags-mode t))
 
   (setq gtags-mode-hook
@@ -340,7 +340,7 @@
            ;; Key bind for cscope-minor-mode
            ))
   ;; hack `xcscope.el', remove hooks
-  (deh-remove-hooks (c-mode-hook c++-mode-hook dired-mode-hook)
+  (deh-remove-hooks '(c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
 
 (deh-require-reserved 'tags-view
@@ -468,9 +468,9 @@ etc).  The following options will be available:
 (deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
-  (deh-add-hooks (text-mode-hook org-mode-hook) (flyspell-mode 1))
-  (deh-add-hooks (change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
-  (deh-add-hooks (c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
+  (deh-add-hooks '(text-mode-hook org-mode-hook) (flyspell-mode 1))
+  (deh-add-hooks '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
+  (deh-add-hooks '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
 
 (deh-section-after "flymake"
   ;; (flymake-mode t)
@@ -480,10 +480,10 @@ etc).  The following options will be available:
         flymake-log-level 0
         flymake-no-changes-timeout 5.0)
 
-  ;; (deh-add-hooks (c-mode-common-hook makefile-mode-hook)
+  ;; (deh-add-hooks '(c-mode-common-hook makefile-mode-hook)
   ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
 
-  ;; (deh-add-hook find-file-hook
+  ;; (deh-add-hook 'find-file-hook
   ;;   (condition-case nil (flymake-find-file-hook) (error nil)))
 
   (defvar flymake-mode-map (make-sparse-keymap))
@@ -698,12 +698,12 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 (deh-section "makefile"
-  (deh-add-hook makefile-mode-hook
+  (deh-add-hook 'makefile-mode-hook
     ;; (my-mode-common-hook)
     ))
 
 (deh-section "change-log"
-  (deh-add-hook change-log-mode-hook
+  (deh-add-hook 'change-log-mode-hook
     (auto-fill-mode t)
     (add-to-list 'change-log-font-lock-keywords
                  '("^[0-9-]+:? +\\|^\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\) [A-z][a-z][a-z] [0-9:+ ]+"
@@ -718,7 +718,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
 
-  (deh-add-hook emacs-lisp-mode-hook
+  (deh-add-hook 'emacs-lisp-mode-hook
     (my-mode-common-hook)
     (turn-on-eldoc-mode)
     (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
@@ -739,7 +739,7 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; scripts setting
 (deh-section "python"
-  (deh-add-hook python-mode-hook
+  (deh-add-hook 'python-mode-hook
     (my-mode-common-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
     ;; (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
@@ -780,7 +780,7 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 (deh-section "sh-mode"
-  (deh-add-hook sh-mode-hook
+  (deh-add-hook 'sh-mode-hook
     ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
     (my-mode-common-hook)
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
@@ -789,9 +789,9 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; tools
 (deh-section "gnuplot"
-  (deh-add-hook gnuplot-after-plot-hook
+  (deh-add-hook 'gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
-  (deh-add-hook gnuplot-comint-setup-hook
+  (deh-add-hook 'gnuplot-comint-setup-hook
     (deh-define-key comint-mode-map
       ("\C-d" . 'comint-delchar-or-maybe-eof))))
 
@@ -799,7 +799,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
-  (deh-add-hook graphviz-dot-mode-hook
+  (deh-add-hook 'graphviz-dot-mode-hook
     (local-unset-key "\C-cc") ; it's prefix key
     (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
   (defun graphviz-dot-tab-action ()
@@ -821,7 +821,7 @@ Use CREATE-TEMP-F for creating temp copy."
     (require 'cedet)
     (require 'jde)
     (jde-mode))
-  (deh-add-hook java-mode-hook
+  (deh-add-hook 'java-mode-hook
     (c-set-style "java")
     (setq c-basic-offset 4)))
 
@@ -831,7 +831,6 @@ Use CREATE-TEMP-F for creating temp copy."
   (add-hook 'sgml-mode-hook 'my-mode-common-hook)
   (set 'html-mode-hook
        (lambda ()
-         (define-key html-mode-map (kbd "<C-return>") 'ywb-html-insert-newline)
          ;; (tempo-use-tag-list 'tempo-html-tags)
          (let ((str '(""))
                (align '(("align" ("left") ("center") ("right")))))
@@ -862,7 +861,7 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
-  (deh-add-hook js2-mode-hook
+  (deh-add-hook 'js2-mode-hook
     (setq forward-sexp-function nil)))
 
 (deh-section "markdown")
@@ -871,7 +870,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
-    (deh-local-set-key php-mode-hook
+    (deh-local-set-key 'php-mode-hook
       ("\t"       . 'php-doc-complete-function)
       ("\C-cd" . 'php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
@@ -884,7 +883,7 @@ Use CREATE-TEMP-F for creating temp copy."
         (w3m-goto-url url)))
     )
 
-  (deh-add-hook php-mode-hook
+  (deh-add-hook 'php-mode-hook
     ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
     (setq php-beginning-of-defun-regexp "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(")
@@ -928,7 +927,7 @@ Use CREATE-TEMP-F for creating temp copy."
         TeX-save-query nil
         TeX-clean-confirm nil
         TeX-show-compilation nil)
-  (deh-add-hook LaTeX-mode-hook
+  (deh-add-hook 'LaTeX-mode-hook
     (turn-off-auto-fill)
     ;; (LaTeX-math-mode 1)
     (outline-minor-mode 1)

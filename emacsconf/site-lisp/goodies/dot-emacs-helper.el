@@ -420,12 +420,12 @@ Example:
   "Set a batch of local keys for a hook.
 
 Example:
-  (deh-local-set-keys text-mode-hook
+  (deh-local-set-key 'text-mode-hook
     (\"\\C-m\"        . 'newline-and-indent)
     (\"\\C-j\"        . 'newline))
 "
   (declare (indent 1))
-  (list 'add-hook (list 'quote hook)
+  (list 'add-hook hook
         (cons 'lambda
               (cons 'nil (mapcar
                           (lambda (pair)
@@ -436,12 +436,12 @@ Example:
   "Set a batch of local keys for a list of hooks.
 
 Example:
-  (deh-local-set-keys (text-mode-hook org-mode-hook)
+  (deh-local-set-keys '(text-mode-hook org-mode-hook)
     (\"\\C-m\"        . 'newline-and-indent)
     (\"\\C-j\"        . 'newline))
 "
   (declare (indent 1))
-  (list 'dolist (list 'hook (list 'quote hooks))
+  (list 'dolist (list 'hook hooks)
         (list 'add-hook 'hook
               (cons 'lambda
                     (cons 'nil (mapcar
@@ -453,46 +453,46 @@ Example:
   "Apply some functions for a hook.
 
 Example:
-  (deh-add-hook c-mode-common-hook
+  (deh-add-hook 'c-mode-common-hook
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
   (declare (indent 1))
-  `(add-hook ',hook (lambda () ,@forms)))
+  `(add-hook ,hook (lambda () ,@forms)))
 
 (defmacro deh-remove-hook (hook &rest forms)
   "Remove some functions for a hook.
 
 Example:
-  (deh-remove-hook c-mode-common-hook
+  (deh-remove-hook 'c-mode-common-hook
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
   (declare (indent 1))
-  `(remove-hook ',hook (lambda () ,@forms)))
+  `(remove-hook ,hook (lambda () ,@forms)))
 
 (defmacro deh-add-hooks (hooks &rest forms)
   "Apply some functions for a list of hooks.
 
 Example:
-  (deh-add-hooks (c-mode-common-hook emacs-lisp-mode-hook)
+  (deh-add-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
   (declare (indent 1))
-  `(dolist (hook ',hooks)
+  `(dolist (hook ,hooks)
      (add-hook hook (lambda () ,@forms))))
 
 (defmacro deh-remove-hooks (hooks &rest forms)
   "Remove some functions for a list of hooks.
 
 Example:
-  (deh-remove-hooks (c-mode-common-hook emacs-lisp-mode-hook)
+  (deh-remove-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
     (flyspell-prog-mode)
     (flymake-minor-mode 1))
 "
   (declare (indent 1))
-  `(dolist (hook ',hooks)
+  `(dolist (hook ,hooks)
      (remove-hook hook (lambda () ,@forms))))
 
 (font-lock-add-keywords

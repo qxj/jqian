@@ -136,13 +136,13 @@ mouse-3: Remove current window from display")
     ("/"    . 'one-key-menu-dired-filter))
 
   ;;# hooks
-  (deh-add-hook dired-load-hook
+  (deh-add-hook 'dired-load-hook
     (load "dired-x")
     ;; Make the execuatable file with different color
     (add-to-list 'dired-font-lock-keywords
                  (list dired-re-exe
                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
-  (deh-add-hook dired-after-readin-hook
+  (deh-add-hook 'dired-after-readin-hook
     (set (make-local-variable 'truncate-lines) t)
     (save-excursion                     ; sort directories first
       (let (buffer-read-only)
@@ -250,7 +250,7 @@ mouse-3: Remove current window from display")
      t)))
 
 (deh-section-after "dired-x"
-  (deh-add-hook dired-mode-hook
+  (deh-add-hook 'dired-mode-hook
     (dired-omit-mode t))
 
   (dolist (ext '(".bak"))
@@ -473,7 +473,7 @@ mouse-3: Remove current window from display")
                                  default-directory))))
       (call-interactively 'ido-find-file)))
 
-  (deh-add-hook ibuffer-mode-hook
+  (deh-add-hook 'ibuffer-mode-hook
     (require 'ibuf-ext nil t)
     (ibuffer-switch-to-saved-filter-groups "default"))
 
@@ -549,7 +549,7 @@ mouse-3: Remove current window from display")
   ;; autosave bookmark into the diskete
   (setq bookmark-save-flag 1)
   (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
-  (deh-add-hook bookmark-bmenu-mode-hook
+  (deh-add-hook 'bookmark-bmenu-mode-hook
     (font-lock-add-keywords
      nil
      '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
@@ -840,7 +840,7 @@ mouse-3: Remove current window from display")
     ("\C-k" . 'kill-this-buffer)))
 
 (deh-section "doc-view"
-  (deh-add-hook doc-view-mode-hook
+  (deh-add-hook 'doc-view-mode-hook
     (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
     (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol)))
 
@@ -878,7 +878,7 @@ mouse-3: Remove current window from display")
     ("n" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
     ("p" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
     ("t" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url))))
-  (deh-add-hook w3m-load-hook
+  (deh-add-hook 'w3m-load-hook
     (add-to-list
      'w3m-relationship-estimate-rules
      `(w3m-relationship-simple-estimate
@@ -925,7 +925,7 @@ mouse-3: Remove current window from display")
 
 ;;; Edit
 (deh-section "occur"
-  (deh-add-hook occur-mode-hook
+  (deh-add-hook 'occur-mode-hook
     (require 'moccur-edit nil t)
     (setq truncate-lines t))
 
@@ -1377,8 +1377,8 @@ mouse-3: Remove current window from display")
   (setq hl-paren-colors
         '("orange1" "yellow1" "greenyellow" "green1"
           "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
-  (deh-add-hooks (emacs-lisp-mode-hook
-                  c-mode-common-hook)
+  (deh-add-hooks '(emacs-lisp-mode-hook
+                   c-mode-common-hook)
     (highlight-parentheses-mode 1)
     ;; compatible with autopair-mode
     (eval-after-load "autopair"
@@ -1398,9 +1398,9 @@ mouse-3: Remove current window from display")
   )
 
 (deh-require 'highlight-symbol
-  (deh-add-hooks (emacs-lisp-mode-hook
-                  java-mode-hook
-                  c-mode-common-hook)
+  (deh-add-hooks '(emacs-lisp-mode-hook
+                   java-mode-hook
+                   c-mode-common-hook)
     (when window-system
       (highlight-symbol-mode 1)
       (setq highlight-symbol-idle-delay 0.5

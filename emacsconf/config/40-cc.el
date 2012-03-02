@@ -138,7 +138,7 @@
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 
 (deh-section "c++-mode"
-  (deh-add-hook c++-mode-hook
+  (deh-add-hook 'c++-mode-hook
     (my-c-mode-common-hook)
     (setq local-abbrev-table c-mode-abbrev-table)
     ;; key binding
@@ -209,7 +209,7 @@ the directories in the INCLUDE environment variable."
   (setq gdb-many-windows nil            ; no need many windows
         gdb-use-separate-io-buffer t)
 
-  (deh-add-hook gud-mode-hook
+  (deh-add-hook 'gud-mode-hook
     (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
     (define-key gud-mode-map (kbd "C-u") 'comint-kill-input)
     ;;# keybinds remind
