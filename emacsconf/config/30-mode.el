@@ -450,19 +450,19 @@ etc).  The following options will be available:
   (defun my-toggle-info ()
     "Switch to info buffer or return to the previous buffer."
     (interactive)
-    (if (derived-mode-p 'info-mode)
-        (while (derived-mode-p 'info-mode)
+    (if (derived-mode-p 'Info-mode)
+        (while (derived-mode-p 'Info-mode)
           (bury-buffer))
       ;; Find the first info buffer
       (let ((list (buffer-list)))
         (while list
           (if (with-current-buffer (car list)
-                (derived-mode-p 'info-mode))
+                (derived-mode-p 'Info-mode))
               (progn
                 (switch-to-buffer (car list))
                 (setq list nil))
             (setq list (cdr list))))
-        (unless (derived-mode-p 'info-mode)
+        (unless (derived-mode-p 'Info-mode)
           (call-interactively 'info))))))
 
 (deh-section-reserved "flyspell"
