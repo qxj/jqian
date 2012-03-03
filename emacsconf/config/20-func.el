@@ -520,9 +520,30 @@ into `kill-ring'."
   (revert-buffer nil t nil))
 
 (defun my-switch-recent-buffer ()
-  "Swith to the recent visited buffer."
+  "Swith to the recent visited buffer, ingore buffers by
+`ido-ignore-buffers'. Inspired from \\[ido-ignore-item-p]."
   (interactive)
-  (switch-to-buffer (other-buffer)))
+  (let* (ignorep nextstr ignores
+                 (temp-list
+                  (delq nil
+                        (mapcar
+                         (lambda (buf)
+                           (setq ignorep nil ignores ido-ignore-buffers)
+                           (if (eq (current-buffer) buf)
+                               (setq ignorep t)
+                             (while ignores
+                               (setq nextstr (car ignores))
+                               (if (cond
+                                    ((stringp nextstr) (string-match nextstr (buffer-name buf)))
+                                    ((functionp nextstr) (funcall nextstr buf))
+                                    (t nil))
+                                   (setq ignorep t ignores nil)
+                                 (setq ignores (cdr ignores)))))
+                           (if ignorep nil buf))
+                         (buffer-list (selected-frame))))))
+    (if (> (length temp-list) 0)
+        (switch-to-buffer (car temp-list))
+      (message "No proper buffer can be switched to."))))
 
 (defun my-copy-full-file-name ()
   "Copy full file name of current-buffer."

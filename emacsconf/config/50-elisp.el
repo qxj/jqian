@@ -334,14 +334,30 @@ mouse-3: Remove current window from display")
         (expand-file-name "emacs.ido-last" my-temp-dir)
         org-id-locations-file
         (expand-file-name "emacs.ido-locations" my-temp-dir))
+  (defun ido-ignore-c-mode (name)
+   "Ignore all c mode buffers -- example function for ido."
+   (with-current-buffer name
+     (derived-mode-p 'c-mode)))
   (setq ido-ignore-buffers
-        '("\\` " "^\\*.+" "_region_" "^TAGS$")
+        '("^ " "_region_" "TAGS"
+          ;; (lambda (buf) (and (not (member-ignore-case (buffer-name buf) '("*scratch*" "*info*")))
+          ;;                    (string-match "^\\*.+" (buffer-name buf))))
+          ;; ido-ignore-c-mode
+          (lambda (buf)
+            (with-current-buffer buf
+              (or
+               ;; ignore dired-mode
+               (eq (buffer-local-value 'major-mode (current-buffer)) 'dired-mode)
+               (and
+                ;; exclude *scratch*, *info*
+                (not (member-ignore-case (buffer-name) '("*scratch*" "*info*")))
+                (string-match "^\\*.+" (buffer-name)))))))
         ido-ignore-directories
         '("^auto/" "^CVS/" "^\\.")
         ido-ignore-files
-        '("\\.\\(aux\\|nav\\|out\\|log\\|snm\\|toc\\|vrb\\|dsp\\|dsw\\|sln\\|vcproj\\|vspscc\\|vssscc\\)$"
-          "^\\(CVS\\|TAGS\\|GPATH\\|GRTAGS\\|GSYMS\\|GTAGS\\)$"
-          "_region_" "^[.#]")
+        '("^[.#]"
+          "~$" "\\.\\(log\\|out\\)$"
+          "\\(TAGS\\|GPATH\\|GSYMS\\)")
         ido-work-directory-list-ignore-regexps
         `(,tramp-file-name-regexp))
   (setq ido-file-extensions-order
