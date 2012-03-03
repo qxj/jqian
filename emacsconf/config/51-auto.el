@@ -304,15 +304,6 @@ indent line."
         auto-insert-query 'function
         auto-insert 'other)
 
-  (defun my-copyright ()
-    (concat "Copyright " (substring (current-time-string) -4) " "
-            (if (getenv "ORGANIZATION")
-                (getenv "ORGANIZATION")
-              (concat user-full-name
-                      " <" user-mail-address ">"))))
-  (defun my-datetime ()
-    (format-time-string "%Y-%m-%d %H:%M:%S"))
-
   (define-auto-insert '("\\.h$" . "C/C++ header")
     '((let* ((modes '("c-mode" "c++-mode"))
              (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
@@ -344,7 +335,8 @@ indent line."
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (if (file-exists-p (concat stem ".h"))
          (file-name-nondirectory (concat stem ".h"))))
-      & ?\" | -10))
+      & ?\" ?\n | -10
+      _))
 
   (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
     '(nil
@@ -363,7 +355,7 @@ indent line."
               ((file-exists-p (concat stem ".hh"))
                (file-name-nondirectory (concat stem ".hh"))))
         )
-      & "\"" | -10 ?\n ?\n
+      & "\"\n" | -10
       _))
 
   (define-auto-insert '(python-mode . "Python script")
@@ -381,6 +373,18 @@ indent line."
       > "main()"
       ))
 
+  (define-auto-insert '(php-mode . "PHP script")
+    '(nil
+      "<?php" ?\n
+      "// @(#) " (setq v1 (file-name-nondirectory (buffer-file-name))) " -*- coding: utf-8 -*-" ?\n
+      "// Time-stamp: <>" ?\n
+      "// " (my-copyright) ?\n
+      "// Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+      "//" ?\n
+      ?\n _ ?\n ?\n
+      "?>"
+      ))
+
   (define-auto-insert '(sh-mode . "Shell script")
     '(nil
       "#!/bin/sh" ?\n
@@ -391,7 +395,96 @@ indent line."
       "#" ?\n ?\n
        _
       ))
-)
+
+  (define-auto-insert '(org-mode . "Org document")
+    '(nil
+      "#+TITLE: " (read-string "Title: ") ?\n
+      "#+AUTHOR: " (progn user-full-name) ?\n
+      "#+EMAIL: " (progn user-mail-address) ?\n
+      "#+DATE: " (format-time-string "%Y-%m-%d") ?\n
+      (let* ((modes '("org" "latex" "beamer"))
+             (selected (ido-completing-read "Which kind of document? : " modes nil nil nil nil (car modes))))
+        (if (string= selected "org")
+            ""
+          (concat "#+LATEX_HEADER: \\setmainfont{Big Caslon}\n"
+                  "#+LATEX_HEADER: \\setsansfont{Optima}\n"
+                  "#+LATEX_HEADER: \\setmonofont{American Typewriter}\n"
+                  "#+LATEX_HEADER: \\setCJKmainfont{Kai}\n"
+                  "#+LATEX_HEADER: \\setCJKsansfont{Hei}\n"
+                  "#+LATEX_HEADER: \\setCJKmonofont{STFangsong}\n"
+                  (if (string= selected "beamer")
+                    (concat "#+LATEX_CLASS_OPTIONS: [presentation]\n"
+                            "#+BEAMER_FRAME_LEVEL: "
+                            "#+BEAMER_HEADER_EXTRA: \\usetheme{"
+                            (let ((themes '("default"
+                                            "Berkeley"
+                                            "CambridgeUS"
+                                            "Frankfurt"
+                                            "PaloAlto"
+                                            "Montpellier"
+                                            "Pittsburgh"
+                                            "Rochester"
+                                            "boxes"
+                                            "Goettingen")))
+                              (ido-completing-read "Select a theme: " themes nil nil nil nil (car themes)))
+                            "}"
+                            "\\usecolortheme{"
+                            (let ((colors '("default"
+                                            "albatross"
+                                            "beaver"
+                                            "beetle"
+                                            "crane"
+                                            "dolphin"
+                                            "dove"
+                                            "fly"
+                                            "lily"
+                                            "orchid"
+                                            "rose"
+                                            "seagull"
+                                            "seahorse"
+                                            "sidebartab"
+                                            "structure"
+                                            "whale"
+                                            "wolverine"
+                                            "default")))
+                              (ido-completing-read "Select a color: " colors nil nil nil nil (car colors)))
+                            "}\n"
+                            "#+COLUMNS: %35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)\n"
+                            "#+OPTIONS: tags:nil\n"))) ) )
+      ?\n _ ?\n
+      "#+COMMENT: Local Variables:" ?\n
+      "#+COMMENT: mode: org" ?\n
+      "#+COMMENT: coding: utf-8" ?\n
+      "#+COMMENT: fill-column: 78" ?\n
+      "#+COMMENT: End:")
+    )
+  ;; helper functions
+  (defun my-copyright ()
+    (concat "Copyright " (substring (current-time-string) -4) " "
+            (or (getenv "ORGANIZATION")
+                (concat user-full-name
+                        " <" user-mail-address ">"))))
+  (defun my-datetime ()
+    (format-time-string "%Y-%m-%d %H:%M:%S"))
+
+  ;; from template-simple.el
+  (add-hook 'write-file-functions 'my-update-header)
+  (defun my-update-header ()
+    (interactive)
+    (when (and buffer-file-name
+               (not (string-match (regexp-opt (list my-temp-dir my-template-dir)) buffer-file-name)))
+      (save-excursion
+        (goto-char (point-min))
+        (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
+              (regexp "@(#)\\([^ \t\n]+\\)")
+              (fn (file-name-sans-versions (file-name-nondirectory buffer-file-name))))
+          (goto-char (point-min))
+          (while (search-forward-regexp regexp end t)
+            (and (not (string= (match-string 1) fn))
+                 (y-or-n-p (format "Update file header %s to %s? "
+                                   (match-string 1) fn))
+                 (replace-match fn nil t nil 1)))))))
+  )
 
 ;;; hippie
 (deh-section "hippie-expand"
