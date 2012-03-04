@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: wildcard
-# key: wl
+# name: $(wildcard match-string)
+# key: wc
 # --
-$(wildcard $0)
+$(wildcard ${1:%.o})

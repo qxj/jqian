@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: patsubst
+# name: $(patsubst pattern, replace, $(list))
 # key: ps
 # --
-$(patsubst ${1:from},${2:to},${3:src})
+$(patsubst ${1:%.c}, ${2:%.o}, ${3:\$(SOURCE)})

@@ -210,9 +210,9 @@ indent line."
         skeleton-pair-on-word nil)
 
   (setq skeleton-pair-alist
-        '((?( _ ?)) (?\))
-          (?[ _ ?]) (?\])
-          (?{ _ ?}) (?\})
+        '((?( _ ?))
+          (?[ _ ?])
+          (?{ _ ?})
           ;; (?` _ ?')
           (?\" _ "\"")))
 
@@ -309,10 +309,7 @@ indent line."
              (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
         selected)
       "/* -*- mode: " str " -*-" ?\n
-      " * @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
-      " * Time-stamp: <>" ?\n
-      " * " (my-copyright) ?\n
-      " * Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
+      (my-common-header " * ")
       " */" ?\n ?\n
       "#ifndef "
       (setq v2 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
@@ -327,11 +324,8 @@ indent line."
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
       "/* -*- mode: c -*-" ?\n
-       " * @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
-       " * Time-stamp: <>" ?\n
-       " * " (my-copyright) ?\n
-       " * Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
-       " */" ?\n ?\n
+      (my-common-header " * ")
+      " */" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (if (file-exists-p (concat stem ".h"))
@@ -342,11 +336,8 @@ indent line."
   (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
     '(nil
       "// -*- mode: c++ -*-" ?\n
-      "// @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
-      "// Time-stamp: <>" ?\n
-      "// " (my-copyright) ?\n
-      "// Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
-      "//" ?\n ?\n
+      (my-common-header "// ")
+      ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (cond ((file-exists-p (concat stem ".h"))
@@ -359,14 +350,19 @@ indent line."
       & "\"\n" | -10
       _))
 
+  ;; (define-auto-insert '(makefile-mode . "Makefile")
+  ;;   ["makefile.tpl"])
+
+  (define-auto-insert '(makefile-mode . "Makefile")
+    '(nil
+      (my-common-header "# ")
+      "\n\n" _))
+
   (define-auto-insert '(python-mode . "Python script")
     '(nil
       "#!/usr/bin/env python" ?\n
-      "# @(#) " (setq v1 (file-name-nondirectory (buffer-file-name))) " -*- coding: utf-8 -*-" ?\n
-      "# Time-stamp: <>" ?\n
-      "# " (my-copyright) ?\n
-      "# Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
-      "#" ?\n ?\n
+      (my-common-header "# ")
+      ?\n
       "import sys" ?\n ?\n
       "def main():" ?\n
       > _ ?\n ?\n
@@ -377,11 +373,7 @@ indent line."
   (define-auto-insert '(php-mode . "PHP script")
     '(nil
       "<?php" ?\n
-      "// @(#) " (setq v1 (file-name-nondirectory (buffer-file-name))) " -*- coding: utf-8 -*-" ?\n
-      "// Time-stamp: <>" ?\n
-      "// " (my-copyright) ?\n
-      "// Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
-      "//" ?\n
+      (my-common-header "// ")
       ?\n _ ?\n ?\n
       "?>"
       ))
@@ -389,12 +381,8 @@ indent line."
   (define-auto-insert '(sh-mode . "Shell script")
     '(nil
       "#!/bin/sh" ?\n
-      "# @(#) " (setq v1 (file-name-nondirectory (buffer-file-name))) " -*- coding: utf-8 -*-" ?\n
-      "# Time-stamp: <>" ?\n
-      "# " (my-copyright) ?\n
-      "# Version: $Id: " v1 ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $" ?\n
-      "#" ?\n ?\n
-       _
+      (my-common-header "# ")
+      ?\n _
       ))
 
   (define-auto-insert '(org-mode . "Org document")
@@ -460,6 +448,17 @@ indent line."
       "#+COMMENT: End:")
     )
   ;; helper functions
+  (defun my-common-header (comment-string &optional encoding)
+    (mapconcat (lambda (line) (concat comment-string line))
+               `(
+                 ,(concat "@(#) " (my-filename) (if encoding " -*- coding: utf-8 -*-"))
+                 "Time-stamp: <>"
+                 ,(my-copyright)
+                 ,(concat "Version: $Id: " (my-filename) ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $"))
+               "\n"))
+  (defun my-filename ()
+    (file-name-nondirectory (buffer-file-name)))
+
   (defun my-copyright ()
     (concat "Copyright " (substring (current-time-string) -4) " "
             (or (getenv "ORGANIZATION")
