@@ -398,8 +398,8 @@ indent line."
       ))
 
   (define-auto-insert '(org-mode . "Org document")
-    '(nil
-      "#+TITLE: " (read-string "Title: ") ?\n
+    '("Title: "
+      "#+TITLE: " str & ?\n | -9
       "#+AUTHOR: " (progn user-full-name) ?\n
       "#+EMAIL: " (progn user-mail-address) ?\n
       "#+DATE: " (format-time-string "%Y-%m-%d") ?\n
@@ -452,7 +452,7 @@ indent line."
                             "}\n"
                             "#+COLUMNS: %35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)\n"
                             "#+OPTIONS: tags:nil\n"))) ) )
-      ?\n _ ?\n
+      ?\n _ ?\n ?\n
       "#+COMMENT: Local Variables:" ?\n
       "#+COMMENT: mode: org" ?\n
       "#+COMMENT: coding: utf-8" ?\n
