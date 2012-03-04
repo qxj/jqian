@@ -609,36 +609,19 @@ mouse-3: Remove current window from display")
   ;;     (desktop-read)
   ;;   (error nil))
   (desktop-save-mode 1)
-  ;; for multiple desktops
-  ;; (require 'desktop-menu)
-  ;; (setq desktop-menu-directory my-temp-dir
-  ;;       desktop-menu-base-filename desktop-base-file-name
-  ;;       desktop-menu-list-file "emacs.desktops")
 
   ;;# persist desktop into file every 10 mins
   (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir)
 
-  (defun my-save-desktop (file)
-    (interactive
-     (list (let ((default-directory "~"))
-             (read-file-name "Save desktop: "))))
-    (let ((desktop-base-file-name (file-name-nondirectory file)))
-      (desktop-save (file-name-directory file))))
-  (defun my-load-desktop (file)
-    (interactive
-     (list (let ((default-directory "~"))
-             (read-file-name "Load desktop: "))))
-    (if (y-or-n-p "kill all buffer")
-        (mapc (lambda (buf)
-                (let ((name (buffer-name buf))
-                      (file (buffer-file-name buf)))
-                  (unless (or (and (string= (substring name 0 1) " ") (null file))
-                              (string-match "^\\*.*\\*" (buffer-name buf)))
-                    (kill-buffer buf))))
-              (buffer-list)))
-    (let ((desktop-base-file-name (file-name-nondirectory file)))
-      (desktop-read (file-name-directory file))))
-  )
+  ;; for multiple desktops
+  (deh-require 'desktop-menu
+    (setq desktop-menu-directory my-temp-dir
+          desktop-menu-base-filename desktop-base-file-name
+          desktop-menu-list-file "emacs.desktops"
+          desktop-menu-autosave 600     ; auto save every 10mins and when exit
+          desktop-menu-clear 'ask)
+    ;; customize some standard `desktop' variables
+    (setq desktop-load-locked-desktop t)))
 
 (deh-require-reserved 'session
   (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
@@ -646,22 +629,18 @@ mouse-3: Remove current window from display")
   (add-to-list 'session-globals-exclude 'org-mark-ring)
   (add-hook 'after-init-hook 'session-initialize))
 
-(deh-section-after "bm"
-
-  (deh-define-key bm-show-mode-map
-    ("n" . 'bm-show-next)
-    ("p" . 'bm-show-prev)
-    ("d" . 'bm-show-remove-bookmark))
-
-  (setq-default bm-buffer-persistence t)
-  (setq bm-repository-file
-        (expand-file-name "emacs.bm-repository" my-temp-dir))
+(deh-require 'bm
   (setq bm-cycle-all-buffers t
         bm-highlight-style
         (if (and window-system (> emacs-major-version 21))
             'bm-highlight-only-fringe
           'bm-highlight-only-line))
+
   ;; For persistent bookmarks
+  (setq-default bm-buffer-persistence t)
+  (setq bm-restore-repository-on-load t
+        bm-repository-file
+        (expand-file-name "emacs.bm-repository" my-temp-dir))
   (add-hook' after-init-hook 'bm-repository-load)
   (add-hook 'find-file-hooks 'bm-buffer-restore)
   (add-hook 'kill-buffer-hook 'bm-buffer-save)
@@ -678,52 +657,9 @@ mouse-3: Remove current window from display")
   (global-set-key [left-margin mouse-2] 'bm-toggle-mouse)
   (global-set-key [left-margin mouse-3] 'bm-next-mouse)
 
-  ;; remove bookmark in bm-show
-  (defun bm-show-remove-bookmark nil
-    "Remove the bookmark on current line in the `bm-show-buffer-name' buffer."
-    (interactive)
-    (let ((buffer-name (get-text-property (point) 'bm-buffer))
-          (bookmark (get-text-property (point) 'bm-bookmark)))
-      (if (null buffer-name)
-          (message "No bookmark at this line.")
-        (bm-bookmark-remove bookmark)
-        ;; TODO: refresh bookmark show
-        (when bm-electric-show (bm-show-quit-window))
-        )))
-
-  ;; hack bm.el
-  (defvar bm-previous-window-conf nil
-    "Window configuration before switching to buffer.")
-  (defun bm-show-goto-bookmark nil
-    "Goto the bookmark on current line in the `bm-show-buffer-name' buffer."
-    (interactive)
-    (let ((buffer-name (get-text-property (point) 'bm-buffer))
-          (bookmark (get-text-property (point) 'bm-bookmark)))
-      (if (null buffer-name)
-          (message "No bookmark at this line.")
-        (pop-to-buffer (get-buffer buffer-name) nil t) ; keep pop buffer in the same window
-        (bm-goto bookmark)
-        (when bm-electric-show
-          (bm-show-quit-window)
-          (set-window-configuration bm-previous-window-conf)
-          (setq bm-previous-window-conf nil)))))
-  (defun bm-show-all nil
-    "Show bookmarked lines in all buffers."
-    (interactive)
-    (let ((lines
-           (save-excursion
-             (mapconcat '(lambda (buffer)
-                           (set-buffer buffer)
-                           (bm-show-extract-bookmarks))
-                        (buffer-list) ""))))
-      (setq bm-previous-window-conf (current-window-configuration))
-      (bm-show-display-lines lines)))
-  (defun bm-show nil
-    "Show bookmarked lines in current buffer."
-    (interactive)
-    (setq bm-previous-window-conf (current-window-configuration))
-    (bm-show-display-lines (bm-show-extract-bookmarks)))
-  )
+  (deh-define-key bm-show-mode-map
+    ("n" . 'bm-show-next)
+    ("p" . 'bm-show-prev)))
 
 ;; recent-jump
 (deh-require 'recent-jump)
