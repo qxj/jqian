@@ -1,9 +1,6 @@
-### (>>>FILE<<<) ---
-## Time-stamp: <Julian Qian 2011-05-02 14:55:54>
-## Author: (>>>AUTHOR<<<)
-## Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
-## Keywords: (>>>1<<<)
-## X-URL: (>>>2<<<)
+#name: another makefile template
+#key: tpl.draft
+# --
 
 .SUFFIXES: .c .cpp
 .PHONY: check-syntax clean all
@@ -17,9 +14,9 @@ EDF=
 
 INCS=-I.
 LIBS=-L.
-SRCS=(>>>POINT<<<)
+SRCS=
 
-all:
+all: $0
 
 # flymake
 check-syntax:
@@ -40,5 +37,3 @@ check-syntax:
 
 clean:
 	-rm *.o
-
-### (>>>FILE<<<) ends here

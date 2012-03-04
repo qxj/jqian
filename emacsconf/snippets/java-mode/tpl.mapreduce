@@ -1,9 +1,6 @@
-/* @(#)(>>>FILE<<<)
- * Time-stamp: < 2011-10-24 09:57:43>
- * Copyright (>>>YEAR<<<) (>>>USER_NAME<<<)
- * Author: (>>>AUTHOR<<<)
- * Version: $Id: (>>>FILE<<<),v 0.0 (>>>VC_DATE<<<) (>>>LOGIN_NAME<<<) Exp $
- */
+#name: a simple m/r example
+#key: tpl
+# --
 
 package net.jqian;
 
@@ -18,34 +15,33 @@ import org.apache.hadoop.mapreduce.lib.output.*;
 import org.apache.hadoop.util.*;
 
 
-public class (>>>FILE_SANS<<<)  extends Configured implements Tool {
+public class ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`} extends Configured implements Tool {
 
-    public static class (>>>FILE_SANS<<<)Mapper extends Mapper <LongWritable, Text, ${MapOutKey}, ${MapOutValue}> {
+    public static class $1Mapper extends Mapper <LongWritable, Text, ${2:Text$$(yas/choose-value '("IntWritable" "Text"))}, ${3:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
 
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             // ...
-
+            $0
         }
     }
 
-    public static class (>>>FILE_SANS<<<)Reducer extends Reducer<${MapOutKey}, ${MapOutValue}, ${OutKey}, ${OutValue}> {
+    public static class $1Reducer extends Reducer<$2, $3, ${4:Text$$(yas/choose-value '("IntWritable" "Text"))}, ${5:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
 
-        public void reduce(${MapOutKey} key, Iterable <${MapOutValue}> values,
+        public void reduce($4 key, Iterable <$5> values,
                 Context context) throws IOException, InterruptedException {
-
+            // ...
         }
     }
 
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = getConf();
-        conf.set("mapred.job.name", " ");
+        conf.set("mapred.job.name", "${6:my m/r job}");
         conf.set("mapred.job.queue.name", "gdm");
-        conf.set("mapred.map.tasks", "5");
-        // conf.set("mapred.reduce.tasks", "200");
+        conf.set("mapred.reduce.tasks", "200");
 
         Job job = new Job(conf);
-        job.setJarByClass((>>>FILE_SANS<<<).class);
+        job.setJarByClass($1.class);
 
         Path inputPath = new Path(args[0]);
         Path outputPath = new Path(args[1]);
@@ -53,20 +49,20 @@ public class (>>>FILE_SANS<<<)  extends Configured implements Tool {
         FileInputFormat.setInputPaths(job, inputPath);
         FileOutputFormat.setOutputPath(job, outputPath);
 
-        job.setMapOutputKeyClass(${MapOutKey}.class);
-        job.setMapOutputValueClass(${MapOutValue}.class);
-        job.setOutputKeyClass(${OutKey}.class);
-        job.setOutputValueClass(${OutValue}.class);
+        job.setMapOutputKeyClass($2.class);
+        job.setMapOutputValueClass($3.class);
+        job.setOutputKeyClass($4.class);
+        job.setOutputValueClass($5.class);
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
-        job.setMapperClass((>>>FILE_SANS<<<)Mapper.class);
-        job.setReducerClass((>>>FILE_SANS<<<)Reducer.class);
+        job.setMapperClass($1Mapper.class);
+        job.setReducerClass($1Reducer.class);
 
         return job.waitForCompletion(true) ? 0 : 1;
     }
 
     public static void main(String[] args) throws Exception {
-        int exitCode = ToolRunner.run(new (>>>FILE_SANS<<<)(), args);
+        int exitCode = ToolRunner.run(new $1(), args);
         System.exit(exitCode);
     }
 }
