@@ -591,9 +591,9 @@ mouse-3: Remove current window from display")
 
   ;;# not to save
   (setq desktop-globals-to-save
-        (delq 'tags-table-list desktop-globals-to-save))
-  (setq desktop-globals-to-save
-        (delq 'file-name-history desktop-globals-to-save))
+        (delq nil (mapcar (lambda (x) (if (memq x '(tags-table-list
+                                                    file-name-history)) nil x))
+                          desktop-globals-to-save)))
   (setq desktop-buffers-not-to-save
         (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
   (dolist (mode '(dired-mode Info-mode info-lookup-mode fundamental-mode))
@@ -613,15 +613,22 @@ mouse-3: Remove current window from display")
   ;;# persist desktop into file every 10 mins
   (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir)
 
-  ;; for multiple desktops
+  ;; desktop-menu.el can store many desktops, it works besides
+  ;; desktop.el and its settings don't cofflict with desktop.el, so
+  ;; please don't mix up `desktop-base-file-name' and
+  ;; `desktop-menu-base-filename'.
+  ;;
   (deh-require 'desktop-menu
     (setq desktop-menu-directory my-temp-dir
-          desktop-menu-base-filename desktop-base-file-name
+          desktop-menu-base-filename (concat "emacs.desktops-" (system-name))
           desktop-menu-list-file "emacs.desktops"
           desktop-menu-autosave 600     ; auto save every 10mins and when exit
           desktop-menu-clear 'ask)
     ;; customize some standard `desktop' variables
-    (setq desktop-load-locked-desktop t)))
+    (setq desktop-load-locked-desktop t)
+    ;; TODO: add hooks for `desktop-menu-read' and `desktop-menu-save'
+    ;; to store and restore bm repository
+    ))
 
 (deh-require-reserved 'session
   (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
@@ -631,16 +638,18 @@ mouse-3: Remove current window from display")
 
 (deh-require 'bm
   (setq bm-cycle-all-buffers t
-        bm-highlight-style
-        (if (and window-system (> emacs-major-version 21))
-            'bm-highlight-only-fringe
-          'bm-highlight-only-line))
-
-  ;; For persistent bookmarks
+        bm-highlight-style 'bm-highlight-only-fringe
+        bm-restore-repository-on-load t)
   (setq-default bm-buffer-persistence t)
-  (setq bm-restore-repository-on-load t
-        bm-repository-file
+  ;; suite for desktop-menu.el
+  ;; (if (fboundp 'desktop-menu)
+  ;;     (setq bm-repository-file
+  ;;           (concat (cdr desktop-menu--current-desktop) ".bm-repo"))
+  ;;   (setq bm-repository-file
+  ;;         (expand-file-name "emacs.bm-repository" my-temp-dir)))
+  (setq bm-repository-file
         (expand-file-name "emacs.bm-repository" my-temp-dir))
+  ;; for persistent bookmarks
   (add-hook' after-init-hook 'bm-repository-load)
   (add-hook 'find-file-hooks 'bm-buffer-restore)
   (add-hook 'kill-buffer-hook 'bm-buffer-save)
