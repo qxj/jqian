@@ -864,7 +864,11 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook 'js2-mode-hook
     (setq forward-sexp-function nil)))
 
-(deh-section "markdown")
+(deh-section-after "markdown"
+  ;; override markdown's key binding
+  (deh-define-key markdown-mode-map
+    ((kbd "C-M-f") . 'forward-sexp)
+    ((kbd "C-M-b") . 'backward-sexp)))
 
 (deh-section-reserved "php"
   (deh-try-require 'php-doc

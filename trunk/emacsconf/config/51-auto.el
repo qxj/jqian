@@ -305,7 +305,7 @@ indent line."
         auto-insert 'other)
 
   (define-auto-insert '("\\.h$" . "C/C++ header")
-    '((let* ((modes '("c-mode" "c++-mode"))
+    '((let* ((modes '("c" "c++"))
              (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
         selected)
       "/* -*- mode: " str " -*-" ?\n
@@ -321,11 +321,12 @@ indent line."
       ?\n
       "#define " v2 "\n\n"
       _
-      "\n\n#endif"))
+      "\n\n#endif"
+      '(progn (set-auto-mode))))
 
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
-      "/* -*- mode: c-mode -*-" ?\n
+      "/* -*- mode: c -*-" ?\n
        " * @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
        " * Time-stamp: <>" ?\n
        " * " (my-copyright) ?\n
@@ -340,7 +341,7 @@ indent line."
 
   (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
     '(nil
-      "// -*- mode: c++-mode -*-" ?\n
+      "// -*- mode: c++ -*-" ?\n
       "// @(#)" (setq v1 (file-name-nondirectory (buffer-file-name))) ?\n
       "// Time-stamp: <>" ?\n
       "// " (my-copyright) ?\n

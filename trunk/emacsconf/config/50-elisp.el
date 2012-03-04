@@ -351,6 +351,8 @@ mouse-3: Remove current window from display")
                (and
                 ;; exclude *scratch*, *info*
                 (not (member-ignore-case (buffer-name) '("*scratch*" "*info*")))
+                ;; exclude *tumblr ...*
+                (not (string-match "^\\*tumblr.+" (buffer-name)))
                 (string-match "^\\*.+" (buffer-name)))))))
         ido-ignore-directories
         '("^auto/" "^CVS/" "^\\.")
