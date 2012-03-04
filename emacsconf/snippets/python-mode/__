@@ -1,3 +1,0 @@
-#name : __...__
-# --
-__${init$$(yas/choose-value '("exit" "enter" "del"))}__

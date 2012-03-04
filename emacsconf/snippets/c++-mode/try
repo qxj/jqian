@@ -1,8 +1,0 @@
-#name: try {...} catch(exception& e){...}
-#key: try
-# --
-try {
-$1
-} catch (${2:std::exception& e}) {
-$3
-}

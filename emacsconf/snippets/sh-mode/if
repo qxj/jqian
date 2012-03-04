@@ -1,9 +1,0 @@
-# name: if [[ .. ]]; then .. fi
-# key: if
-# --
-if [[ $1 ]];
-then
-    $2${3:
-else
-    $4}
-fi
