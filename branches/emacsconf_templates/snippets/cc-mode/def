@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name : #define A B
+# --
+#define $1 $2

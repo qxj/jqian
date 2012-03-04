@@ -1,0 +1,41 @@
+-*- org -*-
+
+* Input special charactors
+C-x 8 RET, C-x 8 C-h
+
+* Removing blank lines in a buffer
+M-x flush-lines RET ^$ RET
+
+* Join two lines
+M-^
+
+* Input 100 times 1
+C-u 100 C-u 1
+
+* Save and restore window configuration
+C-x r w, C-x r j
+
+* Repeat last command
+C-x z
+
+* Print keystrokes you entered
+M-x view-lossage
+
+* View command you entered
+M-x command-history
+
+* Run a shell command and insert result into current buffer
+C-u M-!
+
+* Send a region to a shell command
+M-|
+
+* Local time of sunrise and sunset for today
+M-x sunrise-sunset
+
+* How long did you run this Emacs
+M-x emacs-uptime
+
+* org-mode 7.0+ support easy-template
+ex: input <s then press TAB, it will be expand automatically.
+
