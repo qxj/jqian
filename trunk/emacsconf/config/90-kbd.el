@@ -96,6 +96,7 @@
   ("\C-b" . 'browse-url-at-point)
   ;; ("\C-b" . 'browse-url-of-buffer)
   ("\C-t" . 'tv-view-history)
+  ("\t" . 'tempo-complete-tag)
   )
 
 (deh-define-key ctl-cc-map
@@ -105,6 +106,7 @@
   ("f" . 'find-library)
   ("h" . 'highlight-symbol-at-point)
   ("i" . 'ispell-word)
+  ("m" . 'desktop-menu)
   ("n" . 'my-clone-buffer)
   ("o" . 'recentf-open-files-compl)
   ("r" . 'buffer-action-run)
