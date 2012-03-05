@@ -91,6 +91,12 @@
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
+
+(dolist (ext '(".zip" ".tgz" ".gz" ".tar" ".bz2"
+               ".rpm" ".deb"
+               ".out" ".exe" ".so"))
+  (add-to-list 'completion-ignored-extensions ext))
+
 ;; use clipboard
 (setq x-select-enable-clipboard t)
 

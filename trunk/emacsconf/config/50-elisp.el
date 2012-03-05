@@ -327,6 +327,7 @@ mouse-3: Remove current window from display")
         ido-use-faces t
         ;; ido-use-filename-at-point 'guess
         ;; ido-use-url-at-point t
+        ido-ignore-extensions t         ; refer to `completion-ignored-extensions'
         ido-auto-merge-work-directories-length -1
         ido-max-work-file-list 20)
 
@@ -334,15 +335,8 @@ mouse-3: Remove current window from display")
         (expand-file-name "emacs.ido-last" my-temp-dir)
         org-id-locations-file
         (expand-file-name "emacs.ido-locations" my-temp-dir))
-  (defun ido-ignore-c-mode (name)
-   "Ignore all c mode buffers -- example function for ido."
-   (with-current-buffer name
-     (derived-mode-p 'c-mode)))
   (setq ido-ignore-buffers
         '("^ " "_region_" "TAGS"
-          ;; (lambda (buf) (and (not (member-ignore-case (buffer-name buf) '("*scratch*" "*info*")))
-          ;;                    (string-match "^\\*.+" (buffer-name buf))))
-          ;; ido-ignore-c-mode
           (lambda (buf)
             (with-current-buffer buf
               (or
@@ -363,7 +357,7 @@ mouse-3: Remove current window from display")
         ido-work-directory-list-ignore-regexps
         `(,tramp-file-name-regexp))
   (setq ido-file-extensions-order
-        '(".h" ".c" ".cpp" ".e." ".txt" ".org"))
+        '(".h" ".c" ".cpp" ".py" ".sh" ".el" ".txt" ".org" ".md"))
 
   (add-hook 'ido-setup-hook 'ido-my-keys)
   (defun ido-my-keys ()
