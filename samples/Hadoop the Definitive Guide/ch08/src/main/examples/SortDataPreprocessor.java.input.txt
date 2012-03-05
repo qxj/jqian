@@ -1,1 +1,0 @@
-hadoop jar job.jar SortDataPreprocessor input/ncdc/all input/ncdc/all-seq
