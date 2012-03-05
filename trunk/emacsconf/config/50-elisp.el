@@ -131,11 +131,14 @@ mouse-3: Remove current window from display")
     ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
     (" "    . 'dired-count-directory-size)
     ("E"    . 'dired-w3m-visit)
+    ;; ("!"    . 'dired-do-shell-command)
     ("z"    . 'dired-compress-directory)
     ("s"    . 'one-key-menu-dired-sort)
     ("/"    . 'one-key-menu-dired-filter))
 
   ;;# hooks
+  (deh-add-hook 'dired-mode-hook
+    (dired-omit-mode t))
   (deh-add-hook 'dired-load-hook
     (load "dired-x")
     ;; Make the execuatable file with different color
@@ -250,40 +253,13 @@ mouse-3: Remove current window from display")
      t)))
 
 (deh-section-after "dired-x"
-  (deh-add-hook 'dired-mode-hook
-    (dired-omit-mode t))
-
   (dolist (ext '(".bak"))
     (add-to-list 'dired-omit-extensions ext))
 
   (setq dired-omit-files
         (concat "^[.#]" "\\|"
-                "^" (regexp-opt '(".." "." "TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$"))
+                "^" (regexp-opt '("TAGS" "GPATH" "GRTAGS" "GSYMS" "GTAGS") t) "$"))
 
-  (setq my-dired-guess-command-alist
-        '(("acroread" "pdf")
-          ("evince" "pdf")
-          ;; ("xpdf" "pdf")
-          ("xdvi" "dvi")
-          ("dvipdf" "dvi")
-          ("zxpdf" "pdf.gz")
-          ("ps2pdf" "ps" "eps")
-          ("gv" "ps" "eps")
-          ("unrar x" "rar")
-          ("kchmviewer" "chm")
-          ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
-          ("mplayer -playlist" "list")
-          ("display" "gif" "jpeg" "jpg" "tif" "png" )
-          ("eog" "gif" "jpeg" "jpg" "tif" "png")
-          ("docview.pl" "doc")
-          ("ooffice -writer" "ods" "doc")
-          ("ooffice -calc"  "xls")
-          ("ooffice -impress" "odt" "ppt")
-          ("gnumeric" "xls")
-          ("7z x" "7z")
-          ("djview" "djvu")
-          ("perl" "pl")
-          ("firefox" "xml" "html" "htm" "mht")))
   ;; Based upon the name of a file, Dired tries to guess what shell
   ;; command you might want to apply to it. For example, if you have
   ;; point on a file named foo.tar and you press !, Dired will guess
@@ -294,24 +270,24 @@ mouse-3: Remove current window from display")
                  (list (concat "\\." (regexp-opt (cdr file) t) "$")
                        (car file))))
   ;;# Dired Association
-  (if (eq system-type 'windows-nt)
-      (progn
-        (defun dired-custom-execute-file (&optional arg)
-          (interactive "P")
-          (mapcar #'(lambda (file)
-                      (w32-shell-execute "open" (convert-standard-filename file)))
-                  (dired-get-marked-files nil arg))))
-    ;; Redefine of this function
-    (defun dired-run-shell-command (command)
-      (let ((handler
-             (find-file-name-handler (directory-file-name default-directory)
-                                     'shell-command)))
-        (if handler
-            (apply handler 'shell-command (list command))
-          (start-process-shell-command "dired-run" nil command)))
-      ;; Return nil for sake of nconc in dired-bunch-files.
-      nil))
-  )
+  (when (eq system-type 'windows-nt)
+    (defun dired-custom-execute-file (&optional arg)
+      (interactive "P")
+      (mapcar #'(lambda (file)
+                  (w32-shell-execute "open" (convert-standard-filename file)))
+              (dired-get-marked-files nil arg))))
+
+  ;; Redefine of this function
+  (defun dired-run-shell-command (command)
+    "Replace `shell-command' to `start-process-shell-command' to run command asynchronously. Originally defined in dired-aux.el"
+    (let ((handler
+           (find-file-name-handler (directory-file-name default-directory)
+                                   'shell-command)))
+      (if handler
+          (apply handler 'shell-command (list command))
+        (start-process-shell-command "dired-run" nil command)))
+    ;; Return nil for sake of nconc in dired-bunch-files.
+    nil))
 
 (deh-require 'ido
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
@@ -432,6 +408,14 @@ mouse-3: Remove current window from display")
           "~/temp/"
           "~/bin/"
           "~/")))
+
+(deh-require 'smex
+  (setq smex-save-file (expand-file-name ".smex-items" my-config-dir)
+        smex-history-length 10)
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "C-c M-X") 'smex-major-mode-commands)
+  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command))
 
 (deh-section-after "ibuffer"
   (setq ibuffer-old-time 24

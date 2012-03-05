@@ -977,7 +977,7 @@ If the flag is set, only complete with local files."
 
 (deh-section "slime"
   ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
-  (setq common-lisp-hyperspec-root "/home/jqian/src/HyperSpec/")
+  (setq common-lisp-hyperspec-root (expand-file-name "~/src/HyperSpec/"))
   )
 
 (deh-section-path "evernote"
