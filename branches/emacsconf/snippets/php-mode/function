@@ -1,0 +1,7 @@
+#name: function(..){..}
+#key: func
+#key: function
+# --
+function $1($2){
+    $0
+}

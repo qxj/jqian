@@ -1,0 +1,10 @@
+#name: expect script
+# --
+expect -c "set timeout -1
+spawn ${1:ssh}
+expect {
+    "(yes/no)?" {send "yes\r"; exp_continue}
+    "password:" {send "${2:password}\r"}
+}
+interactive
+"$0

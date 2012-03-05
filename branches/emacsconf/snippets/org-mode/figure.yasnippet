@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: #+CAPTION: figure $+LABEL: fig ...
+# key: fig
+# key: figure
+# --
+#+CAPTION: ${1:figure sample}
+#+LABEL: ${2:fig}${3:
+#+ATTR_LaTeX: width=${4:9cm$$(yas/choose-value '("9cm" "8cm"))},angle=${5:0}}
+[[$6]]

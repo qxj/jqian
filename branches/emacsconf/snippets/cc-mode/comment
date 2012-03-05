@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: /* ** comments ** */
+# key: comment
+# --
+/* ${1:$(make-string (+ 8 (string-width text)) ?\*)} */
+/* **  ${1:comments}  ** */
+/* ${1:$(make-string (+ 8 (string-width text)) ?\*)} */
+$0
