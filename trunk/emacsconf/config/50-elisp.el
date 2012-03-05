@@ -410,7 +410,7 @@ mouse-3: Remove current window from display")
           "~/")))
 
 (deh-require 'smex
-  (setq smex-save-file (expand-file-name ".smex-items" my-config-dir)
+  (setq smex-save-file (expand-file-name "emacs.smex-items" my-temp-dir)
         smex-history-length 10)
   (smex-initialize)
   (global-set-key (kbd "M-x") 'smex)
