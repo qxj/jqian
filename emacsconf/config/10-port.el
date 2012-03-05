@@ -93,12 +93,39 @@
   )
 
 (deh-section "window-system"
-  (when (eq window-system 'x)
-    (setq x-select-enable-clipboard t)
-    ;; fix issue that ibus input method issue cannot be started in emacs
-    ;; firstly, $ sudo apt-get install ibus-el
-    (deh-require-maybe 'ibus
-      (add-hook 'after-init-hook 'ibus-mode-on)) )
+  (cond ((eq window-system 'x)
+         (setq x-select-enable-clipboard t)
+         ;; fix issue that ibus input method issue cannot be started in emacs
+         ;; firstly, $ sudo apt-get install ibus-el
+         (deh-require-maybe 'ibus
+           (add-hook 'after-init-hook 'ibus-mode-on))
+
+         (setq my-dired-guess-command-alist
+               '(("acroread" "pdf")
+                 ("evince" "pdf")
+                 ;; ("xpdf" "pdf")
+                 ("xdvi" "dvi")
+                 ("dvipdf" "dvi")
+                 ("zxpdf" "pdf.gz")
+                 ("ps2pdf" "ps" "eps")
+                 ("gv" "ps" "eps")
+                 ("unrar x" "rar")
+                 ("kchmviewer" "chm")
+                 ("mplayer -stop-xscreensaver" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv")
+                 ("mplayer -playlist" "list")
+                 ("display" "gif" "jpeg" "jpg" "tif" "png" )
+                 ("eog" "gif" "jpeg" "jpg" "tif" "png")
+                 ("docview.pl" "doc")
+                 ("ooffice -writer" "ods" "doc")
+                 ("ooffice -calc"  "xls")
+                 ("ooffice -impress" "odt" "ppt")
+                 ("gnumeric" "xls")
+                 ("7z x" "7z")
+                 ("djview" "djvu")
+                 ("perl" "pl")
+                 ("firefox" "xml" "html" "htm" "mht"))))
+        (t
+         (setq my-dired-guess-command-alist nil)))
 
   ;; If terminal and X is sharing the same emacs server, color-theme
   ;; will affect terminal display. Below function will resolve this
