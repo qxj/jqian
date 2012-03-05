@@ -7,6 +7,8 @@
 
 ;;; autoload
 (deh-section "autoloads"
+  ;; dired-x
+  (autoload 'dired-omit-mode "dired-x" "lazy loading dired-x.el" t)
   ;; c++ member function
   (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
   (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
