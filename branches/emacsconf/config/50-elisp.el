@@ -604,8 +604,20 @@ mouse-3: Remove current window from display")
           desktop-menu-clear 'ask)
     ;; customize some standard `desktop' variables
     (setq desktop-load-locked-desktop t)
-    ;; TODO: add hooks for `desktop-menu-read' and `desktop-menu-save'
-    ;; to store and restore bm repository
+
+    ;;# save individual bm repository with different desktops
+    (eval-after-load "bm"
+      (progn
+        (defun bm-repository-file-of-desktop-menu ()
+          (let ((current-desktop (cdr desktop-menu--current-desktop)))
+            (if current-desktop
+                (setq bm-repository-file
+                      (concat current-desktop ".bm-repo")))))
+        (add-hook 'desktop-after-read-hook (lambda nil (if (bm-repository-file-of-desktop-menu)
+                                                           (bm-repository-load))))
+        (add-hook 'desktop-save-hook (lambda nil (when (bm-repository-file-of-desktop-menu)
+                                                   (bm-buffer-save-all)
+                                                   (bm-repository-save))))))
     ))
 
 (deh-require-reserved 'session
@@ -619,26 +631,22 @@ mouse-3: Remove current window from display")
         bm-highlight-style 'bm-highlight-only-fringe
         bm-restore-repository-on-load t)
   (setq-default bm-buffer-persistence t)
-  ;; suite for desktop-menu.el
-  ;; (if (fboundp 'desktop-menu)
-  ;;     (setq bm-repository-file
-  ;;           (concat (cdr desktop-menu--current-desktop) ".bm-repo"))
-  ;;   (setq bm-repository-file
-  ;;         (expand-file-name "emacs.bm-repository" my-temp-dir)))
+
   (setq bm-repository-file
         (expand-file-name "emacs.bm-repository" my-temp-dir))
-  ;; for persistent bookmarks
-  (add-hook' after-init-hook 'bm-repository-load)
+
+  ;; buffer setting
   (add-hook 'find-file-hooks 'bm-buffer-restore)
+  (add-hook 'after-revert-hook 'bm-buffer-restore)
   (add-hook 'kill-buffer-hook 'bm-buffer-save)
+  (add-hook 'after-save-hook 'bm-buffer-save)
+  (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
+
+  ;; for persistent bookmarks
+  (add-hook 'after-init-hook 'bm-repository-load)
   (add-hook 'kill-emacs-hook '(lambda nil
                                 (bm-buffer-save-all)
                                 (bm-repository-save)))
-  ;; Sync bookmarks
-  (add-hook 'after-save-hook 'bm-buffer-save)
-  (add-hook 'after-revert-hook 'bm-buffer-restore)
-  ;; make sure bookmarks is saved before check-in (and revert-buffer)
-  (add-hook 'vc-before-checkin-hook 'bm-buffer-save)
 
   ;; mouse setting
   (global-set-key [left-margin mouse-2] 'bm-toggle-mouse)
