@@ -377,9 +377,3 @@ Using a template for inserting some text consists of:
        (setq list-buffers-directory default-directory)
        (rename-buffer  (concat "*shell: " default-directory "*") t))))
 ;;}}}
-
-(defun my-toggle-mutt ()
-  (interactive)
-  (if (string-match "*mutt*" (buffer-name))
-      (bury-buffer)
-    (run-in-ansi-term "mutt" t)))

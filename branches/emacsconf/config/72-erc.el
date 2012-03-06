@@ -369,19 +369,6 @@ If the buffer is currently not visible, makes it sticky."
   (let ((inhibit-read-only t))
     ad-do-it))
 
-(defun my-toggle-erc ()
-  "Switch to a erc buffer or return to the previous buffer."
-  (interactive)
-  (if (derived-mode-p 'erc-mode)
-      (while (derived-mode-p 'erc-mode)
-        (bury-buffer))
-    (let ((list (buffer-list)))
-      (while list
-        (if (with-current-buffer (car list)
-              (derived-mode-p 'erc-mode))
-            (progn
-              (switch-to-buffer (car list))
-              (setq list nil))
-          (setq list (cdr list))))
-      (unless (derived-mode-p 'erc-mode)
-        (call-interactively 'erc)))))
+(define-mode-toggle "erc" erc
+  (derived-mode-p 'erc-mode))
+

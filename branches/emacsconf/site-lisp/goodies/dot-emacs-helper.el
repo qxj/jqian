@@ -1,14 +1,14 @@
 ;;; dot-emacs-helper.el --- Some helper functions for .emacs
 
-;; Copyright 2007 Ye Wenbin
+;; Copyright 2007, 2012 Ye Wenbin
 ;;
 ;; Author: wenbinye@gmail.com
-;; Update: Nov 3, 2010 by Julian Qian <junist@gmail.com>
-;; Version: 0.02
+;; Maintainer: Julian Qian <junist@gmail.com>
+;; Version: 0.02a
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful,
@@ -218,7 +218,8 @@ Example:
           (find-file (cdr section))
           (goto-char (point-min))
           (setq done t)
-          (re-search-forward (deh-regexp (car section))))
+          (re-search-forward (deh-regexp (car section)))
+          (recenter-top-bottom 0))
       (if (and deh-custom-file
                (file-exists-p deh-custom-file))
           (progn

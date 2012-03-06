@@ -324,23 +324,10 @@
 ;;
 ;; (setq gnus-use-cache 'passive)
 
-(defun my-check-gnus-buffer (buffer)
-  (or (string-match "^*Article*" (buffer-name buffer))
-      (string-match "^*Summary" (buffer-name buffer))
-      (string-match "^*Group*" (buffer-name buffer))))
-
-(defun my-toggle-gnus ()
-  (interactive)
-  (if (my-check-gnus-buffer (current-buffer))
-      (bury-buffer)
-    (let ((list (buffer-list)))
-      (while list
-        (if (my-check-gnus-buffer (car list))
-            (progn
-              (switch-to-buffer (car list))
-              (setq list nil))
-          (setq list (cdr list))))
-      (unless (my-check-gnus-buffer (current-buffer))
-        (call-interactively 'gnus)))))
+(define-mode-toggle "gnus" gnus
+  (let ((buffer (current-buffer)))
+    (or (string-match "^*Article*" (buffer-name buffer))
+        (string-match "^*Summary" (buffer-name buffer))
+        (string-match "^*Group*" (buffer-name buffer)))))
 
 ;; (gnus-compile)

@@ -202,7 +202,6 @@
        (("e" . "Erc") . my-toggle-erc)
        (("g" . "Gdb") . my-toggle-gdb)
        (("i" . "Info") . my-toggle-info)
-       (("m" . "Mutt") . my-toggle-mutt)
        (("s" . "SpeedBar") . my-toggle-sr-speedbar)
        (("S" . "Slime") . my-toggle-slime)
        (("t" . "Multi-Term") . my-toggle-multi-term)
