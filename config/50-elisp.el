@@ -574,7 +574,7 @@ mouse-3: Remove current window from display")
                           desktop-globals-to-save)))
   (setq desktop-buffers-not-to-save
         (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
-  (dolist (mode '(dired-mode Info-mode info-lookup-mode fundamental-mode))
+  (dolist (mode '(dired-mode info-lookup-mode fundamental-mode))
     (add-to-list 'desktop-modes-not-to-save mode))
 
   ;;# to save
@@ -848,29 +848,12 @@ mouse-3: Remove current window from display")
     (interactive)
     (let ((deactivate-mark nil)
           (url (or (w3m-anchor) (w3m-image))))
-      (if url
-          (browse-url url)
+      (if url (browse-url url)
         (w3m-message "Invalid url."))))
-  (defun my-toggle-w3m ()
-    "Switch to a w3m buffer or return to the previous buffer."
-    (interactive)
-    (if (derived-mode-p 'w3m-mode)
-        ;; Currently in a w3m buffer
-        ;; Bury buffers until you reach a non-w3m one
-        (while (derived-mode-p 'w3m-mode)
-          (bury-buffer))
-      ;; Not in w3m
-      ;; Find the first w3m buffer
-      (let ((list (buffer-list)))
-        (while list
-          (if (with-current-buffer (car list)
-                (derived-mode-p 'w3m-mode))
-              (progn
-                (switch-to-buffer (car list))
-                (setq list nil))
-            (setq list (cdr list))))
-        (unless (derived-mode-p 'w3m-mode)
-          (call-interactively 'w3m))))))
+
+  (define-mode-toggle "w3m" w3m
+    (derived-mode-p 'w3m-mode))
+  )
 
 ;;; Edit
 (deh-section "occur"
@@ -1079,22 +1062,18 @@ mouse-3: Remove current window from display")
 
 (deh-section "shell"
   (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
-  (defun wcy-shell-mode-kill-buffer-on-exit (process state)
-    "Auto save command history and kill buffers when exit ibuffer."
-    (shell-write-history-on-exit process state)
-    (kill-buffer (process-buffer process)))
-  (defun ywb-shell-mode-hook ()
-    (rename-buffer  (concat "*shell: " default-directory "*") t)
-    (set-process-sentinel (get-buffer-process (current-buffer))
-                          #'wcy-shell-mode-kill-buffer-on-exit)
 
+  (deh-add-hook 'shell-mode-hook
+    (rename-buffer (concat "*shell: " default-directory "*") t)
     (ansi-color-for-comint-mode-on)
-    (setq-default
-     comint-dynamic-complete-functions
-     (let ((list (default-value 'comint-dynamic-complete-functions)))
-       (add-to-list 'list 'shell-dynamic-complete-command t)))
-    )
-  (add-hook 'shell-mode-hook 'ywb-shell-mode-hook)
+    (setq-default comint-dynamic-complete-functions
+                  (let ((list (default-value 'comint-dynamic-complete-functions)))
+                    (add-to-list 'list 'shell-dynamic-complete-command t)))
+    ;;# Auto save command history and kill buffers when exit ibuffer.
+    (set-process-sentinel (get-buffer-process (current-buffer))
+                          (lambda (process state)
+                            (shell-write-history-on-exit process state)
+                            (kill-buffer (process-buffer process)))))
 
   ;; shell-completion
   (deh-try-require 'shell-completion
@@ -1157,20 +1136,6 @@ mouse-3: Remove current window from display")
 
 ;;; Navigate buffer
 (deh-section "speedbar"
-  ;;# speedbar in one frame
-  (require 'sr-speedbar)
-  (defun my-toggle-sr-speedbar ()
-    "Toggle sr speedbar window."
-    (interactive)
-    (sr-speedbar-toggle) (sr-speedbar-select-window))
-  ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
-
-  (deh-define-key speedbar-key-map
-    ("j" . 'speedbar-next)
-    ("k" . 'speedbar-prev)
-    ("\M-u" . 'speedbar-up-directory))
-  (deh-define-key speedbar-file-key-map
-    ((kbd "RET") . 'speedbar-toggle-line-expansion)) ; SPC
 
   (setq speedbar-directory-unshown-regexp
         "^\\(CVS\\|RCS\\|SCCS\\|\\.bak\\|\\..*\\)\\'")
@@ -1187,10 +1152,26 @@ mouse-3: Remove current window from display")
   (add-to-list 'speedbar-fetch-etags-parse-list
                '("\\.php" . speedbar-parse-c-or-c++tag))
 
-  (setq sr-speedbar-skip-other-window-p t
-        ;; sr-speedbar-delete-windows t
-        sr-speedbar-width-x 22
-        sr-speedbar-max-width 30)
+  (deh-define-key speedbar-key-map
+    ("j" . 'speedbar-next)
+    ("k" . 'speedbar-prev)
+    ("\M-u" . 'speedbar-up-directory))
+  (deh-define-key speedbar-file-key-map
+    ((kbd "RET") . 'speedbar-toggle-line-expansion)) ; SPC
+
+  ;;# speedbar in one frame
+  (deh-require 'sr-speedbar
+    (setq sr-speedbar-skip-other-window-p t
+          ;; sr-speedbar-delete-windows t
+          sr-speedbar-width-x 22
+          sr-speedbar-max-width 30)
+
+    (defun my-toggle-sr-speedbar ()
+     "Toggle sr speedbar window."
+     (interactive)
+     (sr-speedbar-toggle) (sr-speedbar-select-window))
+   ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
+    )
 
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit))))
