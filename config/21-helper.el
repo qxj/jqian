@@ -129,29 +129,6 @@ of starting a new instance."
     (setq mode-line-modes my-default-mode-line-modes))
   (force-mode-line-update))
 
-(defmacro define-mode-toggle (name mode run &optional switch)
-  "Define a function to toggle buffer visible by its mode."
-  (declare (debug t) (indent 3))
-  `(defun ,(intern (format "my-toggle-%s" name)) ()
-     ,(format "Toggle %s mode visible" name)
-     (interactive)
-     (if (derived-mode-p ',mode)
-         (while (derived-mode-p ',mode)
-           (bury-buffer))
-       (let ((list (buffer-list)))
-         (while list
-           (if (with-current-buffer (car list)
-                 (derived-mode-p ',mode))
-               (progn
-                 ,(if (null ',switch)
-                      `(switch-to-buffer (car list))
-                    ;; ,@switch
-                    `(funcall ',switch))
-                 (setq list nil))
-             (setq list (cdr list))))
-         (unless (derived-mode-p ',mode)
-           (call-interactively ',run))))))
-
 (defmacro define-mode-toggle (name cmd cond &optional restore)
   "Define a function to toggle buffer visible by its mode.
 
