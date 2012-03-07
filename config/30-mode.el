@@ -798,8 +798,8 @@ Use CREATE-TEMP-F for creating temp copy."
       (indent-for-tab-command))))
 
 (deh-section-if "protobuf"
-  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
-  (executable-find "protoc"))
+  (executable-find "protoc")
+  (autoload 'protobuf-mode "protobuf-mode" "Google protobuf mode." t))
 
 ;;; java
 (deh-section "java"
