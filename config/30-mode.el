@@ -7,6 +7,9 @@
 
 ;;; autoload
 (deh-section "autoloads"
+  ;; buffer action
+  (autoload 'buffer-action-compile "buffer-action" "Compile current buffer" t)
+  (autoload 'buffer-action-run "buffer-action" "Run exec of current buffer" t)
   ;; protobuf mode
   (autoload 'protobuf-mode "protobuf-mode" "Google protobuf mode." t)
   ;; loading dired-x.el

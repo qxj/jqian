@@ -301,53 +301,8 @@ the directories in the INCLUDE environment variable."
 
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
-(deh-section "buffer-action"
-  (autoload 'buffer-action-compile "buffer-action")
-  (autoload 'buffer-action-run "buffer-action")
+(deh-section-after "buffer-action"
 
-  ;;# hack to find Makefile upon direcories recursively.
-  (eval-after-load "buffer-action"
-    '(progn
-       (defun buffer-action-throw-final-path (try-dir)
-         (cond
-          ;; tramp root-dir
-          ((and (featurep 'tramp)
-                (string-match tramp-file-name-regexp try-dir))
-           (with-parsed-tramp-file-name try-dir foo
-             foo-localname))
-          (t try-dir)))
-
-       (defun buffer-action-is-root-dir (try-dir)
-         (or
-          ;; windows root dir for a driver or Unix root
-          (string-match "\\`\\([a-zA-Z]:\\)?/$" try-dir)
-          ;; tramp root-dir
-          (and (featurep 'tramp)
-               (string-match (concat tramp-file-name-regexp ".*:/$") try-dir))))
-
-       (defun buffer-action-find-make-dir (try-dir)
-         "Return a directory contain makefile. try-dir is absolute
-path."
-         (if (buffer-action-is-root-dir try-dir)
-             nil ;; return nil if failed to find such directory.
-           (let ((candidate-make-file-name `("GNUmakefile" "makefile" "Makefile")))
-             (or (catch 'break
-                   (mapc (lambda (f)
-                           (if (file-readable-p (concat (file-name-as-directory try-dir) f))
-                               (throw 'break (buffer-action-throw-final-path try-dir))))
-                         candidate-make-file-name)
-                   nil)
-                 (buffer-action-find-make-dir
-                  (expand-file-name (concat (file-name-as-directory try-dir) "..")))))))
-
-       (defun buffer-action-compile-setup (row)
-         "Setup correct compiler action. ROW is matched one in
-`buffer-action-table'."
-         (let* ((dir (buffer-action-find-make-dir (expand-file-name ".")))
-                (cmd (concat "make -C " dir)))
-           (if (and dir (y-or-n-p (format "Run like this? `%s' " cmd)))
-               (setq buffer-action-compile-action (concat cmd " "))
-             (setq buffer-action-compile-action (nth 1 row)))))))
   )
 
 (deh-section "compilation"

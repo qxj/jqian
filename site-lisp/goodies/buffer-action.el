@@ -3,6 +3,7 @@
 ;; Copyright (C) 2005, 2007, 2008, 2009, 2010 William Xu
 
 ;; Author: William Xu <william.xwl@gmail.com>
+;; Update: Julian Qian <junist@gmail.com>
 ;; Version: 3.4a
 ;; Url: http://xwl.appspot.com/ref/buffer-action.el
 
@@ -299,6 +300,7 @@ path."
           (buffer-action-find-make-dir
            (expand-file-name (concat (file-name-as-directory try-dir) "..")))))))
 
+;;# hack to find Makefile upon direcories recursively.
 (defun buffer-action-compile-setup (row)
   "Setup correct compiler action. ROW is matched one in
 `buffer-action-table'."
