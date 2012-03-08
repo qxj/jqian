@@ -379,6 +379,7 @@ indent line."
     '(nil
       "// -*- mode: c++ -*-" ?\n
       (my-common-header "// ")
+      "//" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (cond ((file-exists-p (concat stem ".h"))
@@ -403,6 +404,7 @@ indent line."
     '(nil
       "#!/usr/bin/env python" ?\n
       (my-common-header "# ")
+      "#\n\n"
       "import sys" ?\n ?\n
       "def main():" ?\n
       > _ ?\n ?\n
@@ -414,6 +416,7 @@ indent line."
     '(nil
       "<?php" ?\n
       (my-common-header "// ")
+      "//\n\n"
        _ ?\n ?\n
       "?>"
       ))
@@ -422,6 +425,7 @@ indent line."
     '(nil
       "#!/bin/sh" ?\n
       (my-common-header "# ")
+      "#\n\n"
        _
       ))
 
