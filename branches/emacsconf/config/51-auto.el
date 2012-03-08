@@ -336,23 +336,37 @@ indent line."
     '((let* ((modes '("c" "c++"))
              (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
         selected)
-      "/* -*- mode: " str " -*-" ?\n
+      "/* -*- mode: " str | -13 " -*-" ?\n
       (my-common-header " * ")
       " */" ?\n ?\n
       "#ifndef "
-      (setq v2 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
+      (setq v1 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
                                "_"
                                (file-name-extension buffer-file-name))))
       ?\n
-      "#define " v2 "\n\n"
+      "#define " v1 "\n\n"
       _
       "\n\n#endif"
       '(progn (set-auto-mode))))
 
+  (define-auto-insert '("\\.\\(hh\\|hpp\\)$" . "C++ header")
+    '(nil
+      "// -*- mode: c++ -*-" ?\n
+      (my-common-header "// ")
+      "//" ?\n ?\n
+      "#ifndef "
+      (setq v1 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
+                               "_"
+                               (file-name-extension buffer-file-name))))
+      ?\n
+      "#define " v1 "\n\n"
+      _
+      "\n\n#endif"))
+
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
       "/* -*- mode: c -*-" ?\n
-      (my-common-header " * ") ?\n
+      (my-common-header " * ")
       " */" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
@@ -365,7 +379,6 @@ indent line."
     '(nil
       "// -*- mode: c++ -*-" ?\n
       (my-common-header "// ")
-      ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (cond ((file-exists-p (concat stem ".h"))
@@ -384,13 +397,12 @@ indent line."
   (define-auto-insert '(makefile-mode . "Makefile")
     '(nil
       (my-common-header "# ")
-      "\n\n" _))
+      "\n" _))
 
   (define-auto-insert '(python-mode . "Python script")
     '(nil
       "#!/usr/bin/env python" ?\n
       (my-common-header "# ")
-      ?\n
       "import sys" ?\n ?\n
       "def main():" ?\n
       > _ ?\n ?\n
@@ -402,7 +414,7 @@ indent line."
     '(nil
       "<?php" ?\n
       (my-common-header "// ")
-      ?\n _ ?\n ?\n
+       _ ?\n ?\n
       "?>"
       ))
 
@@ -410,7 +422,7 @@ indent line."
     '(nil
       "#!/bin/sh" ?\n
       (my-common-header "# ")
-      ?\n _
+       _
       ))
 
   (define-auto-insert '(org-mode . "Org document")
@@ -477,23 +489,25 @@ indent line."
     )
   ;; helper functions
   (defun my-common-header (comment-string &optional encoding)
-    (mapconcat (lambda (line) (concat comment-string line))
-               `(
-                 ,(format "@(#) %s %s Time-stamp: <>"
-                          (file-name-nondirectory (buffer-file-name))
-                          (if encoding " -*- coding: utf-8 -*-" ""))
-                 ,(format "Copyright %s %s"
-                          (substring (current-time-string) -4)
-                          (or (getenv "ORGANIZATION") user-full-name))
-                 ,(format "Author: %s <%s>"
-                          user-full-name
-                          user-mail-address)
-                 ,(format "Version: $Id: %s,v 0.1 %s %s Exp $"
-                          (file-name-nondirectory (buffer-file-name))
-                          (format-time-string "%Y-%m-%d %H:%M:%S")
-                          (user-login-name))
-                 )
-               "\n"))
+    (concat
+     (mapconcat (lambda (line) (concat comment-string line))
+                `(
+                  ,(format "@(#) %s %s Time-stamp: <>"
+                           (file-name-nondirectory (buffer-file-name))
+                           (if encoding " -*- coding: utf-8 -*-" ""))
+                  ,(format "Copyright %s %s"
+                           (substring (current-time-string) -4)
+                           (or (getenv "ORGANIZATION") user-full-name))
+                  ,(format "Author: %s <%s>"
+                           user-full-name
+                           user-mail-address)
+                  ,(format "Version: $Id: %s,v 0.1 %s %s Exp $"
+                           (file-name-nondirectory (buffer-file-name))
+                           (format-time-string "%Y-%m-%d %H:%M:%S")
+                           (user-login-name))
+                  )
+                "\n")
+     "\n"))
 
   ;;# copy from template-simple.el
   (add-hook 'write-file-functions 'my-update-header)
