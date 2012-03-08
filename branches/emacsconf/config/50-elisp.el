@@ -1135,8 +1135,7 @@ mouse-3: Remove current window from display")
        )))
 
 ;;; Navigate buffer
-(deh-section "speedbar"
-
+(deh-section-after "speedbar"
   (setq speedbar-directory-unshown-regexp
         "^\\(CVS\\|RCS\\|SCCS\\|\\.bak\\|\\..*\\)\\'")
 
@@ -1159,22 +1158,22 @@ mouse-3: Remove current window from display")
   (deh-define-key speedbar-file-key-map
     ((kbd "RET") . 'speedbar-toggle-line-expansion)) ; SPC
 
-  ;;# speedbar in one frame
-  (deh-require 'sr-speedbar
-    (setq sr-speedbar-skip-other-window-p t
-          ;; sr-speedbar-delete-windows t
-          sr-speedbar-width-x 22
-          sr-speedbar-max-width 30)
-
-    (defun my-toggle-sr-speedbar ()
-     "Toggle sr speedbar window."
-     (interactive)
-     (sr-speedbar-toggle) (sr-speedbar-select-window))
-   ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
-    )
-
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit))))
+
+;; speedbar in one frame
+(deh-require 'sr-speedbar
+  (setq sr-speedbar-skip-other-window-p t
+        ;; sr-speedbar-delete-windows t
+        sr-speedbar-width-x 22
+        sr-speedbar-max-width 30)
+
+  (defun my-toggle-sr-speedbar ()
+    "Toggle sr speedbar window."
+    (interactive)
+    (sr-speedbar-toggle) (sr-speedbar-select-window))
+  ;; (global-set-key (kbd "M-9") 'sr-speedbar-select-window)
+  )
 
 (deh-section-after "hideshow"
   (deh-define-key hs-minor-mode-map

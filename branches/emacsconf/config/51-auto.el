@@ -210,7 +210,9 @@ indent line."
       ("theta" "θ" nil 0)
       ("inf" "∞" nil 0)
       ("ar1" "→" nil 0)
-      ("ar2" "⇒" nil 0))))
+      ("ar2" "⇒" nil 0)
+      ("gt" "»" nil 0)
+      ("lt" "«" nil 0))))
 
 ;;; skeleton
 (deh-section "skeleton"
@@ -234,6 +236,7 @@ indent line."
   (setq skeleton-pair t
         skeleton-pair-on-word nil)
 
+  ;;# `skeleton-pair-alist' will override `skeleton-pair-default-alist'
   (setq skeleton-pair-alist
         '((?( _ ?))
           (?[ _ ?])

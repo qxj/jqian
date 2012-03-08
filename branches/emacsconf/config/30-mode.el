@@ -7,8 +7,10 @@
 
 ;;; autoload
 (deh-section "autoloads"
-  ;; dired-x
-  (autoload 'dired-omit-mode "dired-x" "lazy loading dired-x.el" t)
+  ;; protobuf mode
+  (autoload 'protobuf-mode "protobuf-mode" "Google protobuf mode." t)
+  ;; loading dired-x.el
+  (autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
   ;; c++ member function
   (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
   (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
@@ -799,7 +801,7 @@ Use CREATE-TEMP-F for creating temp copy."
 
 (deh-section-if "protobuf"
   (executable-find "protoc")
-  (autoload 'protobuf-mode "protobuf-mode" "Google protobuf mode." t))
+  )
 
 ;;; java
 (deh-section "java"
