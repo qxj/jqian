@@ -352,13 +352,13 @@ indent line."
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
       "/* -*- mode: c -*-" ?\n
-      (my-common-header " * ")
+      (my-common-header " * ") ?\n
       " */" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (if (file-exists-p (concat stem ".h"))
-         (file-name-nondirectory (concat stem ".h"))))
-      & ?\" ?\n | -10
+            (file-name-nondirectory (concat stem ".h"))))
+      & "\"\n" | -10
       _))
 
   (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
@@ -479,23 +479,23 @@ indent line."
   (defun my-common-header (comment-string &optional encoding)
     (mapconcat (lambda (line) (concat comment-string line))
                `(
-                 ,(concat "@(#) " (my-filename) (if encoding " -*- coding: utf-8 -*-"))
-                 "Time-stamp: <>"
-                 ,(my-copyright)
-                 ,(concat "Version: $Id: " (my-filename) ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $"))
+                 ,(format "@(#) %s %s Time-stamp: <>"
+                          (file-name-nondirectory (buffer-file-name))
+                          (if encoding " -*- coding: utf-8 -*-" ""))
+                 ,(format "Copyright %s %s"
+                          (substring (current-time-string) -4)
+                          (or (getenv "ORGANIZATION") user-full-name))
+                 ,(format "Author: %s <%s>"
+                          user-full-name
+                          user-mail-address)
+                 ,(format "Version: $Id: %s,v 0.1 %s %s Exp $"
+                          (file-name-nondirectory (buffer-file-name))
+                          (format-time-string "%Y-%m-%d %H:%M:%S")
+                          (user-login-name))
+                 )
                "\n"))
-  (defun my-filename ()
-    (file-name-nondirectory (buffer-file-name)))
 
-  (defun my-copyright ()
-    (concat "Copyright " (substring (current-time-string) -4) " "
-            (or (getenv "ORGANIZATION")
-                (concat user-full-name
-                        " <" user-mail-address ">"))))
-  (defun my-datetime ()
-    (format-time-string "%Y-%m-%d %H:%M:%S"))
-
-  ;; from template-simple.el
+  ;;# copy from template-simple.el
   (add-hook 'write-file-functions 'my-update-header)
   (defun my-update-header ()
     (interactive)
