@@ -205,10 +205,21 @@ Example:
            (add-to-list 'deh-sections (cons ,section ,load-file-name)))
        ,@forms)))
 
+;; TODO: defadvice completing-read ?
+(defun deh-completing-read (prompt collection &optional predicate require-match)
+  "Use `ido-completing-read' to replace `completing-read' if possible."
+  (if (fboundp 'ido-completing-read)
+      (ido-completing-read prompt
+                           (mapcar (lambda (x) (if (symbolp (car x))
+                                                   (symbol-name (car x))
+                                                 (car x))) collection)
+                           nil require-match)
+    (completing-read prompt collection nil require-match)))
+
 (defun deh-customize-inplace (name)
   "Configuration the section directly in file"
   (interactive
-   (list (completing-read "Which section to modified: " deh-sections)))
+   (list (deh-completing-read "Which section to modified: " deh-sections)))
   (let ((section (assoc-string name deh-sections))
         done)
     (if (and section
@@ -232,7 +243,7 @@ Example:
 (defun deh-customize (name)
   "Configuration the section in .emacs."
   (interactive
-   (list (completing-read "Which section to modified: " deh-sections)))
+   (list (deh-completing-read "Which section to modified: " deh-sections)))
   (deh-set-buffer)
   (setq deh-information nil)
   (let ((section (assoc-string name deh-sections)))
@@ -397,8 +408,8 @@ With prefix argument sort section by file."
 (defun deh-enable (feature)
   "Eval the form in `deh-enable-list'."
   (interactive
-   (list (completing-read "Enable feature: " deh-enable-list
-                          nil t)))
+   (list (deh-completing-read "Enable feature: " deh-enable-list
+                              nil t)))
   (eval (cons 'progn
               (assoc-default feature deh-enable-list))))
 
