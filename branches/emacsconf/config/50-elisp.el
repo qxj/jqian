@@ -390,7 +390,7 @@ mouse-3: Remove current window from display")
             (boundp 'ido-cur-list)) ; Avoid infinite loop from ido calling this
         ad-do-it
       (let ((allcomp (all-completions "" collection predicate)))
-        (if allcomp
+        (if allcomp                 ; only ido for string list, but not alist/hash-table
             (setq ad-return-value
                   (ido-completing-read prompt
                                        allcomp
