@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8 -*-
 ;;; customization
-(setq custom-file (expand-file-name "01-my-custom.el" my-config-dir))
+(setq custom-file (expand-file-name "19-local.el" my-config-dir))
 
 (setq debug-on-error nil debug-on-quit nil)
 

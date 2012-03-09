@@ -68,7 +68,7 @@
   (mapc (lambda (dir)
           (dolist (mode '(c-mode c++-mode))
             (semantic-add-system-include dir mode)))
-        user-include-dirs)
+        my-include-dirs)
 
 
   (deh-section "imenu-semantic"
