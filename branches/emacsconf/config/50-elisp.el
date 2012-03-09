@@ -732,15 +732,18 @@ mouse-3: Remove current window from display")
           (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
 
   (eval-after-load "ffap"
-    '(setq ffap-c-path (append ffap-c-path user-include-dirs)))
+    '(setq ffap-c-path (append ffap-c-path my-include-dirs)))
+  )
+
+(deh-section "filecache"
+  (deh-define-key minibuffer-local-map
+    ((kbd "C-M-f") . 'file-cache-minibuffer-complete))
 
   (eval-after-load "filecache"
-    '(progn (file-cache-add-directory-list load-path)
-            (file-cache-add-directory-list user-include-dirs)
-            (file-cache-add-directory "/usr/include")
-            (file-cache-add-directory-recursively "/usr/include/c++")
-            (file-cache-add-directory-recursively "/usr/local/include")))
-  )
+    '(progn
+       (message "Loading file cache...")
+       (file-cache-add-directory-recursively my-startup-dir)
+       (file-cache-add-directory-recursively (expand-file-name "~/works")))))
 
 ;;; Buffer view
 (deh-section-after "help-mode"

@@ -2,10 +2,13 @@
 ;; This config is for portable. The platform relate configuration
 ;; should appear here.
 
-(defvar user-include-dirs
-  '(".." "../include" "../inc" "../common" "../public" "../hdr"
-    "../.." "../../include" "../../inc" "../../common" "../../public"
-    "../../hdr"))
+(defvar my-include-dirs
+  (let (dirs
+        (incs '("include" "inc" "common" "public" "hdr"))
+        (updirs '("./" "../" "../../" "../../../" "../../../../")))
+    (dolist (dir updirs)
+      (setq dirs (append dirs (mapcar (lambda (x) (concat dir x)) incs))))
+    (append updirs dirs)))
 
 (deh-section "env"
   (setenv "GIT_PAGER" "cat")
@@ -79,13 +82,30 @@
                    "/usr/share/lib/info"
                    "/usr/local/share/lib/info"
                    "/usr/gnu/lib/emacs/info"))
-      (add-to-list 'Info-default-directory-list dir)))
+      (add-to-list 'Info-default-directory-list dir))
+
+    (defun gcc-include-path ()
+      "Get gcc include path, only tested in linux"
+      (with-temp-buffer
+        (shell-command "echo | LC_ALL=\"en\" cpp -x c++ -Wp,-v" t)
+        (goto-char (point-min))
+        (let* ((start (search-forward "#include <...> search starts here:\n" nil t))
+               (end (progn (search-forward "End of search list." nil t)
+                           (beginning-of-line)
+                           (backward-char 1)
+                           (point)))
+               (lines (split-string (buffer-substring start end) "\n")))
+          (mapcar (lambda (x) (substring x 1)) lines))))
+
+   (when (executable-find "gcc")
+     (setq my-include-dirs (append (gcc-include-path) my-include-dirs)))
+    )
 
 (deh-section-if "macosx"
   (eq system-type 'darwin)
   (setq ns-command-modifier 'meta)
   (dolist (dir '("/usr/include/c++/v1"))
-    (add-to-list 'user-include-dirs dir))
+    (add-to-list 'my-include-dirs dir))
   ;; fix launching from spotlight
   ;; $ cat > $HOME/.launchd.conf
   ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
