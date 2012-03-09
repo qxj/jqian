@@ -739,6 +739,8 @@ mouse-3: Remove current window from display")
   (deh-define-key minibuffer-local-map
     ((kbd "C-M-f") . 'file-cache-minibuffer-complete))
 
+  (setq file-cache-ignore-case t)
+
   (eval-after-load "filecache"
     '(progn
        (message "Loading file cache...")
