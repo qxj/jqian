@@ -66,23 +66,29 @@
 ;;                   (get-new-mail nil)))
 ;;# ~/.offlineimaprc
 ;; [general]
-;; ui = Noninteractive.Basic
+;; ui = Basic
 ;; accounts = GMail
+;; maxsyncaccounts = 3
+;; socktimeout = 30
 ;; [Account GMail]
 ;; localrepository = Local
 ;; remoterepository = Remote
-;; # maxage = 60
+;; autorefresh = 5
+;; quick = 10
+;; # maxsize = 2000000
+;; maxage = 3
 ;; [Repository Local]
 ;; type = Maildir
 ;; localfolders = ~/Gmail
 ;; [Repository Remote]
-;; type = IMAP
-;; remotehost = imap.gmail.com
+;; type = Gmail
 ;; remoteuser = junist@gmail.com
 ;; remotepass = gmail_password
-;; ssl = yes
-;; maxconnections = 1
+;; maxconnections = 2
 ;; realdelete = no
+;; readonly = False
+;; idlefolders = ['INBOX']
+;; folderfilter = lambda folder: folder not in ['[Gmail]/All Mail', '[Gmail]/Trash']
 ;;;; offlineimap -> dovecot
 ;;# ~/.gnus.el
 ;; (setq gnus-select-method
@@ -92,14 +98,14 @@
 ;;                (nnimap-authinfo-file "~/.authinfo")))
 ;; (setq gnus-ignored-from-addresses "jqian")
 ;;# ~/.authinfo
-;; machine localhost login jqian password account_password
+;; machine localhost login jqian password login_password
 ;;# ~/.offlineimaprc
 ;; [Repository Local]  # only local setting is different
 ;; type = IMAP
 ;; remotehost = localhost
 ;; port = 143
 ;; remoteuser = jqian
-;; remotepass = account_password
+;; remotepass = login_password
 ;;# /etc/dovecot/dovecot.conf
 ;; mail_location = maildir:%h/Maildir
 
