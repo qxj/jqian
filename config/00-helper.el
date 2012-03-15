@@ -1,9 +1,9 @@
 ;; -*- coding: utf-8 -*-
 
 (defun gcc-include-path ()
-  "Get gcc include path, only tested in linux"
+  "Get gcc include path, only tested in linux."
   (with-temp-buffer
-    (shell-command "echo | LC_ALL=\"en\" cpp -x c++ -Wp,-v" t)
+    (shell-command "echo | LC_ALL=\"en\" cpp -xc++ -Wp,-v" t)
     (goto-char (point-min))
     (let* ((start (search-forward "#include <...> search starts here:\n" nil t))
            (end (progn (search-forward "End of search list." nil t)

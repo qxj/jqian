@@ -72,18 +72,18 @@
               (comint-send-string (get-buffer-process (current-buffer)) "set PERLIO=:unix\n"))))
 
 (deh-section-if "linux"
-   (eq system-type 'gnu/linux)
-    (make-variable-buffer-local 'compile-command)
+  (eq system-type 'gnu/linux)
+  (make-variable-buffer-local 'compile-command)
 
-    (dolist (dir '("/usr/lib/info"
-                   "/usr/gnu/info"
-                   "/usr/gnu/lib/info"
-                   "/opt/gnu/info"
-                   "/usr/share/lib/info"
-                   "/usr/local/share/lib/info"
-                   "/usr/gnu/lib/emacs/info"))
-      (add-to-list 'Info-default-directory-list dir))
-    )
+  (dolist (dir '("/usr/lib/info"
+                 "/usr/gnu/info"
+                 "/usr/gnu/lib/info"
+                 "/opt/gnu/info"
+                 "/usr/share/lib/info"
+                 "/usr/local/share/lib/info"
+                 "/usr/gnu/lib/emacs/info"))
+    (add-to-list 'Info-default-directory-list dir))
+  )
 
 (deh-section-if "macosx"
   (eq system-type 'darwin)
@@ -141,7 +141,7 @@
     ;; the same color-theme  looks bad in terminal
     (when window-system
       ;; (load (expand-file-name "my-fontset.el" my-config-dir))
-      (load (expand-file-name "my-theme.el" my-config-dir))
+      ;; (load (expand-file-name "my-theme.el" my-config-dir))
       ;; no scroll bar
       (set-scroll-bar-mode nil)
       ;; no tool bar
@@ -161,7 +161,7 @@
               (dolist (charset '(kana han symbol cjk-misc bopomofo))
                 (set-fontset-font "fontset-default" charset
                                   (font-spec :family zh-font))))
-                                  ;; (font-spec :family zh-font :size 16))))
+          ;; (font-spec :family zh-font :size 16))))
           (add-to-list 'default-frame-alist (cons 'width 80))
           (set-frame-font (concat en-font ":pixelsize=12"))
           (set-fontset-font "fontset-default" 'han
@@ -172,8 +172,8 @@
       (add-to-list 'default-frame-alist
                    (cons 'height (/ (- (x-display-pixel-height) 100)
                                     (frame-char-height))))))
-    (add-hook 'after-make-frame-functions 'init-window-frame)
-    (add-hook 'after-init-hook 'init-window-frame))
+  (add-hook 'after-make-frame-functions 'init-window-frame)
+  (add-hook 'after-init-hook 'init-window-frame))
 
 ;; (deh-add-hook 'find-file-hook
 ;;   (if (and (buffer-file-name)
