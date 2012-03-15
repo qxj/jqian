@@ -4,7 +4,6 @@ ipfile=$1
 user=$2
 passwd=$3
 
-EXPSCRIPT="ssh.exp"
 if [ -z $HOSTINFO ]; then
     HOSTINFO=$HOME"/.hostinfo.txt"
 fi
@@ -76,12 +75,100 @@ _hostinfo_path() {
     echo $1 | awk '{print $5}'
 }
 
+_ssh_login() {
+    user=$1
+    passwd=$2
+    ip=$3
+    expect -c "set timeout 30
+spawn ssh $user@$ip -q
+expect {
+    \"assword:\" {
+        send \"$passwd\r\"
+        expect -re {[>$]} { send \"export LC_ALL=en_US.UTF-8\r\"
+                            send \"export LC_CTYPE=zh_CN.UTF-8\r\" }
+        interact
+    }
+    \"yes/no)?\" {
+        send \"yes\r\"
+        expect \"assword:\" {
+            send \"$passwd\r\"
+            expect -re {[>$]} { send \"export LC_ALL=en_US.UTF_8\r\"
+                                send \"export LC_CTYPE=zh_CN.UTF-8\r\" }
+            interact
+        }
+    }
+    \"warning*\" {
+        puts \"\nRETURN WARNING!!!\n\"
+        exit 1
+    }
+    timeout {
+        puts \"\nCHECK WARNING: $ip logon TIMEOUT!!!\n\"
+        exit 1
+    }
+}
+"
+}
+
+_ssh_run() {
+    passwd=$1
+    cmd=$2
+    expect -c "set timeout 3600
+spawn $cmd
+expect {
+    \"assword:\" {
+        send \"$passwd\r\"
+    }
+    \"yes/no)?\" {
+        send \"yes\r\"
+        expect \"assword:\" {
+            send \"$passwd\r\"
+        }
+    }
+    \"warning*\" {
+        puts \"\nRETURN WARNING!!!\n\"
+        exit 1
+    }
+    timeout {
+        puts \"\nCHECK WARNING: $ip logon TIMEOUT!!!\n\"
+        exit 1
+    }
+}
+expect eof
+"
+}
+
+_ssh_exec() {
+    user=$1
+    passwd=$2
+    ip=$3
+    cmd=$4
+    _ssh_run $passwd "ssh $user@$ip \"$cmd\""
+}
+
+_ssh_to() {
+    user=$1
+    passwd=$2
+    ip=$3
+    fa=$4
+    fb=$5
+    _ssh_run $passwd "scp -r $fa $user@$ip:$fb"
+}
+
+_ssh_from() {
+    user=$1
+    passwd=$2
+    ip=$3
+    fa=$4
+    fb=$5
+    _ssh_run $passwd "scp -r $user@$ip:$fa $fb"
+}
+
 cmdlogin() {
     ret=$(_hostinfo_search $1)
     user=$(_hostinfo_user "$ret")
     passwd=$(_hostinfo_passwd "$ret")
     ip=$(_hostinfo_ip "$ret")
-    eval "$EXPSCRIPT login $user '$passwd' $ip"
+    _ssh_login $user "$passwd" $ip
 }
 
 cmdexec() {
@@ -91,7 +178,7 @@ cmdexec() {
     ip=$(_hostinfo_ip "$ret")
 
     cmd=$2
-    eval "$EXPSCRIPT ssh $user '$passwd' $ip \"$cmd\" output.txt"
+    _ssh_exec $user "$passwd" $ip "$cmd"
 }
 
 cmdto() {
@@ -113,7 +200,7 @@ cmdto() {
         fb=${fb/~\//home\/$user\/}
     fi
 
-    eval "$EXPSCRIPT scp $user '$passwd' $ip $fa $fb"
+    _ssh_to $user "$passwd" $ip $fa $fb
 }
 
 cmdfrom() {
@@ -136,7 +223,7 @@ cmdfrom() {
         fb=$fb
     fi
 
-    eval "$EXPSCRIPT scpfrom $user '$passwd' $ip '$fa' '$fb'"
+    _ssh_from $user "$passwd" $ip $fa $fb
 }
 
 cmddepexec () {
@@ -149,7 +236,7 @@ cmddepexec () {
         passwd=$(_hostinfo_passwd $line)
         ip=$(_hostinfo_ip $line)
 
-        eval "$EXPSCRIPT ssh $user '$passwd' $ip \"$cmd\" output.txt"
+        _ssh_exec $user "$passwd" $ip "$cmd"
     done
     IFS=$bak_IFS
 }
@@ -176,14 +263,19 @@ cmddepto () {
             fb=${fb/~\//home\/$user\/}
         fi
 
-        eval "$EXPSCRIPT scp $user '$passwd' $ip '$fa' '$fb'"
+        _ssh_to $user "$passwd" $ip $fa $fb
     done
     IFS=$bak_IFS
 }
 
 cmdlist () {
-    echo "List "$HOSTINFO" content below:"
+    echo "List "$HOSTINFO" content below:
+----
+NAME IP USERNAME PASSWORD DEFAULT-PATH
+----"
     cat $HOSTINFO
+    echo "
+----"
 }
 
 case $1X in
