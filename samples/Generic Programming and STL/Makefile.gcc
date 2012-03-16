@@ -1,0 +1,27 @@
+CPP = g++
+CPPFLAGS = -O2
+OUTDIR = ../bin/gcc
+MF = ../Makefile.gcc
+COPY = cp
+DIRS = 01 03 05 10 11 12 13 14 16
+
+all:
+	@for d in $(DIRS); do (cd $$d; $(MAKE) -f $(MF) src) done
+src:	
+	-@for f in `ls *.cpp`; do \
+		b=`basename $$f .cpp`; $(MAKE) -f $(MF) $$b; \
+		if [ ! -d $(OUTDIR) ]; then mkdir -p $(OUTDIR); fi; \
+		$(COPY) $$b $(OUTDIR); \
+	done
+		
+.cpp:
+	-$(CPP) $(CPPFLAGS) -o $@ $<
+
+clean:
+	@for d in $(DIRS); do (cd $$d; $(MAKE) -f $(MF) clean_bin) done
+
+clean_bin:
+	@for f in `ls *.cpp`; do \
+		b=`basename $$f .cpp`; \
+		rm -f $$b $(OUTDIR)/$$b; \
+	done
