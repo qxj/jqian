@@ -411,7 +411,7 @@ mouse-3: Remove current window from display")
 
 (deh-require 'smex
   (setq smex-save-file (expand-file-name "emacs.smex-items" my-temp-dir)
-        smex-history-length 10)
+        smex-history-length 50)
   (smex-initialize)
   (global-set-key (kbd "M-x") 'smex)
   (global-set-key (kbd "C-c M-X") 'smex-major-mode-commands)
@@ -581,6 +581,8 @@ mouse-3: Remove current window from display")
   (add-to-list 'desktop-globals-to-save 'kill-ring)
   (if (boundp 'windata-name-winconf)
       (add-to-list 'desktop-globals-to-save 'windata-named-winconf))
+  (if (boundp 'smex-history)
+      (add-to-list 'desktop-globals-to-save 'smex-history))
 
   ;; if error occurred, no matter it!
   ;; (condition-case nil

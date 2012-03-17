@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: #+CAPTION: table $+LABEL: tbl ...
 # key: tbl
-# key: table
 # --
 #+CAPTION: ${1:table sample}
 #+LABEL: ${2:tbl:basic-data}${3:

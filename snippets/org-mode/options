@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: #+OPTIONS: ...
-# key: opt
-# key: option
+# key: options
 # --
 #+OPTIONS: ${1:H:3 toc:t @:t ::t ^:nil -:t LaTeX:t skip:t author:nil email:nil timestamp:t d:t}
 $0

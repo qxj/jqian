@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: #+CAPTION: figure $+LABEL: fig ...
 # key: fig
-# key: figure
 # --
 #+CAPTION: ${1:figure sample}
 #+LABEL: ${2:fig}${3:
