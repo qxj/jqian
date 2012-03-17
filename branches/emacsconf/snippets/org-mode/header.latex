@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: #+TITLE: ... #+AUTHOR: ... #+LATEX_HEADER: ...
-# key: hlatex
+# key: header.latex
 # --
 #+TITLE: ${1:My Article}
 #+AUTHOR: ${2:Julian Qian}
