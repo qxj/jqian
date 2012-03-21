@@ -541,10 +541,11 @@ mouse-3: Remove current window from display")
   )
 
 ;;; Session management
-(deh-section "bookmark"
+(deh-section-after "bookmark"
   ;; autosave bookmark into the diskete
-  (setq bookmark-save-flag 1)
-  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir))
+  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir)
+        bookmark-save-flag 1)
+  (add-to-list 'bookmark-after-jump-hook 'recenter)
   (deh-add-hook 'bookmark-bmenu-mode-hook
     (font-lock-add-keywords
      nil
@@ -1299,7 +1300,8 @@ mouse-3: Remove current window from display")
 (deh-section-after "imenu"
   (add-to-list 'imenu-after-jump-hook 'recenter)
   (setq imenu-max-item-length 60
-        imenu-max-items 500))
+        imenu-max-items 500
+        imenu-auto-rescan t))
 
 (deh-section "ediff"
   ;; (global-set-key "\C-cd" 'ediff-show-registry)
