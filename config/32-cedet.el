@@ -72,13 +72,15 @@
 
 
   (deh-section "imenu-semantic"
-    ;;# imenu, expand all functions
-    (setq semantic-imenu-bucketize-file nil
-          semantic-imenu-buckets-to-submenu nil
-          semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing
-          ;; semantic-imenu-auto-rebuild-directory-indexes t
-          ;; semantic-imenu-index-directory t
-          semantic-which-function-use-color t)
+    ;;# imenu, expand all functions but not in submenus
+    (setq-default semantic-imenu-bucketize-file nil
+                  semantic-imenu-buckets-to-submenu t
+                  semantic-imenu-bucketize-type-members t
+                  semantic-imenu-expand-type-members t
+                  semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing
+                  ;; semantic-imenu-auto-rebuild-directory-indexes t
+                  ;; semantic-imenu-index-directory t
+                  semantic-which-function-use-color t)
     ;; (deh-add-hook 'c-mode-common-hook
     ;;   (setq imenu-create-index-function 'semantic-create-imenu-index))
     )
