@@ -29,17 +29,17 @@
         semantic-idle-work-update-headers-flag t) ; if slow, disable it
 
   (deh-define-key senator-mode-map
-    ((kbd "C-c , RET") . 'semantic-ia-complete-symbol-menu)
-    ("\C-c,c" . 'semantic-ia-complete-symbol)
-    ("\C-c,G" . 'semantic-symref)
-    ("\C-c,=" . 'semantic-decoration-include-visit)
-    ("\C-c,j" . 'semantic-ia-fast-jump)
-    ("\C-c,J" . 'semantic-complete-jump)
-    ("\C-c,q" . 'semantic-ia-show-doc)
-    ("\C-c,s" . 'semantic-ia-show-summary)
-    ("\C-c,t" . 'semantic-analyze-proto-impl-toggle)
-    ("\C-c,b" . 'semantic-ia-fast-jump-or-back)
-    ("\C-c,B" . 'semantic-ia-fast-jump-back))
+    ((kbd "C-c , RET") 'semantic-ia-complete-symbol-menu)
+    ("\C-c,c"  'semantic-ia-complete-symbol)
+    ("\C-c,G"  'semantic-symref)
+    ("\C-c,="  'semantic-decoration-include-visit)
+    ("\C-c,j"  'semantic-ia-fast-jump)
+    ("\C-c,J"  'semantic-complete-jump)
+    ("\C-c,q"  'semantic-ia-show-doc)
+    ("\C-c,s"  'semantic-ia-show-summary)
+    ("\C-c,t"  'semantic-analyze-proto-impl-toggle)
+    ("\C-c,b"  'semantic-ia-fast-jump-or-back)
+    ("\C-c,B"  'semantic-ia-fast-jump-back))
   (defun semantic-ia-fast-jump-back ()
     (interactive)
     (if (ring-empty-p (oref semantic-mru-bookmark-ring ring))
@@ -88,15 +88,15 @@
   (deh-section "hippie-semantic"
     (autoload 'senator-try-expand-semantic "senator")
     ;; hippie-try-expand setting
-    (deh-add-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
+    (deh-add-hook '(c-mode-common-hook emacs-lisp-mode-hook)
       (add-to-list 'hippie-expand-try-functions-list
                    'senator-try-expand-semantic
                    'semantic-ia-complete-symbol)))
 
   (deh-require 'eassist
     (deh-define-key senator-mode-map
-      ((kbd "C-c A")   . 'eassist-switch-h-cpp)
-      ((kbd "C-c L") . 'eassist-list-methods))
+      ((kbd "C-c A")  'eassist-switch-h-cpp)
+      ((kbd "C-c L")  'eassist-list-methods))
     ;; donot miss minus "-"
     (eassist-key-itself eassist-mode-map (string-to-char "-")))
 
@@ -104,20 +104,20 @@
     ;;# vss is useful
     (enable-visual-studio-bookmarks)
     (deh-define-key global-map
-      ((kbd "<f2>") . 'viss-bookmark-toggle)
-      ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
-      ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
-      ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer)))
+      ((kbd "<f2>")      'viss-bookmark-toggle)
+      ((kbd "<C-f2>")    'viss-bookmark-next-buffer)
+      ((kbd "<S-f2>")    'viss-bookmark-prev-buffer)
+      ((kbd "<C-S-f2>")  'viss-bookmark-clear-all-buffer)))
 
   (deh-require-if 'semantic-tag-folding
     window-system
     (global-semantic-tag-folding-mode 1)
     (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
     (deh-define-key semantic-tag-folding-mode-map
-      ((kbd "C-c , -") . 'semantic-tag-folding-fold-block)
-      ((kbd "C-c , +") . 'semantic-tag-folding-show-block)
-      ((kbd "C-_")     . 'semantic-tag-folding-fold-all)
-      ((kbd "C-+")     . 'semantic-tag-folding-show-all)))
+      ((kbd "C-c , -") 'semantic-tag-folding-fold-block)
+      ((kbd "C-c , +") 'semantic-tag-folding-show-block)
+      ((kbd "C-_")     'semantic-tag-folding-fold-all)
+      ((kbd "C-+")     'semantic-tag-folding-show-all)))
 
   (deh-require 'ede
     ;; (setq semantic-c-obey-conditional-section-parsing-flag nil) ; ignore #if

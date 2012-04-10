@@ -10,7 +10,7 @@
 (deh-require-reserved 'autopair
   ;; It's not an ideal way to turn on autopair-global-mode, because it's
   ;; unstable and its keybinds often works in unexcepted manner.
-  (deh-add-hooks (java-mode-hook
+  (deh-add-hook (java-mode-hook
                   sh-mode-hook
                   c-mode-common-hook
                   python-mode-hook
@@ -71,16 +71,16 @@
 
   ;; donot use RET for auto complete, only TAB
   (deh-define-key ac-completing-map
-    ((kbd "<return>") . nil)
-    ((kbd "RET") . nil)
-    ((kbd "TAB") . 'ac-complete)
+    ((kbd "<return>")  nil)
+    ((kbd "RET")       nil)
+    ((kbd "TAB")       'ac-complete)
     ;; ((kbd "M-/") . 'ac-stop)
     )
   ;; when completion menu is displayed
   (setq ac-use-menu-map t)
   (deh-define-key ac-menu-map
-    ("\C-n" . 'ac-next)
-    ("\C-p" . 'ac-previous))
+    ("\C-n"  'ac-next)
+    ("\C-p"  'ac-previous))
 
   (ac-set-trigger-key "TAB")
 
@@ -164,8 +164,8 @@ indent line."
                (memq beyond-autopair ac-trigger-commands)
                (and ac-completing
                     (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
-  (eval-after-load "autopair"
-    '(ac-settings-4-autopair)) )
+  (deh-after-load "autopair"
+    (ac-settings-4-autopair)) )
 
 (deh-require 'yasnippet
   (setq yas/root-directory my-snippet-dir)
@@ -202,7 +202,7 @@ indent line."
 
 
 ;;; abbrev
-(deh-section "abbrev"
+(deh-section "abbrev-table"
   (define-abbrev-table 'global-abbrev-table
     '(("alpha" "α" nil 0)
       ("beta" "β" nil 0)
@@ -535,7 +535,7 @@ indent line."
 ;;; hippie
 (deh-section "hippie-expand"
   ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
-  (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
+  (deh-after-load "dabbrev" (defalias 'dabbrev-expand 'hippie-expand))
   (setq hippie-expand-try-functions-list
         '(try-expand-dabbrev
           try-expand-dabbrev-visible

@@ -221,12 +221,11 @@
 (setq gnus-activate-level 5
       gnus-permanently-visible-groups '"nn*")
 
-(eval-after-load "gnus"
-  '(progn
-     (deh-define-key gnus-group-mode-map
-       ("\C-x\C-k" . 'undefined)          ; avoid kill *Group* manually
-       )
-     (add-hook 'kill-emacs-hook 'gnus-group-exit)))
+(deh-after-load "gnus"
+  (deh-define-key gnus-group-mode-map
+    ("\C-x\C-k"  'undefined)          ; avoid kill *Group* manually
+    )
+  (add-hook 'kill-emacs-hook 'gnus-group-exit))
 ;;;; Sumary setting
 (setq gnus-summary-line-format "%U%R%z%(%&user-date;┃%-10,10f┃%4L%*┃%B%s%)\n"
       gnus-user-date-format-alist '(((gnus-seconds-today) . "%H:%M")
@@ -242,26 +241,26 @@
       gnus-sum-thread-tree-single-leaf "╰► "
       gnus-sum-thread-tree-vertical "│")
 
-(eval-after-load "gnus-sum"
-  '(deh-define-key gnus-summary-mode-map
-     ("p" . 'gnus-summary-prev-same-subject)
-     ("n" . 'gnus-summary-next-same-subject)
-     ;; ("q" . 'delete-other-windows)
-     ("Q" . 'gnus-summary-exit)
-     ("," . 'gnus-summary-prev-thread)
-     ("." . 'gnus-summary-next-thread)
-     ("<" . 'scroll-other-window-down)
-     (">" . 'scroll-other-window)
-     ((kbd "/ n") . 'gnus-summary-insert-new-articles)
-     ("r" . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
-     ((kbd "RET") . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
-     ("\C-o" . nil)
-     ((kbd "TAB") . 'gnus-summary-show-thread)
-     ;; move
-     ("k" . 'previous-line)
-     ("j" . 'next-line)
-     ("l" . 'forward-char)
-     ("h" . 'backward-char)))
+(deh-after-load "gnus-sum"
+  (deh-define-key gnus-summary-mode-map
+    ("p"  'gnus-summary-prev-same-subject)
+    ("n"  'gnus-summary-next-same-subject)
+    ;; ("q"  'delete-other-windows)
+    ("Q"  'gnus-summary-exit)
+    (","  'gnus-summary-prev-thread)
+    ("."  'gnus-summary-next-thread)
+    ("<"  'scroll-other-window-down)
+    (">"  'scroll-other-window)
+    ((kbd "/ n")  'gnus-summary-insert-new-articles)
+    ("r"  (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
+    ((kbd "RET")  (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
+    ("\C-o"  'undefined)
+    ((kbd "TAB")  'gnus-summary-show-thread)
+    ;; move
+    ("k"  'previous-line)
+    ("j"  'next-line)
+    ("l"  'forward-char)
+    ("h"  'backward-char)))
 
 ;; (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 ;;;; Article setting
@@ -275,15 +274,15 @@
                  ;; "Content-Type" "Content-Transfer-Encoding"
                  "Newsgroups"))
               "\\):"))
-(eval-after-load "gnus"
-  '(deh-define-key gnus-article-mode-map
-     ("k" . 'pager-row-up)
-     ("j" . 'pager-row-down)
-     ((kbd "<up>") . 'pager-row-up)
-     ((kbd "<down>") . 'pager-row-down)
-     ("l" . 'forward-char)
-     ("h" . 'backward-char)
-     ("q" . 'delete-window)))
+(deh-after-load "gnus"
+  (deh-define-key gnus-article-mode-map
+    ("k"  'pager-row-up)
+    ("j"  'pager-row-down)
+    ((kbd "<up>")  'pager-row-up)
+    ((kbd "<down>")  'pager-row-down)
+    ("l"  'forward-char)
+    ("h"  'backward-char)
+    ("q"  'delete-window)))
 (add-hook 'gnus-article-prepare-hook 'gnus-article-fill-long-lines)
 ;;;; sorting
 (add-hook 'message-sent-hook 'gnus-score-followup-thread)

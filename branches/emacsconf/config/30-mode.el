@@ -7,51 +7,17 @@
 
 ;;; autoload
 (deh-section "autoloads"
-  ;; buffer action
-  (autoload 'buffer-action-compile "buffer-action" "Compile current buffer" t)
-  (autoload 'buffer-action-run "buffer-action" "Run exec of current buffer" t)
   ;; protobuf mode
   (autoload 'protobuf-mode "protobuf-mode" "Google protobuf mode." t)
-  ;; loading dired-x.el
-  (autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
   ;; c++ member function
   (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
-  (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
-  ;; multi-term
-  (autoload 'multi-term "multi-term" "")
-  (autoload 'multi-term-dedicated-open-select "multi-term" "")
-  (autoload 'multi-term-dedicated-exist-p "multi-term" "")
-  (autoload 'multi-term-dedicated-open "multi-term" "")
-  (autoload 'multi-term-dedicated-close "multi-term" "")
-  (autoload 'multi-term-dedicated-select "multi-term" "")
-  (autoload 'multi-term-dedicated-toggle "multi-term" "")
   ;; browse-el
   (autoload 'browse-el-find-funtion "browse-el" "")
   (autoload 'browse-el-go-back "browse-el" "")
-  ;; bm
-  (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
-  (autoload 'bm-next     "bm" "Goto bookmark."                     t)
-  (autoload 'bm-previous "bm" "Goto previous bookmark."            t)
-  (autoload 'bm-show     "bm" "Show bookmarks in current buffer."  t)
-  (autoload 'bm-show-all "bm" "Show all bookmarks."                t)
-  ;; gpg
-  (autoload 'epa-file-enable "epa-file" "" t)
-  ;; psvn
-  (autoload 'svn-status "psvn" "")
-  (autoload 'svn-status-update-modeline "psvn" "")
-  (autoload 'svn-status-in-vc-mode? "psvn" "")
-  ;; grep
-  (autoload 'grep-tag-default "grep")
-  (autoload 'grep-apply-setting "grep")
-  ;; anything
-  (autoload 'anything "anything" "" t)
-  ;; ffap
-  (autoload 'ffap "ffap" "Alias of find-file-at-point")
   ;; php
   (autoload 'php-mode "php-mode" "php mode" t)
   ;; javascript
   (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
-  (autoload 'js2-mode "js2" "" t)
   ;; css
   (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
@@ -62,16 +28,13 @@
   ;; whitespace
   (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
   (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
+  ;; sourcepair
   (autoload 'sourcepair-load "sourcepair" nil t)
   ;; emacs lock
   (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
   ;; iimage
   (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
   (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
-  ;; woman
-  (autoload 'woman-mode "woman")
-  (add-hook 'woman-mode-hook 'view-mode)
-  (autoload 'woman-decode-buffer "woman")
   ;; htmlize
   (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
   ;; moccur
@@ -85,18 +48,10 @@
   (autoload 'rst-mode "rst" "Major mode for editing reStructuredText documents." t)
   ;; markdown mode
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
-  ;; minibuf-isearch
-  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
-  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
   ;; sdcv
   (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
   ;; flymake
   (autoload 'flymake-find-file-hook "flymake" "" t)
-  ;; gnuplot
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-  ;; graphviz
-  (autoload 'graphviz-dot-mode "graphviz-dot" "graphviz mode" t)
   )
 
 ;;; auto detect mode
@@ -207,7 +162,7 @@
 (deh-section-if "gtags" (executable-find "global")
   (autoload 'gtags-mode "gtags" "" t)
 
-  (deh-add-hooks '(c-mode-common-hook)
+  (deh-add-hook '(c-mode-common-hook)
     (gtags-mode t))
 
   (setq gtags-mode-hook
@@ -220,25 +175,26 @@
        (set (make-local-variable 'hl-line-face) 'underline)
        (hl-line-mode 1)))
 
-  (eval-after-load "gtags"
-    '(deh-define-key gtags-mode-map
-       ;; Instead of `find-tag' & `pop-tag-mark'
-       ((kbd "M-.") . 'gtags-find-tag)
-       ((kbd "M-*") . 'gtags-pop-stack)
-       ;; other key binds
-       ("\C-cgv" . 'gtags-visit-rootdir)
-       ("\C-cgt" . 'gtags-find-tag-from-here)
-       ("\C-cgo" . 'gtags-find-tag-other-window)
-       ("\C-cgr" . 'gtags-find-rtag)
-       ("\C-cgs" . 'gtags-find-symbol)
-       ("\C-cgp" . 'gtags-find-pattern)
-       ("\C-cgg" . 'gtags-find-with-grep)
-       ("\C-cgi" . 'gtags-find-with-idutils)
-       ("\C-cgf" . 'gtags-find-file)
-       ("\C-cga" . 'gtags-parse-file)
-       ("\C-cgb" . 'gtags-append-tags)
-       ("\C-cgd" . 'gtags-display-tag)
-       ("\C-cgq" . 'gtags-display-tag-quit)))
+  (deh-after-load "gtags"
+    (deh-define-key gtags-mode-map
+      ;; Instead of `find-tag' & `pop-tag-mark'
+      ((kbd "M-.") 'gtags-find-tag)
+      ((kbd "M-*") 'gtags-pop-stack)
+      ;; other key binds
+      ("\C-cgv"  'gtags-visit-rootdir)
+      ("\C-cgt"  'gtags-find-tag-from-here)
+      ("\C-cgo"  'gtags-find-tag-other-window)
+      ("\C-cgr"  'gtags-find-rtag)
+      ("\C-cgs"  'gtags-find-symbol)
+      ("\C-cgp"  'gtags-find-pattern)
+      ("\C-cgg"  'gtags-find-with-grep)
+      ("\C-cgi"  'gtags-find-with-idutils)
+      ("\C-cgf"  'gtags-find-file)
+      ("\C-cga"  'gtags-parse-file)
+      ("\C-cgb"  'gtags-append-tags)
+      ("\C-cgd"  'gtags-display-tag)
+      ("\C-cgq"  'gtags-display-tag-quit)))
+
   (defun gtags-append-tags ()
     (interactive)
     (if gtags-mode
@@ -342,17 +298,17 @@
         '(lambda ()
            ;; Instead of `find-tag' & `pop-tag-mark'
            (deh-define-key cscope:map
-             ((kbd "M-.") . 'cscope-find-this-symbol)
+             ((kbd "M-.") 'cscope-find-this-symbol)
              ((kbd "M-*") 'cscope-pop-mark))
            ;; Key bind for cscope-minor-mode
            ))
   ;; hack `xcscope.el', remove hooks
-  (deh-remove-hooks '(c-mode-hook c++-mode-hook dired-mode-hook)
+  (deh-remove-hook '(c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
 
 (deh-require-reserved 'tags-view
   (deh-define-key tags-history-mode-map
-    ("q" . 'tv-view-history-quit))
+    ("q" 'tv-view-history-quit))
 
   (defvar tv-previous-window-conf nil
     "Window configuration before switching to tv buffer.")
@@ -400,23 +356,27 @@ etc).  The following options will be available:
   )
 
 (deh-section "svn"
+  ;; psvn
+  (autoload 'svn-status "psvn" "")
+  (autoload 'svn-status-update-modeline "psvn" "")
+  (autoload 'svn-status-in-vc-mode? "psvn" "")
+
   ;; inspired from git-emacs-autoloads
   (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
     "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
     (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
 
-  (eval-after-load "psvn"
-    '(progn
-       (defsubst svn-status-interprete-state-mode-color (stat)
-         "Interpret vc-svn-state symbol to mode line color"
-         (case stat
-           ('up-to-date "GreenYellow")
-           ('edited     "tomato")
-           ('unknown    "gray")
-           ('added      "blue")
-           ('deleted    "red")
-           ('unmerged   "purple")
-           (t           "black")))))
+  (deh-after-load "psvn"
+    (defsubst svn-status-interprete-state-mode-color (stat)
+      "Interpret vc-svn-state symbol to mode line color"
+      (case stat
+        ('up-to-date "GreenYellow")
+        ('edited     "tomato")
+        ('unknown    "gray")
+        ('added      "blue")
+        ('deleted    "red")
+        ('unmerged   "purple")
+        (t           "black"))))
 
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
@@ -427,6 +387,11 @@ etc).  The following options will be available:
 )
 
 (deh-section "woman"
+  (autoload 'woman-mode "woman")
+  (autoload 'woman-decode-buffer "woman")
+
+  ;; (add-hook 'woman-mode-hook 'view-mode)
+
   (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-temp-dir)
         woman-manpath '("/usr/man"
                         "/usr/share/man"
@@ -443,16 +408,15 @@ etc).  The following options will be available:
 (deh-section "info"
   (add-to-list 'Info-default-directory-list "~/info")
 
-  (eval-after-load "info"
-    '(progn
-       (deh-define-key Info-mode-map
-         ;;# useful keybind reminds
-         ;; ("i" . 'info-index)
-         ;; ("T" . 'info-toc)
-         ("j" . 'next-line)
-         ("k" . 'previous-line))
-       (deh-try-require 'info+
-         (setq Info-fit-frame-flag nil))))
+  (deh-after-load "info"
+    (deh-define-key Info-mode-map
+      ;;# useful keybind reminds
+      ;; ("i" . 'info-index)
+      ;; ("T" . 'info-toc)
+      ("j" 'next-line)
+      ("k" 'previous-line))
+    (deh-try-require 'info+
+      (setq Info-fit-frame-flag nil)))
 
   (define-mode-toggle "info" info
     (derived-mode-p 'Info-mode))
@@ -461,9 +425,9 @@ etc).  The following options will be available:
 (deh-section-reserved "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
-  (deh-add-hooks '(text-mode-hook org-mode-hook) (flyspell-mode 1))
-  (deh-add-hooks '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
-  (deh-add-hooks '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
+  (deh-add-hook '(text-mode-hook org-mode-hook) (flyspell-mode 1))
+  (deh-add-hook '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
+  (deh-add-hook '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
 
 (deh-section-after "flymake"
   ;; (flymake-mode t)
@@ -473,7 +437,7 @@ etc).  The following options will be available:
         flymake-log-level 0
         flymake-no-changes-timeout 5.0)
 
-  ;; (deh-add-hooks '(c-mode-common-hook makefile-mode-hook)
+  ;; (deh-add-hook '(c-mode-common-hook makefile-mode-hook)
   ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
 
   ;; (deh-add-hook 'find-file-hook
@@ -481,9 +445,9 @@ etc).  The following options will be available:
 
   (defvar flymake-mode-map (make-sparse-keymap))
   (deh-define-key flymake-mode-map
-    ((kbd "C-c <f4>")   . 'flymake-goto-next-error-disp)
-    ((kbd "C-c <S-f4>") . 'flymake-goto-prev-error-disp)
-    ((kbd "C-c <C-f4>") . 'flymake-display-err-menu-for-current-line))
+    ((kbd "C-c <f4>")    'flymake-goto-next-error-disp)
+    ((kbd "C-c <S-f4>")  'flymake-goto-prev-error-disp)
+    ((kbd "C-c <C-f4>")  'flymake-display-err-menu-for-current-line))
   (or (assoc 'flymake-mode minor-mode-map-alist)
       (setq minor-mode-map-alist
             (cons (cons 'flymake-mode flymake-mode-map)
@@ -715,9 +679,9 @@ Use CREATE-TEMP-F for creating temp copy."
     (my-mode-common-hook)
     (turn-on-eldoc-mode)
     (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
-      ("\M-." . 'browse-el-find-funtion)
-      ("\M-*" . 'browse-el-go-back)
-      ((kbd "C-)") . 'my-auto-insert-paren)))
+      ("\M-."  'browse-el-find-funtion)
+      ("\M-*"  'browse-el-go-back)
+      ((kbd "C-)")  'my-auto-insert-paren)))
 
   (defun my-auto-insert-paren ()
     "Auto close matched parentheses."
@@ -731,7 +695,7 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 ;;; scripts setting
-(deh-section "python"
+(deh-require 'python
   (deh-add-hook 'python-mode-hook
     (my-mode-common-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
@@ -782,13 +746,18 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; tools
 (deh-section "gnuplot"
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
+
   (deh-add-hook 'gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook 'gnuplot-comint-setup-hook
     (deh-define-key comint-mode-map
-      ("\C-d" . 'comint-delchar-or-maybe-eof))))
+      ("\C-d"  'comint-delchar-or-maybe-eof))))
 
 (deh-section "graphviz"
+  (autoload 'graphviz-dot-mode "graphviz-dot" "graphviz mode" t)
+
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
@@ -854,16 +823,18 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
+  (autoload 'js2-mode "js2" "" t)
+
   (deh-add-hook 'js2-mode-hook
     (setq forward-sexp-function nil)))
 
 (deh-section-after "markdown-mode"
   ;; override markdown's key binding
   (deh-define-key markdown-mode-map
-    ((kbd "C-M-f") . 'forward-sexp)
-    ((kbd "C-M-b") . 'backward-sexp)
-    ((kbd "M-p") . 'pager-row-up)
-    ((kbd "M-n") . 'pager-row-down)))
+    ((kbd "C-M-f")  'forward-sexp)
+    ((kbd "C-M-b")  'backward-sexp)
+    ((kbd "M-p")    'pager-row-up)
+    ((kbd "M-n")    'pager-row-down)))
 
 (deh-section-reserved "php"
   (deh-try-require 'php-doc
