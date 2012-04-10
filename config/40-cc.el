@@ -220,22 +220,21 @@ the directories in the INCLUDE environment variable."
     (derived-mode-p 'gud-mode)
     (call-interactively 'gdb-restore-windows))
 
-  (eval-after-load "gud"
-    '(progn
-       (deh-define-key gud-minor-mode-map
-         ((kbd "<M-up>") . 'comint-previous-prompt)
-         ([f5]           . 'gud-go)
-         ([S-f5]         . 'gud-kill)
-         ([f8]           . 'gud-print)
-         ([C-f8]         . 'gud-pstar)
-         ([f9]           . 'gud-break-or-remove)
-         ([C-f9]         . 'gud-enable-or-disable)
-         ([S-f9]         . 'gud-watch)
-         ([f10]          . 'gud-next)
-         ([C-f10]        . 'gud-until)
-         ([C-S-f10]      . 'gud-jump)
-         ([f11]          . 'gud-step)
-         ([C-f11]        . 'gud-finish))))
+  (deh-after-load "gud"
+    (deh-define-key gud-minor-mode-map
+      ((kbd "<M-up>")  'comint-previous-prompt)
+      ([f5]            'gud-go)
+      ([S-f5]          'gud-kill)
+      ([f8]            'gud-print)
+      ([C-f8]          'gud-pstar)
+      ([f9]            'gud-break-or-remove)
+      ([C-f9]          'gud-enable-or-disable)
+      ([S-f9]          'gud-watch)
+      ([f10]           'gud-next)
+      ([C-f10]         'gud-until)
+      ([C-S-f10]       'gud-jump)
+      ([f11]           'gud-step)
+      ([C-f11]         'gud-finish)))
 
   (gud-tooltip-mode 1)
 
@@ -301,8 +300,9 @@ the directories in the INCLUDE environment variable."
 
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
-(deh-section-after "buffer-action"
-
+(deh-section "buffer-action"
+  (autoload 'buffer-action-compile "buffer-action" "Compile current buffer" t)
+  (autoload 'buffer-action-run "buffer-action" "Run exec of current buffer" t)
   )
 
 (deh-section "compilation"

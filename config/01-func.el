@@ -228,10 +228,11 @@ space. bind to \\[vi-join-lines]."
   (interactive "P")
   (setq arg (abs (if arg (prefix-numeric-value arg) 1)))
   (while (> arg 0)
+    (end-of-line)
     (save-excursion
-      (end-of-line)
+      ;; (end-of-line)
       (delete-char 1)
-      (just-one-space))
+      (just-one-space 1))
     (setq arg (- arg 1))))
 
 (defun vi-merge-lines(&optional arg)

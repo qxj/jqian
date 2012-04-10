@@ -93,6 +93,9 @@ mouse-3: Remove current window from display")
   )
 
 (deh-section "minibuffer"
+  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
+  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
+
   (mapcar (lambda (keymap)
             (define-key keymap "\C-r" 'minibuf-isearch-prev)
             (define-key keymap "\C-s" 'minibuf-isearch-next))
@@ -106,6 +109,9 @@ mouse-3: Remove current window from display")
                                minibuffer-local-must-match-map)))))
 
 ;;; Directories and buffers
+;; loading dired-x.el
+(autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
+
 (deh-section-after "dired"
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
@@ -123,18 +129,18 @@ mouse-3: Remove current window from display")
 
   ;;# Keybind for dired
   (deh-define-key dired-mode-map
-    ([return] . 'dired-find-file-single-buffer)
-    ("\M-u" . 'dired-up-directory)   ; remember previous upper directory
-    ;; ("\M-=" . 'dired-backup-diff)
-    ("b"    . 'browse-url-of-dired-file)
-    ("W"    . 'woman-dired-find-file)
-    ("r"    . 'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
-    (" "    . 'dired-count-directory-size)
-    ("E"    . 'dired-w3m-visit)
-    ;; ("!"    . 'dired-do-shell-command)
-    ("z"    . 'dired-compress-directory)
-    ("s"    . 'one-key-menu-dired-sort)
-    ("/"    . 'one-key-menu-dired-filter))
+    ([return]  'dired-find-file-single-buffer)
+    ("\M-u"  'dired-up-directory)   ; remember previous upper directory
+    ;; ("\M-="  'dired-backup-diff)
+    ("b"     'browse-url-of-dired-file)
+    ("W"     'woman-dired-find-file)
+    ("r"     'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
+    (" "     'dired-count-directory-size)
+    ("E"     'dired-w3m-visit)
+    ;; ("!"     'dired-do-shell-command)
+    ("z"     'dired-compress-directory)
+    ("s"     'one-key-menu-dired-sort)
+    ("/"     'one-key-menu-dired-filter))
 
   ;;# hooks
   (deh-add-hook 'dired-mode-hook
@@ -339,18 +345,18 @@ mouse-3: Remove current window from display")
   (defun ido-my-keys ()
     "Add my keybindings for ido."
     (deh-define-key ido-completion-map
-      ((kbd "C-n")   . 'ido-next-match-dir)
-      ((kbd "C-p")   . 'ido-prev-match-dir)
-      ((kbd "M-u")   . 'ido-up-directory)
-      ((kbd "C-M-h") . 'ido-goto-home)
-      ((kbd "C-u")   . 'ido-clean-text)
-      ((kbd "C-w")   . 'ido-delete-backward-word-updir)
+      ((kbd "C-n")    'ido-next-match-dir)
+      ((kbd "C-p")    'ido-prev-match-dir)
+      ((kbd "M-u")    'ido-up-directory)
+      ((kbd "C-M-h")  'ido-goto-home)
+      ((kbd "C-u")    'ido-clean-text)
+      ((kbd "C-w")    'ido-delete-backward-word-updir)
       ;; Remind keybinds
-      ;; ((kbd "C-a") . 'ido-toggle-ignore)
-      ((kbd "C-S-p") . 'ido-toggle-prefix)
-      ;; ((kbd "C-t") . 'ido-enable-regexp)
-      ;; ((kbd "M-n") . 'ido-next-work-directory)
-      ;; ((kbd "M-p") . 'ido-prev-work-directory)
+      ;; ((kbd "C-a")  'ido-toggle-ignore)
+      ((kbd "C-S-p")  'ido-toggle-prefix)
+      ;; ((kbd "C-t")  'ido-enable-regexp)
+      ;; ((kbd "M-n")  'ido-next-work-directory)
+      ;; ((kbd "M-p")  'ido-prev-work-directory)
       ))
 
   (defun ido-clean-text ()
@@ -397,7 +403,26 @@ mouse-3: Remove current window from display")
                                        nil require-match initial-input hist def))
           ad-do-it))))
 
- ;; push the most used directory to `ido-work-directory-list'
+  ;; HACK: avoid `ido-dir-file-cache' include tramp file
+  (defun ido-may-cache-directory (&optional dir)
+    (setq dir (or dir ido-current-directory))
+    (cond
+     ((ido-directory-too-big-p dir)
+      nil)
+     ((and (ido-is-root-directory dir)
+           (or ido-enable-tramp-completion
+               (memq system-type '(windows-nt ms-dos))))
+      nil)
+     ((ido-is-unc-host dir)
+      (ido-cache-unc-valid))
+     ((ido-is-ftp-directory dir)
+      (ido-cache-ftp-valid))
+     ;; hacking
+     ((string-match "^/[^/:]+:[^/:]+@[^/:]+:" dir)
+      nil)
+     (t t)))
+
+  ;; push the most used directory to `ido-work-directory-list'
   (mapc (lambda (dir)
           (add-to-list 'ido-work-directory-list
                        (expand-file-name dir)))
@@ -423,10 +448,10 @@ mouse-3: Remove current window from display")
   ;; keybinds
   ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
   (deh-define-key ibuffer-mode-map
-    ("s" . 'one-key-menu-ibuffer-sort)
-    ("r" . 'ibuffer-rename-buffer)
-    ("\C-x\C-f" . 'ibuffer-find-file)
-    (" " . 'scroll-up))
+    ("s"  'one-key-menu-ibuffer-sort)
+    ("r"  'ibuffer-rename-buffer)
+    ("\C-x\C-f"  'ibuffer-find-file)
+    (" "  'scroll-up))
 
   (defun one-key-menu-ibuffer-sort ()
     "The `one-key' menu for IBUFFER-SORT."
@@ -473,33 +498,32 @@ mouse-3: Remove current window from display")
     (require 'ibuf-ext nil t)
     (ibuffer-switch-to-saved-filter-groups "default"))
 
-  (eval-after-load "ibuf-ext"
-    '(progn
-       (setq ibuffer-saved-filter-groups
-             '(("default"
-                ("*buffers*" (or (mode . term-mode)
-                                 (name . "^\\*gud")
-                                 (name . "^\\*scratch")
-                                 ;; slime
-                                 (name . "^\\*slime-repl")
-                                 (mode . message-mode)))
-                ("programming" (or (mode . c++-mode)
-                                   (mode . c-mode)
-                                   (mode . makefile-mode)))
-                ("script" (or (mode . python-mode)
-                              (mode . sh-mode)
-                              (mode . perl-mode)
-                              (mode . org-mode)
-                              (mode . LaTeX-mode)))
-                ("web" (or  (mode . html-mode)
-                            (mode . css-mode)
-                            (mode . php-mode)
-                            (mode . javascript-mode)
-                            (mode . js2-mode)))
-                ("elisp" (or (mode . emacs-lisp-mode)
-                             (mode . lisp-interaction-mode)))
-                ("dired" (mode . dired-mode))
-                ("*others*" (name . "\\*.*\\*")))))))
+  (deh-after-load "ibuf-ext"
+    (setq ibuffer-saved-filter-groups
+          '(("default"
+             ("*buffers*" (or (mode . term-mode)
+                              (name . "^\\*gud")
+                              (name . "^\\*scratch")
+                              ;; slime
+                              (name . "^\\*slime-repl")
+                              (mode . message-mode)))
+             ("programming" (or (mode . c++-mode)
+                                (mode . c-mode)
+                                (mode . makefile-mode)))
+             ("script" (or (mode . python-mode)
+                           (mode . sh-mode)
+                           (mode . perl-mode)
+                           (mode . org-mode)
+                           (mode . LaTeX-mode)))
+             ("web" (or  (mode . html-mode)
+                         (mode . css-mode)
+                         (mode . php-mode)
+                         (mode . javascript-mode)
+                         (mode . js2-mode)))
+             ("elisp" (or (mode . emacs-lisp-mode)
+                          (mode . lisp-interaction-mode)))
+             ("dired" (mode . dired-mode))
+             ("*others*" (name . "\\*.*\\*"))))))
   )
 
 (deh-require 'uniquify
@@ -609,18 +633,17 @@ mouse-3: Remove current window from display")
     (setq desktop-load-locked-desktop t)
 
     ;;# save individual bm repository with different desktops
-    (eval-after-load "bm"
-      (progn
-        (defun bm-repository-file-of-desktop-menu ()
-          (let ((current-desktop (cdr desktop-menu--current-desktop)))
-            (if current-desktop
-                (setq bm-repository-file
-                      (concat current-desktop ".bm-repo")))))
-        (add-hook 'desktop-after-read-hook (lambda nil (if (bm-repository-file-of-desktop-menu)
-                                                           (bm-repository-load))))
-        (add-hook 'desktop-save-hook (lambda nil (when (bm-repository-file-of-desktop-menu)
-                                                   (bm-buffer-save-all)
-                                                   (bm-repository-save))))))
+    (deh-after-load "bm"
+      (defun bm-repository-file-of-desktop-menu ()
+        (let ((current-desktop (cdr desktop-menu--current-desktop)))
+          (if current-desktop
+              (setq bm-repository-file
+                    (concat current-desktop ".bm-repo")))))
+      (add-hook 'desktop-after-read-hook (lambda nil (if (bm-repository-file-of-desktop-menu)
+                                                         (bm-repository-load))))
+      (add-hook 'desktop-save-hook (lambda nil (when (bm-repository-file-of-desktop-menu)
+                                                 (bm-buffer-save-all)
+                                                 (bm-repository-save)))))
     ))
 
 (deh-require-reserved 'session
@@ -656,8 +679,8 @@ mouse-3: Remove current window from display")
   (global-set-key [left-margin mouse-3] 'bm-next-mouse)
 
   (deh-define-key bm-show-mode-map
-    ("n" . 'bm-show-next)
-    ("p" . 'bm-show-prev)))
+    ("n"  'bm-show-next)
+    ("p"  'bm-show-prev)))
 
 ;; recent-jump
 (deh-require 'recent-jump)
@@ -691,39 +714,41 @@ mouse-3: Remove current window from display")
       (find-file (cdr (assoc (ido-completing-read "Open file: "
                                                   (mapcar 'car elist))
                              elist)))))
-  (eval-after-load "recentf"
-    '(progn
-       ;; Also store recent opened directories besides files
-       (add-hook 'dired-mode-hook
-                 (lambda () (recentf-add-file dired-directory))))))
+  (deh-after-load "recentf"
+    ;; Also store recent opened directories besides files
+    (deh-add-hook 'dired-mode-hook
+      (recentf-add-file dired-directory))))
 
 (deh-require 'pager
-  (global-set-key (kbd "C-v") 'pager-page-down)
-  (global-set-key (kbd "M-v") 'pager-page-up)
-  (global-set-key (kbd "<up>") 'pager-row-up)
-  (global-set-key (kbd "M-p") 'pager-row-up)
-  (global-set-key (kbd "<down>") 'pager-row-down)
-  (global-set-key (kbd "M-n") 'pager-row-down)
+  (deh-define-key global-map
+    ((kbd "C-v")  'pager-page-down)
+    ((kbd "M-v")  'pager-page-up)
+    ((kbd "<up>") 'pager-row-up)
+    ((kbd "M-p")  'pager-row-up)
+    ((kbd "<down>") 'pager-row-down)
+    ((kbd "M-n")  'pager-row-down))
   ;; Some individual keybind overrides
-  (eval-after-load "info"
-    '(progn
-       (define-key Info-mode-map (kbd "M-p") 'pager-row-up)
-       (define-key Info-mode-map (kbd "M-n") 'pager-row-down)))
-  (eval-after-load "man"
-    '(progn
-       (define-key Man-mode-map (kbd "M-p") 'pager-row-up)
-       (define-key Man-mode-map (kbd "M-n") 'pager-row-down)))
-  (eval-after-load "woman"
-    '(progn
-       (define-key woman-mode-map (kbd "M-p") 'pager-row-up)
-       (define-key woman-mode-map (kbd "M-n") 'pager-row-down)))
-  (eval-after-load "w3m"
-    '(progn
-       (define-key w3m-mode-map (kbd "M-p") 'pager-row-up)
-       (define-key w3m-mode-map (kbd "M-n") 'pager-row-down)))
+  (deh-after-load "info"
+    (deh-define-key Info-mode-map
+      ((kbd "M-p") 'pager-row-up)
+      ((kbd "M-n") 'pager-row-down)))
+  (deh-after-load "man"
+    (deh-define-key Man-mode-map
+      ((kbd "M-p") 'pager-row-up)
+      ((kbd "M-n") 'pager-row-down)))
+  (deh-after-load "woman"
+    (deh-define-key woman-mode-map
+      ((kbd "M-p") 'pager-row-up)
+      ((kbd "M-n") 'pager-row-down)))
+  (deh-after-load "w3m"
+    (deh-define-key w3m-mode-map
+      ((kbd "M-p") 'pager-row-up)
+      ((kbd "M-n") 'pager-row-down)))
   )
 
 (deh-section "ffap"
+  (autoload 'ffap "ffap" "Alias of find-file-at-point")
+
   ;; (ffap-bindings)
 
   ;; for windows path recognize
@@ -734,67 +759,67 @@ mouse-3: Remove current window from display")
           (machine "-a-zA-Z0-9." "" ".")
           (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
 
-  (eval-after-load "ffap"
-    '(setq ffap-c-path (append ffap-c-path my-include-dirs)))
+  (deh-after-load "ffap"
+    (setq ffap-c-path (append ffap-c-path my-include-dirs)))
   )
 
 (deh-section "filecache"
   (deh-define-key minibuffer-local-map
-    ((kbd "C-M-f") . 'file-cache-minibuffer-complete))
+    ((kbd "C-M-f")  'file-cache-minibuffer-complete))
 
   (setq file-cache-ignore-case t)
 
-  (eval-after-load "filecache"
-    '(progn
-       (message "Loading file cache...")
-       (file-cache-add-directory-recursively my-startup-dir)
-       (file-cache-add-directory-recursively (expand-file-name "~/works")))))
+  (deh-after-load "filecache"
+    (message "Loading file cache...")
+    (file-cache-add-directory my-config-dir)
+    (file-cache-add-directory-list load-path)
+    (file-cache-add-directory-using-find (expand-file-name "~/works"))))
 
 ;;; Buffer view
 (deh-section-after "help-mode"
   (setq help-window-select t)
   (deh-define-key help-mode-map
-    ((kbd "<left>") . 'help-go-back)
-    ((kbd "<right>") . 'help-go-forward) ))
+    ((kbd "<left>")  'help-go-back)
+    ((kbd "<right>") 'help-go-forward) ))
 
 (deh-section-after "view"
   (setq view-read-only t)
 
   (deh-define-key view-mode-map
     ;; simulate vi keybinds
-    ("h" . 'backward-char)
-    ("l" . 'forward-char)
-    ("j" . 'next-line)
-    ("k" . 'previous-line)
-    ("c" . 'recenter-top-bottom)
-    ("0" . 'beginning-of-line)
-    ("$" . 'end-of-line)
-    ("g" . 'beginning-of-buffer)
-    ("G" . 'end-of-buffer)
-    ("n" . 'View-scroll-line-forward)
-    ("p" . 'View-scroll-line-backward)
-    ((kbd "<backspace>") . 'View-scroll-page-backward)
-    ((kbd "SPC") . 'View-scroll-page-forward)
-    ("?" . 'View-search-regexp-backward)
+    ("h"  'backward-char)
+    ("l"  'forward-char)
+    ("j"  'next-line)
+    ("k"  'previous-line)
+    ("c"  'recenter-top-bottom)
+    ("0"  'beginning-of-line)
+    ("$"  'end-of-line)
+    ("g"  'beginning-of-buffer)
+    ("G"  'end-of-buffer)
+    ("n"  'View-scroll-line-forward)
+    ("p"  'View-scroll-line-backward)
+    ((kbd "<backspace>")  'View-scroll-page-backward)
+    ((kbd "SPC")  'View-scroll-page-forward)
+    ("?"  'View-search-regexp-backward)
     ;; register
-    ("m" . 'point-to-register)
-    ("'" . 'register-to-point)
+    ("m"  'point-to-register)
+    ("'"  'register-to-point)
     ;; gtags
-    ("." . 'gtags-find-tag)
-    ("," . 'gtags-pop-stack)
-    ("i" . 'gtags-find-tag)
-    ("u" . 'gtags-pop-stack)
+    ("."  'gtags-find-tag)
+    (","  'gtags-pop-stack)
+    ("i"  'gtags-find-tag)
+    ("u"  'gtags-pop-stack)
     ;; sourcepair
-    ("a" . 'sourcepair-load)
+    ("a"  'sourcepair-load)
     ;; eassist
-    ("L" . 'eassist-list-methods)
+    ("L"  'eassist-list-methods)
     ;; generic
-    ("f" . 'ido-find-file)
-    ("d" . 'dired-jump)
-    ("o" . 'my-switch-recent-buffer)
-    ;; ("q" . 'bury-buffer)
-    ("q" .  'View-quit)
-    ("\C-k" . 'kill-this-buffer)))
+    ("f"  'ido-find-file)
+    ("d"  'dired-jump)
+    ("o"  'my-switch-recent-buffer)
+    ;; ("q"  'bury-buffer)
+    ("q"   'View-quit)
+    ("\C-k"  'kill-this-buffer)))
 
 (deh-section "doc-view"
   (deh-add-hook 'doc-view-mode-hook
@@ -832,9 +857,9 @@ mouse-3: Remove current window from display")
   (setq w3m-verbose t                   ; log in *Messages*
         w3m-default-display-inline-images t)
   (deh-define-key w3m-mode-map
-    ("n" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
-    ("p" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
-    ("t" . (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url))))
+    ("n"  (lambda nil (interactive) (ywb-w3m-goto-url w3m-next-url)))
+    ("p"  (lambda nil (interactive) (ywb-w3m-goto-url w3m-previous-url)))
+    ("t"  (lambda nil (interactive) (ywb-w3m-goto-url w3m-contents-url))))
   (deh-add-hook 'w3m-load-hook
     (add-to-list
      'w3m-relationship-estimate-rules
@@ -872,10 +897,9 @@ mouse-3: Remove current window from display")
   ;; make cursor become a line
   ;; (require 'bar-cursor)
 
-  (eval-after-load "moccur-edit"
-    '(progn
-       (defadvice moccur-edit-change-file (after save-after-moccur-edit-buffer activate)
-         (save-buffer))))
+  (deh-after-load "moccur-edit"
+    (defadvice moccur-edit-change-file (after save-after-moccur-edit-buffer activate)
+      (save-buffer)))
 
   ;; handy functions
   (defun moccur-word-all-buffers (regexp)
@@ -905,9 +929,34 @@ mouse-3: Remove current window from display")
     )
   )
 
+(deh-section "mark-multiple"
+  (deh-try-require 'inline-string-rectangle
+    (deh-define-key global-map
+      ((kbd "C-x r t") 'inline-string-rectangle)))
+
+  (deh-try-require 'mark-more-like-this
+    (deh-define-key global-map
+      ((kbd "C-<") 'mark-previous-like-this)
+      ((kbd "C->") 'mark-next-like-this)
+      ((kbd "C-M-m") 'mark-more-like-this)
+      ((kbd "C-*") 'mark-all-like-this)))
+
+  (deh-after-load "sgml-mode"
+    (deh-try-require 'rename-sgml-tag
+      (deh-define-key sgml-mode-map
+        ((kbd "C-c C-r") 'rename-sgml-tag))))
+
+  (deh-after-load "js2"
+    (deh-try-require 'js2-rename-var
+      (deh-define-key js2-mode-map
+        ((kbd "C-c C-r") 'js2-rename-var)))))
+
 (deh-section "grep"
-  (eval-after-load "grep"
-    '(add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
+  (autoload 'grep-tag-default "grep")
+  (autoload 'grep-apply-setting "grep")
+
+  (deh-after-load "grep"
+    (add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
 
   (defun grep-current-dir (&optional prompt wd)
     "Run `grep' to find current word in current directory."
@@ -931,17 +980,17 @@ mouse-3: Remove current window from display")
 
 (deh-section "isearch"
   (deh-define-key isearch-mode-map
-    ("\t" . 'isearch-complete)
-    ("\M-<" . 'isearch-beginning-of-buffer)
-    ("\M->" . 'isearch-end-of-buffer)
-    ("\M-i" . 'isearch-query-replace-current)
-    ("\C-u" . 'isearch-clean)
-    ("\C-\M-y" . 'isearch-yank-symbol-regexp)
-    ("\C-y" . 'isearch-yank-symbol) ; instead of `isearch-yank-line'
+    ("\t"  'isearch-complete)
+    ("\M-<"  'isearch-beginning-of-buffer)
+    ("\M->"  'isearch-end-of-buffer)
+    ("\M-i"  'isearch-query-replace-current)
+    ("\C-u"  'isearch-clean)
+    ("\C-\M-y"  'isearch-yank-symbol-regexp)
+    ("\C-y"  'isearch-yank-symbol) ; instead of `isearch-yank-line'
     ;; Remind other useful keybinds
-    ;; ("\M-e" . 'isearch-edit-string)
-    ;; ("\M-y" . 'isearch-yank-kill)
-    ;; ("\M-r" . 'isearch-toggle-regexp)
+    ;; ("\M-e"  'isearch-edit-string)
+    ;; ("\M-y"  'isearch-yank-kill)
+    ;; ("\M-r"  'isearch-toggle-regexp)
     )
 
   (defun isearch-beginning-of-buffer ()
@@ -1014,6 +1063,20 @@ mouse-3: Remove current window from display")
 ;;       (ad-activate 'isearch-repeat)))
   )
 
+(deh-require 'key-chord
+  (key-chord-mode 1)
+  (key-chord-define-global ",." "<>\C-b"))
+
+(deh-require 'ace-jump-mode
+  (global-set-key (kbd "C-c SPC") 'ace-jump-mode))
+
+(deh-require 'iy-go-to-char
+  (global-set-key (kbd "C-c f") 'iy-go-to-char)
+  (global-set-key (kbd "C-c ;") 'iy-go-to-char-continue)
+  ;; (global-set-key (kbd "C-c F") 'iy-go-to-char-backward)
+  ;; (global-set-key (kbd "C-c ,") 'iy-go-to-char-continue-backward)
+  )
+
 (deh-require 'midnight
   (setq midnight-mode t
         clean-buffer-list-delay-general 2 ; delete after two days
@@ -1027,32 +1090,39 @@ mouse-3: Remove current window from display")
 
 ;;; Enhanced terminal
 (deh-section "multi-term"
+  (autoload 'multi-term "multi-term" "")
+  (autoload 'multi-term-dedicated-open-select "multi-term" "")
+  (autoload 'multi-term-dedicated-exist-p "multi-term" "")
+  (autoload 'multi-term-dedicated-open "multi-term" "")
+  (autoload 'multi-term-dedicated-close "multi-term" "")
+  (autoload 'multi-term-dedicated-select "multi-term" "")
+  (autoload 'multi-term-dedicated-toggle "multi-term" "")
+
   (setq multi-term-dedicated-window-height 10
         multi-term-dedicated-max-window-height 10)
 
-  (eval-after-load "multi-term"
-    '(progn
-       ;; compatible with normal terminal keybinds
-       (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
-       (add-to-list 'term-bind-key-alist '("<C-backspace>" . term-send-backward-kill-word))
-       (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
-       (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
-       (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
-       (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
-       (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
-       (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
-       (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
-       (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
-       ;; Only close dedicated window
-       (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
-       ;; unbind keys
-       (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
+  (deh-after-load "multi-term"
+    ;; compatible with normal terminal keybinds
+    (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
+    (add-to-list 'term-bind-key-alist '("<C-backspace>" . term-send-backward-kill-word))
+    (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
+    (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
+    (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
+    (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
+    (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+    (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
+    (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
+    (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
+    ;; Only close dedicated window
+    (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
+    ;; unbind keys
+    (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
 
-       ;; hack to backward kill word as it does in terminal
-       (defun term-send-backward-kill-word ()
-         "Backward kill word in term mode."
-         (interactive)
-         (term-send-raw-string "\e\C-?"))))
+    ;; hack to backward kill word as it does in terminal
+    (defun term-send-backward-kill-word ()
+      "Backward kill word in term mode."
+      (interactive)
+      (term-send-raw-string "\e\C-?")))
 
   (defun multi-term-dedicated-open-select ()
     (interactive)
@@ -1097,6 +1167,8 @@ mouse-3: Remove current window from display")
 
 ;; browse-kill-ring
 (deh-section "browse-kill-ring"
+  (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
+
   (browse-kill-ring-default-keybindings)
   (setq browse-kill-ring-highlight-current-entry t))
 
@@ -1112,35 +1184,38 @@ mouse-3: Remove current window from display")
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
 
 (deh-section "anything"
+  (autoload 'anything "anything" "" t)
 
-  (eval-after-load "anything"
-    '(deh-define-key anything-map
-       ("\C-n" . 'anything-next-line)
-       ("\C-p" . 'anything-previous-line)
-       ("\M-n" . 'anything-next-source)
-       ("\M-p" . 'anything-previous-source)))
+  (deh-after-load "anything"
+    (deh-define-key anything-map
+      ("\C-n"  'anything-next-line)
+      ("\C-p"  'anything-previous-line)
+      ("\M-n"  'anything-next-source)
+      ("\M-p"  'anything-previous-source)))
 
   ;; redefine anything-command-map-prefix-key
   (setq anything-command-map-prefix-key "")
 
-  (eval-after-load "anything-config"
-    '(progn
-       (setq anything-c-adaptive-history-file
-             (expand-file-name "anything-c-adaptive-history" my-temp-dir)
-             anything-c-yaoddmuse-cache-file
-             (expand-file-name "yaoddmuse-cache.el" my-temp-dir))
-       (setq anything-c-find-files-show-icons t
-             ;; anything-c-external-programs-associations nil
-             anything-c-google-suggest-url "http://www.google.com/complete/search?output=toolbar&q="
-             ;; anything-google-suggest-use-curl-p t
-             anything-kill-ring-threshold 50
-             anything-su-or-sudo "sudo")
+  (deh-after-load "anything-config"
+    (setq anything-c-adaptive-history-file
+          (expand-file-name "anything-c-adaptive-history" my-temp-dir)
+          anything-c-yaoddmuse-cache-file
+          (expand-file-name "yaoddmuse-cache.el" my-temp-dir))
+    (setq anything-c-find-files-show-icons t
+          ;; anything-c-external-programs-associations nil
+          anything-c-google-suggest-url "http://www.google.com/complete/search?output=toolbar&q="
+          ;; anything-google-suggest-use-curl-p t
+          anything-kill-ring-threshold 50
+          anything-su-or-sudo "sudo")
 
-       (defun anything-info-pages ()
-         "Preconfigured anything for info pages."
-         (interactive)
-         (anything-other-buffer 'anything-c-source-info-pages "*info pages*"))
-       )))
+    (defun anything-info-pages ()
+      "Preconfigured anything for info pages."
+      (interactive)
+      (anything-other-buffer 'anything-c-source-info-pages "*info pages*"))
+    ))
+
+(deh-section "helm"
+  (deh-try-require 'helm-config))
 
 ;;; Navigate buffer
 (deh-section-after "speedbar"
@@ -1160,11 +1235,11 @@ mouse-3: Remove current window from display")
                '("\\.php" . speedbar-parse-c-or-c++tag))
 
   (deh-define-key speedbar-key-map
-    ("j" . 'speedbar-next)
-    ("k" . 'speedbar-prev)
-    ("\M-u" . 'speedbar-up-directory))
+    ("j"  'speedbar-next)
+    ("k"  'speedbar-prev)
+    ("\M-u"  'speedbar-up-directory))
   (deh-define-key speedbar-file-key-map
-    ((kbd "RET") . 'speedbar-toggle-line-expansion)) ; SPC
+    ((kbd "RET")  'speedbar-toggle-line-expansion)) ; SPC
 
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit))))
@@ -1185,12 +1260,12 @@ mouse-3: Remove current window from display")
 
 (deh-section-after "hideshow"
   (deh-define-key hs-minor-mode-map
-    ("\C-chh" . 'hs-hide-block)
-    ("\C-chs" . 'hs-show-block)
-    ("\C-chH" . 'hs-hide-all)
-    ("\C-chS" . 'hs-show-all)
-    ("\C-cht" . 'hs-toggle-hiding)
-    ((kbd "<left-fringe> <mouse-2>") . 'hs-mouse-toggle-hiding))
+    ("\C-chh"  'hs-hide-block)
+    ("\C-chs"  'hs-show-block)
+    ("\C-chH"  'hs-hide-all)
+    ("\C-chS"  'hs-show-all)
+    ("\C-cht"  'hs-toggle-hiding)
+    ((kbd "<left-fringe> <mouse-2>")  'hs-mouse-toggle-hiding))
 
   (defvar hs--overlay-keymap nil "keymap for folding overlay")
   (let ((map (make-sparse-keymap)))
@@ -1212,23 +1287,23 @@ mouse-3: Remove current window from display")
 (deh-section-after "outline"
   (setq outline-minor-mode-prefix (kbd "C-c o"))
   (deh-define-key outline-minor-mode-map
-    ("\C-cos" . 'show-subtree)
-    ("\C-coS" . 'show-all)
-    ("\C-coh" . 'hide-subtree)
-    ("\C-coH" . 'hide-body)
+    ("\C-cos"  'show-subtree)
+    ("\C-coS"  'show-all)
+    ("\C-coh"  'hide-subtree)
+    ("\C-coH"  'hide-body)
     ;; shortcuts
-    ((kbd "<right>") . 'show-subtree)
-    ((kbd "<M-right>") . 'show-all)
-    ((kbd "<left>") . 'hide-subtree)
-    ((kbd "<M-left>") . 'hide-body)
-    ((kbd "<up>") . 'outline-previous-heading)
-    ((kbd "<down>") . 'outline-next-heading)
-    ((kbd "<M-up>") . 'outline-previous-visible-heading)
-    ((kbd "<M-down>") . 'outline-next-visible-heading)
+    ((kbd "<right>")  'show-subtree)
+    ((kbd "<M-right>")  'show-all)
+    ((kbd "<left>")  'hide-subtree)
+    ((kbd "<M-left>")  'hide-body)
+    ((kbd "<up>")  'outline-previous-heading)
+    ((kbd "<down>")  'outline-next-heading)
+    ((kbd "<M-up>")  'outline-previous-visible-heading)
+    ((kbd "<M-down>")  'outline-next-visible-heading)
     ;; xwl keybinds
-    ("\C-con" . 'xwl-narrow-to-outline-level)
-    ("\C-cou" . 'xwl-outline-toggle-enter-exit)
-    ("\C-coq" . 'xwl-outline-toggle-show-hide))
+    ("\C-con"  'xwl-narrow-to-outline-level)
+    ("\C-cou"  'xwl-outline-toggle-enter-exit)
+    ("\C-coq"  'xwl-outline-toggle-show-hide))
 
   (defadvice outline-mode (after hide-sublevels)
     "Enter overview after start up `outline-mode'."
@@ -1245,7 +1320,7 @@ mouse-3: Remove current window from display")
                 '(outline-font-lock-face)
                 nil t)))
 
-  (eval-after-load "outline" '(require 'foldout))
+  (deh-after-load "outline" (require 'foldout))
 
   ;; keys
   (defun xwl-hide-body ()
@@ -1315,18 +1390,17 @@ mouse-3: Remove current window from display")
   (setq hl-paren-colors
         '("orange1" "yellow1" "greenyellow" "green1"
           "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
-  (deh-add-hooks '(emacs-lisp-mode-hook
+  (deh-add-hook '(emacs-lisp-mode-hook
                    c-mode-common-hook)
     (highlight-parentheses-mode 1)
     ;; compatible with autopair-mode
-    (eval-after-load "autopair"
-      '(progn
-         (setq autopair-handle-action-fns
-               (append (if (boundp 'autopair-handle-action-fns)
-                           autopair-handle-action-fns
-                         '(autopair-default-handle-action))
-                       '((lambda (action pair pos-before)
-                           (hl-paren-color-update)))))))
+    (deh-after-load "autopair"
+      (setq autopair-handle-action-fns
+            (append (if (boundp 'autopair-handle-action-fns)
+                        autopair-handle-action-fns
+                      '(autopair-default-handle-action))
+                    '((lambda (action pair pos-before)
+                        (hl-paren-color-update))))))
     ))
 
 (deh-section "highlight-line"
@@ -1336,7 +1410,7 @@ mouse-3: Remove current window from display")
   )
 
 (deh-require 'highlight-symbol
-  (deh-add-hooks '(emacs-lisp-mode-hook
+  (deh-add-hook '(emacs-lisp-mode-hook
                    java-mode-hook
                    c-mode-common-hook)
     (when window-system
@@ -1354,8 +1428,8 @@ mouse-3: Remove current window from display")
 ;; ;; erc
 ;; (deh-section "erc"
 ;;   (setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir))
-;;   (eval-after-load "erc"
-;;     '(deh-require 'emoticons
+;;   (deh-after-load "erc"
+;;     (deh-require 'emoticons
 ;;        (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)
 ;;        (add-hook 'erc-send-modify-hook 'emoticons-fill-buffer)
 ;;        (add-hook 'erc-mode-hook
@@ -1363,6 +1437,7 @@ mouse-3: Remove current window from display")
 ;;                    (eldoc-mode t)
 ;;                    (setq eldoc-documentation-function 'emoticons-help-echo))))))
 
+(autoload 'epa-file-enable "epa-file" "" t)
 (deh-section-after "epa-file"
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
 

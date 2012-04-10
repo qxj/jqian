@@ -14,7 +14,7 @@
        (setq scalable-fonts-allowed t)))
 (setq font-lock-maximum-size
       (quote ((t . 1280000) (c-mode . 256000) (c++-mode . 256000))))
-(setq default-directory "~/")
+(setq-default default-directory (expand-file-name "~/"))
 ;; echo key strokes quickly
 (setq echo-keystrokes 0.1)
 ;; auto fill : M-q
@@ -193,14 +193,7 @@
 ;;}}}
 
 ;; Turn on the features disabled default
-(put 'set-goal-column 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'scroll-left 'disabled nil)
-(put 'erase-buffer 'disabled nil)
-(put 'dired-find-alternate-file 'disabled nil)
-(put 'LaTeX-hide-environment 'disabled nil)
+(setq disabled-command-function nil)
 
 (setq tooltip-use-echo-area nil)
 (setq folding-folding-on-startup nil)

@@ -72,10 +72,8 @@
 (setq erc-keywords '("jqian"))
 (setq erc-pals nil)
 
-;; (eval-after-load 'erc-match
-;;   '(progn
-;;      (set-face-foreground erc-query-buffer-face "magenta")
-;;      ))
+;; (deh-after-load 'erc-match
+;;    (set-face-foreground erc-query-buffer-face "magenta"))
 
 (defface erc-query-buffer-face '((t (:bold t :foreground "magenta")))
   "ERC face for your query buffers."
@@ -155,23 +153,22 @@ so as to keep an eye on work when necessarily."
 ;;       (add-to-list 'faces 'erc-query-buffer-face))
 ;;     faces))
 
-(eval-after-load 'erc-track
-  '(progn
-     (defun erc-faces-in (str)
-       "Return a list of all faces used in STR."
-       (let ((i 0)
-             (m (length str))
-             (faces (erc-list (get-text-property 0 'face str))))
-         (while (and (setq i (next-single-property-change i 'face str m))
-                     (not (= i m)))
-           (dolist (face (erc-list (get-text-property i 'face str)))
-             (add-to-list 'faces face)))
-         ;; special faces for query & group(like msn groups) buffers
-         (when (or (erc-query-buffer-p)
-                   (string-match "&" (buffer-name)))
-           (add-to-list 'faces 'erc-query-buffer-face))
-         faces))
-     ))
+(deh-after-load "erc-track"
+  (defun erc-faces-in (str)
+    "Return a list of all faces used in STR."
+    (let ((i 0)
+          (m (length str))
+          (faces (erc-list (get-text-property 0 'face str))))
+      (while (and (setq i (next-single-property-change i 'face str m))
+                  (not (= i m)))
+        (dolist (face (erc-list (get-text-property i 'face str)))
+          (add-to-list 'faces face)))
+      ;; special faces for query & group(like msn groups) buffers
+      (when (or (erc-query-buffer-p)
+                (string-match "&" (buffer-name)))
+        (add-to-list 'faces 'erc-query-buffer-face))
+      faces))
+  )
 
 ;; ,----
 ;; | timestamp
