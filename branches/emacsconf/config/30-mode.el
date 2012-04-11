@@ -8,6 +8,7 @@
 ;;; autoload
 (deh-section "autoloads"
   ;; loading dired-x.el
+  (autoload 'dired-jump "dired-x" "Jump to dired buffer corresponding to current buffer." t)
   (autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
   ;; c++ member function
   (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)

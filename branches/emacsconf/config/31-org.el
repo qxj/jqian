@@ -15,7 +15,7 @@
   ;;(require 'org-export-freemind-install)
 )
 
-(deh-section "org"
+(deh-section-after "org"
   (setq org-CUA-compatible t)
 
   (setq org-directory my-org-dir
