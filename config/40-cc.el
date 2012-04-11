@@ -116,7 +116,7 @@
     (subword-mode 1)
     ;; (cwarn-mode 1)
     ;; (smart-operator-mode 1)
-    (set (make-local-variable 'comment-style) 'extra-line)
+    ;; (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
     ;; (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'

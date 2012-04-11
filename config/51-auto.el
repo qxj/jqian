@@ -85,8 +85,8 @@
   (ac-set-trigger-key "TAB")
 
   ;; press <TAB> to active `auto-complete'
-  ;; (deh-local-set-key auto-complete-mode-hook
-  ;;   ((kbd "TAB") . 'auto-complete-tab-action))
+  ;; (deh-define-key ac-mode-map
+  ;;   ((kbd "TAB")  'auto-complete-tab-action))
   (defun auto-complete-tab-action ()
     "If cursor at one word end, try auto complete it. Otherwise,
 indent line."

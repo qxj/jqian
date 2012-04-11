@@ -840,9 +840,9 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
-    (deh-local-set-key 'php-mode-hook
-      ("\t"       . 'php-doc-complete-function)
-      ("\C-cd" . 'php-doc))
+    (deh-define-key php-mode-map
+      ("\t"    'php-doc-complete-function)
+      ("\C-cd" 'php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
          'php-doc-eldoc-function)
     (eldoc-mode 1)

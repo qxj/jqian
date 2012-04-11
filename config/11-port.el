@@ -101,7 +101,7 @@
          (setq x-select-enable-clipboard t)
          ;; fix issue that ibus input method issue cannot be started in emacs
          ;; firstly, $ sudo apt-get install ibus-el
-         (deh-require-maybe 'ibus
+         (deh-try-require 'ibus
            (add-hook 'after-init-hook 'ibus-mode-on))
 
          (setq my-dired-guess-command-alist
