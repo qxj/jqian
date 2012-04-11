@@ -20,32 +20,10 @@
 ;;; Load-path
 (add-to-list 'load-path my-config-dir)
 (add-to-list 'load-path my-site-lisp-dir)
-(let ((default-directory my-site-lisp-dir))
-  (load "subdirs.el"))
+(let ((default-directory my-site-lisp-dir)) (load "subdirs.el"))
 
-;;; if no dot-emacs-helper.el, use this to inhibit load errors
 (unless (require 'dot-emacs-helper nil t)
-  (defmacro deh-require-maybe (feature &rest forms)
-    (declare (indent 1))
-    `(progn (when (require ,feature nil t) ,@forms)))
-  (defalias 'deh-require 'deh-require-maybe)
-  (put 'deh-require 'lisp-indent-function 1)
-  (defmacro deh-section (section &rest forms)
-    (declare (indent 1))
-    `(progn ,@forms))
-  (defmacro deh-define-key (map &rest keypairs)
-    "Define a batch of keys.
-
-Example:
-  (deh-define-key global-map
-    (\"\\C-m\"        . 'newline-and-indent)
-    (\"\\C-j\"        . 'newline))
-"
-    (declare (indent 1))
-    (cons 'progn
-          (mapcar (lambda (pair)
-                    `(define-key ,map ,(car pair) ,(cdr pair)))
-                  keypairs))))
+  (error "missing dot-emacs-helpler.el"))
 
 ;;; ready to load my configurations
 (mapc 'load (directory-files my-config-dir t "^[0-9]+-.*.elc?$"))

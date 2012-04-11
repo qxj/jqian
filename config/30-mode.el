@@ -7,27 +7,14 @@
 
 ;;; autoload
 (deh-section "autoloads"
-  ;; protobuf mode
-  (autoload 'protobuf-mode "protobuf-mode" "Google protobuf mode." t)
+  ;; loading dired-x.el
+  (autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
   ;; c++ member function
   (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
   ;; browse-el
   (autoload 'browse-el-find-funtion "browse-el" "")
   (autoload 'browse-el-go-back "browse-el" "")
-  ;; php
-  (autoload 'php-mode "php-mode" "php mode" t)
-  ;; javascript
-  (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
-  ;; css
-  (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
-  (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
-  (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
-  ;; python
-  (autoload 'python-mode "python" "Python editing mode." t)
-  ;; whitespace
-  (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
-  (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
   ;; sourcepair
   (autoload 'sourcepair-load "sourcepair" nil t)
   ;; emacs lock
@@ -50,9 +37,7 @@
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
   ;; sdcv
   (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
-  ;; flymake
-  (autoload 'flymake-find-file-hook "flymake" "" t)
-  )
+  (autoload 'epa-file-enable "epa-file" "" t))
 
 ;;; auto detect mode
 (deh-section "auto-mode"
@@ -159,8 +144,8 @@
         (lambda nil
           (my-find-top-directory "TAGS"))))
 
-(deh-section-if "gtags" (executable-find "global")
-  (autoload 'gtags-mode "gtags" "" t)
+(deh-section-if "gtags"
+  (executable-find "global")
 
   (deh-add-hook '(c-mode-common-hook)
     (gtags-mode t))
@@ -356,17 +341,13 @@ etc).  The following options will be available:
   )
 
 (deh-section "svn"
-  ;; psvn
-  (autoload 'svn-status "psvn" "")
-  (autoload 'svn-status-update-modeline "psvn" "")
-  (autoload 'svn-status-in-vc-mode? "psvn" "")
-
-  ;; inspired from git-emacs-autoloads
-  (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
-    "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
-    (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
 
   (deh-after-load "psvn"
+    ;; inspired from git-emacs-autoloads
+    (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
+      "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
+      (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
+
     (defsubst svn-status-interprete-state-mode-color (stat)
       "Interpret vc-svn-state symbol to mode line color"
       (case stat
@@ -387,9 +368,6 @@ etc).  The following options will be available:
 )
 
 (deh-section "woman"
-  (autoload 'woman-mode "woman")
-  (autoload 'woman-decode-buffer "woman")
-
   ;; (add-hook 'woman-mode-hook 'view-mode)
 
   (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-temp-dir)
@@ -422,12 +400,17 @@ etc).  The following options will be available:
     (derived-mode-p 'Info-mode))
   )
 
-(deh-section-reserved "flyspell"
+(deh-section "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
-  (deh-add-hook '(text-mode-hook org-mode-hook) (flyspell-mode 1))
-  (deh-add-hook '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
-  (deh-add-hook '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
+
+  (setq ispell-program-name "aspell" ; use aspell instead of ispell
+        ispell-extra-args '("--sug-mode=ultra"))
+
+  ;; (deh-add-hook '(text-mode-hook org-mode-hook) (flyspell-mode 1))
+  ;; (deh-add-hook '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
+  ;; (deh-add-hook '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode))
+  )
 
 (deh-section-after "flymake"
   ;; (flymake-mode t)
@@ -743,12 +726,11 @@ Use CREATE-TEMP-F for creating temp copy."
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     ))
 
+(deh-section "text-mode"
+  (deh-add-hook text-mode-hook abbrev-mode))
 
 ;;; tools
 (deh-section "gnuplot"
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-
   (deh-add-hook 'gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook 'gnuplot-comint-setup-hook
@@ -756,8 +738,6 @@ Use CREATE-TEMP-F for creating temp copy."
       ("\C-d"  'comint-delchar-or-maybe-eof))))
 
 (deh-section "graphviz"
-  (autoload 'graphviz-dot-mode "graphviz-dot" "graphviz mode" t)
-
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
@@ -823,8 +803,6 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
-  (autoload 'js2-mode "js2" "" t)
-
   (deh-add-hook 'js2-mode-hook
     (setq forward-sexp-function nil)))
 
@@ -939,13 +917,22 @@ If the flag is set, only complete with local files."
       (TeX-argument-insert file optionel)))
   )
 
-(deh-section "slime"
+(deh-section-after "slime"
   ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
   (setq common-lisp-hyperspec-root (expand-file-name "~/src/HyperSpec/"))
-  )
+
+  (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+        slime-fuzzy-completion-in-place t
+        slime-enable-evaluate-in-emacs t
+        slime-autodoc-use-multiline-p t)
+
+  (deh-define-key slime-mode-map
+    ((kbd "TAB") 'slime-indent-and-complete-symbol)
+    ((kbd "C-c i") 'slime-inspect)
+    ((kbd "C-c C-s") 'slime-selector)))
 
 (deh-section-path "evernote"
-  "~/src/emacs-evernote-mode"
+  "~/local/emacs-evernote-mode"
   (add-to-list 'load-path deh-this-path)
   (require 'evernote-mode nil t)
   ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option

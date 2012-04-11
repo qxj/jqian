@@ -133,15 +133,6 @@ of starting a new instance."
                       (and buf (buffer-name (switch-to-buffer bufname))))))
       (ansi-term prg prg))))
 
-(setq my-default-mode-line-modes mode-line-modes)
-(defun my-toggle-mode-line ()
-  "toggle minor modes display on mode-line"
-  (interactive)
-  (if (not (equal mode-line-modes (concat "(" mode-name ")")))
-      (setq mode-line-modes (concat "(" mode-name ")"))
-    (setq mode-line-modes my-default-mode-line-modes))
-  (force-mode-line-update))
-
 (defmacro define-mode-toggle (name cmd cond &optional restore)
   "Define a function to toggle buffer visible by its mode.
 
@@ -153,9 +144,9 @@ back.
 
 For example:
 
-(define-mode-toggle \"gdb\"  gdb
-  (derived-mode-p 'gud-mode)
-  (call-interactively 'gdb-restore-windows))
+ (define-mode-toggle \"gdb\"  gdb
+   (derived-mode-p \'gud-mode)
+   (call-interactively 'gdb-restore-windows))
 "
   (declare (debug t) (indent 2))
   `(defun ,(intern (format "my-toggle-%s" name)) ()
@@ -180,4 +171,35 @@ For example:
          (unless ,cond
            (call-interactively ',cmd))))))
 
+(defun find-subdirs-containing (dir pattern)
+  "Return a list of all deep subdirectories of DIR that contain
+files that match PATTERN."
+  (let* ((ret nil)
+         (files (directory-files dir))
+         (max-lisp-eval-depth 3000))
+    (while files
+      (let* ((file (car files))
+             (path (expand-file-name file dir)))
+        (if (and (file-directory-p path)
+                 (not (string-match "^\\.+" file)))
+            (setq ret (append ret (find-subdirs-containing path pattern)))
+          (if (string-match pattern file)
+              (add-to-list 'ret dir))))
+      (setq files (cdr files)))
+    ret))
 
+(defun find-files-in-directory (dir pattern)
+  "Return a list of all files in DIR whose filenames match PATTERN."
+  (let* (ret
+         (files (directory-files dir))
+         (max-lisp-eval-depth 3000))
+    (while files
+      (let* ((file (car files))
+             (path (expand-file-name file dir)))
+        (if (file-directory-p path)     ; directory
+            (if (not (string-match "^\\.+" file))
+                (setq ret (append ret (find-files-in-directory path pattern))))
+          (if (string-match pattern file) ; file
+              (add-to-list 'ret path))))
+      (setq files (cdr files)))
+    ret))

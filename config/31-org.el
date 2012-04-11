@@ -44,7 +44,7 @@
     (outline-minor-mode t))
 
   ;; org keybinds
-  (deh-define-key 'org-mode-map
+  (deh-define-key org-mode-map
     ((kbd "C-c o l")  'org-store-link)
     ((kbd "C-c o a")  'org-agenda)
     ((kbd "C-c o b")  'org-iswitchb)
