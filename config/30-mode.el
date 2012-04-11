@@ -342,13 +342,14 @@ etc).  The following options will be available:
   )
 
 (deh-section "svn"
+  (autoload 'svn-status-in-vc-mode? "psvn" "Is vc-svn active?")
+
+  ;; inspired from git-emacs-autoloads
+  (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
+    "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
+    (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
 
   (deh-after-load "psvn"
-    ;; inspired from git-emacs-autoloads
-    (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
-      "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
-      (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
-
     (defsubst svn-status-interprete-state-mode-color (stat)
       "Interpret vc-svn-state symbol to mode line color"
       (case stat

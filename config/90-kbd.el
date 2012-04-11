@@ -185,7 +185,7 @@
        (("b" . "Buffers") . helm-buffers-list)
        (("B" . "Bookmarks") . helm-bookmarks)
        (("c" . "Commands") . helm-M-x)
-       (("f" . "Files") . helm-for-files)
+       (("l" . "Locate Files") . helm-locate)
        (("i" . "Imenu") . helm-imenu)
        (("k" . "Kill Ring") . helm-show-kill-ring)
        (("o" . "Occur") . helm-occur)
