@@ -7,10 +7,6 @@
 
 
 (deh-section "std-lib"
-  ;; (partial-completion-mode 1)
-  (icomplete-mode 1)
-  (winner-mode 1)
-  ;; (auto-insert-mode 1)
   ;; (filesets-init)
   (require 'generic-x)
 
@@ -109,9 +105,6 @@ mouse-3: Remove current window from display")
                                minibuffer-local-must-match-map)))))
 
 ;;; Directories and buffers
-;; loading dired-x.el
-(autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
-
 (deh-section-after "dired"
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
@@ -309,6 +302,8 @@ mouse-3: Remove current window from display")
         ido-use-faces t
         ;; ido-use-filename-at-point 'guess
         ;; ido-use-url-at-point t
+        ido-create-new-buffer 'always
+        ido-default-file-method 'selected-window
         ido-ignore-extensions t         ; refer to `completion-ignored-extensions'
         ido-auto-merge-work-directories-length -1
         ido-max-work-file-list 20)
@@ -527,8 +522,11 @@ mouse-3: Remove current window from display")
   )
 
 (deh-require 'uniquify
-  (setq uniquify-buffer-name-style 'forward)
-  ;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+  (setq uniquify-buffer-name-style 'forward
+        ;; uniquify-buffer-name-style 'post-forward-angle-brackets
+        uniquify-separator "/"
+        uniquify-after-kill-buffer-p t ; rename after killing uniquified
+        uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
   )
 
 (deh-section "tramp"
@@ -651,6 +649,16 @@ mouse-3: Remove current window from display")
   (setq session-save-file-coding-system 'utf-8-unix)
   (add-to-list 'session-globals-exclude 'org-mark-ring)
   (add-hook 'after-init-hook 'session-initialize))
+
+(deh-require 'saveplace
+  (setq save-place-file (expand-file-name "emacs.saveplace" my-temp-dir))
+  (setq-default save-place t))
+
+(deh-require 'savehist
+  (setq savehist-additional-variables '(search ring regexp-search-ring)
+        savehist-autosave-interval 60
+        savehist-file (expand-file-name "emacs.savehist" my-temp-dir))
+  (savehist-mode t))
 
 (deh-require 'bm
   (setq bm-cycle-all-buffers t
@@ -776,6 +784,9 @@ mouse-3: Remove current window from display")
     (file-cache-add-directory-using-find (expand-file-name "~/works"))))
 
 ;;; Buffer view
+(deh-section "windmove"
+  (windmove-default-keybindings 'shift))
+
 (deh-section-after "help-mode"
   (setq help-window-select t)
   (deh-define-key help-mode-map
@@ -951,6 +962,9 @@ mouse-3: Remove current window from display")
       (deh-define-key js2-mode-map
         ((kbd "C-c C-r") 'js2-rename-var)))))
 
+(deh-require 'undo-tree
+  (global-undo-tree-mode))
+
 (deh-section "grep"
   (autoload 'grep-tag-default "grep")
   (autoload 'grep-apply-setting "grep")
@@ -987,6 +1001,7 @@ mouse-3: Remove current window from display")
     ("\C-u"  'isearch-clean)
     ("\C-\M-y"  'isearch-yank-symbol-regexp)
     ("\C-y"  'isearch-yank-symbol) ; instead of `isearch-yank-line'
+    ("\C-o" 'isearch-occur)
     ;; Remind other useful keybinds
     ;; ("\M-e"  'isearch-edit-string)
     ;; ("\M-y"  'isearch-yank-kill)
@@ -1068,14 +1083,22 @@ mouse-3: Remove current window from display")
   (key-chord-define-global ",." "<>\C-b"))
 
 (deh-require 'ace-jump-mode
-  (global-set-key (kbd "C-c SPC") 'ace-jump-mode))
+  (deh-define-key global-map
+    ;; ((kbd "C-c SPC") 'ace-jump-mode)
+    ((kbd "C-4") 'ace-jump-mode)
+    ((kbd "M-4") 'ace-jump-mode)))
 
 (deh-require 'iy-go-to-char
-  (global-set-key (kbd "C-c f") 'iy-go-to-char)
-  (global-set-key (kbd "C-c ;") 'iy-go-to-char-continue)
-  ;; (global-set-key (kbd "C-c F") 'iy-go-to-char-backward)
-  ;; (global-set-key (kbd "C-c ,") 'iy-go-to-char-continue-backward)
-  )
+  (deh-define-key global-map
+    ;; ((kbd "C-c f") 'iy-go-to-char)
+    ;; ((kbd "C-c ;") 'iy-go-to-char-continue)
+    ;; ((kbd "C-c F") 'iy-go-to-char-backward)
+    ;; ((kbd "C-c ,") 'iy-go-to-char-continue-backward)
+    ((kbd "M-3") 'iy-go-to-char)
+    ((kbd "C-3") 'iy-go-to-char))
+
+  (setq iy-go-to-char-key-forward ?\;
+        iy-go-to-char-key-backward ?\,))
 
 (deh-require 'midnight
   (setq midnight-mode t
@@ -1089,15 +1112,7 @@ mouse-3: Remove current window from display")
         ))
 
 ;;; Enhanced terminal
-(deh-section "multi-term"
-  (autoload 'multi-term "multi-term" "")
-  (autoload 'multi-term-dedicated-open-select "multi-term" "")
-  (autoload 'multi-term-dedicated-exist-p "multi-term" "")
-  (autoload 'multi-term-dedicated-open "multi-term" "")
-  (autoload 'multi-term-dedicated-close "multi-term" "")
-  (autoload 'multi-term-dedicated-select "multi-term" "")
-  (autoload 'multi-term-dedicated-toggle "multi-term" "")
-
+(deh-require 'multi-term
   (setq multi-term-dedicated-window-height 10
         multi-term-dedicated-max-window-height 10)
 
@@ -1167,8 +1182,6 @@ mouse-3: Remove current window from display")
 
 ;; browse-kill-ring
 (deh-section "browse-kill-ring"
-  (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
-
   (browse-kill-ring-default-keybindings)
   (setq browse-kill-ring-highlight-current-entry t))
 
@@ -1183,7 +1196,7 @@ mouse-3: Remove current window from display")
 ;;                              (propertize " " 'face 'fringe)))
 ;;   (autoload 'linum-mode "linum" "Display line number" t))
 
-(deh-section "anything"
+(deh-section-reserved "anything"
   (autoload 'anything "anything" "" t)
 
   (deh-after-load "anything"
@@ -1215,7 +1228,9 @@ mouse-3: Remove current window from display")
     ))
 
 (deh-section "helm"
-  (deh-try-require 'helm-config))
+  ;; TODO: more helm setting
+  (deh-try-require 'helm-config)
+  )
 
 ;;; Navigate buffer
 (deh-section-after "speedbar"
@@ -1437,7 +1452,6 @@ mouse-3: Remove current window from display")
 ;;                    (eldoc-mode t)
 ;;                    (setq eldoc-documentation-function 'emoticons-help-echo))))))
 
-(autoload 'epa-file-enable "epa-file" "" t)
 (deh-section-after "epa-file"
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
 

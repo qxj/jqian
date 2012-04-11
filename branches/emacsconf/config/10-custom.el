@@ -60,11 +60,24 @@
 (setq show-paren-style 'parentheses)
 
 (mouse-avoidance-mode 'animate)
+
 (auto-image-file-mode t)
 ;; Highlight selected regions in Gnu Emacs
 (transient-mark-mode t)
 ;; Make typing overwrite text selection
-(setq delete-selection-mode t)
+(delete-selection-mode t)
+;; revert buffers automatically when underlying files are changed externally
+;; (global-auto-revert-mode t)
+
+;; Smart indenting and pairing for all (emacs24)
+;; (electric-pair-mode t)
+;; (electric-indent-mode t)
+;; (electric-layout-mode t)
+
+;; (partial-completion-mode 1)
+(icomplete-mode 1)
+(winner-mode 1)
+;; (auto-insert-mode 1)
 
 (deh-section "backup"
   (setq make-backup-files t

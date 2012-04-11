@@ -20,7 +20,11 @@
   ((kbd "C-d")    'delete-char-or-region)
   ((kbd "<C-delete>")    'delete-char-or-region)
   ((kbd "C-1")    'extend-selection)
+  ((kbd "M-1")    'extend-selection)    ; for terminal that don't recognize Ctrl
   ((kbd "C-2")    'set-mark-command)
+  ((kbd "M-2")    'set-mark-command)
+  ((kbd "C-9")    'helm-mini)
+  ((kbd "M-9")    'helm-mini)
   ((kbd "C-m")    'newline-and-indent)
   ((kbd "C-j")    'newline)
   ((kbd "C-a")    'my-beginning-of-line)
@@ -36,7 +40,7 @@
   ((kbd "M-5")    'my-display-buffer-path)
   ((kbd "M-0")    'other-window)
   ((kbd "C-M-0")  'sr-speedbar-select-window)
-  ((kbd "M-1")    'sdcv-search)
+  ((kbd "C-M-1")    'sdcv-search)
   ((kbd "M-'")    'just-one-space)
   ((kbd "M--")    'delete-blank-lines)
   ((kbd "M-J")    'vi-join-lines)
@@ -54,8 +58,6 @@
   ((kbd "<f3>")    'highlight-symbol-next)
   ((kbd "<S-f3>")  'highlight-symbol-prev)
 ;;;; one key
-  ((kbd "<f5>")  'one-key-menu-anything)
-  ((kbd "<f6>")  'one-key-menu-root)
   ((kbd "<f12>") 'one-key-menu-toggle)
 
   ((kbd "<f8>")   'org-agenda)
@@ -77,6 +79,7 @@
   ("\C-_"  'fit-frame)
   ;; ("t"     'template-expand-template)
   ;; ("m"     'message-mail)
+  ("\\" 'align-regexp)
   )
 
 (deh-define-key ctl-c-map
@@ -135,8 +138,6 @@
 (deh-define-key ctl-z-map
   ("\C-z" (if (eq window-system 'x) 'suspend-frame 'suspend-emacs)))
 
-(windmove-default-keybindings)
-
 (deh-define-key minibuffer-local-map
   ("\t"  'comint-dynamic-complete))
 ;; (deh-define-key read-expression-map
@@ -146,7 +147,7 @@
 (deh-require 'one-key
   (deh-define-key one-key-prefix
     ("k"  'one-key-menu-root)
-    ("a"  'one-key-menu-anything)
+    ("a"  'one-key-menu-helm)
     ("t"  'one-key-menu-toggle)
     ("g"  'one-key-menu-gtags)
     ("c"  'one-key-menu-cscope)
@@ -163,8 +164,8 @@
     (one-key-menu
      "ROOT"
      '(
-       (("a" . "Anything") . one-key-menu-anything)
        (("t" . "Toggle") . one-key-menu-toggle)
+       (("a" . "Helm") . one-key-menu-helm)
        (("g" . "Gtags") . one-key-menu-gtags)
        (("c" . "Cscope") . one-key-menu-cscope)
        (("h" . "Highlight") . one-key-menu-highlight)
@@ -172,26 +173,24 @@
        (("v" . "Version Control") . one-key-menu-vc)
        (("w" . "Window") . one-key-menu-window))))
 
-;;;; Anything
-  (defun one-key-menu-anything ()
-    "The `one-key' menu for ANYTHING."
+;;;; helm
+  (defun one-key-menu-helm ()
+    "The `one-key' menu for HELM."
     (interactive)
-    (require 'anything-config nil t)    ; latter load
+    (require 'helm-config nil t)    ; latter load
     (one-key-menu
-     "ANYTHING"
+     "HELM"
      '(
-       (("a" . "Anything") . anything)
-       (("b" . "Buffers") . anything-buffers+)
-       (("B" . "Bookmarks") . anything-c-pp-bookmarks)
-       (("c" . "Commands") . anything-M-x)
-       (("f" . "Files") . anything-for-files)
-       (("i" . "Imenu") . anything-imenu)
-       (("I" . "Info") . anything-info-pages)
-       (("k" . "Kill Ring") . anything-show-kill-ring)
-       (("o" . "Occur") . anything-occur)
-       (("r" . "Register") . anything-register)
-       (("m" . "Man Pages") . anything-man-woman)
-       (("SPC" . "Execute anything commands") . anything-execute-anything-command)
+       (("h" . "Helm mini") . helm-mini)
+       (("b" . "Buffers") . helm-buffers-list)
+       (("B" . "Bookmarks") . helm-bookmarks)
+       (("c" . "Commands") . helm-M-x)
+       (("f" . "Files") . helm-for-files)
+       (("i" . "Imenu") . helm-imenu)
+       (("k" . "Kill Ring") . helm-show-kill-ring)
+       (("o" . "Occur") . helm-occur)
+       (("r" . "Register") . helm-register)
+       (("m" . "Man Pages") . helm-man-woman)
        ) t))
 
 ;;;; Toggle
@@ -219,23 +218,23 @@
     (one-key-menu
      "GTAGS"
      '(
-       (("," . "Find Tag Define") . xgtags-find-tag-from-here)
-       (("." . "Find Tag Reference (No Prompt)") . xgtags-find-rtag-no-prompt)
-       ((">" . "Find Tag Reference") . xgtags-find-rtag)
-       (("t" . "Search Tag Define") . xgtags-find-tag)
-       (("s" . "Find Symbol") . xgtags-find-symbol)
-       (("p" . "Find Pattern") . xgtags-find-pattern)
-       (("/" . "Pop Stack") . xgtags-pop-stack)
-       (("b" . "Switch Current Window") . xgtags-switch-to-buffer)
-       (("o" . "Switch Other Window") . xgtags-switch-to-buffer-other-window)
-       (("x" . "Parse File") . xgtags-parse-file)
-       (("f" . "Find File") . xgtags-find-file)
-       (("g" . "Find With Grep") . xgtags-find-with-grep)
-       (("i" . "Find With Idutils") . xgtags-find-with-idutils)
-       (("m" . "Make Complete List") . xgtags-make-complete-alist)
-       (("q" . "Query Replace Regexp") . xgtags-query-replace-regexp)
-       (("v" . "Visit Root Directory") . xgtags-visit-rootdir)
-       (("r" . "Return Window") . xgtags-select-tag-return-window)) t))
+       (("," . "Find Tag Define") . gtags-find-tag-from-here)
+       (("." . "Find Tag Reference (No Prompt)") . gtags-find-rtag-no-prompt)
+       ((">" . "Find Tag Reference") . gtags-find-rtag)
+       (("t" . "Search Tag Define") . gtags-find-tag)
+       (("s" . "Find Symbol") . gtags-find-symbol)
+       (("p" . "Find Pattern") . gtags-find-pattern)
+       (("/" . "Pop Stack") . gtags-pop-stack)
+       (("b" . "Switch Current Window") . gtags-switch-to-buffer)
+       (("o" . "Switch Other Window") . gtags-switch-to-buffer-other-window)
+       (("x" . "Parse File") . gtags-parse-file)
+       (("f" . "Find File") . gtags-find-file)
+       (("g" . "Find With Grep") . gtags-find-with-grep)
+       (("i" . "Find With Idutils") . gtags-find-with-idutils)
+       (("m" . "Make Complete List") . gtags-make-complete-alist)
+       (("q" . "Query Replace Regexp") . gtags-query-replace-regexp)
+       (("v" . "Visit Root Directory") . gtags-visit-rootdir)
+       (("r" . "Return Window") . gtags-select-tag-return-window)) t))
 
 ;;;; Cscope
   (defun one-key-menu-cscope ()
