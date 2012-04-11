@@ -184,6 +184,9 @@
 (when (executable-find "gcc")
   (setq my-include-dirs (append (gcc-include-path) my-include-dirs)))
 
+(let ((autoload-file (expand-file-name "100-loaddefs.el" my-config-dir)))
+  (unless (file-exists-p autoload-file) (my-generate-loaddefs t autoload-file)))
+
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)
   (unless (fboundp 'define-fringe-bitmap)

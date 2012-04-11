@@ -565,12 +565,13 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
   (fundamental-mode)
   (setq indent-line-function 'ignore))
 
-(defun my-generate-loaddefs (&optional force-generate)
+(defun my-generate-loaddefs (&optional force-generate autoload-file)
   "Auto generate autoloads into '100-loaddefs.el'."
   (interactive "P")
   (require 'autoload)
   (with-temp-buffer
-    (let* ((autoload-file (expand-file-name "100-loaddefs.el" my-config-dir))
+    (let* ((autoload-file (or autoload-file
+                              (expand-file-name "100-loaddefs.el" my-config-dir)))
            (files (find-files-in-directory my-startup-dir "\\.el$")))
       (when (or force-generate
                 (not (file-exists-p autoload-file))

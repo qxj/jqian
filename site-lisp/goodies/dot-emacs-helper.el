@@ -442,6 +442,7 @@ With prefix argument sort section by file."
                                   (deh-customize (button-label but)))))
     (setq buffer-read-only t)))
 
+;; FIXME: record keybinds error
 (defun deh-list-keybind ()
   "List all keybinds by `deh-define-key'."
   (interactive "P")
