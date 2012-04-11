@@ -44,24 +44,24 @@
     (outline-minor-mode t))
 
   ;; org keybinds
-  (deh-local-set-key 'org-mode-hook
-    ((kbd "C-c o l") . 'org-store-link)
-    ((kbd "C-c o a") . 'org-agenda)
-    ((kbd "C-c o b") . 'org-iswitchb)
-    ((kbd "C-c o o") . 'org-open-at-point) ; "\C-c\C-o"
-    ((kbd "C-c o j") . 'org-open-at-point) ; "\C-c\C-o"
-    ("\M-\C-l" . 'org-table-sort-lines)
-    ("\M-\C-w" . 'org-table-copy-region)
-    ("\M-\C-y" . 'org-table-paste-rectangle)
-    ("\M-I" . 'org-toggle-iimage-in-org)
+  (deh-define-key 'org-mode-map
+    ((kbd "C-c o l")  'org-store-link)
+    ((kbd "C-c o a")  'org-agenda)
+    ((kbd "C-c o b")  'org-iswitchb)
+    ((kbd "C-c o o")  'org-open-at-point) ; "\C-c\C-o"
+    ((kbd "C-c o j")  'org-open-at-point) ; "\C-c\C-o"
+    ("\M-\C-l"  'org-table-sort-lines)
+    ("\M-\C-w"  'org-table-copy-region)
+    ("\M-\C-y"  'org-table-paste-rectangle)
+    ("\M-I"  'org-toggle-iimage-in-org)
     ;;## Org Keybinds Reminds ;;;;;;;;;;;;;;;;;;;
-    ((kbd "C-c C-b") . 'org-beamer-select-environment)
-    ;; ((kbd "C-c C-x p") . 'org-set-property)
-    ;; ((kbd "C-c /") . 'org-sparse-tree)
-    ;; ((kbd "C-c C-x C-c") . 'org-columns)
-    ;; ((kbd "C-c C-x C-l") . 'org-preview-latex-fragment)
-    ;; ((kbd "C-c C-e") . 'org-export)
-    ;; ((kbd "C-c C-a") . 'org-attach)
+    ((kbd "C-c C-b")  'org-beamer-select-environment)
+    ;; ((kbd "C-c C-x p")  'org-set-property)
+    ;; ((kbd "C-c /")  'org-sparse-tree)
+    ;; ((kbd "C-c C-x C-c")  'org-columns)
+    ;; ((kbd "C-c C-x C-l")  'org-preview-latex-fragment)
+    ;; ((kbd "C-c C-e")  'org-export)
+    ;; ((kbd "C-c C-a")  'org-attach)
     )
 
   (defun org-toggle-iimage-in-org ()
