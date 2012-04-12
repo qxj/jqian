@@ -948,3 +948,27 @@ If the flag is set, only complete with local files."
   (setq evernote-mode-hook
         '(lambda () (outline-minor-mode t)))
   )
+
+(deh-require 'tumblr-mode
+  (setq tumblr-hostname "blog.jqian.net"
+        tumblr-hostnames '("blog.jqian.net" "memo.jqian.net")
+        tumblr-post-header-delimiters '("<!--" . "-->"))
+
+  ;; TUMBLR SYNTAX HIGHLIGHTING
+  ;; Firstly, insert following codes into your tumblr template
+  ;;
+  ;; <!-- http://code.google.com/p/google-code-prettify/ -->
+  ;; <link href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css" type="text/css" rel="stylesheet" />
+  ;; <script type="text/javascript" src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js"></script>
+  ;;
+  (defun tumblr-wrap-pre (begin end lang)
+    "simple wrapper"
+    (interactive "r\nMPlease specify language (optional):")
+    (save-restriction
+      (narrow-to-region begin end)
+      (goto-char (point-min))
+      (insert (format "<pre class=\"prettyprint%s\">\n"
+                      (if (string-match "[:ascii:]+" lang) (format " %s" lang) "")))
+      (goto-char (point-max))
+      (insert "\n</pre>")))
+  )
