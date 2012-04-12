@@ -1,12 +1,4 @@
 
-(set-cursor-color "red")
-
-;; (add-to-list 'default-frame-alist '(height . 50))
-
-(require 'fit-frame)
-
-;; avoid conflicting to winsav.el
-;; (add-hook 'after-make-frame-functions 'fit-frame)
 
 (defun color-theme-blackboard ()
   "Color theme by JD Huntington, based off the TextMate Blackboard theme, created 2008-11-27"
@@ -160,9 +152,18 @@
        (info-xref-visited ((t (:foreground ,wombat-purple-1))))
        ))))
 
-(deh-require 'color-theme
-  (eval-after-load "color-theme"
-    '(progn
-       ;; (color-theme-blackboard)
-       ;; (color-theme-wombat)
-       )))
+
+(deh-require 'fit-frame
+  ;; avoid conflicting to winsav.el
+  ;; (add-hook 'after-make-frame-functions 'fit-frame)
+  )
+
+(deh-section "theme"
+  ;; (set-cursor-color "red")
+  (deh-try-require 'color-theme
+    ;; (color-theme-initialize)
+    ;; (color-theme-blackboard)
+    ;; (color-theme-wombat)
+    (deh-try-require 'tango-theme)
+    (color-theme-tango)))
+
