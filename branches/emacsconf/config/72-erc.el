@@ -200,7 +200,7 @@ so as to keep an eye on work when necessarily."
 ;; `----
 
 (erc-log-mode 1)
-(setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir)
+(setq erc-log-channels-directory (expand-file-name "erc" my-data-dir)
       erc-save-buffer-on-part t
       erc-log-file-coding-system 'utf-8
       erc-log-write-after-send t

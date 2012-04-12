@@ -116,7 +116,7 @@
   ("o"  'recentf-open-files-compl)
   ("r"  'buffer-action-run)
   ("s"  'buffer-action-compile)
-  ("t"  'template-simple-expand-template)
+  ("t"  'auto-insert)
   ("v"  'view-mode)
   ("\t" 'ispell-complete-word)
   )

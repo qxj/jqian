@@ -89,18 +89,18 @@
         backup-by-copying t)
   ;; DO NOT depends on the backup, it is not really useful
   (add-to-list 'backup-directory-alist
-               (cons "." (expand-file-name "backup" my-temp-dir)))
+               (cons "." (expand-file-name "backup" my-data-dir)))
   ;; (setq make-backup-file-name-function
   ;;       (lambda (fpath)
   ;;         "Return a new file path of a given file path.
   ;; If the new path's directories does not exist, create them."
-  ;;         (let* ((backup-root (expand-file-name "backup" my-temp-dir))
+  ;;         (let* ((backup-root (expand-file-name "backup" my-data-dir))
   ;;                (bpath (concat backup-root fpath "~")))
   ;;           (make-directory (file-name-directory bpath) bpath)
   ;;           bpath)))
   )
 
-(setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-temp-dir))
+(setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-data-dir))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
@@ -131,7 +131,7 @@
 (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
 
 (deh-section "abbrev"
-  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-temp-dir))
+  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-data-dir))
   (if (file-exists-p abbrev-file-name)
       (read-abbrev-file abbrev-file-name))
   (setq save-abbrevs t)

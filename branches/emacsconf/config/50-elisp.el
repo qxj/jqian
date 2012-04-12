@@ -309,9 +309,9 @@ mouse-3: Remove current window from display")
         ido-max-work-file-list 20)
 
   (setq ido-save-directory-list-file
-        (expand-file-name "emacs.ido-last" my-temp-dir)
+        (expand-file-name "emacs.ido-last" my-data-dir)
         org-id-locations-file
-        (expand-file-name "emacs.ido-locations" my-temp-dir))
+        (expand-file-name "emacs.ido-locations" my-data-dir))
   (setq ido-ignore-buffers
         '("^ " "_region_" "TAGS"
           (lambda (buf)
@@ -430,7 +430,7 @@ mouse-3: Remove current window from display")
           "~/")))
 
 (deh-require 'smex
-  (setq smex-save-file (expand-file-name "emacs.smex-items" my-temp-dir)
+  (setq smex-save-file (expand-file-name "emacs.smex-items" my-data-dir)
         smex-history-length 50)
   (smex-initialize)
   (global-set-key (kbd "M-x") 'smex)
@@ -549,8 +549,8 @@ mouse-3: Remove current window from display")
   ;;
 
   ;; (setq tramp-mode nil)                  ; disable tramp
-  (setq tramp-auto-save-directory my-temp-dir
-        tramp-persistency-file-name (expand-file-name "tramp" my-temp-dir)
+  (setq tramp-auto-save-directory my-data-dir
+        tramp-persistency-file-name (expand-file-name "tramp" my-data-dir)
         tramp-default-method "ssh"
         ;; tramp-syntax 'url
         password-cache-expiry nil)
@@ -565,7 +565,7 @@ mouse-3: Remove current window from display")
 ;;; Session management
 (deh-section-after "bookmark"
   ;; autosave bookmark into the diskete
-  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-temp-dir)
+  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-data-dir)
         bookmark-save-flag 1)
   (add-to-list 'bookmark-after-jump-hook 'recenter)
   (deh-add-hook 'bookmark-bmenu-mode-hook
@@ -586,7 +586,7 @@ mouse-3: Remove current window from display")
   (not (emacs-process-duplicated-p))
 
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
-        desktop-path (list my-temp-dir)
+        desktop-path (list my-data-dir)
         desktop-restore-eager 8        ; firstly restore 8 buffers
         history-length 100)
 
@@ -622,7 +622,7 @@ mouse-3: Remove current window from display")
   ;; `desktop-menu-base-filename'.
   ;;
   (deh-require 'desktop-menu
-    (setq desktop-menu-directory my-temp-dir
+    (setq desktop-menu-directory my-data-dir
           desktop-menu-base-filename (concat "emacs.desktops-" (system-name))
           desktop-menu-list-file "emacs.desktops"
           desktop-menu-autosave 600     ; auto save every 10mins and when exit
@@ -645,19 +645,19 @@ mouse-3: Remove current window from display")
     ))
 
 (deh-require-reserved 'session
-  (setq session-save-file (expand-file-name "emacs.session" my-temp-dir))
+  (setq session-save-file (expand-file-name "emacs.session" my-data-dir))
   (setq session-save-file-coding-system 'utf-8-unix)
   (add-to-list 'session-globals-exclude 'org-mark-ring)
   (add-hook 'after-init-hook 'session-initialize))
 
 (deh-require 'saveplace
-  (setq save-place-file (expand-file-name "emacs.saveplace" my-temp-dir))
+  (setq save-place-file (expand-file-name "emacs.saveplace" my-data-dir))
   (setq-default save-place t))
 
 (deh-require 'savehist
   (setq savehist-additional-variables '(search ring regexp-search-ring)
         savehist-autosave-interval 60
-        savehist-file (expand-file-name "emacs.savehist" my-temp-dir))
+        savehist-file (expand-file-name "emacs.savehist" my-data-dir))
   (savehist-mode t))
 
 (deh-require 'bm
@@ -667,7 +667,7 @@ mouse-3: Remove current window from display")
   (setq-default bm-buffer-persistence t)
 
   (setq bm-repository-file
-        (expand-file-name "emacs.bm-repository" my-temp-dir))
+        (expand-file-name "emacs.bm-repository" my-data-dir))
 
   ;; buffer setting
   (add-hook 'find-file-hooks 'bm-buffer-restore)
@@ -697,8 +697,8 @@ mouse-3: Remove current window from display")
 (deh-section "recentf"
   ;; recent finded buffers
   (setq recentf-max-saved-items 1000
-        recentf-save-file (expand-file-name "emacs.recentf" my-temp-dir)
-        recentf-exclude `(,my-temp-dir
+        recentf-save-file (expand-file-name "emacs.recentf" my-data-dir)
+        recentf-exclude `(,my-data-dir
                           ,tramp-file-name-regexp))
   (recentf-mode t)
 
@@ -1154,7 +1154,7 @@ mouse-3: Remove current window from display")
   )
 
 (deh-section "shell"
-  (setenv "HISTFILE" (expand-file-name "shell.history" my-temp-dir))
+  (setenv "HISTFILE" (expand-file-name "shell.history" my-data-dir))
 
   (deh-add-hook 'shell-mode-hook
     (rename-buffer (concat "*shell: " default-directory "*") t)
@@ -1211,9 +1211,9 @@ mouse-3: Remove current window from display")
 
   (deh-after-load "anything-config"
     (setq anything-c-adaptive-history-file
-          (expand-file-name "anything-c-adaptive-history" my-temp-dir)
+          (expand-file-name "anything-c-adaptive-history" my-data-dir)
           anything-c-yaoddmuse-cache-file
-          (expand-file-name "yaoddmuse-cache.el" my-temp-dir))
+          (expand-file-name "yaoddmuse-cache.el" my-data-dir))
     (setq anything-c-find-files-show-icons t
           ;; anything-c-external-programs-associations nil
           anything-c-google-suggest-url "http://www.google.com/complete/search?output=toolbar&q="
@@ -1442,7 +1442,7 @@ mouse-3: Remove current window from display")
 
 ;; ;; erc
 ;; (deh-section "erc"
-;;   (setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir))
+;;   (setq erc-log-channels-directory (expand-file-name "erc" my-data-dir))
 ;;   (deh-after-load "erc"
 ;;     (deh-require 'emoticons
 ;;        (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)
