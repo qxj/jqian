@@ -163,53 +163,55 @@ The following keywords are meaningful:
 "
   (declare (indent 1))
   ;; TODO: add timer for profiling
-  (nconc `(progn
-            (if ,load-file-name
-                (add-to-list 'deh-sections (cons ,name ,load-file-name))))
-         ;; autoload
-         (let* ((ls (cdr (deh--getoption :autoload options)))
-                (lv (if (vectorp ls) ls (vector ls))))
-           (mapcan (lambda (load)
-                     (let ((filename (car load)))
-                       (mapcar (lambda (func)
-                                 `(autoload ,func ,filename "" t)) (cdr load)))) lv))
-         ;; source
-         ;; TODO: maintain source for each package
-         (let* ((when-to-eval (deh--getoption :eval options)) ; eval
-                (whether-load (deh--getoption :cond options)) ; cond
-                (ks (cdr (deh--getoption :keybind options)))  ; keybind
-                (kv (if ks (if (vectorp ks) ks (vector ks))))
-                (keybinds (mapcar (lambda (keybind)
-                                    (let ((keymap (car keybind))
-                                          (binds (cdr keybind)))
-                                      `(deh-define-key ,keymap ,@binds)))
-                                  kv))
-                (hs (cdr (deh--getoption :hook options))) ; hook
-                (hv (if hs (if (vectorp hs) hs (vector hs))))
-                (hooks (mapcar (lambda (hfunc)
-                                 (let ((hook (car hfunc))
-                                       (funcs (cdr hfunc)))
-                                   `(deh-add-hook ,hook ,@funcs)))
-                               hv))
-                (body (nconc forms keybinds hooks)))
-           ;; merge body
-           (list
-            (if whether-load
-                (cond ((eq 'after (cdr when-to-eval))
-                       `(if ,(cdr whether-load) (deh-after-load ,name ,@body))
-                       )
-                      ((eq 'reserved (cdr when-to-eval))
-                       `(if ,(cdr whether-load)
-                            (add-to-list 'deh-reserves '(,name (deh-try-require ,name ,@body)))))
-                      (t
-                       `(if ,(cdr whether-load)
-                            (deh-try-require ,name ,@body))))
-              (cond ((eq 'after (cdr when-to-eval))
-                     `(deh-after-load ,name ,@body))
-                    ((eq 'reserved (cdr when-to-eval))
-                     `(add-to-list 'deh-reserves '(,name (deh-try-require ,name ,@body))))
-                    (t
-                     `(deh-try-require ,name ,@body))))))))
+  (list 'progn
+        ;; won't override previous setting
+        (nconc `(unless (assoc-string ,name deh-sections)
+                  (if ,load-file-name
+                      (add-to-list 'deh-sections (cons ,name ,load-file-name))))
+               ;; autoload
+               (let* ((ls (cdr (deh--getoption :autoload options)))
+                      (lv (if (vectorp ls) ls (vector ls))))
+                 (mapcan (lambda (load)
+                           (let ((filename (car load)))
+                             (mapcar (lambda (func)
+                                       `(autoload ,func ,filename "" t)) (cdr load)))) lv))
+               ;; source
+               ;; TODO: maintain source for each package
+               (let* ((when-to-eval (deh--getoption :eval options)) ; eval
+                      (whether-load (deh--getoption :cond options)) ; cond
+                      (ks (cdr (deh--getoption :keybind options)))  ; keybind
+                      (kv (if ks (if (vectorp ks) ks (vector ks))))
+                      (keybinds (mapcar (lambda (keybind)
+                                          (let ((keymap (car keybind))
+                                                (binds (cdr keybind)))
+                                            `(deh-define-key ,keymap ,@binds)))
+                                        kv))
+                      (hs (cdr (deh--getoption :hook options))) ; hook
+                      (hv (if hs (if (vectorp hs) hs (vector hs))))
+                      (hooks (mapcar (lambda (hfunc)
+                                       (let ((hook (car hfunc))
+                                             (funcs (cdr hfunc)))
+                                         `(deh-add-hook ,hook ,@funcs)))
+                                     hv))
+                      (body (nconc forms keybinds hooks)))
+                 ;; merge body
+                 (list
+                  (if whether-load
+                      (cond ((eq 'after (cdr when-to-eval))
+                             `(if ,(cdr whether-load) (deh-after-load ,name ,@body))
+                             )
+                            ((eq 'reserved (cdr when-to-eval))
+                             `(if ,(cdr whether-load)
+                                  (add-to-list 'deh-reserves '(,name (deh-try-require ,name ,@body)))))
+                            (t
+                             `(if ,(cdr whether-load)
+                                  (deh-try-require ,name ,@body))))
+                    (cond ((eq 'after (cdr when-to-eval))
+                           `(deh-after-load ,name ,@body))
+                          ((eq 'reserved (cdr when-to-eval))
+                           `(add-to-list 'deh-reserves '(,name (deh-try-require ,name ,@body))))
+                          (t
+                           `(deh-try-require ,name ,@body)))))))))
 
 ;;;
 ;;; Some derived macros from `deh-section-with-options'

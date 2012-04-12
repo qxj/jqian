@@ -20,11 +20,8 @@
   ((kbd "C-d")    'delete-char-or-region)
   ((kbd "<C-delete>")    'delete-char-or-region)
   ((kbd "C-1")    'extend-selection)
-  ((kbd "M-1")    'extend-selection)    ; for terminal that don't recognize Ctrl
   ((kbd "C-2")    'set-mark-command)
-  ((kbd "M-2")    'set-mark-command)
-  ((kbd "C-9")    'helm-mini)
-  ((kbd "M-9")    'helm-mini)
+  ((kbd "M-9")    'anything)
   ((kbd "C-m")    'newline-and-indent)
   ((kbd "C-j")    'newline)
   ((kbd "C-a")    'my-beginning-of-line)
@@ -40,7 +37,7 @@
   ((kbd "M-5")    'my-display-buffer-path)
   ((kbd "M-0")    'other-window)
   ((kbd "C-M-0")  'sr-speedbar-select-window)
-  ((kbd "C-M-1")    'sdcv-search)
+  ((kbd "M-1")    'sdcv-search)
   ((kbd "M-'")    'just-one-space)
   ((kbd "M--")    'delete-blank-lines)
   ((kbd "M-J")    'vi-join-lines)
@@ -147,7 +144,7 @@
 (deh-require 'one-key
   (deh-define-key one-key-prefix
     ("k"  'one-key-menu-root)
-    ("a"  'one-key-menu-helm)
+    ("a"  'one-key-menu-anything)
     ("t"  'one-key-menu-toggle)
     ("g"  'one-key-menu-gtags)
     ("c"  'one-key-menu-cscope)
@@ -165,13 +162,36 @@
      "ROOT"
      '(
        (("t" . "Toggle") . one-key-menu-toggle)
-       (("a" . "Helm") . one-key-menu-helm)
+       (("a" . "Anything") . one-key-menu-anything)
+       ;; (("a" . "Helm") . one-key-menu-helm)
        (("g" . "Gtags") . one-key-menu-gtags)
        (("c" . "Cscope") . one-key-menu-cscope)
        (("h" . "Highlight") . one-key-menu-highlight)
        (("s" . "Show Hide") . one-key-menu-hideshow)
        (("v" . "Version Control") . one-key-menu-vc)
        (("w" . "Window") . one-key-menu-window))))
+
+;;;; Anything
+  (defun one-key-menu-anything ()
+    "The `one-key' menu for ANYTHING."
+    (interactive)
+    (require 'anything-config nil t)    ; latter load
+    (one-key-menu
+     "ANYTHING"
+     '(
+       (("a" . "Anything") . anything)
+       (("b" . "Buffers") . anything-buffers+)
+       (("B" . "Bookmarks") . anything-c-pp-bookmarks)
+       (("c" . "Commands") . anything-M-x)
+       (("f" . "Files") . anything-for-files)
+       (("i" . "Imenu") . anything-imenu)
+       (("I" . "Info") . anything-info-pages)
+       (("k" . "Kill Ring") . anything-show-kill-ring)
+       (("o" . "Occur") . anything-occur)
+       (("r" . "Register") . anything-register)
+       (("m" . "Man Pages") . anything-man-woman)
+       (("SPC" . "Execute anything commands") . anything-execute-anything-command)
+       ) t))
 
 ;;;; helm
   (defun one-key-menu-helm ()

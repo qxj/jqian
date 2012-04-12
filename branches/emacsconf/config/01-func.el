@@ -582,14 +582,17 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
         (write-region (point-min) (point-max) autoload-file)
         (load autoload-file)))))
 
-(defun my-byte-recompile-startup-dir ()
-  "Recompile all the .el files under my-startup-dir, if they're
-not up to date. It can also be run from the command line:
+(defun my-byte-recompile-directory-recursively (&optional specified)
+  "Recompile all the .el files under DIR, if they're not up to
+date. It can also be run from the command line:
 
-$ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
-  (interactive)
-  (dolist (dir (find-subdirs-containing my-startup-dir "\\.el$"))
-    (byte-recompile-directory dir 0)))
+$ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
+  (interactive
+   (list current-prefix-arg))
+  (let ((spec-dir (if specified (read-directory-name "Byte compile the directory recursively: ")
+                    my-startup-dir)))
+    (dolist (dir (find-subdirs-containing spec-dir "\\.el$"))
+      (byte-recompile-directory dir 0))))
 
 (defun antiword (&optional file width)
   "Run antiword on the entire buffer."
