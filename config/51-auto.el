@@ -26,18 +26,10 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-require-reserved 'template-simple
-  (setq template-directory-list (list my-template-dir)
-        template-skip-directory-list (list my-temp-dir my-template-dir))
-  ;; (defadvice ido-find-file (after ido-file-file-template activate)
-  ;;   (funcall 'template-auto-insert))
-  (add-hook 'write-file-functions 'template-simple-update-header)
-  )
-
 (deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
-  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
+  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
   (setq ac-auto-start 3
         ac-auto-show-menu 1.5
         ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
@@ -518,7 +510,7 @@ indent line."
   (defun my-update-header ()
     (interactive)
     (when (and buffer-file-name
-               (not (string-match (regexp-opt (list my-temp-dir my-template-dir)) buffer-file-name)))
+               (not (string-match (regexp-opt (list my-data-dir my-template-dir)) buffer-file-name)))
       (save-excursion
         (goto-char (point-min))
         (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines

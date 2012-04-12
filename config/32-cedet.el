@@ -19,7 +19,7 @@
   (global-semantic-decoration-mode 1)
 
   ;; semantic cache directory
-  (setq semanticdb-default-save-directory (expand-file-name "semanticdb" my-temp-dir))
+  (setq semanticdb-default-save-directory (expand-file-name "semanticdb" my-data-dir))
 
   ;; CEDET tweaks: http://stackoverflow.com/questions/3807345/cedet-scalability-tips/3808830#3808830
   (setq semantic-idle-scheduler-idle-time 5
@@ -124,7 +124,7 @@
     (setq ede-locate-setup-options
           '(ede-locate-global ede-locate-locate ede-locate-base)
           ede-project-placeholder-cache-file
-          (expand-file-name "ede-project.el" my-temp-dir))
+          (expand-file-name "ede-project.el" my-data-dir))
 
     ;; (global-ede-mode t)
 

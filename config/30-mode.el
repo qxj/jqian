@@ -372,7 +372,7 @@ etc).  The following options will be available:
 (deh-section "woman"
   ;; (add-hook 'woman-mode-hook 'view-mode)
 
-  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-temp-dir)
+  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-data-dir)
         woman-manpath '("/usr/man"
                         "/usr/share/man"
                         "/usr/X11R6/man"
@@ -819,7 +819,7 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-section-reserved "php"
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
-          php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
+          php-doc-cachefile (expand-file-name "php-doc" my-data-dir))
     (deh-define-key php-mode-map
       ("\t"    'php-doc-complete-function)
       ("\C-cd" 'php-doc))
