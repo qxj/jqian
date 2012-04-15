@@ -9,6 +9,10 @@ M-x flush-lines RET ^$ RET
 * Join two lines
 M-^
 
+* Dired open directory in the same buffer
+
+a (M-x dired-find-alternate-file)
+
 * Input 100 times 1
 C-u 100 C-u 1
 
