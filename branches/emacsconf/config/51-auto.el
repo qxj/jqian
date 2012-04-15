@@ -246,13 +246,14 @@ indent line."
             (t
              (looking-at (regexp-quote (string last-command-char)))))))
 
-  (global-set-key "("  'autopair-insert)
-  (global-set-key ")"  'autopair-insert)
-  (global-set-key "["  'autopair-insert)
-  (global-set-key "]"  'autopair-insert)
-  (global-set-key "{"  'autopair-insert)
-  (global-set-key "}"  'autopair-insert)
-  (global-set-key "\"" 'autopair-insert)
+  (deh-define-key global-map
+    ("("  'autopair-insert)
+    (")"  'autopair-insert)
+    ("["  'autopair-insert)
+    ("]"  'autopair-insert)
+    ("{"  'autopair-insert)
+    ("}"  'autopair-insert)
+    ("\"" 'autopair-insert))
 
   (defun autopair-insert (arg)
     (interactive "P")
@@ -288,11 +289,15 @@ indent line."
      ((looking-at
        (concat "[ \t\n]*"
                (regexp-quote (string last-command-char))))
-      (replace-match (string last-command-char))
-      (indent-according-to-mode))
+      ;; (replace-match (string last-command-char))
+      (delete-region (match-beginning 0) (match-end 0))
+      (insert (string last-command-char))
+      ;; (indent-according-to-mode)
+      )
      (t
       (self-insert-command (prefix-numeric-value arg))
-      (indent-according-to-mode))))
+      ;; (indent-according-to-mode)
+      )))
 
   (defadvice delete-backward-char (before autopair activate)
     (when (and (char-after)
