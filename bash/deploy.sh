@@ -283,19 +283,19 @@ case $1X in
         cmdlogin $2
         ;;
     execX)
-        cmdexec $2 $3
+        cmdexec $2 "$3"
         ;;
     toX)
-        cmdto $2 $3 $4
+        cmdto $2 "$3" "$4"
         ;;
     fromX)
-        cmdfrom $2 $3 $4
+        cmdfrom $2 "$3" "$4"
         ;;
     depexecX)
-        cmddepexec $2
+        cmddepexec "$2"
         ;;
     deptoX)
-        cmddepto $2 $3
+        cmddepto $2 "$3"
         ;;
     listX)
         cmdlist
