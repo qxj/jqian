@@ -1,6 +1,8 @@
 ;; -*- coding: utf-8 -*-
+
 ;;; customization
-(setq custom-file (expand-file-name "19-local.el" my-config-dir))
+(setq custom-file (expand-file-name "emacs.custom.el" my-data-dir))
+(load custom-file)
 
 (setq debug-on-error nil debug-on-quit nil)
 
@@ -100,7 +102,8 @@
   ;;           bpath)))
   )
 
-(setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-data-dir))
+(setq auto-save-list-file-prefix
+      (expand-file-name "emacs.autosave-" my-data-dir))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
@@ -171,14 +174,14 @@
   (set-register ?b '(file . "~/Dropbox/"))
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
-  (set-register ?p '(file . "~/projects/"))
   (set-register ?w '(file . "~/works/"))
   (set-register ?d '(file . "~/Desktop/")))
 
 ;; prevent no response if click the memu in File
-(fset 'print-buffer 'ignore)
-(setq lpr-command "")
-(setq printer-name "")
+(deh-section "printer"
+  (fset 'print-buffer 'ignore)
+  (setq lpr-command "")
+  (setq printer-name ""))
 ;;;}}}
 
 ;;{{{ Hooks
