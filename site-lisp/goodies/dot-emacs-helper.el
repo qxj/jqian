@@ -303,6 +303,7 @@ Example:
                              keypairs))
                    maps))))
 
+;; Deperated! Suggest to replace with deh-define-key
 (defmacro deh-local-set-key (hook &rest keypairs)
   "Set a batch of local keys for a hook.
 
@@ -447,17 +448,24 @@ With prefix argument sort section by file."
 ;; FIXME: record keybinds error
 (defun deh-list-keybind ()
   "List all keybinds by `deh-define-key'."
-  (interactive "P")
+  (interactive)
   (switch-to-buffer (get-buffer-create "*DEH*"))
   (setq buffer-read-only nil)
   (erase-buffer)
   (mapc (lambda (keybind)
-          (insert "%s\n" (deh--stringfy (car keybind))) ; map
+          (insert (format "%s\n" (deh--stringfy (car keybind)))) ; map
           (mapc (lambda (bind)
-                  (insert "%s\t%s\n" (deh--stringfy (car bind))
-                          (deh--stringfy (cdr bind))))
-                (cdr keybind)))
-        deh-keybinds))
+                  (insert (format "\t%s\t%s\n" (key-description (car bind))
+                                  (deh--stringfy (cdr bind)))))
+                (sort (cdr keybind)
+                      (lambda (n1 n2)
+                        (string< (key-description (car n1))
+                                 (key-description (car n2)))))))
+        (sort deh-keybinds
+              (lambda (n1 n2)
+                (string< (deh--stringfy (car n1))
+                         (deh--stringfy (car n2))))))
+  (goto-char (point-min)))
 
 (defun deh-set-buffer ()
   (switch-to-buffer (get-buffer-create deh-buffer-name))
@@ -480,7 +488,9 @@ With prefix argument sort section by file."
 (defun deh--set-keybind (map key func)
   (let* ((binds (cdr (assoc map deh-keybinds)))
          (new-binds (if binds
-                        (append `((,key . ,func)) binds)
+                        (if (assoc key binds)
+                            binds
+                          (append `((,key . ,func)) binds))
                       `((,key . ,func)))))
     (setq deh-keybinds (cons `(,map . ,new-binds)
                              (delq (assoc map deh-keybinds) deh-keybinds)))))
