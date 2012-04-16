@@ -299,7 +299,7 @@ Example:
                      (mapcan (lambda (pair)
                                (list
                                `(define-key ,map ,(car pair) ,(cadr pair))
-                               `(deh--set-keybind ,map ',pair) ))
+                               `(deh--set-keybind ',map ,(car pair) ,(cadr pair))))
                              keypairs))
                    maps))))
 
@@ -455,7 +455,7 @@ With prefix argument sort section by file."
           (insert "%s\n" (deh--stringfy (car keybind))) ; map
           (mapc (lambda (bind)
                   (insert "%s\t%s\n" (deh--stringfy (car bind))
-                          (deh--stringfy (cadr bind))))
+                          (deh--stringfy (cdr bind))))
                 (cdr keybind)))
         deh-keybinds))
 
@@ -477,11 +477,13 @@ With prefix argument sort section by file."
             ("\C-c\C-f" . deh-switch-file))
   )
 
-(defun deh--set-keybind (map keybind)
-  (let ((binds (assoc-default map deh-keybinds)))
-    (if binds
-        (push keybind binds)
-      (add-to-list 'deh-keybinds (cons map '(keybind))))))
+(defun deh--set-keybind (map key func)
+  (let* ((binds (cdr (assoc map deh-keybinds)))
+         (new-binds (if binds
+                        (append `((,key . ,func)) binds)
+                      `((,key . ,func)))))
+    (setq deh-keybinds (cons `(,map . ,new-binds)
+                             (delq (assoc map deh-keybinds) deh-keybinds)))))
 
 (defun deh--regexp (name)
   (if (stringp name)
