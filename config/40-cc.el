@@ -210,10 +210,6 @@ the directories in the INCLUDE environment variable."
         gdb-use-separate-io-buffer t)
 
   (deh-add-hook 'gud-mode-hook
-    (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
-    (define-key gud-mode-map (kbd "C-u") 'comint-kill-input)
-    ;;# keybinds remind
-    ;; M-r 'comint-history-isearch-backward-regexp
     (set (make-local-variable 'paragraph-separate) "\\'"))
 
   (define-mode-toggle "gdb"  gdb
@@ -221,6 +217,12 @@ the directories in the INCLUDE environment variable."
     (call-interactively 'gdb-restore-windows))
 
   (deh-after-load "gud"
+    (deh-define-key gud-mode-map
+      ;;# keybinds remind
+      ;; M-r 'comint-history-isearch-backward-regexp
+      ((kbd "<M-up>") 'comint-previous-prompt)
+      ((kbd "C-u") 'comint-kill-input))
+
     (deh-define-key gud-minor-mode-map
       ((kbd "<M-up>")  'comint-previous-prompt)
       ([f5]            'gud-go)

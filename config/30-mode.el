@@ -422,9 +422,6 @@ etc).  The following options will be available:
         flymake-log-level 0
         flymake-no-changes-timeout 5.0)
 
-  ;; (deh-add-hook '(c-mode-common-hook makefile-mode-hook)
-  ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
-
   ;; (deh-add-hook 'find-file-hook
   ;;   (condition-case nil (flymake-find-file-hook) (error nil)))
 
@@ -662,7 +659,9 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (deh-add-hook 'emacs-lisp-mode-hook
     (my-mode-common-hook)
-    (turn-on-eldoc-mode)
+    (turn-on-eldoc-mode))
+
+  (deh-after-load "lisp-mode"
     (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
       ("\M-."  'browse-el-find-funtion)
       ("\M-*"  'browse-el-go-back)
@@ -732,20 +731,21 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook text-mode-hook abbrev-mode))
 
 ;;; tools
-(deh-section "gnuplot"
+(deh-section-after "gnuplot"
   (deh-add-hook 'gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook 'gnuplot-comint-setup-hook
-    (deh-define-key comint-mode-map
-      ("\C-d"  'comint-delchar-or-maybe-eof))))
+    (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof)))
 
-(deh-section "graphviz"
+(deh-section-after "graphviz-dot"
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
-  (deh-add-hook 'graphviz-dot-mode-hook
-    (local-unset-key "\C-cc") ; it's prefix key
-    (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
+
+  (deh-define-key graphviz-dot-mode-map
+    ("\C-cc" nil)                     ; it's prefix key
+    ("\t" 'graphviz-dot-tab-action))
+
   (defun graphviz-dot-tab-action ()
     "If cursor at one word end, try complete it. Otherwise, indent line."
     (interactive)
