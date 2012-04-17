@@ -114,6 +114,7 @@
   ("r"  'buffer-action-run)
   ("s"  'buffer-action-compile)
   ("t"  'auto-insert)
+  ("u"  'undo-tree-visualize)
   ("v"  'view-mode)
   ("\t" 'ispell-complete-word)
   )
