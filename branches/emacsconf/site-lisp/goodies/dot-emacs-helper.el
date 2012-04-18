@@ -457,7 +457,7 @@ With prefix argument sort section by file."
           (mapc (lambda (bind)
                   (insert (format "\t%s\t%s\n" (key-description (car bind))
                                   (deh--stringfy (cdr bind)))))
-                (sort (copy-sequence (cdr keybind))
+                (sort (cdr keybind)
                       (lambda (n1 n2)
                         (string< (key-description (car n1))
                                  (key-description (car n2)))))))
