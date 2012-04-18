@@ -129,9 +129,10 @@ missing packages into `deh-missing-packages-list'."
      '(progn ,@forms)))
 
 (defmacro deh-section-with-options (name options &rest forms)
-  "Combine all into one section.
-
-options should have the form
+  "Combine all settings as FORMS into one section. If there are
+several sections declared as the same NAME, the prior section
+will override the latters. In additional, a sort of OPTIONS can
+be specified, that should follow the such form:
 
     [KEYWORD VALUE]...
 
