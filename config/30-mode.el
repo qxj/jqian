@@ -86,6 +86,7 @@
          (number-sequence tab-width 80 tab-width))
 
     (abbrev-mode 1)
+    (subword-mode 1)
     ;; (when (fboundp 'whitespace-mode) (whitespace-mode t))
     (hs-minor-mode 1)
     (ignore-errors (imenu-add-menubar-index))

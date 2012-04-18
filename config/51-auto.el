@@ -246,37 +246,55 @@ indent line."
             (t
              (looking-at (regexp-quote (string last-command-char)))))))
 
-  (deh-define-key global-map
-    ("("  'autopair-insert)
-    (")"  'autopair-insert)
-    ("["  'autopair-insert)
-    ("]"  'autopair-insert)
-    ("{"  'autopair-insert)
-    ("}"  'autopair-insert)
-    ("\"" 'autopair-insert))
+  (defun skeleton-autopair-setup (keymap)
 
-  (defun autopair-insert (arg)
-    (interactive "P")
-    (let (pair)
-      (cond
-       ((assq last-command-char skeleton-pair-alist)
-        (autopair-open arg))
-       (t
-        (autopair-close arg)))))
 
-  (defun autopair-open (arg)
+    (deh-define-key keymap
+      ("("  'skeleton-autopair-insert)
+      (")"  'skeleton-autopair-insert)
+      ("["  'skeleton-autopair-insert)
+      ("]"  'skeleton-autopair-insert)
+      ("{"  'skeleton-autopair-insert)
+      ("}"  'skeleton-autopair-insert)
+      ("\"" 'skeleton-autopair-insert)))
+
+  (skeleton-autopair-setup global-map)
+
+  (deh-add-hook sh-mode-hook
+    (set (make-local-variable 'skeleton-pair-alist)
+         '((?( _ ?))
+           (?[ _ ?])
+           (?{ _ ?})
+           (?` _ ?`)
+           (?\" _ ?\")))
+    (skeleton-autopair-setup sh-mode-map))
+
+  (defun skeleton-autopair-insert (arg)
     (interactive "P")
-    (let ((pair (assq last-command-char
-                      skeleton-pair-alist)))
+    (let ((pair (assq last-command-char skeleton-pair-alist)))
+      (if pair
+          (progn (cond
+                  ((and (not mark-active)
+                        (eq (car pair) (car (last pair)))
+                        (eq (car pair) (char-after)))
+                   (skeleton-autopair-close arg))
+                  (t
+                   (skeleton-pair-insert-maybe arg)))
+                 (message "Autopair %s _ %s" (string last-command-char) (string (caddr pair))))
+        (skeleton-autopair-close arg))))
+
+  (defun skeleton-autopair-open (arg)
+    (interactive "P")
+    (let ((pair (assq last-command-char skeleton-pair-alist)))
       (cond
        ((and (not mark-active)
              (eq (car pair) (car (last pair)))
              (eq (car pair) (char-after)))
-        (autopair-close arg))
+        (skeleton-autopair-close arg))
        (t
         (skeleton-pair-insert-maybe arg)))))
 
-  (defun autopair-close (arg)
+  (defun skeleton-autopair-close (arg)
     (interactive "P")
     (cond
      (mark-active
