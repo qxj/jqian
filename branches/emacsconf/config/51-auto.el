@@ -246,19 +246,29 @@ indent line."
             (t
              (looking-at (regexp-quote (string last-command-char)))))))
 
-  (defun skeleton-autopair-setup (keymap)
+  (defmacro skeleton-autopair-define-key (keymap &optional alist)
+    "Helper to define keymap for all autopair keys in customized
+`skeleton-pair-alist'. While `skeleton-pair-alist' is a skeleton
+definition, so this macro is only suitable for such skeleton
+definition:
 
+    '((KEY-BEFORE _ KEY-AFTER) ...)
 
-    (deh-define-key keymap
-      ("("  'skeleton-autopair-insert)
-      (")"  'skeleton-autopair-insert)
-      ("["  'skeleton-autopair-insert)
-      ("]"  'skeleton-autopair-insert)
-      ("{"  'skeleton-autopair-insert)
-      ("}"  'skeleton-autopair-insert)
-      ("\"" 'skeleton-autopair-insert)))
+for example:
 
-  (skeleton-autopair-setup global-map)
+    '((?( _ ?))
+      (?[ _ ?])
+      ...)
+
+"
+    (nconc (list 'progn)
+           (mapcan (lambda (pair)
+                     (list
+                      `(define-key ,keymap ,(string (car pair)) 'skeleton-autopair-insert)
+                      `(define-key ,keymap ,(string (caddr pair)) 'skeleton-autopair-insert)))
+                   (or alist skeleton-pair-alist))))
+
+  (skeleton-autopair-define-key global-map)
 
   (deh-add-hook sh-mode-hook
     (set (make-local-variable 'skeleton-pair-alist)
@@ -267,7 +277,7 @@ indent line."
            (?{ _ ?})
            (?` _ ?`)
            (?\" _ ?\")))
-    (skeleton-autopair-setup sh-mode-map))
+    (skeleton-autopair-define-key sh-mode-map))
 
   (defun skeleton-autopair-insert (arg)
     (interactive "P")
