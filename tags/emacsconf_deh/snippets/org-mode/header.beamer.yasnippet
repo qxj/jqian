@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: #+LaTeX_CLASS: beamer ...
+# key: beamer
+# key: hbeamer
+# --
+#+LaTeX_CLASS: beamer
+#+TITLE: ${1:My Presentation}
+#+AUTHOR: ${2:Julian Qian}
+#+EMAIL: `user-mail-address`
+#+DATE: `(current-time-string)`
+#+LATEX_CLASS_OPTIONS: [presentation]
+#+LATEX_HEADER: \setmainfont{Big Caslon}
+#+LATEX_HEADER: \setsansfont{Optima}
+#+LATEX_HEADER: \setmonofont{American Typewriter}
+#+LATEX_HEADER: \setCJKmainfont{Kai}
+#+LATEX_HEADER: \setCJKsansfont{Hei}
+#+LATEX_HEADER: \setCJKmonofont{STFangsong}
+#+BEAMER_FRAME_LEVEL: ${3:2$$(yas/choose-value '("4" "3" "2"))}
+#+BEAMER_HEADER_EXTRA: \usetheme{${4:default$$(yas/choose-value '("Berkeley" "CambridgeUS"  "Frankfurt" "PaloAlto" "Montpellier" "Pittsburgh" "Rochester" "boxes" "Goettingen" "default"))}}\usecolortheme{${5:default$$(yas/choose-value '("albatross" "beaver" "beetle" "crane" "dolphin" "dove" "fly" "lily" "orchid" "rose" "seagull" "seahorse" "sidebartab" "structure" "whale" "wolverine" "default"))}}
+#+COLUMNS: ${6:%35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)}
+#+OPTIONS: tags:${7:nil}
+
+$0

@@ -1,0 +1,4 @@
+#name: $(filter-out $(match-list) $(all-list))
+#key: fo
+# --
+$(filter-out ${1} ${2})

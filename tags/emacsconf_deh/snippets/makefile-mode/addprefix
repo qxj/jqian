@@ -1,0 +1,4 @@
+#name: $(addprefix string, $(list))
+#key: ap
+# --
+$(addprefix ${1:-l}, ${2:\$(LIBS)})

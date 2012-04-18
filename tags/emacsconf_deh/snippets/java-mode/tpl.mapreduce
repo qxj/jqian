@@ -1,0 +1,68 @@
+#name: a simple m/r example
+#key: tpl
+# --
+
+package net.jqian;
+
+import java.io.IOException;
+import java.util.*;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+import org.apache.hadoop.util.*;
+
+
+public class ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`} extends Configured implements Tool {
+
+    public static class $1Mapper extends Mapper <LongWritable, Text, ${2:Text$$(yas/choose-value '("IntWritable" "Text"))}, ${3:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
+
+        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+            // ...
+            $0
+        }
+    }
+
+    public static class $1Reducer extends Reducer<$2, $3, ${4:Text$$(yas/choose-value '("IntWritable" "Text"))}, ${5:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
+
+        public void reduce($4 key, Iterable <$5> values,
+                Context context) throws IOException, InterruptedException {
+            // ...
+        }
+    }
+
+    @Override
+    public int run(String[] args) throws Exception {
+        Configuration conf = getConf();
+        conf.set("mapred.job.name", "${6:my m/r job}");
+        conf.set("mapred.job.queue.name", "gdm");
+        conf.set("mapred.reduce.tasks", "200");
+
+        Job job = new Job(conf);
+        job.setJarByClass($1.class);
+
+        Path inputPath = new Path(args[0]);
+        Path outputPath = new Path(args[1]);
+
+        FileInputFormat.setInputPaths(job, inputPath);
+        FileOutputFormat.setOutputPath(job, outputPath);
+
+        job.setMapOutputKeyClass($2.class);
+        job.setMapOutputValueClass($3.class);
+        job.setOutputKeyClass($4.class);
+        job.setOutputValueClass($5.class);
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+        job.setMapperClass($1Mapper.class);
+        job.setReducerClass($1Reducer.class);
+
+        return job.waitForCompletion(true) ? 0 : 1;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int exitCode = ToolRunner.run(new $1(), args);
+        System.exit(exitCode);
+    }
+}

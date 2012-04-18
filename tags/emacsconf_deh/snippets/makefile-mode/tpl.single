@@ -1,0 +1,26 @@
+#name: A simple makefile template
+#key: tpl
+# --
+
+.SUFFIXES: .h .cpp
+
+CC=g++
+
+${1:TEST} = ${2:$$(downcase (yas/field-value 1))}
+$1_O = $2.o $0
+
+ALL: \${$1}
+
+\${$1}: \${$1_O}
+	$(CC) -o \${$1} \${$1_O}
+
+%.o:%.cpp %.h
+	$(CC) -Wall -g -O0 -o $@ -c $<
+
+# for solo cpp
+%.o:%.cpp
+	$(CC) -Wall -g -O0 -o $@ -c $<
+
+clean:
+	-rm -f *.o
+	-rm -f $2

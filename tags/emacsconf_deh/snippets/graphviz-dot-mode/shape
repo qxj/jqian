@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: shape=..
+# key: shape
+# --
+shape=${1:box$$(yas/choose-value '("record" "ellipse" "circle" "egg" "point" "plaintext" "box"))}
