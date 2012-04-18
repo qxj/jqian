@@ -1,10 +1,10 @@
 ;;; dot-emacs-helper.el --- Some helper functions for .emacs
 
-;; Copyright 2007, 2012 Ye Wenbin
+;; Copyright 2007 Ye Wenbin, 2011, 2012 Julian Qian
 ;;
-;; Author: wenbinye@gmail.com
-;; Update: Julian Qian <junist@gmail.com>
-;; Version: 0.1
+;; Created: wenbinye@gmail.com
+;; Updated: Julian Qian <junist@gmail.com>
+;; Version: 1.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
