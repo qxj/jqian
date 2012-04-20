@@ -9,10 +9,24 @@ M-x flush-lines RET ^$ RET
 * Join two lines
 M-^
 
+* Dired open directory in the same buffer
+
+a (M-x dired-find-alternate-file)
+
 * Input 100 times 1
 C-u 100 C-u 1
 
-* Save and restore window configuration
+* Rectangle edit
+C-x r k, Kill a marked rectangle region
+C-x r y, Yank the last killed rectangle with *upper left corner* at point.
+C-x r o, Blank out the region-rectangle, shifting text right.
+
+* Copy/insert a region with register
+C-x r s, Copy region into register
+C-x r r, Copy rectangular region into register
+C-x r i, Insert contents of register
+
+* Save and restore window configuration with register
 C-x r w, C-x r j
 
 * Repeat last command

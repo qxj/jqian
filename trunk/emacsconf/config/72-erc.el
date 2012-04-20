@@ -72,10 +72,8 @@
 (setq erc-keywords '("jqian"))
 (setq erc-pals nil)
 
-;; (eval-after-load 'erc-match
-;;   '(progn
-;;      (set-face-foreground erc-query-buffer-face "magenta")
-;;      ))
+;; (deh-after-load 'erc-match
+;;    (set-face-foreground erc-query-buffer-face "magenta"))
 
 (defface erc-query-buffer-face '((t (:bold t :foreground "magenta")))
   "ERC face for your query buffers."
@@ -155,23 +153,22 @@ so as to keep an eye on work when necessarily."
 ;;       (add-to-list 'faces 'erc-query-buffer-face))
 ;;     faces))
 
-(eval-after-load 'erc-track
-  '(progn
-     (defun erc-faces-in (str)
-       "Return a list of all faces used in STR."
-       (let ((i 0)
-             (m (length str))
-             (faces (erc-list (get-text-property 0 'face str))))
-         (while (and (setq i (next-single-property-change i 'face str m))
-                     (not (= i m)))
-           (dolist (face (erc-list (get-text-property i 'face str)))
-             (add-to-list 'faces face)))
-         ;; special faces for query & group(like msn groups) buffers
-         (when (or (erc-query-buffer-p)
-                   (string-match "&" (buffer-name)))
-           (add-to-list 'faces 'erc-query-buffer-face))
-         faces))
-     ))
+(deh-after-load "erc-track"
+  (defun erc-faces-in (str)
+    "Return a list of all faces used in STR."
+    (let ((i 0)
+          (m (length str))
+          (faces (erc-list (get-text-property 0 'face str))))
+      (while (and (setq i (next-single-property-change i 'face str m))
+                  (not (= i m)))
+        (dolist (face (erc-list (get-text-property i 'face str)))
+          (add-to-list 'faces face)))
+      ;; special faces for query & group(like msn groups) buffers
+      (when (or (erc-query-buffer-p)
+                (string-match "&" (buffer-name)))
+        (add-to-list 'faces 'erc-query-buffer-face))
+      faces))
+  )
 
 ;; ,----
 ;; | timestamp
@@ -203,7 +200,7 @@ so as to keep an eye on work when necessarily."
 ;; `----
 
 (erc-log-mode 1)
-(setq erc-log-channels-directory (expand-file-name "erc" my-temp-dir)
+(setq erc-log-channels-directory (expand-file-name "erc" my-data-dir)
       erc-save-buffer-on-part t
       erc-log-file-coding-system 'utf-8
       erc-log-write-after-send t
@@ -369,19 +366,6 @@ If the buffer is currently not visible, makes it sticky."
   (let ((inhibit-read-only t))
     ad-do-it))
 
-(defun my-toggle-erc ()
-  "Switch to a erc buffer or return to the previous buffer."
-  (interactive)
-  (if (derived-mode-p 'erc-mode)
-      (while (derived-mode-p 'erc-mode)
-        (bury-buffer))
-    (let ((list (buffer-list)))
-      (while list
-        (if (with-current-buffer (car list)
-              (derived-mode-p 'erc-mode))
-            (progn
-              (switch-to-buffer (car list))
-              (setq list nil))
-          (setq list (cdr list))))
-      (unless (derived-mode-p 'erc-mode)
-        (call-interactively 'erc)))))
+(define-mode-toggle "erc" erc
+  (derived-mode-p 'erc-mode))
+

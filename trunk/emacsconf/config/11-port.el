@@ -2,10 +2,13 @@
 ;; This config is for portable. The platform relate configuration
 ;; should appear here.
 
-(defvar user-include-dirs
-  '(".." "../include" "../inc" "../common" "../public" "../hdr"
-    "../.." "../../include" "../../inc" "../../common" "../../public"
-    "../../hdr"))
+(defvar my-include-dirs
+  (let (dirs
+        (incs '("include" "inc" "common" "public" "hdr"))
+        (updirs '("./" "../" "../../" "../../../" "../../../../")))
+    (dolist (dir updirs)
+      (setq dirs (append dirs (mapcar (lambda (x) (concat dir x)) incs))))
+    (append updirs dirs)))
 
 (deh-section "env"
   (setenv "GIT_PAGER" "cat")
@@ -42,13 +45,11 @@
 (deh-section-if "win32"
   (eq system-type 'windows-nt)
   (setq file-name-coding-system 'gbk)
-  (set-terminal-coding-system 'gbk)
-  (set-keyboard-coding-system 'gbk)
   (setq locale-coding-system 'gbk)
   (set-selection-coding-system 'gbk)
-  (set-clipboard-coding-system 'ctext)
-  (set-clipboard-coding-system 'gbk)
   (set-terminal-coding-system 'gbk)
+  (set-keyboard-coding-system 'gbk)
+  (set-clipboard-coding-system 'gbk)
   (set-buffer-file-coding-system 'gbk)
   (modify-coding-system-alist 'process "*" 'gbk)
   (setq default-process-coding-system '(gbk . gbk))
@@ -69,35 +70,35 @@
               (comint-send-string (get-buffer-process (current-buffer)) "set PERLIO=:unix\n"))))
 
 (deh-section-if "linux"
-   (eq system-type 'gnu/linux)
-    (make-variable-buffer-local 'compile-command)
+  (eq system-type 'gnu/linux)
+  (make-variable-buffer-local 'compile-command)
 
-    (dolist (dir '("/usr/lib/info"
-                   "/usr/gnu/info"
-                   "/usr/gnu/lib/info"
-                   "/opt/gnu/info"
-                   "/usr/share/lib/info"
-                   "/usr/local/share/lib/info"
-                   "/usr/gnu/lib/emacs/info"))
-      (add-to-list 'Info-default-directory-list dir)))
+  (dolist (dir '("/usr/lib/info"
+                 "/usr/gnu/info"
+                 "/usr/gnu/lib/info"
+                 "/opt/gnu/info"
+                 "/usr/share/lib/info"
+                 "/usr/local/share/lib/info"
+                 "/usr/gnu/lib/emacs/info"))
+    (add-to-list 'Info-default-directory-list dir))
+  )
 
 (deh-section-if "macosx"
   (eq system-type 'darwin)
   (setq ns-command-modifier 'meta)
   (dolist (dir '("/usr/include/c++/v1"))
-    (add-to-list 'user-include-dirs dir))
+    (add-to-list 'my-include-dirs dir))
   ;; fix launching from spotlight
   ;; $ cat > $HOME/.launchd.conf
   ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
-  (setq browse-url-generic-program "open")
-  )
+  (setq browse-url-generic-program "open"))
 
 (deh-section "window-system"
   (cond ((eq window-system 'x)
          (setq x-select-enable-clipboard t)
          ;; fix issue that ibus input method issue cannot be started in emacs
          ;; firstly, $ sudo apt-get install ibus-el
-         (deh-require-maybe 'ibus
+         (deh-try-require 'ibus
            (add-hook 'after-init-hook 'ibus-mode-on))
 
          (setq my-dired-guess-command-alist
@@ -136,7 +137,7 @@
     ;; only enable color theme in window system
     ;; the same color-theme  looks bad in terminal
     (when window-system
-      ;; (load (expand-file-name "my-fontset.el" my-config-dir))
+      (load (expand-file-name "my-fontset.el" my-config-dir))
       (load (expand-file-name "my-theme.el" my-config-dir))
       ;; no scroll bar
       (set-scroll-bar-mode nil)
@@ -145,41 +146,33 @@
       ;; transparent frame
       (set-frame-parameter (selected-frame) 'alpha '(95 85))
       (add-to-list 'default-frame-alist '(alpha 95 85))
-      ;; use 120 char wide window for largeish displays and smaller 80
-      ;; column windows for smaller displays pick whatever numbers make
-      ;; sense for you
-      (let ((en-font "DejaVu Sans Mono")
-            (zh-font "WenQuanYi Micro Hei Mono"))
-        (if (> (x-display-pixel-width) 1280)
-            (progn
-              (add-to-list 'default-frame-alist (cons 'width 100))
-              (set-frame-font (concat en-font ":pixelsize=14"))
-              (dolist (charset '(kana han symbol cjk-misc bopomofo))
-                (set-fontset-font "fontset-default" charset
-                                  (font-spec :family zh-font))))
-                                  ;; (font-spec :family zh-font :size 16))))
-          (add-to-list 'default-frame-alist (cons 'width 80))
-          (set-frame-font (concat en-font ":pixelsize=12"))
-          (set-fontset-font "fontset-default" 'han
-                            (font-spec :family zh-font))))
       ;; for the height, subtract a couple hundred pixels from the
       ;; screen height (for panels, menubars and whatnot), then divide
       ;; by the height of a char to get the height we want
       (add-to-list 'default-frame-alist
                    (cons 'height (/ (- (x-display-pixel-height) 100)
                                     (frame-char-height))))))
-    (add-hook 'after-make-frame-functions 'init-window-frame)
-    (add-hook 'after-init-hook 'init-window-frame))
+  (add-hook 'after-make-frame-functions 'init-window-frame)
+  (add-hook 'after-init-hook 'init-window-frame))
 
 ;; (deh-add-hook 'find-file-hook
 ;;   (if (and (buffer-file-name)
 ;;            (string-match (expand-file-name "~/src/") (buffer-file-name)))
 ;;       (toggle-read-only 1)))
 
+;; post setting
+(when (executable-find "gcc")
+  (setq my-include-dirs (append (gcc-include-path) my-include-dirs)))
+
+(let ((autoload-file (expand-file-name "100-loaddefs.el" my-config-dir)))
+  (unless (file-exists-p autoload-file) (my-generate-loaddefs t autoload-file)))
+
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)
-  (unless (boundp 'define-fringe-bitmap)
-    (defun define-fringe-bitmap (bitmap bits &optional height width align))))
+  (unless (fboundp 'define-fringe-bitmap)
+    (defun define-fringe-bitmap (bitmap bits &optional height width align)))
+  (unless (fboundp 'x-hide-tip)
+    (defun x-hide-tip ())))
 
 ;; WORKAROUND: skip existed server-name
 (eval-after-load "server"

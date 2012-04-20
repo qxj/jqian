@@ -10,7 +10,7 @@
 (deh-require-reserved 'autopair
   ;; It's not an ideal way to turn on autopair-global-mode, because it's
   ;; unstable and its keybinds often works in unexcepted manner.
-  (deh-add-hooks (java-mode-hook
+  (deh-add-hook (java-mode-hook
                   sh-mode-hook
                   c-mode-common-hook
                   python-mode-hook
@@ -26,18 +26,10 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-require-reserved 'template-simple
-  (setq template-directory-list (list my-template-dir)
-        template-skip-directory-list (list my-temp-dir my-template-dir))
-  ;; (defadvice ido-find-file (after ido-file-file-template activate)
-  ;;   (funcall 'template-auto-insert))
-  (add-hook 'write-file-functions 'template-simple-update-header)
-  )
-
 (deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
-  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-temp-dir))
+  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
   (setq ac-auto-start 3
         ac-auto-show-menu 1.5
         ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
@@ -71,22 +63,22 @@
 
   ;; donot use RET for auto complete, only TAB
   (deh-define-key ac-completing-map
-    ((kbd "<return>") . nil)
-    ((kbd "RET") . nil)
-    ((kbd "TAB") . 'ac-complete)
+    ((kbd "<return>")  nil)
+    ((kbd "RET")       nil)
+    ((kbd "TAB")       'ac-complete)
     ;; ((kbd "M-/") . 'ac-stop)
     )
   ;; when completion menu is displayed
   (setq ac-use-menu-map t)
   (deh-define-key ac-menu-map
-    ("\C-n" . 'ac-next)
-    ("\C-p" . 'ac-previous))
+    ("\C-n"  'ac-next)
+    ("\C-p"  'ac-previous))
 
   (ac-set-trigger-key "TAB")
 
   ;; press <TAB> to active `auto-complete'
-  ;; (deh-local-set-key auto-complete-mode-hook
-  ;;   ((kbd "TAB") . 'auto-complete-tab-action))
+  ;; (deh-define-key ac-mode-map
+  ;;   ((kbd "TAB")  'auto-complete-tab-action))
   (defun auto-complete-tab-action ()
     "If cursor at one word end, try auto complete it. Otherwise,
 indent line."
@@ -164,8 +156,8 @@ indent line."
                (memq beyond-autopair ac-trigger-commands)
                (and ac-completing
                     (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
-  (eval-after-load "autopair"
-    '(ac-settings-4-autopair)) )
+  (deh-after-load "autopair"
+    (ac-settings-4-autopair)) )
 
 (deh-require 'yasnippet
   (setq yas/root-directory my-snippet-dir)
@@ -202,7 +194,7 @@ indent line."
 
 
 ;;; abbrev
-(deh-section "abbrev"
+(deh-section "abbrev-table"
   (define-abbrev-table 'global-abbrev-table
     '(("alpha" "α" nil 0)
       ("beta" "β" nil 0)
@@ -210,7 +202,9 @@ indent line."
       ("theta" "θ" nil 0)
       ("inf" "∞" nil 0)
       ("ar1" "→" nil 0)
-      ("ar2" "⇒" nil 0))))
+      ("ar2" "⇒" nil 0)
+      ("gt" "»" nil 0)
+      ("lt" "«" nil 0))))
 
 ;;; skeleton
 (deh-section "skeleton"
@@ -234,6 +228,7 @@ indent line."
   (setq skeleton-pair t
         skeleton-pair-on-word nil)
 
+  ;;# `skeleton-pair-alist' will override `skeleton-pair-default-alist'
   (setq skeleton-pair-alist
         '((?( _ ?))
           (?[ _ ?])
@@ -251,36 +246,65 @@ indent line."
             (t
              (looking-at (regexp-quote (string last-command-char)))))))
 
-  (global-set-key "("  'autopair-insert)
-  (global-set-key ")"  'autopair-insert)
-  (global-set-key "["  'autopair-insert)
-  (global-set-key "]"  'autopair-insert)
-  (global-set-key "{"  'autopair-insert)
-  (global-set-key "}"  'autopair-insert)
-  (global-set-key "\"" 'autopair-insert)
+  (defmacro skeleton-autopair-define-key (keymap &optional alist)
+    "Helper to define keymap for all autopair keys in customized
+`skeleton-pair-alist'. While `skeleton-pair-alist' is a skeleton
+definition, so this macro is only suitable for such skeleton
+definition:
 
-  (defun autopair-insert (arg)
-    (interactive "P")
-    (let (pair)
-      (cond
-       ((assq last-command-char skeleton-pair-alist)
-        (autopair-open arg))
-       (t
-        (autopair-close arg)))))
+    '((KEY-BEFORE _ KEY-AFTER) ...)
 
-  (defun autopair-open (arg)
+for example:
+
+    '((?( _ ?))
+      (?[ _ ?])
+      ...)
+
+"
+    (nconc (list 'progn)
+           (mapcan (lambda (pair)
+                     (list
+                      `(define-key ,keymap ,(string (car pair)) 'skeleton-autopair-insert)
+                      `(define-key ,keymap ,(string (caddr pair)) 'skeleton-autopair-insert)))
+                   (or alist skeleton-pair-alist))))
+
+  (skeleton-autopair-define-key global-map)
+
+  (deh-add-hook sh-mode-hook
+    (set (make-local-variable 'skeleton-pair-alist)
+         '((?( _ ?))
+           (?[ _ ?])
+           (?{ _ ?})
+           (?` _ ?`)
+           (?\" _ ?\")))
+    (skeleton-autopair-define-key sh-mode-map))
+
+  (defun skeleton-autopair-insert (arg)
     (interactive "P")
-    (let ((pair (assq last-command-char
-                      skeleton-pair-alist)))
+    (let ((pair (assq last-command-char skeleton-pair-alist)))
+      (if pair
+          (progn (cond
+                  ((and (not mark-active)
+                        (eq (car pair) (car (last pair)))
+                        (eq (car pair) (char-after)))
+                   (skeleton-autopair-close arg))
+                  (t
+                   (skeleton-pair-insert-maybe arg)))
+                 (message "Autopair %s _ %s" (string last-command-char) (string (caddr pair))))
+        (skeleton-autopair-close arg))))
+
+  (defun skeleton-autopair-open (arg)
+    (interactive "P")
+    (let ((pair (assq last-command-char skeleton-pair-alist)))
       (cond
        ((and (not mark-active)
              (eq (car pair) (car (last pair)))
              (eq (car pair) (char-after)))
-        (autopair-close arg))
+        (skeleton-autopair-close arg))
        (t
         (skeleton-pair-insert-maybe arg)))))
 
-  (defun autopair-close (arg)
+  (defun skeleton-autopair-close (arg)
     (interactive "P")
     (cond
      (mark-active
@@ -293,11 +317,15 @@ indent line."
      ((looking-at
        (concat "[ \t\n]*"
                (regexp-quote (string last-command-char))))
-      (replace-match (string last-command-char))
-      (indent-according-to-mode))
+      ;; (replace-match (string last-command-char))
+      (delete-region (match-beginning 0) (match-end 0))
+      (insert (string last-command-char))
+      ;; (indent-according-to-mode)
+      )
      (t
       (self-insert-command (prefix-numeric-value arg))
-      (indent-according-to-mode))))
+      ;; (indent-according-to-mode)
+      )))
 
   (defadvice delete-backward-char (before autopair activate)
     (when (and (char-after)
@@ -333,18 +361,32 @@ indent line."
     '((let* ((modes '("c" "c++"))
              (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
         selected)
-      "/* -*- mode: " str " -*-" ?\n
+      "/* -*- mode: " str | -13 " -*-" ?\n
       (my-common-header " * ")
       " */" ?\n ?\n
       "#ifndef "
-      (setq v2 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
+      (setq v1 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
                                "_"
                                (file-name-extension buffer-file-name))))
       ?\n
-      "#define " v2 "\n\n"
+      "#define " v1 "\n\n"
       _
       "\n\n#endif"
       '(progn (set-auto-mode))))
+
+  (define-auto-insert '("\\.\\(hh\\|hpp\\)$" . "C++ header")
+    '(nil
+      "// -*- mode: c++ -*-" ?\n
+      (my-common-header "// ")
+      "//" ?\n ?\n
+      "#ifndef "
+      (setq v1 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
+                               "_"
+                               (file-name-extension buffer-file-name))))
+      ?\n
+      "#define " v1 "\n\n"
+      _
+      "\n\n#endif"))
 
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
@@ -354,15 +396,15 @@ indent line."
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (if (file-exists-p (concat stem ".h"))
-         (file-name-nondirectory (concat stem ".h"))))
-      & ?\" ?\n | -10
+            (file-name-nondirectory (concat stem ".h"))))
+      & "\"\n" | -10
       _))
 
   (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
     '(nil
       "// -*- mode: c++ -*-" ?\n
       (my-common-header "// ")
-      ?\n
+      "//" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
         (cond ((file-exists-p (concat stem ".h"))
@@ -381,13 +423,13 @@ indent line."
   (define-auto-insert '(makefile-mode . "Makefile")
     '(nil
       (my-common-header "# ")
-      "\n\n" _))
+      "\n" _))
 
   (define-auto-insert '(python-mode . "Python script")
     '(nil
       "#!/usr/bin/env python" ?\n
       (my-common-header "# ")
-      ?\n
+      "#\n\n"
       "import sys" ?\n ?\n
       "def main():" ?\n
       > _ ?\n ?\n
@@ -399,7 +441,8 @@ indent line."
     '(nil
       "<?php" ?\n
       (my-common-header "// ")
-      ?\n _ ?\n ?\n
+      "//\n\n"
+       _ ?\n ?\n
       "?>"
       ))
 
@@ -407,7 +450,8 @@ indent line."
     '(nil
       "#!/bin/sh" ?\n
       (my-common-header "# ")
-      ?\n _
+      "#\n\n"
+       _
       ))
 
   (define-auto-insert '(org-mode . "Org document")
@@ -474,30 +518,32 @@ indent line."
     )
   ;; helper functions
   (defun my-common-header (comment-string &optional encoding)
-    (mapconcat (lambda (line) (concat comment-string line))
-               `(
-                 ,(concat "@(#) " (my-filename) (if encoding " -*- coding: utf-8 -*-"))
-                 "Time-stamp: <>"
-                 ,(my-copyright)
-                 ,(concat "Version: $Id: " (my-filename) ",v 0.0 " (my-datetime) " " (user-login-name) " Exp $"))
-               "\n"))
-  (defun my-filename ()
-    (file-name-nondirectory (buffer-file-name)))
+    (concat
+     (mapconcat (lambda (line) (concat comment-string line))
+                `(
+                  ,(format "@(#) %s %s Time-stamp: <>"
+                           (file-name-nondirectory (buffer-file-name))
+                           (if encoding " -*- coding: utf-8 -*-" ""))
+                  ,(format "Copyright %s %s"
+                           (substring (current-time-string) -4)
+                           (or (getenv "ORGANIZATION") user-full-name))
+                  ,(format "Author: %s <%s>"
+                           user-full-name
+                           user-mail-address)
+                  ,(format "Version: $Id: %s,v 0.1 %s %s Exp $"
+                           (file-name-nondirectory (buffer-file-name))
+                           (format-time-string "%Y-%m-%d %H:%M:%S")
+                           (user-login-name))
+                  )
+                "\n")
+     "\n"))
 
-  (defun my-copyright ()
-    (concat "Copyright " (substring (current-time-string) -4) " "
-            (or (getenv "ORGANIZATION")
-                (concat user-full-name
-                        " <" user-mail-address ">"))))
-  (defun my-datetime ()
-    (format-time-string "%Y-%m-%d %H:%M:%S"))
-
-  ;; from template-simple.el
+  ;;# copy from template-simple.el
   (add-hook 'write-file-functions 'my-update-header)
   (defun my-update-header ()
     (interactive)
     (when (and buffer-file-name
-               (not (string-match (regexp-opt (list my-temp-dir my-template-dir)) buffer-file-name)))
+               (not (string-match (regexp-opt (list my-data-dir my-template-dir)) buffer-file-name)))
       (save-excursion
         (goto-char (point-min))
         (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
@@ -514,7 +560,7 @@ indent line."
 ;;; hippie
 (deh-section "hippie-expand"
   ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
-  (eval-after-load "dabbrev" '(defalias 'dabbrev-expand 'hippie-expand))
+  (deh-after-load "dabbrev" (defalias 'dabbrev-expand 'hippie-expand))
   (setq hippie-expand-try-functions-list
         '(try-expand-dabbrev
           try-expand-dabbrev-visible

@@ -3,6 +3,6 @@
 #key: cond
 # --
 (cond
-(CONDITION$0 BODY)
-(CONDITION BODY)
+ (${1:CONDITION} ${2:BODY})
+ (t nil)
 )

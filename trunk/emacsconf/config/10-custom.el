@@ -1,6 +1,4 @@
 ;; -*- coding: utf-8 -*-
-;;; customization
-(setq custom-file (expand-file-name "01-my-custom.el" my-config-dir))
 
 (setq debug-on-error nil debug-on-quit nil)
 
@@ -14,7 +12,7 @@
        (setq scalable-fonts-allowed t)))
 (setq font-lock-maximum-size
       (quote ((t . 1280000) (c-mode . 256000) (c++-mode . 256000))))
-(setq default-directory "~/")
+(setq-default default-directory (expand-file-name "~/"))
 ;; echo key strokes quickly
 (setq echo-keystrokes 0.1)
 ;; auto fill : M-q
@@ -60,11 +58,24 @@
 (setq show-paren-style 'parentheses)
 
 (mouse-avoidance-mode 'animate)
+
 (auto-image-file-mode t)
 ;; Highlight selected regions in Gnu Emacs
 (transient-mark-mode t)
 ;; Make typing overwrite text selection
-(setq delete-selection-mode t)
+(delete-selection-mode t)
+;; revert buffers automatically when underlying files are changed externally
+;; (global-auto-revert-mode t)
+
+;; Smart indenting and pairing for all (emacs24)
+;; (electric-pair-mode t)
+;; (electric-indent-mode t)
+;; (electric-layout-mode t)
+
+;; (partial-completion-mode 1)
+(icomplete-mode 1)
+(winner-mode 1)
+;; (auto-insert-mode 1)
 
 (deh-section "backup"
   (setq make-backup-files t
@@ -76,18 +87,19 @@
         backup-by-copying t)
   ;; DO NOT depends on the backup, it is not really useful
   (add-to-list 'backup-directory-alist
-               (cons "." (expand-file-name "backup" my-temp-dir)))
+               (cons "." (expand-file-name "backup" my-data-dir)))
   ;; (setq make-backup-file-name-function
   ;;       (lambda (fpath)
   ;;         "Return a new file path of a given file path.
   ;; If the new path's directories does not exist, create them."
-  ;;         (let* ((backup-root (expand-file-name "backup" my-temp-dir))
+  ;;         (let* ((backup-root (expand-file-name "backup" my-data-dir))
   ;;                (bpath (concat backup-root fpath "~")))
   ;;           (make-directory (file-name-directory bpath) bpath)
   ;;           bpath)))
   )
 
-(setq auto-save-list-file-prefix (expand-file-name "emacs-autosave-" my-temp-dir))
+(setq auto-save-list-file-prefix
+      (expand-file-name "emacs.autosave-" my-data-dir))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
@@ -118,7 +130,7 @@
 (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
 
 (deh-section "abbrev"
-  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-temp-dir))
+  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-data-dir))
   (if (file-exists-p abbrev-file-name)
       (read-abbrev-file abbrev-file-name))
   (setq save-abbrevs t)
@@ -158,14 +170,14 @@
   (set-register ?b '(file . "~/Dropbox/"))
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
-  (set-register ?p '(file . "~/projects/"))
   (set-register ?w '(file . "~/works/"))
   (set-register ?d '(file . "~/Desktop/")))
 
 ;; prevent no response if click the memu in File
-(fset 'print-buffer 'ignore)
-(setq lpr-command "")
-(setq printer-name "")
+(deh-section "printer"
+  (fset 'print-buffer 'ignore)
+  (setq lpr-command "")
+  (setq printer-name ""))
 ;;;}}}
 
 ;;{{{ Hooks
@@ -193,17 +205,14 @@
 ;;}}}
 
 ;; Turn on the features disabled default
-(put 'set-goal-column 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'scroll-left 'disabled nil)
-(put 'erase-buffer 'disabled nil)
-(put 'dired-find-alternate-file 'disabled nil)
-(put 'LaTeX-hide-environment 'disabled nil)
+(setq disabled-command-function nil)
 
 (setq tooltip-use-echo-area nil)
 (setq folding-folding-on-startup nil)
+
+;;; customization
+(setq custom-file (expand-file-name "emacs.custom.el" my-data-dir))
+(load custom-file t)
 
 (custom-set-variables
  ;; '(confirm-kill-emacs (quote y-or-n-p))
@@ -213,3 +222,4 @@
  '(one-key-keystroke ((t (:foreground "DarkRed" :weight bold))))
  '(one-key-prompt ((t (:foreground "navy"))))
  '(one-key-title ((t (:foreground "blue")))))
+

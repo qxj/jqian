@@ -66,23 +66,29 @@
 ;;                   (get-new-mail nil)))
 ;;# ~/.offlineimaprc
 ;; [general]
-;; ui = Noninteractive.Basic
+;; ui = Basic
 ;; accounts = GMail
+;; maxsyncaccounts = 3
+;; socktimeout = 30
 ;; [Account GMail]
 ;; localrepository = Local
 ;; remoterepository = Remote
-;; # maxage = 60
+;; autorefresh = 5
+;; quick = 10
+;; # maxsize = 2000000
+;; maxage = 3
 ;; [Repository Local]
 ;; type = Maildir
 ;; localfolders = ~/Gmail
 ;; [Repository Remote]
-;; type = IMAP
-;; remotehost = imap.gmail.com
+;; type = Gmail
 ;; remoteuser = junist@gmail.com
 ;; remotepass = gmail_password
-;; ssl = yes
-;; maxconnections = 1
+;; maxconnections = 2
 ;; realdelete = no
+;; readonly = False
+;; idlefolders = ['INBOX']
+;; folderfilter = lambda folder: folder not in ['[Gmail]/All Mail', '[Gmail]/Trash']
 ;;;; offlineimap -> dovecot
 ;;# ~/.gnus.el
 ;; (setq gnus-select-method
@@ -92,14 +98,14 @@
 ;;                (nnimap-authinfo-file "~/.authinfo")))
 ;; (setq gnus-ignored-from-addresses "jqian")
 ;;# ~/.authinfo
-;; machine localhost login jqian password account_password
+;; machine localhost login jqian password login_password
 ;;# ~/.offlineimaprc
 ;; [Repository Local]  # only local setting is different
 ;; type = IMAP
 ;; remotehost = localhost
 ;; port = 143
 ;; remoteuser = jqian
-;; remotepass = account_password
+;; remotepass = login_password
 ;;# /etc/dovecot/dovecot.conf
 ;; mail_location = maildir:%h/Maildir
 
@@ -215,12 +221,11 @@
 (setq gnus-activate-level 5
       gnus-permanently-visible-groups '"nn*")
 
-(eval-after-load "gnus"
-  '(progn
-     (deh-define-key gnus-group-mode-map
-       ("\C-x\C-k" . 'undefined)          ; avoid kill *Group* manually
-       )
-     (add-hook 'kill-emacs-hook 'gnus-group-exit)))
+(deh-after-load "gnus"
+  (deh-define-key gnus-group-mode-map
+    ("\C-x\C-k"  'undefined)          ; avoid kill *Group* manually
+    )
+  (add-hook 'kill-emacs-hook 'gnus-group-exit))
 ;;;; Sumary setting
 (setq gnus-summary-line-format "%U%R%z%(%&user-date;┃%-10,10f┃%4L%*┃%B%s%)\n"
       gnus-user-date-format-alist '(((gnus-seconds-today) . "%H:%M")
@@ -236,26 +241,26 @@
       gnus-sum-thread-tree-single-leaf "╰► "
       gnus-sum-thread-tree-vertical "│")
 
-(eval-after-load "gnus-sum"
-  '(deh-define-key gnus-summary-mode-map
-     ("p" . 'gnus-summary-prev-same-subject)
-     ("n" . 'gnus-summary-next-same-subject)
-     ;; ("q" . 'delete-other-windows)
-     ("Q" . 'gnus-summary-exit)
-     ("," . 'gnus-summary-prev-thread)
-     ("." . 'gnus-summary-next-thread)
-     ("<" . 'scroll-other-window-down)
-     (">" . 'scroll-other-window)
-     ((kbd "/ n") . 'gnus-summary-insert-new-articles)
-     ("r" . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
-     ((kbd "RET") . (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
-     ("\C-o" . nil)
-     ((kbd "TAB") . 'gnus-summary-show-thread)
-     ;; move
-     ("k" . 'previous-line)
-     ("j" . 'next-line)
-     ("l" . 'forward-char)
-     ("h" . 'backward-char)))
+(deh-after-load "gnus-sum"
+  (deh-define-key gnus-summary-mode-map
+    ("p"  'gnus-summary-prev-same-subject)
+    ("n"  'gnus-summary-next-same-subject)
+    ;; ("q"  'delete-other-windows)
+    ("Q"  'gnus-summary-exit)
+    (","  'gnus-summary-prev-thread)
+    ("."  'gnus-summary-next-thread)
+    ("<"  'scroll-other-window-down)
+    (">"  'scroll-other-window)
+    ((kbd "/ n")  'gnus-summary-insert-new-articles)
+    ("r"  (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
+    ((kbd "RET")  (lambda () (interactive) (gnus-summary-show-article) (other-window 1)))
+    ("\C-o"  'undefined)
+    ((kbd "TAB")  'gnus-summary-show-thread)
+    ;; move
+    ("k"  'previous-line)
+    ("j"  'next-line)
+    ("l"  'forward-char)
+    ("h"  'backward-char)))
 
 ;; (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 ;;;; Article setting
@@ -269,15 +274,15 @@
                  ;; "Content-Type" "Content-Transfer-Encoding"
                  "Newsgroups"))
               "\\):"))
-(eval-after-load "gnus"
-  '(deh-define-key gnus-article-mode-map
-     ("k" . 'pager-row-up)
-     ("j" . 'pager-row-down)
-     ((kbd "<up>") . 'pager-row-up)
-     ((kbd "<down>") . 'pager-row-down)
-     ("l" . 'forward-char)
-     ("h" . 'backward-char)
-     ("q" . 'delete-window)))
+(deh-after-load "gnus"
+  (deh-define-key gnus-article-mode-map
+    ("k"  'pager-row-up)
+    ("j"  'pager-row-down)
+    ((kbd "<up>")  'pager-row-up)
+    ((kbd "<down>")  'pager-row-down)
+    ("l"  'forward-char)
+    ("h"  'backward-char)
+    ("q"  'delete-window)))
 (add-hook 'gnus-article-prepare-hook 'gnus-article-fill-long-lines)
 ;;;; sorting
 (add-hook 'message-sent-hook 'gnus-score-followup-thread)
@@ -324,23 +329,10 @@
 ;;
 ;; (setq gnus-use-cache 'passive)
 
-(defun my-check-gnus-buffer (buffer)
-  (or (string-match "^*Article*" (buffer-name buffer))
-      (string-match "^*Summary" (buffer-name buffer))
-      (string-match "^*Group*" (buffer-name buffer))))
-
-(defun my-toggle-gnus ()
-  (interactive)
-  (if (my-check-gnus-buffer (current-buffer))
-      (bury-buffer)
-    (let ((list (buffer-list)))
-      (while list
-        (if (my-check-gnus-buffer (car list))
-            (progn
-              (switch-to-buffer (car list))
-              (setq list nil))
-          (setq list (cdr list))))
-      (unless (my-check-gnus-buffer (current-buffer))
-        (call-interactively 'gnus)))))
+(define-mode-toggle "gnus" gnus
+  (let ((buffer (current-buffer)))
+    (or (string-match "^*Article*" (buffer-name buffer))
+        (string-match "^*Summary" (buffer-name buffer))
+        (string-match "^*Group*" (buffer-name buffer)))))
 
 ;; (gnus-compile)

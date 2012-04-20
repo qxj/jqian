@@ -228,10 +228,11 @@ space. bind to \\[vi-join-lines]."
   (interactive "P")
   (setq arg (abs (if arg (prefix-numeric-value arg) 1)))
   (while (> arg 0)
+    (end-of-line)
     (save-excursion
-      (end-of-line)
+      ;; (end-of-line)
       (delete-char 1)
-      (just-one-space))
+      (just-one-space 1))
     (setq arg (- arg 1))))
 
 (defun vi-merge-lines(&optional arg)
@@ -493,7 +494,13 @@ newline after “}” or “;” for c-like syntaxes."
 (defun my-display-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
 you call this function by prefix 'C-u', the path will be store
-into `kill-ring'."
+into `kill-ring'.
+
+\\[my-display-buffer-path]        display buffer's absolute path
+C-u \\[my-display-buffer-path]    copy buffer's absolute path
+C-u 1 \\[my-display-buffer-path]  copy buffer's directory name
+C-u 2 \\[my-display-buffer-path]  copy buffer's basename
+"
   (interactive
    (list current-prefix-arg))
   (let ((f (buffer-file-name (current-buffer))))
@@ -558,49 +565,34 @@ into `kill-ring'."
   (fundamental-mode)
   (setq indent-line-function 'ignore))
 
-(defun my-generate-loaddefs ()
+(defun my-generate-loaddefs (&optional force-generate autoload-file)
   "Auto generate autoloads into '100-loaddefs.el'."
-  (interactive)
+  (interactive "P")
   (require 'autoload)
   (with-temp-buffer
-    (let (files)
-      (setq files (directory-files my-config-dir t "func-.*\\.el$"))
-      (dolist (dir '("contrib" "goodies"))
-        (setq files (append files
-                            (directory-files
-                             (expand-file-name dir my-site-lisp-dir)
-                             t ".*\\.el$"))))
-      (dolist (file files)
-        (unless (file-directory-p file)
-          (generate-file-autoloads file)))
-      (write-region (point-min) (point-max)
-                    (expand-file-name "100-loaddefs.el" my-config-dir)))))
+    (let* ((autoload-file (or autoload-file
+                              (expand-file-name "100-loaddefs.el" my-config-dir)))
+           (files (find-files-in-directory my-startup-dir "\\.el$")))
+      (when (or force-generate
+                (not (file-exists-p autoload-file))
+                (some (lambda (f) (file-newer-than-file-p f autoload-file)) files))
+        (message "Updating autoloads...")
+        (dolist (file files)
+          (generate-file-autoloads file))
+        (write-region (point-min) (point-max) autoload-file)
+        (load autoload-file)))))
 
-(defun find-subdirs-containing (dir pattern)
-  "Return a list of all deep subdirectories of DIR that contain
-files that match PATTERN."
-  (let* ((ret nil)
-         (files (directory-files dir))
-         (max-lisp-eval-depth 3000))
-    (while files
-      (let* ((file (car files))
-             (path (expand-file-name file dir)))
-        (if (and (file-directory-p path)
-                 (not (string-match "^\\.+" file)))
-            (setq ret (append ret (find-subdirs-containing path pattern)))
-          (if (string-match pattern file)
-              (add-to-list 'ret dir))))
-      (setq files (cdr files)))
-    ret))
+(defun my-byte-recompile-directory-recursively (&optional specified)
+  "Recompile all the .el files under DIR, if they're not up to
+date. It can also be run from the command line:
 
-(defun my-byte-recompile-startup-dir ()
-  "Recompile all the .el files under my-startup-dir, if they're
-not up to date. It can also be run from the command line:
-
-$ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
-  (interactive)
-  (dolist (dir (find-subdirs-containing my-startup-dir "\\.el$"))
-    (byte-recompile-directory dir 0)))
+$ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
+  (interactive
+   (list current-prefix-arg))
+  (let ((spec-dir (if specified (read-directory-name "Byte compile the directory recursively: ")
+                    my-startup-dir)))
+    (dolist (dir (find-subdirs-containing spec-dir "\\.el$"))
+      (byte-recompile-directory dir 0))))
 
 (defun antiword (&optional file width)
   "Run antiword on the entire buffer."
@@ -651,3 +643,32 @@ $ emacs -l ~/.emacs -batch -f byte-recompile-startup-dir"
     (delete-file psfile)
     (message "Saved to: %s" pdffile)))
 
+(defun my-insert-date ()
+  (interactive)
+  (insert (format-time-string "%c" (current-time))))
+
+(defun my-swap-windows ()
+  "If you have 2 windows, it swaps them."
+  (interactive)
+  (if (/= (count-windows) 2)
+      (message "You need exactly 2 windows to do this.")
+    (let* ((w1 (first (window-list)))
+           (w2 (second (window-list)))
+           (b1 (window-buffer w1))
+           (b2 (window-buffer w2))
+           (s1 (window-start w1))
+           (s2 (window-start w2)))
+      (set-window-buffer w1 b2)
+      (set-window-buffer w2 b1)
+      (set-window-start w1 s2)
+      (set-window-start w2 s1)))
+  (other-window 1))
+
+(setq my-default-mode-line-modes mode-line-modes)
+(defun my-toggle-mode-line ()
+  "toggle minor modes display on mode-line"
+  (interactive)
+  (if (not (equal mode-line-modes (concat "(" mode-name ")")))
+      (setq mode-line-modes (concat "(" mode-name ")"))
+    (setq mode-line-modes my-default-mode-line-modes))
+  (force-mode-line-update))
