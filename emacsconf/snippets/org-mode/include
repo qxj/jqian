@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: #+INCLUDE: "~/.emacs" src emacs-lisp
 # key: inc
-# key: include
 # --
 #+INCLUDE: "${1:~/.emacs}"${2: src${3: emacs-lisp}}
 $0

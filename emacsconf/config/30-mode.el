@@ -7,66 +7,22 @@
 
 ;;; autoload
 (deh-section "autoloads"
-  ;; dired-x
-  (autoload 'dired-omit-mode "dired-x" "lazy loading dired-x.el" t)
+  ;; loading dired-x.el
+  (autoload 'dired-jump "dired-x" "Jump to dired buffer corresponding to current buffer." t)
+  (autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
   ;; c++ member function
   (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
-  (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "" t)
-  ;; multi-term
-  (autoload 'multi-term "multi-term" "")
-  (autoload 'multi-term-dedicated-open-select "multi-term" "")
-  (autoload 'multi-term-dedicated-exist-p "multi-term" "")
-  (autoload 'multi-term-dedicated-open "multi-term" "")
-  (autoload 'multi-term-dedicated-close "multi-term" "")
-  (autoload 'multi-term-dedicated-select "multi-term" "")
-  (autoload 'multi-term-dedicated-toggle "multi-term" "")
   ;; browse-el
   (autoload 'browse-el-find-funtion "browse-el" "")
   (autoload 'browse-el-go-back "browse-el" "")
-  ;; bm
-  (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
-  (autoload 'bm-next     "bm" "Goto bookmark."                     t)
-  (autoload 'bm-previous "bm" "Goto previous bookmark."            t)
-  (autoload 'bm-show     "bm" "Show bookmarks in current buffer."  t)
-  (autoload 'bm-show-all "bm" "Show all bookmarks."                t)
-  ;; gpg
-  (autoload 'epa-file-enable "epa-file" "" t)
-  ;; psvn
-  (autoload 'svn-status "psvn" "")
-  (autoload 'svn-status-update-modeline "psvn" "")
-  (autoload 'svn-status-in-vc-mode? "psvn" "")
-  ;; grep
-  (autoload 'grep-tag-default "grep")
-  (autoload 'grep-apply-setting "grep")
-  ;; anything
-  (autoload 'anything "anything" "" t)
-  ;; ffap
-  (autoload 'ffap "ffap" "Alias of find-file-at-point")
-  ;; php
-  (autoload 'php-mode "php-mode" "php mode" t)
-  ;; javascript
-  (autoload 'javascript-mode "javascript-mode" "JavaScript mode" t)
-  (autoload 'js2-mode "js2" "" t)
-  ;; css
-  (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
   (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
-  (autoload 'bat-mode "bat-mode" "Bat mode for Windows batch file" t)
-  (autoload 'visual-basic-mode "vb-mode" "Visual Basic Mode" t)
-  ;; python
-  (autoload 'python-mode "python" "Python editing mode." t)
-  ;; whitespace
-  (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
-  (autoload 'whitespace-toggle-options "whitespace" "Toggle local `whitespace-mode' options." t)
+  ;; sourcepair
   (autoload 'sourcepair-load "sourcepair" nil t)
   ;; emacs lock
   (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
   ;; iimage
   (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
   (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
-  ;; woman
-  (autoload 'woman-mode "woman")
-  (add-hook 'woman-mode-hook 'view-mode)
-  (autoload 'woman-decode-buffer "woman")
   ;; htmlize
   (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
   ;; moccur
@@ -80,19 +36,9 @@
   (autoload 'rst-mode "rst" "Major mode for editing reStructuredText documents." t)
   ;; markdown mode
   (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
-  ;; minibuf-isearch
-  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
-  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
   ;; sdcv
   (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
-  ;; flymake
-  (autoload 'flymake-find-file-hook "flymake" "" t)
-  ;; gnuplot
-  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-  ;; graphviz
-  (autoload 'graphviz-dot-mode "graphviz-dot" "graphviz mode" t)
-  )
+  (autoload 'epa-file-enable "epa-file" "" t))
 
 ;;; auto detect mode
 (deh-section "auto-mode"
@@ -140,6 +86,7 @@
          (number-sequence tab-width 80 tab-width))
 
     (abbrev-mode 1)
+    (subword-mode 1)
     ;; (when (fboundp 'whitespace-mode) (whitespace-mode t))
     (hs-minor-mode 1)
     (ignore-errors (imenu-add-menubar-index))
@@ -199,10 +146,10 @@
         (lambda nil
           (my-find-top-directory "TAGS"))))
 
-(deh-section-if "gtags" (executable-find "global")
-  (autoload 'gtags-mode "gtags" "" t)
+(deh-section-if "gtags"
+  (executable-find "global")
 
-  (deh-add-hooks '(c-mode-common-hook)
+  (deh-add-hook '(c-mode-common-hook)
     (gtags-mode t))
 
   (setq gtags-mode-hook
@@ -215,25 +162,26 @@
        (set (make-local-variable 'hl-line-face) 'underline)
        (hl-line-mode 1)))
 
-  (eval-after-load "gtags"
-    '(deh-define-key gtags-mode-map
-       ;; Instead of `find-tag' & `pop-tag-mark'
-       ((kbd "M-.") . 'gtags-find-tag)
-       ((kbd "M-*") . 'gtags-pop-stack)
-       ;; other key binds
-       ("\C-cgv" . 'gtags-visit-rootdir)
-       ("\C-cgt" . 'gtags-find-tag-from-here)
-       ("\C-cgo" . 'gtags-find-tag-other-window)
-       ("\C-cgr" . 'gtags-find-rtag)
-       ("\C-cgs" . 'gtags-find-symbol)
-       ("\C-cgp" . 'gtags-find-pattern)
-       ("\C-cgg" . 'gtags-find-with-grep)
-       ("\C-cgi" . 'gtags-find-with-idutils)
-       ("\C-cgf" . 'gtags-find-file)
-       ("\C-cga" . 'gtags-parse-file)
-       ("\C-cgb" . 'gtags-append-tags)
-       ("\C-cgd" . 'gtags-display-tag)
-       ("\C-cgq" . 'gtags-display-tag-quit)))
+  (deh-after-load "gtags"
+    (deh-define-key gtags-mode-map
+      ;; Instead of `find-tag' & `pop-tag-mark'
+      ((kbd "M-.") 'gtags-find-tag)
+      ((kbd "M-*") 'gtags-pop-stack)
+      ;; other key binds
+      ("\C-cgv"  'gtags-visit-rootdir)
+      ("\C-cgt"  'gtags-find-tag-from-here)
+      ("\C-cgo"  'gtags-find-tag-other-window)
+      ("\C-cgr"  'gtags-find-rtag)
+      ("\C-cgs"  'gtags-find-symbol)
+      ("\C-cgp"  'gtags-find-pattern)
+      ("\C-cgg"  'gtags-find-with-grep)
+      ("\C-cgi"  'gtags-find-with-idutils)
+      ("\C-cgf"  'gtags-find-file)
+      ("\C-cga"  'gtags-parse-file)
+      ("\C-cgb"  'gtags-append-tags)
+      ("\C-cgd"  'gtags-display-tag)
+      ("\C-cgq"  'gtags-display-tag-quit)))
+
   (defun gtags-append-tags ()
     (interactive)
     (if gtags-mode
@@ -337,17 +285,17 @@
         '(lambda ()
            ;; Instead of `find-tag' & `pop-tag-mark'
            (deh-define-key cscope:map
-             ((kbd "M-.") . 'cscope-find-this-symbol)
+             ((kbd "M-.") 'cscope-find-this-symbol)
              ((kbd "M-*") 'cscope-pop-mark))
            ;; Key bind for cscope-minor-mode
            ))
   ;; hack `xcscope.el', remove hooks
-  (deh-remove-hooks '(c-mode-hook c++-mode-hook dired-mode-hook)
+  (deh-remove-hook '(c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
 
 (deh-require-reserved 'tags-view
   (deh-define-key tags-history-mode-map
-    ("q" . 'tv-view-history-quit))
+    ("q" 'tv-view-history-quit))
 
   (defvar tv-previous-window-conf nil
     "Window configuration before switching to tv buffer.")
@@ -395,23 +343,24 @@ etc).  The following options will be available:
   )
 
 (deh-section "svn"
+  (autoload 'svn-status-in-vc-mode? "psvn" "Is vc-svn active?")
+
   ;; inspired from git-emacs-autoloads
   (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
     "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
     (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
 
-  (eval-after-load "psvn"
-    '(progn
-       (defsubst svn-status-interprete-state-mode-color (stat)
-         "Interpret vc-svn-state symbol to mode line color"
-         (case stat
-           ('up-to-date "GreenYellow")
-           ('edited     "tomato")
-           ('unknown    "gray")
-           ('added      "blue")
-           ('deleted    "red")
-           ('unmerged   "purple")
-           (t           "black")))))
+  (deh-after-load "psvn"
+    (defsubst svn-status-interprete-state-mode-color (stat)
+      "Interpret vc-svn-state symbol to mode line color"
+      (case stat
+        ('up-to-date "GreenYellow")
+        ('edited     "tomato")
+        ('unknown    "gray")
+        ('added      "blue")
+        ('deleted    "red")
+        ('unmerged   "purple")
+        (t           "black"))))
 
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
@@ -422,7 +371,9 @@ etc).  The following options will be available:
 )
 
 (deh-section "woman"
-  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-temp-dir)
+  ;; (add-hook 'woman-mode-hook 'view-mode)
+
+  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-data-dir)
         woman-manpath '("/usr/man"
                         "/usr/share/man"
                         "/usr/X11R6/man"
@@ -438,41 +389,31 @@ etc).  The following options will be available:
 (deh-section "info"
   (add-to-list 'Info-default-directory-list "~/info")
 
-  (eval-after-load "info"
-    '(progn
-       (deh-define-key Info-mode-map
-         ;;# useful keybind reminds
-         ;; ("i" . 'info-index)
-         ;; ("T" . 'info-toc)
-         ("j" . 'next-line)
-         ("k" . 'previous-line))
-       (deh-try-require 'info+
-         (setq Info-fit-frame-flag nil))))
+  (deh-after-load "info"
+    (deh-define-key Info-mode-map
+      ;;# useful keybind reminds
+      ;; ("i" . 'info-index)
+      ;; ("T" . 'info-toc)
+      ("j" 'next-line)
+      ("k" 'previous-line))
+    (deh-try-require 'info+
+      (setq Info-fit-frame-flag nil)))
 
-  (defun my-toggle-info ()
-    "Switch to info buffer or return to the previous buffer."
-    (interactive)
-    (if (derived-mode-p 'Info-mode)
-        (while (derived-mode-p 'Info-mode)
-          (bury-buffer))
-      ;; Find the first info buffer
-      (let ((list (buffer-list)))
-        (while list
-          (if (with-current-buffer (car list)
-                (derived-mode-p 'Info-mode))
-              (progn
-                (switch-to-buffer (car list))
-                (setq list nil))
-            (setq list (cdr list))))
-        (unless (derived-mode-p 'Info-mode)
-          (call-interactively 'info))))))
+  (define-mode-toggle "info" info
+    (derived-mode-p 'Info-mode))
+  )
 
-(deh-section-reserved "flyspell"
+(deh-section "flyspell"
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
-  (deh-add-hooks '(text-mode-hook org-mode-hook) (flyspell-mode 1))
-  (deh-add-hooks '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
-  (deh-add-hooks '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode)))
+
+  (setq ispell-program-name "aspell" ; use aspell instead of ispell
+        ispell-extra-args '("--sug-mode=ultra"))
+
+  ;; (deh-add-hook '(text-mode-hook org-mode-hook) (flyspell-mode 1))
+  ;; (deh-add-hook '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
+  ;; (deh-add-hook '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode))
+  )
 
 (deh-section-after "flymake"
   ;; (flymake-mode t)
@@ -482,17 +423,14 @@ etc).  The following options will be available:
         flymake-log-level 0
         flymake-no-changes-timeout 5.0)
 
-  ;; (deh-add-hooks '(c-mode-common-hook makefile-mode-hook)
-  ;;      ((kbd "C-c C-v") . 'flymake-goto-next-error))
-
   ;; (deh-add-hook 'find-file-hook
   ;;   (condition-case nil (flymake-find-file-hook) (error nil)))
 
   (defvar flymake-mode-map (make-sparse-keymap))
   (deh-define-key flymake-mode-map
-    ((kbd "C-c <f4>")   . 'flymake-goto-next-error-disp)
-    ((kbd "C-c <S-f4>") . 'flymake-goto-prev-error-disp)
-    ((kbd "C-c <C-f4>") . 'flymake-display-err-menu-for-current-line))
+    ((kbd "C-c <f4>")    'flymake-goto-next-error-disp)
+    ((kbd "C-c <S-f4>")  'flymake-goto-prev-error-disp)
+    ((kbd "C-c <C-f4>")  'flymake-display-err-menu-for-current-line))
   (or (assoc 'flymake-mode minor-mode-map-alist)
       (setq minor-mode-map-alist
             (cons (cons 'flymake-mode flymake-mode-map)
@@ -722,11 +660,13 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (deh-add-hook 'emacs-lisp-mode-hook
     (my-mode-common-hook)
-    (turn-on-eldoc-mode)
+    (turn-on-eldoc-mode))
+
+  (deh-after-load "lisp-mode"
     (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
-      ("\M-." . 'browse-el-find-funtion)
-      ("\M-*" . 'browse-el-go-back)
-      ((kbd "C-)") . 'my-auto-insert-paren)))
+      ("\M-."  'browse-el-find-funtion)
+      ("\M-*"  'browse-el-go-back)
+      ((kbd "C-)")  'my-auto-insert-paren)))
 
   (defun my-auto-insert-paren ()
     "Auto close matched parentheses."
@@ -740,7 +680,7 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 ;;; scripts setting
-(deh-section "python"
+(deh-require 'python
   (deh-add-hook 'python-mode-hook
     (my-mode-common-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
@@ -788,22 +728,25 @@ Use CREATE-TEMP-F for creating temp copy."
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     ))
 
+(deh-section "text-mode"
+  (deh-add-hook text-mode-hook abbrev-mode))
 
 ;;; tools
-(deh-section "gnuplot"
+(deh-section-after "gnuplot"
   (deh-add-hook 'gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
   (deh-add-hook 'gnuplot-comint-setup-hook
-    (deh-define-key comint-mode-map
-      ("\C-d" . 'comint-delchar-or-maybe-eof))))
+    (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof)))
 
-(deh-section "graphviz"
+(deh-section-after "graphviz-dot"
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
-  (deh-add-hook 'graphviz-dot-mode-hook
-    (local-unset-key "\C-cc") ; it's prefix key
-    (define-key graphviz-dot-mode-map "\t" 'graphviz-dot-tab-action))
+
+  (deh-define-key graphviz-dot-mode-map
+    ("\C-cc" nil)                     ; it's prefix key
+    ("\t" 'graphviz-dot-tab-action))
+
   (defun graphviz-dot-tab-action ()
     "If cursor at one word end, try complete it. Otherwise, indent line."
     (interactive)
@@ -812,8 +755,8 @@ Use CREATE-TEMP-F for creating temp copy."
       (indent-for-tab-command))))
 
 (deh-section-if "protobuf"
-  (autoload 'protobuf-mode "protobuf" "Google protobuf mode." t)
-  (executable-find "protoc"))
+  (executable-find "protoc")
+  )
 
 ;;; java
 (deh-section "java"
@@ -866,19 +809,21 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook 'js2-mode-hook
     (setq forward-sexp-function nil)))
 
-(deh-section-after "markdown"
+(deh-section-after "markdown-mode"
   ;; override markdown's key binding
   (deh-define-key markdown-mode-map
-    ((kbd "C-M-f") . 'forward-sexp)
-    ((kbd "C-M-b") . 'backward-sexp)))
+    ((kbd "C-M-f")  'forward-sexp)
+    ((kbd "C-M-b")  'backward-sexp)
+    ((kbd "M-p")    'pager-row-up)
+    ((kbd "M-n")    'pager-row-down)))
 
 (deh-section-reserved "php"
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
-          php-doc-cachefile (expand-file-name "php-doc" my-temp-dir))
-    (deh-local-set-key 'php-mode-hook
-      ("\t"       . 'php-doc-complete-function)
-      ("\C-cd" . 'php-doc))
+          php-doc-cachefile (expand-file-name "php-doc" my-data-dir))
+    (deh-define-key php-mode-map
+      ("\t"    'php-doc-complete-function)
+      ("\C-cd" 'php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
          'php-doc-eldoc-function)
     (eldoc-mode 1)
@@ -975,13 +920,22 @@ If the flag is set, only complete with local files."
       (TeX-argument-insert file optionel)))
   )
 
-(deh-section "slime"
+(deh-section-after "slime"
   ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
   (setq common-lisp-hyperspec-root (expand-file-name "~/src/HyperSpec/"))
-  )
+
+  (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+        slime-fuzzy-completion-in-place t
+        slime-enable-evaluate-in-emacs t
+        slime-autodoc-use-multiline-p t)
+
+  (deh-define-key slime-mode-map
+    ((kbd "TAB") 'slime-indent-and-complete-symbol)
+    ((kbd "C-c i") 'slime-inspect)
+    ((kbd "C-c C-s") 'slime-selector)))
 
 (deh-section-path "evernote"
-  "~/src/emacs-evernote-mode"
+  "~/local/emacs-evernote-mode"
   (add-to-list 'load-path deh-this-path)
   (require 'evernote-mode nil t)
   ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
@@ -994,4 +948,28 @@ If the flag is set, only complete with local files."
   (global-set-key "\C-ceb" 'evernote-browser)
   (setq evernote-mode-hook
         '(lambda () (outline-minor-mode t)))
+  )
+
+(deh-require 'tumblr-mode
+  (setq tumblr-hostname "blog.jqian.net"
+        tumblr-hostnames '("blog.jqian.net" "memo.jqian.net")
+        tumblr-post-header-delimiters '("<!--" . "-->"))
+
+  ;; TUMBLR SYNTAX HIGHLIGHTING
+  ;; Firstly, insert following codes into your tumblr template
+  ;;
+  ;; <!-- http://code.google.com/p/google-code-prettify/ -->
+  ;; <link href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css" type="text/css" rel="stylesheet" />
+  ;; <script type="text/javascript" src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js"></script>
+  ;;
+  (defun tumblr-wrap-pre (begin end lang)
+    "simple wrapper"
+    (interactive "r\nMPlease specify language (optional):")
+    (save-restriction
+      (narrow-to-region begin end)
+      (goto-char (point-min))
+      (insert (format "<pre class=\"prettyprint%s\">\n"
+                      (if (string-match "[:ascii:]+" lang) (format " %s" lang) "")))
+      (goto-char (point-max))
+      (insert "\n</pre>")))
   )

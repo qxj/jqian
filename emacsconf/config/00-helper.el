@@ -1,5 +1,18 @@
 ;; -*- coding: utf-8 -*-
 
+(defun gcc-include-path ()
+  "Get gcc include path, only tested in linux."
+  (with-temp-buffer
+    (shell-command "echo | LC_ALL=\"en\" cpp -xc++ -Wp,-v" t)
+    (goto-char (point-min))
+    (let* ((start (search-forward "#include <...> search starts here:\n" nil t))
+           (end (progn (search-forward "End of search list." nil t)
+                       (beginning-of-line)
+                       (backward-char 1)
+                       (point)))
+           (lines (split-string (buffer-substring start end) "\n")))
+      (mapcar (lambda (x) (substring x 1)) lines))))
+
 (defun kill-buffer-when-shell-command-exit ()
   "Close current buffer when `shell-command' exit."
   (let ((process (ignore-errors (get-buffer-process (current-buffer)))))
@@ -120,11 +133,73 @@ of starting a new instance."
                       (and buf (buffer-name (switch-to-buffer bufname))))))
       (ansi-term prg prg))))
 
-(setq my-default-mode-line-modes mode-line-modes)
-(defun my-toggle-mode-line ()
-  "toggle minor modes display on mode-line"
-  (interactive)
-  (if (not (equal mode-line-modes (concat "(" mode-name ")")))
-      (setq mode-line-modes (concat "(" mode-name ")"))
-    (setq mode-line-modes my-default-mode-line-modes))
-  (force-mode-line-update))
+(defmacro define-mode-toggle (name cmd cond &optional restore)
+  "Define a function to toggle buffer visible by its mode.
+
+first argument NAME to combine command name, second argument CMD
+to open the mode, thrid argument COND is a lisp expression to
+check which buffers will be toggled, four optional argument
+RESTORE is also a lisp expression to restore all hidden buffers
+back.
+
+For example:
+
+ (define-mode-toggle \"gdb\"  gdb
+   (derived-mode-p \'gud-mode)
+   (call-interactively 'gdb-restore-windows))
+"
+  (declare (debug t) (indent 2))
+  `(defun ,(intern (format "my-toggle-%s" name)) ()
+     ,(format "Toggle %s mode visible" name)
+     (interactive)
+     (if ,cond
+         (while ,cond
+           (bury-buffer))
+       (let ((list (buffer-list)))
+         (while list
+           (if (with-current-buffer (car list)
+                 ,cond)
+               (progn
+                 ,(if (null ',restore)
+                      `(switch-to-buffer (car list))
+                    ;; ,@switch
+                    ;; `(funcall ',restore)
+                    `,restore
+                    )
+                 (setq list nil))
+             (setq list (cdr list))))
+         (unless ,cond
+           (call-interactively ',cmd))))))
+
+(defun find-subdirs-containing (dir pattern)
+  "Return a list of all deep subdirectories of DIR that contain
+files that match PATTERN."
+  (let* ((ret nil)
+         (files (directory-files dir))
+         (max-lisp-eval-depth 3000))
+    (while files
+      (let* ((file (car files))
+             (path (expand-file-name file dir)))
+        (if (and (file-directory-p path)
+                 (not (string-match "^\\.+" file)))
+            (setq ret (append ret (find-subdirs-containing path pattern)))
+          (if (string-match pattern file)
+              (add-to-list 'ret dir))))
+      (setq files (cdr files)))
+    ret))
+
+(defun find-files-in-directory (dir pattern)
+  "Return a list of all files in DIR whose filenames match PATTERN."
+  (let* (ret
+         (files (directory-files dir))
+         (max-lisp-eval-depth 3000))
+    (while files
+      (let* ((file (car files))
+             (path (expand-file-name file dir)))
+        (if (file-directory-p path)     ; directory
+            (if (not (string-match "^\\.+" file))
+                (setq ret (append ret (find-files-in-directory path pattern))))
+          (if (string-match pattern file) ; file
+              (add-to-list 'ret path))))
+      (setq files (cdr files)))
+    ret))

@@ -1,14 +1,14 @@
 ;;; dot-emacs-helper.el --- Some helper functions for .emacs
 
-;; Copyright 2007 Ye Wenbin
+;; Copyright 2007 Ye Wenbin, 2011, 2012 Julian Qian
 ;;
-;; Author: wenbinye@gmail.com
-;; Update: Nov 3, 2010 by Julian Qian <junist@gmail.com>
-;; Version: 0.02
+;; Created: wenbinye@gmail.com
+;; Updated: Julian Qian <junist@gmail.com>
+;; Version: 1.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful,
@@ -65,10 +65,16 @@
   "Default coustom file.")
 
 (defvar deh-sections nil
-  "The sections that configured by `deh-require-maybe' etc.")
+  "The sections that configured by `deh-section-with-options' etc.")
 
-(defvar deh-enable-list nil
-  "Features will be enable when need.")
+(defvar deh-keybinds nil
+  "Record all keybinds by `deh-define-key'.")
+
+(defvar deh-hooks nil
+  "Record all hooks by `deh-add-hook'.")
+
+(defvar deh-reserves nil
+  "Features will be enabled when needed.")
 
 (defvar deh-buffer-name "*Dot Emacs*"
   "Buffer name for edit configuration.")
@@ -78,70 +84,161 @@
 
 (defvar deh-information nil)
 
+(defvar deh-custom-keys-list nil
+  "All keybinds customized by `deh-define-key' etc.")
+
+(defvar deh-custom-hooks-list nil
+  "All hooks customized by `deh-add-hook' etc.")
+
 (defvar deh-missing-packages-list nil
   "List of packages that `deh-try-require', `deh-require-maybe'
 and `deh-section-if' can't find.")
+
+(defsubst deh--getoption (key options)
+  (let ((val (memq key options)))
+    (if val
+        (cons t (cadr (memq key options)))
+      nil)))
+
+(defsubst deh--stringfy (name)
+  (if (symbolp name) (symbol-name name) name))
+
+(defsubst deh--tolerate (item)
+  (if (listp item)         ; quote tolerance @.@
+      (if (eq 'quote (car item))
+          (if (symbolp (cadr item))
+              (list (cadr item))
+            (cadr item))
+        item)
+    (list item)))
 
 (defmacro deh-try-require (feature &rest forms)
   "Almost identical to (require FEATURE nil t). if failed, record
 missing packages into `deh-missing-packages-list'."
   (declare (indent 1))
-  `(progn
-     (if (require ,feature nil t)
+  (if (stringp feature)
+    `(progn ,@forms)
+    `(if (require ,feature nil t)
          (progn ,@forms)
        (add-to-list 'deh-missing-packages-list ,feature 'append))))
 
-(defmacro deh-require-maybe (feature &rest forms)
+(defmacro deh-after-load (filename &rest forms)
+  "A syntax suger for `eval-after-load' expression."
+  (declare (indent 1))
+  `(eval-after-load ,(deh--stringfy filename)
+     '(progn ,@forms)))
+
+(defmacro deh-section-with-options (name options &rest forms)
+  "Combine all settings as FORMS into one section. If there are
+several sections declared as the same NAME, the prior section
+will override the latters. In additional, a sort of OPTIONS can
+be specified, that should follow the such form:
+
+    [KEYWORD VALUE]...
+
+The following keywords are meaningful:
+
+:eval     when to eval this function
+
+    'AFTER 'RESERVED
+
+:cond     whether to declare this section
+
+    a BOOLEAN function
+
+:source   where to download the latest package
+
+    [(LOCAL-PATH EL-URL1 EL-URL2 ...)...]
+
+:autoload load file and functions
+
+    [(LOAD-FILE 'FUNCTION1 'FUNCTION2 ...)...]
+
+:keybind  keymap, key and functions
+
+    [(KEY-MAP (KEY1 'FUNCTION1) (KEY2 'FUNCTION2)...)...]
+
+:hook     hook and functions
+
+    [(HOOK FUNCTION1 FUNCTION2 ...)...]
+"
+  (declare (indent 1))
+  ;; TODO: add timer for profiling
+  (list 'progn
+        ;; won't override previous setting
+        (nconc `(unless (assoc-string ,name deh-sections)
+                  (if ,load-file-name
+                      (add-to-list 'deh-sections (cons ,name ,load-file-name))))
+               ;; autoload
+               (let* ((ls (cdr (deh--getoption :autoload options)))
+                      (lv (if (vectorp ls) ls (vector ls))))
+                 (mapcan (lambda (load)
+                           (let ((filename (car load)))
+                             (mapcar (lambda (func)
+                                       `(autoload ,func ,filename "" t)) (cdr load)))) lv))
+               ;; source
+               ;; TODO: maintain source for each package
+               (let* ((when-to-eval (deh--getoption :eval options)) ; eval
+                      (whether-load (deh--getoption :cond options)) ; cond
+                      (ks (cdr (deh--getoption :keybind options)))  ; keybind
+                      (kv (if ks (if (vectorp ks) ks (vector ks))))
+                      (keybinds (mapcar (lambda (keybind)
+                                          (let ((keymap (car keybind))
+                                                (binds (cdr keybind)))
+                                            `(deh-define-key ,keymap ,@binds)))
+                                        kv))
+                      (hs (cdr (deh--getoption :hook options))) ; hook
+                      (hv (if hs (if (vectorp hs) hs (vector hs))))
+                      (hooks (mapcar (lambda (hfunc)
+                                       (let ((hook (car hfunc))
+                                             (funcs (cdr hfunc)))
+                                         `(deh-add-hook ,hook ,@funcs)))
+                                     hv))
+                      (body (nconc forms keybinds hooks)))
+                 ;; merge body
+                 (list
+                  (if whether-load
+                      (cond ((eq 'after (cdr when-to-eval))
+                             `(if ,(cdr whether-load) (deh-after-load ,name ,@body))
+                             )
+                            ((eq 'reserved (cdr when-to-eval))
+                             `(if ,(cdr whether-load)
+                                  (add-to-list 'deh-reserves '(,name (deh-try-require ,name ,@body)))))
+                            (t
+                             `(if ,(cdr whether-load)
+                                  (deh-try-require ,name ,@body))))
+                    (cond ((eq 'after (cdr when-to-eval))
+                           `(deh-after-load ,name ,@body))
+                          ((eq 'reserved (cdr when-to-eval))
+                           `(add-to-list 'deh-reserves '(,name (deh-try-require ,name ,@body))))
+                          (t
+                           `(deh-try-require ,name ,@body)))))))))
+
+;;;
+;;; Some derived macros from `deh-section-with-options'
+;;;
+
+(defmacro deh-require (feature &rest forms)
   "Besides `deh-try-require', it records required packages into
 `deh-secionts'."
-  (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-     (deh-try-require ,feature ,@forms)))
-(defalias 'deh-require 'deh-require-maybe)
+  `(deh-section-with-options ,feature nil ,@forms))
 (put 'deh-require 'lisp-indent-function 1)
+
+(defmacro deh-require-if (feature cond &rest forms)
+  "If COND is true, require this FEATURE."
+  (declare (indent 1))
+  `(deh-section-with-options ,feature (:eval ,cond) ,@forms))
+
+(defmacro deh-require-reserved (feature &rest forms)
+  "Put some elisp into `deh-reserves' and reserved. You can
+use `deh-enable' to active these elisp."
+  (declare (indent 1))
+  `(deh-section-with-options ,feature (:eval reserved) ,@forms))
 
 (defmacro deh-section (section &rest forms)
   "A section placeholder to arrange lisp codes."
   (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-     ,@forms))
-
-(defmacro deh-require-if (feature cond &rest forms)
-  "If COND is true, require this FEATURE.
-
-Example:
-  (deh-require-if 'org-capture
-    (>= (string-to-int org-version) 7.5)
-    (setq org-capture-templates '(
-    )))
-"
-  (declare (indent 1))
-  `(progn
-     (when ,cond
-       (if ,load-file-name
-           (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-       (deh-try-require ,feature ,@forms))))
-
-(defmacro deh-require-reserved (feature &rest forms)
-  "Put some elisp into `deh-enable-list' and reserved. You can
-use `deh-enable' to active these elisp.
-
-Example:
-  (deh-require-reserved 'w3m-load
-    (load \"preview-latex.el\" t t t)
-    (load \"auctex.el\" t t t))
-"
-  (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,feature ,load-file-name)))
-     (add-to-list 'deh-enable-list '(,feature
-                                     (deh-try-require ,feature
-                                       ,@forms)))))
+  `(deh-section-with-options ,section nil ,@forms))
 
 (defmacro deh-section-path (section path &rest forms)
   "If path exists, call `deh-section'. One internal variable
@@ -161,54 +258,123 @@ Example:
        (deh-section ,section ,@forms))))
 
 (defmacro deh-section-after (section &rest forms)
-  "Eval forms after section file is loaded.
-
-Example:
-  (deh-section-after \"outline\"
-    (setq outline-minor-mode-prefix (kbd \"C-c C-o\")))
-"
+  "Eval forms after section file is loaded."
   (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-     (eval-after-load ,section
-       '(progn ,@forms))))
+  `(deh-section-with-options ,section (:eval after) ,@forms))
+
+(defmacro deh-section-autoload (section autoloads &rest forms)
+  "Eval forms after section file is loaded, also integrate
+autoloads setting."
+  (declare (indent 1))
+  `(deh-section-with-options ,section (:eval after :autoload (,section ,@autoloads)) ,@forms))
 
 (defmacro deh-section-reserved (section &rest forms)
-  "Put some elisp into `deh-enable-list' and reserved. You can
-use `deh-enable' to active these elisp.
-
-Example:
-  (deh-section-reserved \"latex\"
-    (load \"preview-latex.el\" t t t)
-    (load \"auctex.el\" t t t))
-"
+  "Put some elisp into `deh-reserves' and reserved. You can
+use `deh-enable' to active these elisp."
   (declare (indent 1))
-  `(progn
-     (if ,load-file-name
-         (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-     (add-to-list 'deh-enable-list '(,section ,@forms))))
-
+  `(deh-section-with-options ,section (:eval reserved) ,@forms))
 
 (defmacro deh-section-if (section cond &rest forms)
-  "If COND is true, SECTION will be enabled.
+  "If COND is true, SECTION will be enabled."
+  (declare (indent 1))
+  `(deh-section-with-options ,section (:cond ,cond) ,@forms))
+
+
+;;; Other helper functions, eg: define-key, local-set-key, add-hook, etc.
+(defmacro deh-define-key (map &rest keypairs)
+  "Define a batch of keys.
 
 Example:
-  (deh-section-if \"cedet\"
-    cedet-enable
-    (require 'cedet nil 'noerror))
+  (deh-define-key (text-mode-map c-mode-map)
+    (\"\\C-m\"  'newline-and-indent)
+    (\"\\C-j\"  'newline))
+
+  (deh-define-key global-map
+    (\"\\C-m\"  'newline-and-indent)
+    (\"\\C-j\"  'newline))
 "
   (declare (indent 1))
-  `(progn
-     (when ,cond
-       (if ,load-file-name
-           (add-to-list 'deh-sections (cons ,section ,load-file-name)))
-       ,@forms)))
+  (let ((maps (if (listp map) map (list map))))
+    (nconc (list 'progn)
+           (mapcan (lambda (map)
+                     (mapcan (lambda (pair)
+                               (list
+                               `(define-key ,map ,(car pair) ,(cadr pair))
+                               `(deh--set-keybind ',map ,(car pair) ,(cadr pair))))
+                             keypairs))
+                   maps))))
+
+;; Deperated! Suggest to replace with deh-define-key
+(defmacro deh-local-set-key (hook &rest keypairs)
+  "Set a batch of local keys for a hook.
+
+Example:
+  (deh-local-set-key (text-mode-hook c-mode-common-hook)
+    (\"\\C-m\"  'newline-and-indent)
+    (\"\\C-j\"  'newline))
+
+  (deh-local-set-key text-mode-hook
+    (\"\\C-m\"  'newline-and-indent))
+"
+  (declare (indent 1))
+  (let ((hooks (deh--tolerate hook)))
+    (nconc (list 'progn)
+           (mapcar (lambda (hk)
+                     (list 'add-hook (list 'quote hk)
+                           (nconc (list 'lambda 'nil)
+                                  (mapcar (lambda (pair)
+                                            `(local-set-key ,(car pair) ,(cadr pair)))
+                                          keypairs))))
+                   hooks))))
+
+(defmacro deh-add-hook (hook &rest forms)
+  "Apply some functions for a hook.
+
+Example:
+  (deh-add-hook (c-mode-common-hook text-mode-hook)
+    (flyspell-prog-mode)
+    (auto-fill-mode 1))
+
+  (deh-add-hook c-mode-common-hook flymake-minor-mode)
+"
+  (declare (indent 1))
+  (let ((hooks (deh--tolerate hook)))
+    (nconc (list 'progn)
+           (mapcar (lambda (hk)
+                     (list 'add-hook (list 'quote hk)
+                           (if (listp (car forms))
+                               `(lambda nil ,@forms)
+                             (list 'quote (car forms)))))
+                   hooks))))
+
+(defmacro deh-remove-hook (hook &rest forms)
+  "Remove some functions for a hook. see examples of `deh-add-hook'."
+  (declare (indent 1))
+  (let ((hooks (if (listp hook) hook (list hook))))
+    (nconc (list 'progn)
+           (mapcar (lambda (hk)
+                     (list 'remove-hook (list 'quote hk)
+                           (if (listp (car forms))
+                               `(lambda nil ,@forms)
+                             (list 'quote (car forms)))))
+                   hooks))))
+
+
+;; TODO: defadvice completing-read ?
+(defun deh-completing-read (prompt collection &optional predicate require-match)
+  "Use `ido-completing-read' to replace `completing-read' if possible."
+  (if (fboundp 'ido-completing-read)
+      (ido-completing-read prompt
+                           (mapcar (lambda (x) (if (symbolp (car x))
+                                                   (symbol-name (car x))
+                                                 (car x))) collection)
+                           nil require-match)
+    (completing-read prompt collection nil require-match)))
 
 (defun deh-customize-inplace (name)
   "Configuration the section directly in file"
   (interactive
-   (list (completing-read "Which section to modified: " deh-sections)))
+   (list (deh-completing-read "Which section to modified: " deh-sections)))
   (let ((section (assoc-string name deh-sections))
         done)
     (if (and section
@@ -218,7 +384,8 @@ Example:
           (find-file (cdr section))
           (goto-char (point-min))
           (setq done t)
-          (re-search-forward (deh-regexp (car section))))
+          (re-search-forward (deh--regexp (car section)))
+          (recenter-top-bottom 0))
       (if (and deh-custom-file
                (file-exists-p deh-custom-file))
           (progn
@@ -231,7 +398,7 @@ Example:
 (defun deh-customize (name)
   "Configuration the section in .emacs."
   (interactive
-   (list (completing-read "Which section to modified: " deh-sections)))
+   (list (deh-completing-read "Which section to modified: " deh-sections)))
   (deh-set-buffer)
   (setq deh-information nil)
   (let ((section (assoc-string name deh-sections)))
@@ -254,10 +421,6 @@ Example:
     (deh-minor-mode 1)
     (goto-char (point-min))))
 
-(defsubst deh-stringfy (name)
-  (if (symbolp name)
-      (symbol-name name)
-    name))
 
 (defun deh-list-section (arg)
   "List all sections defined in .emacs.
@@ -273,15 +436,38 @@ With prefix argument sort section by file."
                            (lambda (n1 n2)
                              (string< (cdr n1) (cdr n2)))
                          (lambda (n1 n2)
-                           (string< (deh-stringfy (car n1))
-                                    (deh-stringfy (car n2)))))))
+                           (string< (deh--stringfy (car n1))
+                                    (deh--stringfy (car n2)))))))
       (setq pos (point))
-      (setq name (deh-stringfy (car sec)))
+      (setq name (deh--stringfy (car sec)))
       (insert (format "%-20s %s\n" name (cdr sec)))
       (make-text-button pos (+ pos (length name))
                         'action (lambda (but)
                                   (deh-customize (button-label but)))))
     (setq buffer-read-only t)))
+
+;; FIXME: record keybinds error
+(defun deh-list-keybind ()
+  "List all keybinds by `deh-define-key'."
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*DEH*"))
+  (setq buffer-read-only nil)
+  (erase-buffer)
+  (mapc (lambda (keybind)
+          (insert (format "%s\n" (deh--stringfy (car keybind)))) ; map
+          (mapc (lambda (bind)
+                  (insert (format "\t%s\t%s\n" (key-description (car bind))
+                                  (deh--stringfy (cdr bind)))))
+                (sort (cdr keybind)
+                      (lambda (n1 n2)
+                        (string< (key-description (car n1))
+                                 (key-description (car n2)))))))
+        (sort (copy-sequence deh-keybinds)
+              (lambda (n1 n2)
+                (string< (deh--stringfy (car n1))
+                         (deh--stringfy (car n2))))))
+  (goto-char (point-min))
+  (toggle-read-only 1))
 
 (defun deh-set-buffer ()
   (switch-to-buffer (get-buffer-create deh-buffer-name))
@@ -301,23 +487,33 @@ With prefix argument sort section by file."
             ("\C-c\C-f" . deh-switch-file))
   )
 
-(defun deh-switch-file ()
-  "Jump to configuration file."
-  (interactive)
-  (deh-customize-inplace
-   (deh-stringfy (car (assoc-default "section" deh-information)))))
+(defun deh--set-keybind (map key func)
+  (let* ((binds (cdr (assoc map deh-keybinds)))
+         (new-binds (if binds
+                        (if (assoc key binds)
+                            binds
+                          (append `((,key . ,func)) binds))
+                      `((,key . ,func)))))
+    (setq deh-keybinds (cons `(,map . ,new-binds)
+                             (delq (assoc map deh-keybinds) deh-keybinds)))))
 
-(defun deh-regexp (name)
+(defun deh--regexp (name)
   (if (stringp name)
       (concat "(\\s-*deh-section\\(-\\w+\\)?\\s-+\"" (regexp-quote name))
     (concat "(\\s-*deh-require\\(-\\w+\\)?\\s-+'"
             (regexp-quote (symbol-name name)))))
 
+(defun deh-switch-file ()
+  "Jump to configuration file."
+  (interactive)
+  (deh-customize-inplace
+   (deh--stringfy (car (assoc-default "section" deh-information)))))
+
 (defun deh-get-configuration (section)
   (let ((name (car section))
         (file (cdr section))
         re pos)
-    (setq re (deh-regexp name))
+    (setq re (deh--regexp name))
     (with-temp-buffer
       (insert-file-contents file)
       (goto-char (point-min))
@@ -341,7 +537,7 @@ With prefix argument sort section by file."
                 (conf (buffer-string))
                 re)
             (setq file (cdr section)
-                  re (deh-regexp (car section)))
+                  re (deh--regexp (car section)))
             (with-temp-buffer
               (insert-file-contents file)
               (goto-char (point-min))
@@ -394,110 +590,16 @@ With prefix argument sort section by file."
   (deh-submit t))
 
 (defun deh-enable (feature)
-  "Eval the form in `deh-enable-list'."
+  "Eval the form in `deh-reserves'."
   (interactive
-   (list (completing-read "Enable feature: " deh-enable-list
-                          nil t)))
+   (list (deh-completing-read "Enable feature: " deh-reserves
+                              nil t)))
   (eval (cons 'progn
-              (assoc-default feature deh-enable-list))))
-
-;;; Other helper functions, eg: define-key, local-set-key, add-hook, etc.
-(defmacro deh-define-key (map &rest keypairs)
-  "Define a batch of keys.
-
-Example:
-  (deh-define-key global-map
-    (\"\\C-m\"        . 'newline-and-indent)
-    (\"\\C-j\"        . 'newline))
-"
-  (declare (indent 1))
-  (cons 'progn
-        (mapcar (lambda (pair)
-                  `(define-key ,map ,(car pair) ,(cdr pair)))
-                keypairs)))
-
-(defmacro deh-local-set-key (hook &rest keypairs)
-  "Set a batch of local keys for a hook.
-
-Example:
-  (deh-local-set-key 'text-mode-hook
-    (\"\\C-m\"        . 'newline-and-indent)
-    (\"\\C-j\"        . 'newline))
-"
-  (declare (indent 1))
-  (list 'add-hook hook
-        (cons 'lambda
-              (cons 'nil (mapcar
-                          (lambda (pair)
-                            `(local-set-key ,(car pair) ,(cdr pair)))
-                          keypairs)))))
-
-(defmacro deh-local-set-keys (hooks &rest keypairs)
-  "Set a batch of local keys for a list of hooks.
-
-Example:
-  (deh-local-set-keys '(text-mode-hook org-mode-hook)
-    (\"\\C-m\"        . 'newline-and-indent)
-    (\"\\C-j\"        . 'newline))
-"
-  (declare (indent 1))
-  (list 'dolist (list 'hook hooks)
-        (list 'add-hook 'hook
-              (cons 'lambda
-                    (cons 'nil (mapcar
-                                (lambda (pair)
-                                  `(local-set-key ,(car pair) ,(cdr pair)))
-                                keypairs))))))
-
-(defmacro deh-add-hook (hook &rest forms)
-  "Apply some functions for a hook.
-
-Example:
-  (deh-add-hook 'c-mode-common-hook
-    (flyspell-prog-mode)
-    (flymake-minor-mode 1))
-"
-  (declare (indent 1))
-  `(add-hook ,hook (lambda () ,@forms)))
-
-(defmacro deh-remove-hook (hook &rest forms)
-  "Remove some functions for a hook.
-
-Example:
-  (deh-remove-hook 'c-mode-common-hook
-    (flyspell-prog-mode)
-    (flymake-minor-mode 1))
-"
-  (declare (indent 1))
-  `(remove-hook ,hook (lambda () ,@forms)))
-
-(defmacro deh-add-hooks (hooks &rest forms)
-  "Apply some functions for a list of hooks.
-
-Example:
-  (deh-add-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
-    (flyspell-prog-mode)
-    (flymake-minor-mode 1))
-"
-  (declare (indent 1))
-  `(dolist (hook ,hooks)
-     (add-hook hook (lambda () ,@forms))))
-
-(defmacro deh-remove-hooks (hooks &rest forms)
-  "Remove some functions for a list of hooks.
-
-Example:
-  (deh-remove-hooks '(c-mode-common-hook emacs-lisp-mode-hook)
-    (flyspell-prog-mode)
-    (flymake-minor-mode 1))
-"
-  (declare (indent 1))
-  `(dolist (hook ,hooks)
-     (remove-hook hook (lambda () ,@forms))))
+              (assoc-default feature deh-reserves))))
 
 (font-lock-add-keywords
  'emacs-lisp-mode
- '(("\\<deh-\\(section\\|\\(try-\\)?require\\)\\(-[a-z]+\\)?\\>" . font-lock-keyword-face)))
+ '(("\\<deh-\\(section\\|\\(try-\\)?require\\)\\([-a-z]+\\)?\\>" . font-lock-function-name-face)))
 
 (provide 'dot-emacs-helper)
 ;;; dot-emacs-helper.el ends here

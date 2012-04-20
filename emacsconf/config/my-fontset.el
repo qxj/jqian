@@ -84,21 +84,33 @@
 ;; (set-fontset-font (frame-parameter nil 'font)
 ;;                   'han '("Microsoft YaHei" . "unicode-bmp"))
 
-;; For `emacsclient -c xxx`
-(add-hook
- 'after-make-frame-functions
- (lambda (frame)
-   (when window-system
-     ;; (set-face-attribute 'default nil :height 100 :width 'normal
-     ;;                     :family "Consolas")
-     (set-frame-font "Consolas:pixelsize=14")
-     )))
 
-;; Make Chinese characters match exactly twice more than English ones.
-(let ((font-en "Consolas:pixelsize=14")
-      (font-zh "Microsoft YaHei")
-      (font-zh-size 16))
-  (set-frame-font font-en t)
-  (dolist (charset '(kana han symbol cjk-misc bopomofo))
-    (set-fontset-font "fontset-default" charset
-                      (font-spec :family font-zh :size font-zh-size))))
+(deh-section "font"
+  ;;; For `emacsclient -c xxx`
+  (add-hook
+   'after-make-frame-functions
+   (lambda (frame)
+     (when window-system
+       ;; (set-face-attribute 'default nil :height 100 :width 'normal
+       ;;                     :family "Consolas")
+       (set-frame-font "Consolas:pixelsize=14")
+       )))
+
+;;; Make Chinese characters match exactly twice more than English ones.
+  ;; use 120 char wide window for largeish displays and smaller 80
+  ;; column windows for smaller displays pick whatever numbers make
+  ;; sense for you
+  (let ((en-font "DejaVu Sans Mono")
+        (zh-font "WenQuanYi Micro Hei Mono"))
+    (if (> (x-display-pixel-width) 1280)
+        (progn
+          (add-to-list 'default-frame-alist (cons 'width 100))
+          (set-frame-font (concat en-font ":pixelsize=14"))
+          (dolist (charset '(kana han symbol cjk-misc bopomofo))
+            (set-fontset-font "fontset-default" charset
+                              (font-spec :family zh-font))))
+      ;; (font-spec :family zh-font :size 16))))
+      (add-to-list 'default-frame-alist (cons 'width 80))
+      (set-frame-font (concat en-font ":pixelsize=12"))
+      (set-fontset-font "fontset-default" 'han
+                        (font-spec :family zh-font)))))

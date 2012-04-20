@@ -113,10 +113,9 @@
     (c-toggle-auto-newline nil)
     (eldoc-mode 1)
     ;; (hide-ifdef-mode 1)
-    (subword-mode 1)
     ;; (cwarn-mode 1)
     ;; (smart-operator-mode 1)
-    (set (make-local-variable 'comment-style) 'extra-line)
+    ;; (set (make-local-variable 'comment-style) 'extra-line)
     ;; (expand-add-abbrevs c-mode-abbrev-table expand-c-sample-expand-list)
     ;; keybinds
     ;; (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
@@ -210,45 +209,33 @@ the directories in the INCLUDE environment variable."
         gdb-use-separate-io-buffer t)
 
   (deh-add-hook 'gud-mode-hook
-    (define-key gud-mode-map (kbd "<M-up>") 'comint-previous-prompt)
-    (define-key gud-mode-map (kbd "C-u") 'comint-kill-input)
-    ;;# keybinds remind
-    ;; M-r 'comint-history-isearch-backward-regexp
     (set (make-local-variable 'paragraph-separate) "\\'"))
 
-  (defun my-toggle-gdb ()
-    "Switch to a gdb buffer or return to the previous buffer."
-    (interactive)
-    (if (derived-mode-p 'gud-mode)
-        (while (derived-mode-p 'gud-mode)
-          (bury-buffer))
-      (let ((list (buffer-list)))
-        (while list
-          (if (with-current-buffer (car list)
-                (derived-mode-p 'gud-mode))
-              (progn
-                (call-interactively 'gdb-restore-windows)
-                (setq list nil))
-            (setq list (cdr list))))
-        (unless (derived-mode-p 'gud-mode)
-          (call-interactively 'gdb)))))
+  (define-mode-toggle "gdb"  gdb
+    (derived-mode-p 'gud-mode)
+    (call-interactively 'gdb-restore-windows))
 
-  (eval-after-load "gud"
-    '(progn
-       (deh-define-key gud-minor-mode-map
-         ((kbd "<M-up>") . 'comint-previous-prompt)
-         ([f5]           . 'gud-go)
-         ([S-f5]         . 'gud-kill)
-         ([f8]           . 'gud-print)
-         ([C-f8]         . 'gud-pstar)
-         ([f9]           . 'gud-break-or-remove)
-         ([C-f9]         . 'gud-enable-or-disable)
-         ([S-f9]         . 'gud-watch)
-         ([f10]          . 'gud-next)
-         ([C-f10]        . 'gud-until)
-         ([C-S-f10]      . 'gud-jump)
-         ([f11]          . 'gud-step)
-         ([C-f11]        . 'gud-finish))))
+  (deh-after-load "gud"
+    (deh-define-key gud-mode-map
+      ;;# keybinds remind
+      ;; M-r 'comint-history-isearch-backward-regexp
+      ((kbd "<M-up>") 'comint-previous-prompt)
+      ((kbd "C-u") 'comint-kill-input))
+
+    (deh-define-key gud-minor-mode-map
+      ((kbd "<M-up>")  'comint-previous-prompt)
+      ([f5]            'gud-go)
+      ([S-f5]          'gud-kill)
+      ([f8]            'gud-print)
+      ([C-f8]          'gud-pstar)
+      ([f9]            'gud-break-or-remove)
+      ([C-f9]          'gud-enable-or-disable)
+      ([S-f9]          'gud-watch)
+      ([f10]           'gud-next)
+      ([C-f10]         'gud-until)
+      ([C-S-f10]       'gud-jump)
+      ([f11]           'gud-step)
+      ([C-f11]         'gud-finish)))
 
   (gud-tooltip-mode 1)
 
@@ -315,52 +302,8 @@ the directories in the INCLUDE environment variable."
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
 (deh-section "buffer-action"
-  (autoload 'buffer-action-compile "buffer-action")
-  (autoload 'buffer-action-run "buffer-action")
-
-  ;;# hack to find Makefile upon direcories recursively.
-  (eval-after-load "buffer-action"
-    '(progn
-       (defun buffer-action-throw-final-path (try-dir)
-         (cond
-          ;; tramp root-dir
-          ((and (featurep 'tramp)
-                (string-match tramp-file-name-regexp try-dir))
-           (with-parsed-tramp-file-name try-dir foo
-             foo-localname))
-          (t try-dir)))
-
-       (defun buffer-action-is-root-dir (try-dir)
-         (or
-          ;; windows root dir for a driver or Unix root
-          (string-match "\\`\\([a-zA-Z]:\\)?/$" try-dir)
-          ;; tramp root-dir
-          (and (featurep 'tramp)
-               (string-match (concat tramp-file-name-regexp ".*:/$") try-dir))))
-
-       (defun buffer-action-find-make-dir (try-dir)
-         "Return a directory contain makefile. try-dir is absolute
-path."
-         (if (buffer-action-is-root-dir try-dir)
-             nil ;; return nil if failed to find such directory.
-           (let ((candidate-make-file-name `("GNUmakefile" "makefile" "Makefile")))
-             (or (catch 'break
-                   (mapc (lambda (f)
-                           (if (file-readable-p (concat (file-name-as-directory try-dir) f))
-                               (throw 'break (buffer-action-throw-final-path try-dir))))
-                         candidate-make-file-name)
-                   nil)
-                 (buffer-action-find-make-dir
-                  (expand-file-name (concat (file-name-as-directory try-dir) "..")))))))
-
-       (defun buffer-action-compile-setup (row)
-         "Setup correct compiler action. ROW is matched one in
-`buffer-action-table'."
-         (let* ((dir (buffer-action-find-make-dir (expand-file-name ".")))
-                (cmd (concat "make -C " dir)))
-           (if (and dir (y-or-n-p (format "Run like this? `%s' " cmd)))
-               (setq buffer-action-compile-action (concat cmd " "))
-             (setq buffer-action-compile-action (nth 1 row)))))))
+  (autoload 'buffer-action-compile "buffer-action" "Compile current buffer" t)
+  (autoload 'buffer-action-run "buffer-action" "Run exec of current buffer" t)
   )
 
 (deh-section "compilation"
