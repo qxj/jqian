@@ -16,6 +16,9 @@ HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 # Don’t clear the screen after quitting a manual page
 MANPAGER="less -X"
 
+# Don't grep svn base
+GREP_OPTIONS="--color --exclude=\*.svn-base"
+
 # append to the history file, don't overwrite it
 shopt -s histappend
 
