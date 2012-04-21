@@ -142,7 +142,7 @@
         todo-file-do (expand-file-name "todo-do" my-org-dir)
         todo-file-done (expand-file-name "todo-done" my-org-dir)
         todo-file-top (expand-file-name "todo-top" my-org-dir))
-  (add-hook 'initial-calendar-window-hook (lambda () (toggle-truncate-lines 1)))
+  (deh-add-hook initial-calendar-window-hook (toggle-truncate-lines 1))
   ;; calendar
   ;; for calendar-sunrise-sunset
   (setq calendar-longitude 114
