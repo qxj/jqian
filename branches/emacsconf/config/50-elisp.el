@@ -424,7 +424,7 @@ mouse-3: Remove current window from display")
         '("~/.emacs.d/config/"
           "~/.emacs.d/site-lisp/"
           "~/projects/"
-          "~/work/"
+          "~/works/"
           "~/temp/"
           "~/bin/"
           "~/")))
