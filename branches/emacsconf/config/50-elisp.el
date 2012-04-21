@@ -293,7 +293,7 @@ mouse-3: Remove current window from display")
   (ido-everywhere t)
   (add-hook 'term-setup-hook 'ido-mode)
 
-  (setq ido-enable-regexp t
+  (setq ido-enable-regexp nil           ; C-t, M-x ido-toggle-regexp
         ido-enable-dot-prefix t
         ido-enable-flex-matching t
         ido-enable-tramp-completion nil
@@ -336,9 +336,7 @@ mouse-3: Remove current window from display")
   (setq ido-file-extensions-order
         '(".h" ".c" ".cpp" ".py" ".sh" ".el" ".txt" ".org" ".md"))
 
-  (add-hook 'ido-setup-hook 'ido-my-keys)
-  (defun ido-my-keys ()
-    "Add my keybindings for ido."
+  (deh-add-hook ido-setup-hook
     (deh-define-key ido-completion-map
       ((kbd "C-n")    'ido-next-match-dir)
       ((kbd "C-p")    'ido-prev-match-dir)
@@ -637,11 +635,12 @@ mouse-3: Remove current window from display")
           (if current-desktop
               (setq bm-repository-file
                     (concat current-desktop ".bm-repo")))))
-      (add-hook 'desktop-after-read-hook (lambda nil (if (bm-repository-file-of-desktop-menu)
-                                                         (bm-repository-load))))
-      (add-hook 'desktop-save-hook (lambda nil (when (bm-repository-file-of-desktop-menu)
-                                                 (bm-buffer-save-all)
-                                                 (bm-repository-save)))))
+      (deh-add-hook 'desktop-after-read-hook
+        (if (bm-repository-file-of-desktop-menu) (bm-repository-load)))
+      (deh-add-hook 'desktop-save-hook
+        (when (bm-repository-file-of-desktop-menu)
+          (bm-buffer-save-all)
+          (bm-repository-save))))
     ))
 
 (deh-require-reserved 'session
@@ -860,9 +859,8 @@ mouse-3: Remove current window from display")
                           (propertize (car item) 'face 'bold)
                           (cdr item))))
         (display-buffer (current-buffer)))))
-  (add-hook 'image-mode-hook
-            (lambda ()
-              (define-key image-mode-map "I" 'image-display-info))))
+  (deh-add-hook image-mode-hook
+    (deh-define-key image-mode-map "I" 'image-display-info)))
 
 (deh-section-after "w3m"
   (setq w3m-verbose t                   ; log in *Messages*

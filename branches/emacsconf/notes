@@ -58,3 +58,6 @@ C-x C-q
 
 * expand a defmacro
 macroexpand & macroexpand-all
+
+* ido-enable-regexp
+if toggle on ido-enable-regexp, M-x ido-find-file RET c\++ to escape regexp.
