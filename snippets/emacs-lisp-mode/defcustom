@@ -1,5 +1,0 @@
-#contributor: Xah Lee (XahLee.org)
-#name: defcustom
-#key: defcustom
-# --
-(defcustom ${1:SYMBOL} ${2:VALUE} ${3:"DOC"})

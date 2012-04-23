@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: boost::
+# key: bt
+# --
+boost::$0
