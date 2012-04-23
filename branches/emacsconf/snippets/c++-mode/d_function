@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: fun_declaration
-# key: f
+# name: declare a function
+# key: dfunc
 # --
 ${1:type} ${2:name}(${3:args})${4: const};

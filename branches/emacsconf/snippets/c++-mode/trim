@@ -1,4 +1,5 @@
-#name: idiom, trim whitespace from std::string
+# -*- mode: snippet -*-
+# name: idiom, trim whitespace from std::string
 # key: trim
 # --
 std::string::iterator ${1:itr} = std::remove(${2:str}.begin(), $2.end(), ' ');

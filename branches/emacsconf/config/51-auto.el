@@ -208,20 +208,36 @@ indent line."
 
 ;;; skeleton
 (deh-section "skeleton"
-  (define-skeleton skel-elisp-comment
-    "Inserts an elisp comment in a rectangle into current buffer."
-    ""
-    '(setq str (read-string "Comment: "))
-    '(when (string= str "") (setq str " - "))
-    '(setq v1 (make-string (- fill-column 6) ?*))
-    '(setq v2 (- fill-column 10 (length str)))
-    ";; " v1 " ;;" \n
-    ";; **"
-    (make-string (floor v2 2) ?\ )
-    str
-    (make-string (ceiling v2 2) ?\ )
-    "** ;;" \n
-    ";; " v1 " ;;"))
+  (defmacro define-skel-comment (name comment-start comment-end
+                                      &optional char-to-fill)
+    "Define a skeleton to insert one line comment as a
+`fill-column' wide rectangle into current buffer.
+
+For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
+"
+    (declare (debug t) (indent 2))
+    (let ((char-to-fill (or char-to-fill ?*))
+          (padding-length (+ (length comment-start) (length comment-end))))
+      `(define-skeleton ,(intern (format "skel-%s-comment" name))
+         ,(format "Insert a %s comment as a rectangle" name)
+         ""
+         '(setq str (skeleton-read "Comment: "))
+         '(when (string= str "") (setq str " - "))
+         '(setq v1 (make-string (- fill-column ,(+ padding-length 2))
+                                ,char-to-fill))
+         '(setq v2 (- fill-column ,(+ padding-length 6) (length str)))
+         ,comment-start " " v1 " " ,comment-end \n
+         ,comment-start " " ,(make-string 2 char-to-fill)
+         (make-string (floor v2 2) ?\ )
+         str
+         (make-string (ceiling v2 2) ?\ )
+         ,(make-string 2 char-to-fill) " " ,comment-end \n
+         ,comment-start " " v1 " " ,comment-end)))
+
+  (define-skel-comment "elisp" ";;" ";;" ?\;)
+  (define-skel-comment "c" "/*" "*/")
+  (define-skel-comment "c++" "//" "//" ?/)
+  )
 
 ;;;; autopair
 (deh-section "skeleton-pair"
