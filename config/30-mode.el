@@ -684,7 +684,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook 'python-mode-hook
     (my-mode-common-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
-    ;; (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
+    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
 
   ;;# Install rope, pymacs, ropemode, ropemacs
