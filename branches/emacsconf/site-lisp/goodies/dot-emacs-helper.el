@@ -281,7 +281,7 @@ use `deh-enable' to active these elisp."
 
 
 ;;; Other helper functions, eg: define-key, local-set-key, add-hook, etc.
-(defmacro deh-define-key (map &rest keypairs)
+(defmacro deh-define-key (maps &rest keypairs)
   "Define a batch of keys.
 
 Example:
@@ -294,15 +294,15 @@ Example:
     (\"\\C-j\"  'newline))
 "
   (declare (indent 1))
-  (let ((maps (if (listp map) map (list map))))
-    (nconc (list 'progn)
-           (mapcan (lambda (map)
-                     (mapcan (lambda (pair)
-                               (list
-                               `(define-key ,map ,(car pair) ,(cadr pair))
-                               `(deh--set-keybind ',map ,(car pair) ,(cadr pair))))
-                             keypairs))
-                   maps))))
+  (if (consp maps)
+      `(progn ,@(loop for map in maps
+                      collect `(deh-define-key ,map ,keypairs)))
+    `(progn
+       ,@(mapcan (lambda (pair)
+                   (list
+                    `(define-key ,maps ,(car pair) ,(cadr pair))
+                    `(deh--set-keybind ',maps ,(car pair) ,(cadr pair))))
+                 keypairs))))
 
 ;; Deperated! Suggest to replace with deh-define-key
 (defmacro deh-local-set-key (hook &rest keypairs)
@@ -327,6 +327,7 @@ Example:
                                           keypairs))))
                    hooks))))
 
+;; FIXME: handle hooks recursively and remove to support quoted hooks
 (defmacro deh-add-hook (hook &rest forms)
   "Apply some functions for a hook.
 

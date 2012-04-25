@@ -195,6 +195,35 @@ indent line."
 
 ;;; abbrev
 (deh-section "abbrev-table"
+  ;; Digested from (Emacswiki)[http://www.emacswiki.org/emacs/AbbrevMode#toc7]
+  (require 'cl)
+  (defvar my-abbrev-tables nil)
+  (defun my-abbrev-hook ()
+    (let ((def (assoc (symbol-name last-abbrev) my-abbrev-tables)))
+      (when def
+        (execute-kbd-macro (cdr def)))
+      t))
+  (put 'my-abbrev-hook 'no-self-insert t)
+  (defmacro declare-abbrevs (table abbrevs)
+    (if (consp table)
+        `(progn ,@(loop for tab in table
+                        collect `(declare-abbrevs ,tab ,abbrevs)))
+      `(progn
+         ,@(loop for abbr in abbrevs
+                 do (when (third abbr)
+                      (push (cons (first abbr) (read-kbd-macro (third abbr)))
+                            my-abbrev-tables))
+                 collect `(define-abbrev ,table
+                            ,(first abbr) ,(second abbr) ,(and (third abbr)
+                                                               ''my-abbrev-hook))))))
+  (put 'declare-abbrevs 'lisp-indent-function 2)
+
+  (declare-abbrevs sh-mode-abbrev-table
+      (("redx" "\033[1;31m\033[0m" "C-u 4 C-b")
+       ("greenx" "\033[1;32m\033[0m" "C-u 4 C-b")
+       ("bluex" "\033[1;34m\033[0m" "C-u 4 C-b")))
+
+  ;; define global abbrev
   (define-abbrev-table 'global-abbrev-table
     '(("alpha" "α" nil 0)
       ("beta" "β" nil 0)
@@ -204,10 +233,17 @@ indent line."
       ("ar1" "→" nil 0)
       ("ar2" "⇒" nil 0)
       ("gt" "»" nil 0)
-      ("lt" "«" nil 0))))
+      ("lt" "«" nil 0)))
+
+  (deh-after-load "sh-script"
+    ))
 
 ;;; skeleton
 (deh-section "skeleton"
+  ;; avoid abbre-mode when expand skeleton
+  (setq skeleton-further-elements '((abbrev-mode nil))
+        skeleton-end-hook nil)
+
   (defmacro define-skel-comment (name comment-start comment-end
                                       &optional char-to-fill)
     "Define a skeleton to insert one line comment as a
