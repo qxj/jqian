@@ -1078,7 +1078,14 @@ mouse-3: Remove current window from display")
 
 (deh-require 'key-chord
   (key-chord-mode 1)
-  (key-chord-define-global ",." "<>\C-b"))
+  (setq key-chord-two-keys-delay 0.2
+        key-chord-in-macros nil)
+  ;; global key chords
+  (key-chord-define-global ",." "<>\C-b")
+  (key-chord-define-global "90" "()\C-b")
+  ;; key chord in c++-mode
+  (key-chord-define c++-mode-map ",," "<<")
+  (key-chord-define c++-mode-map ".." ">>"))
 
 (deh-require 'ace-jump-mode
   (deh-define-key global-map
