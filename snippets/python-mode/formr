@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : m/r: for ... in sys.stdin : ...
+#key: formr
+# --
+for ${1:line} in sys.stdin:
+    ${2:cols} = $1.strip().split()
+    $0
