@@ -704,7 +704,7 @@ mouse-3: Remove current window from display")
   (defun recentf-open-files-compl ()
     "Open files opened recently with `ido-completing-read'."
     (interactive)
-    (let ((elist '()))
+    (let (elist)
       (dolist (item recentf-list)
         (let* ((el (basename item))
                (collided-item (cdr (assoc el elist)))
@@ -735,7 +735,8 @@ mouse-3: Remove current window from display")
                           (if (= idx (1- len))
                               el
                             (format "%s/%s" slice el))))))))
-          (add-to-list 'elist (cons el item))))
+          (unless (zerop (length el))
+            (add-to-list 'elist (cons el item)))))
       ;; use `ido-completing-read' instead of `completing-read'
       (find-file (cdr (assoc (ido-completing-read "Open file: "
                                                   (mapcar 'car elist))
