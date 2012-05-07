@@ -704,23 +704,43 @@ mouse-3: Remove current window from display")
   (defun recentf-open-files-compl ()
     "Open files opened recently with `ido-completing-read'."
     (interactive)
-    (let (el (elist '()))
+    (let ((elist '()))
       (dolist (item recentf-list)
-        (setq el (file-name-nondirectory item))
-        (unless (zerop (length el))     ; skip dir
-          (let ((orig el))
-            ;; distinguish collided file name
-            (while (assoc el elist)
-              (if (string-match (format "%s<\\([0-9]+\\)>$" orig) el)
-                  (setq el (format "%s<%d>" orig
-                                   (+ 1 (string-to-number (match-string 1 el)))))
-                (setq el (format "%s<%d>" orig 1))
-                )))
+        (let* ((el (basename item))
+               (collided-item (cdr (assoc el elist)))
+               collided-el)
+          ;; distinguish collided file name
+          (when collided-item
+            (let ((len (directory-depth item))
+                  (collided-len (directory-depth collided-item))
+                  (slices (split-file-name item))
+                  (collided-slices (split-file-name collided-item))
+                  (idx 0)
+                  found-unique)
+              (while (and (not found-unique)
+                          (< idx (min len collided-len)))
+                (let ((slice (nth idx slices))
+                      (collided-slice (nth idx collided-slices)))
+                  (if (string= slice collided-slice)
+                      (incf idx)
+                    (setq found-unique t)
+                    (remove-from-list 'elist el)
+                    (setq collided-el
+                          (if (= idx (1- collided-len))
+                              el
+                            (format "%s/%s" collided-slice el)))
+                    ;; (setq elist (delq (cons el item) elist))
+                    (add-to-list 'elist (cons collided-el collided-item))
+                    (setq el
+                          (if (= idx (1- len))
+                              el
+                            (format "%s/%s" slice el))))))))
           (add-to-list 'elist (cons el item))))
       ;; use `ido-completing-read' instead of `completing-read'
       (find-file (cdr (assoc (ido-completing-read "Open file: "
                                                   (mapcar 'car elist))
                              elist)))))
+
   (deh-after-load "recentf"
     ;; Also store recent opened directories besides files
     (deh-add-hook 'dired-mode-hook

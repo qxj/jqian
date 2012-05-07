@@ -330,6 +330,15 @@ for example:
            (?\" _ ?\")))
     (skeleton-autopair-define-key sh-mode-map))
 
+  (deh-add-hook c-mode-common-hook
+    (set (make-local-variable 'skeleton-pair-alist)
+         '((?( _ ?))
+           (?[ _ ?])
+           (?{ _ ?})
+           (?\' _ ?\')
+           (?\" _ ?\")))
+    (skeleton-autopair-define-key c-mode-base-map))
+
   (defun skeleton-autopair-insert (arg)
     (interactive "P")
     (let ((pair (assq last-command-char skeleton-pair-alist)))
