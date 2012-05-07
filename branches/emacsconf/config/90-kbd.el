@@ -32,6 +32,7 @@
   ((kbd "<M-backspace>")  'my-backward-delete-word)
   ((kbd "M-DEL")  'my-backward-delete-word) ; mac os x
   ((kbd "C-o")    'vi-open-next-line)
+  ((kbd "C-M-o")  'split-line)
   ((kbd "C-'")    'redo)
   ((kbd "C-\\")   'my-comment-or-uncomment-region)
   ((kbd "M-5")    'my-display-buffer-path)

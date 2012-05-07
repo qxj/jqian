@@ -62,6 +62,18 @@ pgrep, so.. make sure pgrep is already installed in your system."
   (set list (remove (assoc key (symbol-value list))
                     (symbol-value list))))
 
+(defun split-file-name (file-name)
+  (let ((sep (if (eq system-type 'windows-nt) "\\" "/")))
+    (split-string (directory-file-name file-name) sep)))
+
+(defun basename (file-name)
+  "simulate linux command basename(1), require cl.el"
+  (car (last (split-file-name file-name))))
+
+(defun directory-depth (file-name)
+  "how deep of a file or directory."
+  (length (split-file-name file-name)))
+
 ;; sort line
 (defun sort-lines-1 (reverse beg end predicate)
   (save-excursion
