@@ -218,10 +218,11 @@ indent line."
                                                                ''my-abbrev-hook))))))
   (put 'declare-abbrevs 'lisp-indent-function 2)
 
-  (declare-abbrevs sh-mode-abbrev-table
-      (("redx" "\033[1;31m\033[0m" "C-u 4 C-b")
-       ("greenx" "\033[1;32m\033[0m" "C-u 4 C-b")
-       ("bluex" "\033[1;34m\033[0m" "C-u 4 C-b")))
+  (deh-after-load "sh-script"
+    (declare-abbrevs sh-mode-abbrev-table
+        (("redx" "\033[1;31m\033[0m" "C-u 4 C-b")
+         ("greenx" "\033[1;32m\033[0m" "C-u 4 C-b")
+         ("bluex" "\033[1;34m\033[0m" "C-u 4 C-b"))))
 
   ;; define global abbrev
   (define-abbrev-table 'global-abbrev-table
@@ -234,9 +235,7 @@ indent line."
       ("ar2" "⇒" nil 0)
       ("gt" "»" nil 0)
       ("lt" "«" nil 0)))
-
-  (deh-after-load "sh-script"
-    ))
+  )
 
 ;;; skeleton
 (deh-section "skeleton"
