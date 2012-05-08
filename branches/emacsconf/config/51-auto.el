@@ -192,7 +192,6 @@ indent line."
       (when (string-match (concat "^" root) bfn)
         (yas/load-snippet-buffer)))) )
 
-
 ;;; abbrev
 (deh-section "abbrev-table"
   ;; Digested from (Emacswiki)[http://www.emacswiki.org/emacs/AbbrevMode#toc7]
@@ -234,8 +233,8 @@ indent line."
       ("ar1" "→" nil 0)
       ("ar2" "⇒" nil 0)
       ("gt" "»" nil 0)
-      ("lt" "«" nil 0))))
-  )
+      ("lt" "«" nil 0)))
+)
 
 ;;; skeleton
 (deh-section "skeleton"
