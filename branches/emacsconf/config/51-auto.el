@@ -234,7 +234,7 @@ indent line."
       ("ar1" "→" nil 0)
       ("ar2" "⇒" nil 0)
       ("gt" "»" nil 0)
-      ("lt" "«" nil 0)))
+      ("lt" "«" nil 0))))
   )
 
 ;;; skeleton
