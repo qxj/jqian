@@ -487,7 +487,7 @@ for example:
   (define-auto-insert '(python-mode . "Python script")
     '(nil
       "#!/usr/bin/env python" ?\n
-      "# -*- coding: utf-8 -*-" ?\n
+      "# -*- coding: utf-8; tab-width: 4; -*-" ?\n
       (my-common-header "# ")
       "#\n\n"
       "import sys" ?\n ?\n
