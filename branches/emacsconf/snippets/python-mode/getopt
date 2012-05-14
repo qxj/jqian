@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: getopt template
+# key: getopt
+# --
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "$1", ["$2"])
+except getopt.GetoptError, e:
+    print e
+    sys.exit(2)
+if opts:
+    for o, a in opts:
+        if o in ("-$1", "--$2"):
+            $0
