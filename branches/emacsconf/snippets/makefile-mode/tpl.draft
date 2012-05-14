@@ -1,5 +1,7 @@
-#name: another makefile template
-#key: tpl.draft
+# -*- mode: snippet -*-
+# name: another makefile template
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# key: tpl.draft
 # --
 
 .SUFFIXES: .c .cpp

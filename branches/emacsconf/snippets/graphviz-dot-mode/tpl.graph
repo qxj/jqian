@@ -1,7 +1,7 @@
-#name: a graph example
-#key: tpl1
+# -*- mode: snippet -*-
+# name: a graph example
+# key: tpl1
 # --
-
 graph G {
     compound=true;
     // rankdir=LR;
