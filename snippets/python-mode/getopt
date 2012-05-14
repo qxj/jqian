@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # name: getopt template
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
 # key: getopt
 # --
 try:
@@ -11,3 +12,9 @@ if opts:
     for o, a in opts:
         if o in ("-$1", "--$2"):
             $0
+else:
+    print """
+Usage:
+    %(cmd)s
+    """ % {"cmd": sys.argv[0]}
+    sys.exit(1)

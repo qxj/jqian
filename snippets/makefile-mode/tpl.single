@@ -1,5 +1,7 @@
-#name: A simple makefile template
-#key: tpl
+# -*- mode: snippet -*-
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# name: A simple makefile template
+# key: tpl
 # --
 
 .SUFFIXES: .h .cpp

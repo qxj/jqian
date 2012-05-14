@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # name: #+CAPTION: table $+LABEL: tbl ...
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
 # key: tbl
 # --
 #+CAPTION: ${1:table sample}

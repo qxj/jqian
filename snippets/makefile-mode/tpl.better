@@ -1,5 +1,7 @@
-#name: a better makefile template
-#key: tplb
+# -*- mode: snippet -*-
+# name: a better makefile template
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# key: tpl.better
 # --
 
 EXECUTABLE := ${1:example-exec}
