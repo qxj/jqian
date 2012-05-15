@@ -98,6 +98,8 @@ alias -- -="cd -"
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+alias urldecode="python -c \"import re,sys;print re.sub(r'%([0-9a-hA-H]{2})',lambda m: chr(int(m.group(1),16)), open(sys.argv[1]).read() if len(sys.argv) > 1 else sys.stdin.read())\""
+
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
