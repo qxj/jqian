@@ -1108,6 +1108,8 @@ mouse-3: Remove current window from display")
   (deh-after-load "cc-mode"
     (key-chord-define c++-mode-map ",," "<<")
     (key-chord-define c++-mode-map ".." ">>"))
+  (deh-after-load "python"
+    (key-chord-define python-mode-map "''" "\"\"\"\"\"\"\C-b\C-b\C-b"))
   )
 
 (deh-require 'ace-jump-mode
