@@ -52,15 +52,15 @@ fi
 
 if [ "$color_prompt" = yes ]; then
     if [ "$(/usr/bin/id -u)" != "0" ]; then
-        PS1='${debian_chroot:+($debian_chroot)}[\[\033[01;31m\]\u\[\033[00m\]@\[\033[01;32m\]\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]]$ '
+        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[00m\]@\[\033[01;32m\]\h\[\033[00m\][\[\033[01;33m\]$(date "+%Y-%m-%d %H:%M:%S")\[\033[00m\]]:\[\033[01;34m\]\w\[\033[00m\]\n$ '
     else
-        PS1='${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]]# '
+        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\h\[\033[00m\][\[\033[01;33m\]$(date "+%Y-%m-%d %H:%M:%S")\[\033[00m\]]:\[\033[01;34m\]\w\[\033[00m\]\n# '
     fi
 else
     if [ "$(/usr/bin/id -u)" != "0" ]; then
-        PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+        PS1='${debian_chroot:+($debian_chroot)}\u@\h[$(date "+%Y-%m-%d %H:%M:%S")]:\w\n$ '
     else
-        PS1='${debian_chroot:+($debian_chroot)}\h:\w\$ '
+        PS1='${debian_chroot:+($debian_chroot)}\h[$(date "+%Y-%m-%d %H:%M:%S")]:\w\n# '
     fi
 fi
 unset color_prompt
