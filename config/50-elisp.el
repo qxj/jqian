@@ -706,10 +706,12 @@ mouse-3: Remove current window from display")
     (interactive)
     (let (elist)
       (dolist (item recentf-list)
-        (let* ((el (basename item))
+        (let* ((el (if (file-directory-p item)
+                       (concat (basename item) "/") ; flag directories with a slash
+                     (basename item)))
                (collided-item (cdr (assoc el elist)))
                collided-el)
-          ;; distinguish collided file name
+          ;; distinguish collided file names
           (when collided-item
             (let ((len (directory-depth item))
                   (collided-len (directory-depth collided-item))
