@@ -1087,11 +1087,11 @@ mouse-3: Remove current window from display")
     "Put current symbol into search string."
     (interactive)
     (save-excursion
-      (re-search-backward "[^[:alnum:]-_@.]" nil t)
+      (re-search-backward "[^[:alnum:]-_@]" nil t)
       (forward-char)
       (isearch-yank-internal
        (lambda ()
-         (re-search-forward "[[:alnum:]-_@.]*[[:alnum:]_]" nil t)))))
+         (re-search-forward "[[:alnum:]-_@]*[[:alnum:]_]" nil t)))))
 
 ;;   (defadvice isearch-repeat (after isearch-no-fail activate)
 ;;     "When Isearch fails, it immediately tries again with
