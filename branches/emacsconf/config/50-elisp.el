@@ -1111,7 +1111,6 @@ mouse-3: Remove current window from display")
         key-chord-in-macros nil)
   ;; global key chords
   (key-chord-define-global ",." "<>\C-b")
-  (key-chord-define-global "90" "()\C-b")
   ;; key chord in c++-mode
   (deh-after-load "cc-mode"
     (key-chord-define c++-mode-map ",," "<<")
