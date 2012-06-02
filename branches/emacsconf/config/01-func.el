@@ -674,6 +674,8 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
   (force-mode-line-update))
 
 (defun my-custom-file ()
-  "Find and open `custom-file' quickly."
+  "Find and open `custom-file' quickly.
+
+All deh-sections defined in `custom-file' will overide the later deh-sections with the same name (they are loaded after 10-custom.el)."
   (interactive)
   (find-file custom-file))
