@@ -672,3 +672,8 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
       (setq mode-line-modes (concat "(" mode-name ")"))
     (setq mode-line-modes my-default-mode-line-modes))
   (force-mode-line-update))
+
+(defun my-custom-file ()
+  "Find and open `custom-file' quickly."
+  (interactive)
+  (find-file custom-file))
