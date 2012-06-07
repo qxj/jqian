@@ -661,7 +661,9 @@ mouse-3: Remove current window from display")
 
 (deh-require 'bm
   (setq bm-cycle-all-buffers t
-        bm-highlight-style 'bm-highlight-only-fringe
+        bm-highlight-style (if window-system
+                               'bm-highlight-line-and-fringe
+                             'bm-highlight-line)
         bm-restore-repository-on-load t)
   (setq-default bm-buffer-persistence t)
 
