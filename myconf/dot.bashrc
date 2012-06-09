@@ -100,6 +100,14 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 alias urldecode="python -c \"import re,sys;print re.sub(r'%([0-9a-hA-H]{2})',lambda m: chr(int(m.group(1),16)), open(sys.argv[1]).read() if len(sys.argv) > 1 else sys.stdin.read())\""
 
+function ts2str() {
+	date -d "1970-01-01 utc $1 seconds" "+%Y-%m-%d %H:%M:%S"
+}
+
+function str2ts() {
+	date -d "$1" +%s
+}
+
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
