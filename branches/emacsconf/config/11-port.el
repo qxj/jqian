@@ -17,15 +17,39 @@
   )
 
 (deh-section "coding-system"
+  (if (eq system-type 'windows-nt)
+      (progn
+        (setq file-name-coding-system 'gbk)
+        (setq locale-coding-system 'gbk)
+        (set-selection-coding-system 'gbk)
+        (set-terminal-coding-system 'gbk)
+        (set-keyboard-coding-system 'gbk)
+        (set-clipboard-coding-system 'gbk)
+        (set-buffer-file-coding-system 'gbk)
+        (modify-coding-system-alist 'process "*" 'gbk)
+        (setq default-process-coding-system '(gbk . gbk))
+        ;; (set-language-environment 'Chinese-GB)
+        (setq w32-charset-info-alist
+              (cons '("gbk" w32-charset-gb2312 . 936)
+                    w32-charset-info-alist)))
+    (setq file-name-coding-system 'utf-8-unix)
+    (setq locale-coding-system 'utf-8-unix)
+    (set-selection-coding-system 'utf-8-unix)
+    (set-terminal-coding-system 'utf-8-unix)
+    (set-keyboard-coding-system 'utf-8-unix)
+    (set-clipboard-coding-system 'utf-8-unix)
+    (set-buffer-file-coding-system 'utf-8-unix)
+    (modify-coding-system-alist 'process "*" 'utf-8-unix)
+    (setq default-process-coding-system '(utf-8-unix . utf-8-unix)))
+
   (unless (coding-system-p 'gbk)
     (define-coding-system-alias 'gbk 'chinese-iso-8bit))
   (unless (coding-system-p 'chinese-gbk)
     (define-coding-system-alias 'chinese-gbk 'chinese-iso-8bit))
   (prefer-coding-system 'utf-8)
-
   (add-to-list 'auto-coding-alist '("\\.nfo\\'" . cp437))
-  (dolist (char (append
-                 "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
+  (dolist (char (append "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》""」』〗】"
+                        "；：""？！""±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
     (modify-syntax-entry char "." (standard-syntax-table))))
 
 (deh-section "PATH"
@@ -44,25 +68,9 @@
 
 (deh-section-if "win32"
   (eq system-type 'windows-nt)
-  (setq file-name-coding-system 'gbk)
-  (setq locale-coding-system 'gbk)
-  (set-selection-coding-system 'gbk)
-  (set-terminal-coding-system 'gbk)
-  (set-keyboard-coding-system 'gbk)
-  (set-clipboard-coding-system 'gbk)
-  (set-buffer-file-coding-system 'gbk)
-  (modify-coding-system-alist 'process "*" 'gbk)
-  (setq default-process-coding-system '(gbk . gbk))
-  ;; (set-language-environment 'Chinese-GB)
-  (setq w32-charset-info-alist
-        (cons '("gbk" w32-charset-gb2312 . 936)
-              w32-charset-info-alist))
   (setq abbreviated-home-dir nil)
-
   (setenv "SHELL" "d:/cygwin/bin/bash.exe")
-
   (setq explicit-shell-file-name "bash.exe")
-
   (setq ffap-c-path '("d:/Programs/MSYS/mingw/include/"
                       "d:/Programs/MSYS/mingw/include/c++/3.4.0/"))
   (add-hook 'shell-mode-hook
