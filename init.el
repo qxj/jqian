@@ -25,5 +25,7 @@
 (unless (require 'dot-emacs-helper nil t) (error "missing dot-emacs-helpler.el"))
 
 ;;; ready to load my configurations
+(load (expand-file-name "emacs.preload.el" my-data-dir) t)
 (mapc 'load (directory-files my-config-dir t "^[0-9]+-.*.el$"))
+(load (expand-file-name "emacs.postload.el" my-data-dir) t)
 (server-start)
