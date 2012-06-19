@@ -190,7 +190,7 @@
 ;;}}}
 
 ;;{{{ Customized keywords
-(dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode
+(dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode python-mode
                        php-mode lisp-interaction-mode sh-mode sgml-mode))
   (font-lock-add-keywords
    mode
@@ -210,16 +210,9 @@
 (setq tooltip-use-echo-area nil)
 (setq folding-folding-on-startup nil)
 
+(setq user-full-name "Julian Qian"
+      user-mail-address "junist@gmail.com")
+
 ;;; customization
 (setq custom-file (expand-file-name "emacs.custom.el" my-data-dir))
 (load custom-file t)
-
-(custom-set-variables
- ;; '(confirm-kill-emacs (quote y-or-n-p))
- '(user-mail-address "junist@gmail.com")
-)
-(custom-set-faces
- '(one-key-keystroke ((t (:foreground "DarkRed" :weight bold))))
- '(one-key-prompt ((t (:foreground "navy"))))
- '(one-key-title ((t (:foreground "blue")))))
-
