@@ -144,6 +144,12 @@
 
 ;;; one-key settings
 (deh-require 'one-key
+
+  (custom-set-faces
+   '(one-key-keystroke ((t (:foreground "DarkRed" :weight bold))))
+   '(one-key-prompt ((t (:foreground "navy"))))
+   '(one-key-title ((t (:foreground "blue")))))
+
   (deh-define-key one-key-prefix
     ("k"  'one-key-menu-root)
     ("a"  'one-key-menu-anything)
