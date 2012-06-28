@@ -1,0 +1,4 @@
+#name: idiom, Erase-remove idiom
+#key: erase
+# --
+${1:v}.erase(remove($1.begin(), $1.end(), ${2:0}), $1.end());

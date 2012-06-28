@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ignore idiom
+# key: ignore
+# --
+${1:std::}cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

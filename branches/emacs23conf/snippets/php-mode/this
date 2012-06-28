@@ -1,0 +1,3 @@
+#name: $this->obj->func(..)
+# --
+$this->$1->$2($3)

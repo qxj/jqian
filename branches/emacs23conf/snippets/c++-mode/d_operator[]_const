@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: declare operator[] const
+# key: d[]c
+# --
+const ${1:Type}& operator[](${2:int index}) const;

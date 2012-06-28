@@ -1,0 +1,5 @@
+#contributor: Xah Lee (XahLee.org)
+#name: lambda
+#key: lambda
+# --
+(lambda (${1:x}) ($2))

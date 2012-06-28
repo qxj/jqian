@@ -1,0 +1,3 @@
+#name: $this->db->database()
+# --
+$this->db->database($1)
