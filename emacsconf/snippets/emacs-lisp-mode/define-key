@@ -1,5 +1,0 @@
-#contributor: Xah Lee (XahLee.org)
-#name: define-key
-#key: dk
-# --
-(define-key ${1:KEYMAPNAME} (kbd ${2:"M-b"}) '${3:FUNCNAME})

@@ -1,7 +1,0 @@
-#name: Hi-lock: ... Hi-lock: end
-#key: hilock
-# --
-;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
-;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
-;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
-;; Hi-lock: end

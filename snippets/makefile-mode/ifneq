@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: ifneq (val1, val2) ... else ... endif
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# key: ifneq
+# --
+ifneq (${1}, ${2})
+    $3
+else
+    $4
+endif

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: #+CAPTION: table $+LABEL: tbl ...
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# key: tbl
+# --
+#+CAPTION: ${1:table sample}
+#+LABEL: ${2:tbl:basic-data}${3:
+#+ATTR_LaTeX: ${4:align=r|p{8cm}|l}}
+| $5 |
