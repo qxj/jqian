@@ -26,7 +26,7 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-section "auto-complete"
+(deh-section-reserved "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
@@ -158,6 +158,12 @@ indent line."
                     (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
   (deh-after-load "autopair"
     (ac-settings-4-autopair)) )
+
+(deh-section-if "completion"
+  (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function)
+  (setq completion-cycle-threshold 5)
+  (add-to-list 'completion-styles 'substring)
+  )
 
 (deh-require 'yasnippet
   (setq yas/root-directory my-snippet-dir)

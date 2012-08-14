@@ -48,8 +48,8 @@
     (define-coding-system-alias 'chinese-gbk 'chinese-iso-8bit))
   (prefer-coding-system 'utf-8)
   (add-to-list 'auto-coding-alist '("\\.nfo\\'" . cp437))
-  (dolist (char (append "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》""」』〗】"
-                        "；：""？！""±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
+  (dolist (char (append "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】"
+                        "；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
     (modify-syntax-entry char "." (standard-syntax-table))))
 
 (deh-section "PATH"

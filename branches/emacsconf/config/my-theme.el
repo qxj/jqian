@@ -160,10 +160,5 @@
 
 (deh-section "theme"
   ;; (set-cursor-color "red")
-  (deh-try-require 'color-theme
-    ;; (color-theme-initialize)
-    ;; (color-theme-blackboard)
-    ;; (color-theme-wombat)
-    (deh-try-require 'tango-theme)
-    (color-theme-tango)))
+	     )
 
