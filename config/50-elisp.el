@@ -550,6 +550,7 @@ mouse-3: Remove current window from display")
   (setq tramp-auto-save-directory my-data-dir
         tramp-persistency-file-name (expand-file-name "tramp" my-data-dir)
         tramp-default-method "ssh"
+        remote-file-name-inhibit-cache 60
         ;; tramp-syntax 'url
         password-cache-expiry nil)
   ;;# avoid to backup tramp files
@@ -1121,9 +1122,16 @@ mouse-3: Remove current window from display")
     (key-chord-define python-mode-map "''" "\"\"\"\"\"\"\C-b\C-b\C-b"))
   )
 
-(deh-require 'ace-jump-mode
+
+(deh-section "ace-jump-mode"
+  (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
+  (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
+
+  (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
+
   (deh-define-key global-map
-    ;; ((kbd "C-c SPC") 'ace-jump-mode)
+    ((kbd "C-c SPC") 'ace-jump-mode)
+    ((kbd "C-x SPC") 'ace-jump-mode-pop-mark)
     ((kbd "M-4") 'ace-jump-char-mode)
     ((kbd "C-4") 'ace-jump-mode)))
 

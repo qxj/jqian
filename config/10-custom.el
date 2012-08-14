@@ -72,7 +72,7 @@
 ;; (electric-indent-mode t)
 ;; (electric-layout-mode t)
 
-;; (partial-completion-mode 1)
+;; (partial-completion-mode 1)             ; deprecated in emacs24
 (icomplete-mode 1)
 (winner-mode 1)
 ;; (auto-insert-mode 1)
@@ -148,6 +148,9 @@
   (setq calendar-longitude 114
         calendar-latitude 22.3
         calendar-location-name "Beijing"))
+
+(deh-section "theme"
+  (setq custom-theme-directory (expand-file-name "themes" my-site-lisp-dir)))
 
 ;; formats and timestamp
 (deh-section "formats"
