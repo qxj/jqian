@@ -70,3 +70,6 @@ M-x find-dired, specify (1) directory and (2) find arguments, e.g.:
 -name ".h" -o -name ".cpp", and RET.
 Then (1) press `m' to select files, or `t' to select them all, (2) press
 `Q' to query regexp string, e.g.: \<DEBUG\>, (3) press RET.
+
+* set-goal-column
+C-x C-n
