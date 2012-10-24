@@ -84,6 +84,7 @@
   ("k"  'one-key-prefix)
   ("t"  'multi-term-prefix)
   ("c"  'ctl-cc-map)
+  ("\C-k" 'kmacro-keymap)
   ("$"  'toggle-truncate-lines)
   ;; ("f"  'comint-dynamic-complete)
   ;; ("g"  'fold-dwim-hide-all)
