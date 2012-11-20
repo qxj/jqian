@@ -1080,7 +1080,9 @@ mouse-3: Remove current window from display")
 
 (deh-require 'key-chord
   (key-chord-mode 1)
-  (key-chord-define-global ",." "<>\C-b"))
+  (key-chord-define-global ",." "<>\C-b")
+  (deh-after-load "python"
+    (key-chord-define python-mode-map "''"  "\"\"\"\"\"\"\C-b\C-b\C-b")))
 
 (deh-require 'ace-jump-mode
   (deh-define-key global-map
