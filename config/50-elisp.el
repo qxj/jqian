@@ -1228,7 +1228,7 @@ mouse-3: Remove current window from display")
                    ("bookmark" "add")))))
 
 ;; browse-kill-ring
-(deh-section "browse-kill-ring"
+(deh-require 'browse-kill-ring
   (browse-kill-ring-default-keybindings)
   (setq browse-kill-ring-highlight-current-entry t))
 
