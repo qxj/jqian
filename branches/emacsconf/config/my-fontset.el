@@ -86,31 +86,24 @@
 
 
 (deh-section "font"
-  ;;; For `emacsclient -c xxx`
-  (add-hook
-   'after-make-frame-functions
-   (lambda (frame)
-     (when window-system
-       ;; (set-face-attribute 'default nil :height 100 :width 'normal
-       ;;                     :family "Consolas")
-       (set-frame-font "Consolas:pixelsize=14")
-       )))
-
-;;; Make Chinese characters match exactly twice more than English ones.
+  ;; Make Chinese characters match exactly twice more than English ones.
   ;; use 120 char wide window for largeish displays and smaller 80
   ;; column windows for smaller displays pick whatever numbers make
   ;; sense for you
-  (let ((en-font "DejaVu Sans Mono")
-        (zh-font "WenQuanYi Micro Hei Mono"))
-    (if (> (x-display-pixel-width) 1280)
-        (progn
-          (add-to-list 'default-frame-alist (cons 'width 100))
-          (set-frame-font (concat en-font ":pixelsize=14"))
-          (dolist (charset '(kana han symbol cjk-misc bopomofo))
-            (set-fontset-font "fontset-default" charset
-                              (font-spec :family zh-font))))
-      ;; (font-spec :family zh-font :size 16))))
-      (add-to-list 'default-frame-alist (cons 'width 80))
-      (set-frame-font (concat en-font ":pixelsize=12"))
-      (set-fontset-font "fontset-default" 'han
+  (let ((en-font (if (eq system-type 'windows-nt)
+                     "Consolas" "DejaVu Sans Mono"))
+        (zh-font (if (eq system-type 'windows-nt)
+                     "Microsoft YaHei" "WenQuanYi Micro Hei Mono"))
+        (pixel-size (if (> (x-display-pixel-width) 1280)
+                        ":pixelsize=14" ":pixelsize=12"))
+        (frame-width (if (> (x-display-pixel-width) 1280) 100 80)))
+    ;;## For `emacsclient -c xxx`
+    (deh-add-hook 'after-make-frame-functions
+      ;; (set-face-attribute 'default nil :height 100 :width 'normal
+      ;;                     :family en-font)
+      (set-frame-font (concat en-font pixel-size)))
+    (add-to-list 'default-frame-alist (cons 'width frame-width))
+    (set-frame-font (concat en-font pixel-size))
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font "fontset-default" charset
                         (font-spec :family zh-font)))))

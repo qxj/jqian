@@ -225,7 +225,8 @@
   (deh-define-key gnus-group-mode-map
     ("\C-x\C-k"  'undefined)          ; avoid kill *Group* manually
     )
-  (add-hook 'kill-emacs-hook 'gnus-group-exit))
+  ;; (add-hook 'kill-emacs-hook 'gnus-group-exit)
+  )
 ;;;; Sumary setting
 (setq gnus-summary-line-format "%U%R%z%(%&user-date;┃%-10,10f┃%4L%*┃%B%s%)\n"
       gnus-user-date-format-alist '(((gnus-seconds-today) . "%H:%M")
