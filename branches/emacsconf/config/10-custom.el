@@ -30,6 +30,10 @@
 
 (setq truncate-partial-width-windows nil)
 
+;; only split window horzontal
+(setq split-height-threshold 0
+      split-width-threshold nil)
+
 ;; highlight trailing whitespace
 (setq show-trailing-whitespace t)
 
