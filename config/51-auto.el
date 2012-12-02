@@ -26,7 +26,7 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-section-reserved "auto-complete"
+(deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
