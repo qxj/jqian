@@ -54,16 +54,18 @@
 
 (deh-section "PATH"
   ;; add more directory to environment variable PATH and exec-path
-  (let ((path (split-string (getenv "PATH") path-separator)))
+  (let (path)
     (mapc (lambda (p)
             (setq p (convert-standard-filename
                      (expand-file-name p)))
             (add-to-list 'exec-path p)
-            (add-to-list 'path p))
+            (add-to-list 'path p t))
           (append
-           '("~/bin" "/usr/local/bin" "/usr/local/sbin" "/usr/texbin" "/usr/X11/bin")
-           (when (eq system-type 'windows-nt)
-             '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin"))))
+           ;; let your dirs prepend original PATH
+           (if (eq system-type 'windows-nt)
+               '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin")
+             '("~/bin" "/usr/local/bin" "/usr/local/sbin" "/usr/texbin" "/usr/X11/bin"))
+           (split-string (getenv "PATH") path-separator)))
     (setenv "PATH" (mapconcat 'identity path path-separator))))
 
 (deh-section-if "win32"
