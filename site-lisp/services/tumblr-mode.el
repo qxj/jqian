@@ -33,6 +33,7 @@
 ;; - `tumblr-new-post' create a buffer to post
 ;; - `tumblr-save-post' save buffer to tumblr.com
 ;; - `tumblr-list-posts' list tumblr posts in a buffer
+;; - `tumblr-edit-post' edit an existed post by its url
 ;;
 ;;; Install:
 ;;
@@ -538,6 +539,14 @@ blah..blah..blah
                                  (state . "published"))
                                nil (or tumblr-current-hostname (tumblr-get-hostname)))
   (tumblr-prepare-post-edit))
+
+(defun tumblr-edit-post (url)
+  (interactive "sPost url: \n")
+  (let* (hostname post-id)
+    (string-match "http://\\([^/]+\\)/post/\\([0-9]+\\)" url)
+    (setq hostname (match-string 1 url)
+          post-id (match-string 2 url))
+    (tumblr-get-post post-id hostname)))
 
 ;; (put 'tumblr-mode 'mode-class 'special)
 
