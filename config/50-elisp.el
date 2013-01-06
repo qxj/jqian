@@ -1516,6 +1516,13 @@ mouse-3: Remove current window from display")
 
 ;;; others
 
+(deh-require 'diminish
+  (diminish 'abbrev-mode "Abv")
+  (diminish 'highlight-parentheses-mode)
+  (diminish 'hi-lock-mode)
+  (diminish 'undo-tree-mode)
+  (diminish 'eldoc-mode))
+
 ;; ;; erc
 ;; (deh-section "erc"
 ;;   (setq erc-log-channels-directory (expand-file-name "erc" my-data-dir))

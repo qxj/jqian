@@ -1,3 +1,5 @@
+;; -*- mode: Emacs-Lisp -*-
+
 ;; (load "cedet")
 
 ;; internal cedet setting for emacs23.2+
@@ -21,7 +23,7 @@
   (global-semantic-idle-local-symbol-highlight-mode 1)
 
   ;; semantic cache directory
-  (setq semanticdb-default-save-directory my-temp-dir
+  (setq semanticdb-default-save-directory my-data-dir
         ;; semanticdb-persistent-path '(project)
         ;; semanticdb-project-predicate-functions nil ; TODO: add predicates
         ;; semanticdb-find-default-throttle '(local project unloaded system recursive)
@@ -57,13 +59,13 @@
   ;; (add-to-list 'semantic-c-dependency-system-include-path "/usr/local/include")
 
   (deh-define-key semantic-mode-map
-    ("\C-c,c" . 'semantic-ia-complete-symbol)
-    ("\C-c,=" . 'semantic-decoration-include-visit)
-    ("\C-c,q" . 'semantic-ia-show-doc)
-    ("\C-c,s" . 'semantic-ia-show-summary)
-    ("\C-c,t" . 'semantic-analyze-proto-impl-toggle)
-    ("\C-c,b" . 'semantic-ia-fast-jump-or-back)
-    ("\C-c,B" . 'semantic-ia-fast-jump-back))
+    ("\C-c,c" 'semantic-ia-complete-symbol)
+    ("\C-c,=" 'semantic-decoration-include-visit)
+    ("\C-c,q" 'semantic-ia-show-doc)
+    ("\C-c,s" 'semantic-ia-show-summary)
+    ("\C-c,t" 'semantic-analyze-proto-impl-toggle)
+    ("\C-c,b" 'semantic-ia-fast-jump-or-back)
+    ("\C-c,B" 'semantic-ia-fast-jump-back))
 
   ;;# wrap `semantic-ia-fast-jump'
   (defun semantic-ia-fast-jump-back ()
@@ -100,7 +102,7 @@ the mru bookmark stack."
   (mapc (lambda (dir)
           (dolist (mode '(c-mode c++-mode))
             (semantic-add-system-include dir mode)))
-        user-include-dirs))
+        my-include-dirs))
 
 (deh-section "hippie-semantic"
   ;; hippie-try-expand setting
@@ -117,29 +119,29 @@ the mru bookmark stack."
   (global-semantic-tag-folding-mode 1)
   (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
   (deh-define-key semantic-tag-folding-mode-map
-    ((kbd "C-c , -") . 'semantic-tag-folding-fold-block)
-    ((kbd "C-c , +") . 'semantic-tag-folding-show-block)
-    ((kbd "C-_")     . 'semantic-tag-folding-fold-all)
-    ((kbd "C-+")     . 'semantic-tag-folding-show-all)))
+    ((kbd "C-c , -") 'semantic-tag-folding-fold-block)
+    ((kbd "C-c , +") 'semantic-tag-folding-show-block)
+    ((kbd "C-_")     'semantic-tag-folding-fold-all)
+    ((kbd "C-+")     'semantic-tag-folding-show-all)))
 
 (deh-require 'linemark
   (enable-visual-studio-bookmarks) ; vss is useful
   (deh-define-key global-map
-    ((kbd "<f2>") . 'viss-bookmark-toggle)
-    ((kbd "<C-f2>") . 'viss-bookmark-next-buffer)
-    ((kbd "<S-f2>") . 'viss-bookmark-prev-buffer)
-    ((kbd "<C-S-f2>") . 'viss-bookmark-clear-all-buffer)))
+    ((kbd "<f2>")     'viss-bookmark-toggle)
+    ((kbd "<C-f2>")   'viss-bookmark-next-buffer)
+    ((kbd "<S-f2>")   'viss-bookmark-prev-buffer)
+    ((kbd "<C-S-f2>") 'viss-bookmark-clear-all-buffer)))
 
 
 (deh-require 'eassist
   (deh-define-key semantic-mode-map
-    ("\C-cA" . 'eassist-switch-h-cpp)
-    ("\C-cL" . 'eassist-list-methods)))
+    ("\C-cA" 'eassist-switch-h-cpp)
+    ("\C-cL" 'eassist-list-methods)))
 
 (deh-require 'ede
   ;; (setq semantic-c-obey-conditional-section-parsing-flag nil) ; ignore #if
   (setq ede-project-placeholder-cache-file
-        (expand-file-name "ede-project.el" my-temp-dir)
+        (expand-file-name "ede-project.el" my-data-dir)
         ede-locate-setup-options
         '(ede-locate-global ede-locate-locate ede-locate-base))
 
