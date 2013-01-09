@@ -153,24 +153,28 @@ the mru bookmark stack."
                      filename
                      &optional incdir
                      &optional cmd)
-    "Generate a Project.ede for current project, instead of `ede-new'."
+    "Generate a Project.ede for current project, instead of `ede-new'.
+
+refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
     (interactive
      (list
       (read-string "Project name: ")
-      (read-file-name "Choose a project file, such as Makefile: ")
+      (read-file-name "Choose a file in the project root directory (only as an anchor): ")
       (if (y-or-n-p "Do you have extra include path? ")
           (read-directory-name "Extra include path: "))
       (if (y-or-n-p "Will you customize compile command? ")
           (read-string "Default compile command is `make': " "make"))))
     (let ((current-dir (file-name-directory
-                        (or (buffer-file-name (current-buffer))
+                        (or filename
+                            (buffer-file-name (current-buffer))
                             default-directory))))
       (find-file (expand-file-name "Project.ede" current-dir))
       (lisp-interaction-mode)
-      (insert (format "(ede-proj-project \"%s\"
+      (insert (format "(ede-cpp-root-project \"%s\"
                       :name \"%s\"
                       :file \"%s\"
-                      :targets 'nil" projname projname filename))
+                      :targets 'nil
+                      :include-path '(\"/\")" projname projname filename))
       (if incdir
           (insert (format "\n
                       :system-include-path '(\"%s\")" incdir)))

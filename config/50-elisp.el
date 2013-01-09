@@ -1279,36 +1279,6 @@ mouse-3: Remove current window from display")
   ;; (deh-try-require 'helm-config)
   )
 
-(deh-section "anything"
-
-  (deh-after-load "anything"
-    (deh-define-key anything-map
-      ("\C-n" . 'anything-next-line)
-      ("\C-p" . 'anything-previous-line)
-      ("\M-n" . 'anything-next-source)
-      ("\M-p" . 'anything-previous-source)))
-
-  ;; redefine anything-command-map-prefix-key
-  (setq anything-command-map-prefix-key "")
-
-  (deh-after-load "anything-config"
-    (setq anything-c-adaptive-history-file
-          (expand-file-name "anything-c-adaptive-history" my-data-dir)
-          anything-c-yaoddmuse-cache-file
-          (expand-file-name "yaoddmuse-cache.el" my-data-dir))
-    (setq anything-c-find-files-show-icons t
-          ;; anything-c-external-programs-associations nil
-          anything-c-google-suggest-url "http://www.google.com/complete/search?output=toolbar&q="
-          ;; anything-google-suggest-use-curl-p t
-          anything-kill-ring-threshold 50
-          anything-su-or-sudo "sudo")
-
-    (defun anything-info-pages ()
-      "Preconfigured anything for info pages."
-      (interactive)
-      (anything-other-buffer 'anything-c-source-info-pages "*info pages*"))
-    ))
-
 ;;; Navigate buffer
 (deh-section-after "speedbar"
   (setq speedbar-directory-unshown-regexp
@@ -1337,7 +1307,7 @@ mouse-3: Remove current window from display")
   (setq speedbar-mode-hook '(lambda () (View-exit))))
 
 ;; speedbar in one frame
-(deh-require 'sr-speedbar
+(deh-require-reserved 'sr-speedbar
   (setq sr-speedbar-skip-other-window-p t
         ;; sr-speedbar-delete-windows t
         sr-speedbar-width-x 22
