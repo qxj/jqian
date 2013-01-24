@@ -73,3 +73,6 @@ Then (1) press `m' to select files, or `t' to select them all, (2) press
 
 * set-goal-column
 C-x C-n
+
+* add .dir-locals.el for a project or a directory
+M-x add-dir-local-variable

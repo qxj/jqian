@@ -166,37 +166,37 @@ indent line."
   )
 
 (deh-require 'yasnippet
-  (setq yas/root-directory my-snippet-dir)
-  (yas/load-directory yas/root-directory)
+  (setq yas-snippet-dirs my-snippet-dir)
+  (yas-load-directory yas-snippet-dirs)
   ;; (yas/initialize)     ;; enable yas/minor-mode globally
-  (yas/global-mode 1)
+  (yas-global-mode 1)
 
-  (setq yas/wrap-around-region t)
+  (setq yas-wrap-around-region t)
 
   (require 'dropdown-list)
-  (setq yas/prompt-functions '(yas/dropdown-prompt
+  (setq yas-prompt-functions '(yas/dropdown-prompt
                                yas/ido-prompt
                                yas/completing-prompt))
 
   ;; FOR `hippie-try-expand' setting
-  (add-to-list 'hippie-expand-try-functions-list 'yas/hippie-try-expand)
+  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
 
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
         ;; (setq yas/trigger-key nil) ; deperecated tweak
-        (define-key yas/keymap (kbd "<right>") 'yas/next-field-or-maybe-expand)
-        (define-key yas/keymap (kbd "<left>") 'yas/prev-field)))
+        (define-key yas-keymap (kbd "<right>") 'yas-next-field-or-maybe-expand)
+        (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
 
   ;; List all snippets for current mode
-  (define-key yas/minor-mode-map (kbd "C-c y") 'yas/insert-snippet)
+  (define-key yas-minor-mode-map (kbd "C-c y") 'yas-insert-snippet)
 
 ;;;###autoload
   (defun yasnippet-reload-after-save ()
     (let* ((bfn (expand-file-name (buffer-file-name)))
-           (root (expand-file-name yas/root-directory)))
+           (root (expand-file-name yas-snippet-dirs)))
       (when (string-match (concat "^" root) bfn)
-        (yas/load-snippet-buffer)))) )
+        (yas-load-snippet-buffer)))) )
 
 ;;; abbrev
 (deh-section "abbrev-table"
@@ -295,12 +295,12 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (setq skeleton-pair-filter-function
         '(lambda ()
            (cond
-            ((eq last-command-char ?\")
-             (or (looking-at   (regexp-quote (string last-command-char)))
-                 (looking-back (regexp-quote (string last-command-char)))
+            ((eq last-command-event ?\")
+             (or (looking-at   (regexp-quote (string last-command-event)))
+                 (looking-back (regexp-quote (string last-command-event)))
                  (looking-back "[[:graph:]]")))
             (t
-             (looking-at (regexp-quote (string last-command-char)))))))
+             (looking-at (regexp-quote (string last-command-event)))))))
 
   (defmacro skeleton-autopair-define-key (keymap &optional alist)
     "Helper to define keymap for all autopair keys in customized
@@ -349,14 +349,14 @@ for example:
   (defun skeleton-autopair-insert (arg)
     (interactive "P")
     (cond
-     ((assq last-command-char skeleton-pair-alist)
+     ((assq last-command-event skeleton-pair-alist)
       (skeleton-autopair-open arg))
      (t
       (skeleton-autopair-close arg))))
 
   (defun skeleton-autopair-open (arg)
     (interactive "P")
-    (let ((pair (assq last-command-char skeleton-pair-alist)))
+    (let ((pair (assq last-command-event skeleton-pair-alist)))
       (cond
        ((and (not mark-active)
              (eq (car pair) (car (last pair)))
@@ -371,16 +371,16 @@ for example:
      (mark-active
       (let (pair open)
         (dolist (pair skeleton-pair-alist)
-          (when (eq last-command-char (car (last pair)))
+          (when (eq last-command-event (car (last pair)))
             (setq open (car pair))))
-        (setq last-command-char open)
+        (setq last-command-event open)
         (skeleton-pair-insert-maybe arg)))
      ((looking-at
        (concat "[ \t\n]*"
-               (regexp-quote (string last-command-char))))
-      (replace-match (string last-command-char))
+               (regexp-quote (string last-command-event))))
+      (replace-match (string last-command-event))
       (delete-region (match-beginning 0) (match-end 0))
-      (insert (string last-command-char))
+      (insert (string last-command-event))
       (indent-according-to-mode)
       )
      (t
