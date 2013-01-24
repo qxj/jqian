@@ -321,7 +321,7 @@ for example:
            (mapcan (lambda (pair)
                      (list
                       `(define-key ,keymap ,(string (car pair)) 'skeleton-autopair-insert)
-                      `(define-key ,keymap ,(string (caddr pair)) 'skeleton-autopair-insert)))
+                      `(define-key ,keymap ,(string (car (last pair))) 'skeleton-autopair-insert)))
                    (or alist skeleton-pair-alist))))
 
   (skeleton-autopair-define-key global-map)
@@ -339,24 +339,19 @@ for example:
     (set (make-local-variable 'skeleton-pair-alist)
          '((?( _ ?))
            (?[ _ ?])
-           (?{ _ ?})
+           (?{ \n _ \n ?})
+           ;; (?{ \n  _ \n ?} >)
            (?\' _ ?\')
            (?\" _ ?\")))
     (skeleton-autopair-define-key c-mode-base-map))
 
   (defun skeleton-autopair-insert (arg)
     (interactive "P")
-    (let ((pair (assq last-command-char skeleton-pair-alist)))
-      (if pair
-          (progn (cond
-                  ((and (not mark-active)
-                        (eq (car pair) (car (last pair)))
-                        (eq (car pair) (char-after)))
-                   (skeleton-autopair-close arg))
-                  (t
-                   (skeleton-pair-insert-maybe arg)))
-                 (message "Autopair %s _ %s" (string last-command-char) (string (caddr pair))))
-        (skeleton-autopair-close arg))))
+    (cond
+     ((assq last-command-char skeleton-pair-alist)
+      (skeleton-autopair-open arg))
+     (t
+      (skeleton-autopair-close arg))))
 
   (defun skeleton-autopair-open (arg)
     (interactive "P")
@@ -382,17 +377,20 @@ for example:
      ((looking-at
        (concat "[ \t\n]*"
                (regexp-quote (string last-command-char))))
-      ;; (replace-match (string last-command-char))
+      (replace-match (string last-command-char))
       (delete-region (match-beginning 0) (match-end 0))
       (insert (string last-command-char))
-      ;; (indent-according-to-mode)
+      (indent-according-to-mode)
       )
      (t
       (self-insert-command (prefix-numeric-value arg))
-      ;; (indent-according-to-mode)
+      (indent-according-to-mode)
       )))
 
   (defadvice delete-backward-char (before autopair activate)
+    "When you \\[delete-backward-char] a character, if both
+charactors surrounding the current cursor belong to a pair, they
+will be deleted together."
     (when (and (char-after)
                (eq this-command 'delete-backward-char)
                (eq (char-after)
