@@ -308,20 +308,22 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
 definition, so this macro is only suitable for such skeleton
 definition:
 
-    '((KEY-BEFORE _ KEY-AFTER) ...)
+    '((KEY-BEFORE ... KEY-AFTER) ...)
 
 for example:
 
     '((?( _ ?))
-      (?[ _ ?])
+      (?{ \n _ \n ?})
       ...)
 
 "
+    (declare (debug t))
     (nconc (list 'progn)
            (mapcan (lambda (pair)
                      (list
                       `(define-key ,keymap ,(string (car pair)) 'skeleton-autopair-insert)
-                      `(define-key ,keymap ,(string (car (last pair))) 'skeleton-autopair-insert)))
+                      `(define-key ,keymap ,(string (car (last pair))) 'skeleton-autopair-insert)
+                      ))
                    (or alist skeleton-pair-alist))))
 
   (skeleton-autopair-define-key global-map)
@@ -339,11 +341,10 @@ for example:
     (set (make-local-variable 'skeleton-pair-alist)
          '((?( _ ?))
            (?[ _ ?])
-           (?{ \n _ \n ?})
-           ;; (?{ \n  _ \n ?} >)
+           (?{ \n  _ \n ?} >)
            (?\' _ ?\')
            (?\" _ ?\")))
-    (skeleton-autopair-define-key c-mode-base-map))
+    (skeleton-autopair-define-key c-mode-base-map ((?( ?)) (?[ ?]) (?{ ?}) (?\') (?\"))))
 
   (defun skeleton-autopair-insert (arg)
     (interactive "P")
