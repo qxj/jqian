@@ -381,11 +381,11 @@ for example:
       (replace-match (string last-command-event))
       (delete-region (match-beginning 0) (match-end 0))
       (insert (string last-command-event))
-      (indent-according-to-mode)
+      ;; (indent-according-to-mode)
       )
      (t
       (self-insert-command (prefix-numeric-value arg))
-      (indent-according-to-mode)
+      ;; (indent-according-to-mode)
       )))
 
   (defadvice delete-backward-char (before autopair activate)
