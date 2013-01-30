@@ -1017,6 +1017,7 @@ mouse-3: Remove current window from display")
 
 
 (deh-section "isearch"
+  (setq isearch-case-fold-search t)     ; case insensitive
   (deh-define-key isearch-mode-map
     ("\t"  'isearch-complete)
     ("\M-<"  'isearch-beginning-of-buffer)
