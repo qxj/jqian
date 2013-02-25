@@ -76,3 +76,6 @@ C-x C-n
 
 * add .dir-locals.el for a project or a directory
 M-x add-dir-local-variable
+
+* treat underline _ as a part of words
+(modify-syntax-entry ?_ "w")
