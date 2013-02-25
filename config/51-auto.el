@@ -168,15 +168,14 @@ indent line."
 (deh-require 'yasnippet
   (setq yas-snippet-dirs my-snippet-dir)
   (yas-load-directory yas-snippet-dirs)
-  ;; (yas/initialize)     ;; enable yas/minor-mode globally
   (yas-global-mode 1)
 
   (setq yas-wrap-around-region t)
 
   (require 'dropdown-list)
-  (setq yas-prompt-functions '(yas/dropdown-prompt
-                               yas/ido-prompt
-                               yas/completing-prompt))
+  (setq yas-prompt-functions '(yas-dropdown-prompt
+                               yas-ido-prompt
+                               yas-completing-prompt))
 
   ;; FOR `hippie-try-expand' setting
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
@@ -184,7 +183,6 @@ indent line."
   ;; FOR `auto-complete-mode', so disable default yasnippet expand action
   (if (fboundp 'auto-complete-mode)
       (progn
-        ;; (setq yas/trigger-key nil) ; deperecated tweak
         (define-key yas-keymap (kbd "<right>") 'yas-next-field-or-maybe-expand)
         (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
 
@@ -629,7 +627,7 @@ will be deleted together."
   (setq hippie-expand-try-functions-list
         '(try-expand-dabbrev
           try-expand-dabbrev-visible
-          yas/hippie-try-expand
+          yas-hippie-try-expand
           try-expand-list
           try-expand-line
           try-expand-dabbrev-all-buffers
