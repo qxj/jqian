@@ -1175,6 +1175,8 @@ mouse-3: Remove current window from display")
     (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
     (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
     (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+    (add-to-list 'term-bind-key-alist '("<tab>" . (lambda nil (interactive) (term-send-raw-string "\C-i"))))
+    ;; some helpful key bindings
     (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
     (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
     (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
