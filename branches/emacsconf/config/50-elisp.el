@@ -994,7 +994,9 @@ mouse-3: Remove current window from display")
   (autoload 'grep-apply-setting "grep")
 
   (deh-after-load "grep"
-    (add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp")))
+    (add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp"))
+    ;;# avoid print NUL when grep something in Windows.
+    (if (eq system-type 'window-nt) (setq grep-use-null-device nil)))
 
   (defun grep-current-dir (&optional prompt wd)
     "Run `grep' to find current word in current directory."

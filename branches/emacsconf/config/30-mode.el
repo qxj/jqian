@@ -149,6 +149,8 @@
 (deh-section-if "gtags"
   (executable-find "global")
 
+  (autoload 'gtags-mode "gtags" "Toggle Gtags mode, a minor mode for GLOBAL." t)
+
   (deh-add-hook '(c-mode-common-hook)
     (gtags-mode t))
 
