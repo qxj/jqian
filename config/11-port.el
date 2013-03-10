@@ -19,7 +19,14 @@
 
 (deh-section "coding-system"
   (if (eq system-type 'windows-nt)
-      (set-language-environment "Chinese-GBK")
+      (progn
+        (set-language-environment "Chinese-GBK")
+        (set-selection-coding-system 'chinese-gbk)
+        (set-terminal-coding-system 'chinese-gbk)
+        (set-keyboard-coding-system 'chinese-gbk)
+        (set-clipboard-coding-system 'chinese-gbk)
+        (set-buffer-file-coding-system 'chinese-gbk)
+        (modify-coding-system-alist 'process "*" 'chinese-gbk))
     (set-language-environment "UTF-8")
     (set-locale-environment "zh_CN.UTF-8")
     (set-selection-coding-system 'utf-8-unix)
@@ -45,7 +52,8 @@
           (append
            ;; let your dirs prepend original PATH
            (if (eq system-type 'windows-nt)
-               '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin")
+               '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin"
+                 "d:/cygwin/usr/local/bin")
              '("~/bin" "/usr/local/bin" "/usr/local/sbin" "/usr/texbin" "/usr/X11/bin"))
            (split-string (getenv "PATH") path-separator)))
     (setenv "PATH" (mapconcat 'identity path path-separator))))
