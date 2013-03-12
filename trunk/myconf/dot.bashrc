@@ -100,12 +100,58 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 alias urldecode="python -c \"import re,sys;print re.sub(r'%([0-9a-hA-H]{2})',lambda m: chr(int(m.group(1),16)), open(sys.argv[1]).read() if len(sys.argv) > 1 else sys.stdin.read())\""
 
-function ts2str() {
-	date -d "1970-01-01 utc $1 seconds" "+%Y-%m-%d %H:%M:%S"
+# timestamp to date string
+# e.g.: ts2ds "2013-01-01 12:01:05" "+%Y-%m-%d %H:%M:%S"
+function ts2ds() {
+    if [[ -n $2 ]]; then
+        fmt=$2
+    else
+        fmt="+%Y%m%d"
+    fi
+    date -d "1970-01-01 utc $1 seconds" $fmt
 }
 
-function str2ts() {
-	date -d "$1" +%s
+# date string to timestamp
+function ds2ts() {
+    date -d "$1" +%s
+}
+
+# print date string one-by-one from one day to another day
+# e.g.: print_ds 20130103 20130604 +%Y%m%d
+function print_ds() {
+    if [[ -n $1 ]]; then
+        ds1=today
+    else
+        ds1=$1
+    fi
+    if [[ -n $2 ]]; then
+        ds2=today
+    else
+        ds2=$2
+    fi
+    if [[ -n $3 ]]; then
+        fmt=$3
+    else
+        fmt="+%Y%m%d"
+    fi
+    ts1=$(ds2ts $1)
+    ts2=$(ds2ts $2)
+    if [[ $ts1 -gt $ts2 ]]; then
+        ((periods=($ts1-$ts2)/86400))
+        incr=0
+    else
+        ((periods=($ts2-$ts1)/86400))
+        incr=1
+    fi
+    for((i=0;i<=periods;i++));
+    do
+        if [[ $incr -eq 1 ]]; then
+            ((ts=$ts1+86400*$i))
+        else
+            ((ts=$ts1-86400*$i))
+        fi
+        echo $(ts2ds $ts $fmt)
+    done
 }
 
 function settitle() {
