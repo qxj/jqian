@@ -6,6 +6,7 @@
 pre_job
 
 input0=$(latest_input "${1:/path/to/input}")
+day=$(get_tailing_date $input0)
 
 input=$input0
 output=$(latest_output "${2:/path/to/output}" $input0)
@@ -22,7 +23,7 @@ if [[ $? -eq 0 ]]; then
         -file ./$3 \
         -file ./$4 \
         -partitioner org.apache.hadoop.mapred.lib.KeyFieldBasedPartitioner \
-        -jobconf mapred.job.name="$5" \
+        -jobconf mapred.job.name="`user-login-name`:$2:$day" \
         -jobconf map.output.key.field.separator=':' \
         -jobconf num.key.fields.for.partition=1
 
