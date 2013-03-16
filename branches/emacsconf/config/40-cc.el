@@ -47,7 +47,7 @@
 
 (deh-section "c-mode"
   (deh-try-require 'google-c-style)
-  (deh-try-require 'zjl-c-hl)
+  ;; (deh-try-require 'zjl-c-hl)
 
   ;;# if function name is too long, we will indent the parameters forward.
   (defconst my-c-lineup-maximum-indent 20)
@@ -321,4 +321,3 @@ the directories in the INCLUDE environment variable."
 (deh-section-after "hideif"
   (setq hide-ifdef-initially t
         hide-ifdef-shadow t))
-
