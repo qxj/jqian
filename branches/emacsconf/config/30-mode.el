@@ -15,6 +15,7 @@
   ;; browse-el
   (autoload 'browse-el-find-funtion "browse-el" "")
   (autoload 'browse-el-go-back "browse-el" "")
+  ;; yaml
   (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
   ;; sourcepair
   (autoload 'sourcepair-load "sourcepair" nil t)
@@ -773,6 +774,22 @@ Use CREATE-TEMP-F for creating temp copy."
     (setq c-basic-offset 4)))
 
 ;;; web related
+(deh-require 'multi-web-mode
+  (setq mweb-default-major-mode 'html-mode)
+  (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+                    (js-mode "<script[^>]*>" "</script>")
+                    (css-mode "<style[^>]*>" "</style>")))
+  (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+  (multi-web-global-mode 1))
+
+
+;; ;; [DEPRECATED] nxhtml: javascript + php + html + css
+;; (deh-section-path "nxhtml"
+;;   "~/tools/nxhtml/autostart.el"
+;;   (load-file deh-this-path)
+;;   (setq mumamo-chunk-coloring 5)        ; disable background colors
+;;   )
+
 (deh-section "html"
   (setq sgml-xml-mode t)
   (add-hook 'sgml-mode-hook 'my-mode-common-hook)
@@ -799,33 +816,19 @@ Use CREATE-TEMP-F for creating temp copy."
                                   ("code")
                                   ,@sgml-tag-alist))))))
 
-;; nxhtml: javascript + php + html + css
-(deh-section-path "nxhtml"
-  "~/tools/nxhtml/autostart.el"
-  (load-file deh-this-path)
-  (setq mumamo-chunk-coloring 5)        ; disable background colors
-  )
-
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
   (deh-add-hook 'js2-mode-hook
     (setq forward-sexp-function nil)))
 
-(deh-section-after "markdown-mode"
-  ;; override markdown's key binding
-  (deh-define-key markdown-mode-map
-    ((kbd "C-M-f")  'forward-sexp)
-    ((kbd "C-M-b")  'backward-sexp)
-    ((kbd "M-p")    'pager-row-up)
-    ((kbd "M-n")    'pager-row-down)))
-
-(deh-section-reserved "php"
+(autoload 'php-mode "php-mode" "php mode" t)
+(deh-section-after "php-mode"
   (deh-try-require 'php-doc
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-data-dir))
     (deh-define-key php-mode-map
-      ("\t"    'php-doc-complete-function)
-      ("\C-cd" 'php-doc))
+      ("\C-c\t" 'php-doc-complete-function)
+      ("\C-cd"  'php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
          'php-doc-eldoc-function)
     (eldoc-mode 1)
@@ -853,8 +856,6 @@ Use CREATE-TEMP-F for creating temp copy."
             (nil
              "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
             ))
-    (local-set-key (kbd "C-M-a") 'beginning-of-defun)
-    (local-set-key (kbd "C-M-e") 'end-of-defun)
     )
 ;;;; ffap settings
   (defvar ffap-php-path
@@ -869,6 +870,15 @@ Use CREATE-TEMP-F for creating temp copy."
       (ffap-locate-file name t ffap-php-path)))
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
+
+;;; edit
+(deh-section-after "markdown-mode"
+  ;; override markdown's key binding
+  (deh-define-key markdown-mode-map
+    ((kbd "C-M-f")  'forward-sexp)
+    ((kbd "C-M-b")  'backward-sexp)
+    ((kbd "M-p")    'pager-row-up)
+    ((kbd "M-n")    'pager-row-down)))
 
 (deh-section-reserved "latex"
   (load "preview-latex.el" nil t t)
