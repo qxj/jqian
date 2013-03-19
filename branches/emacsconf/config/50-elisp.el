@@ -1439,7 +1439,7 @@ mouse-3: Remove current window from display")
   (which-func-mode 1))
 
 (deh-section-after "imenu"
-  (add-to-list 'imenu-after-jump-hook 'recenter)
+  (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0)))
   (setq imenu-max-item-length 60
         imenu-max-items 500
         imenu-auto-rescan t))

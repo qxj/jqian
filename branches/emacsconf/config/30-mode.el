@@ -690,18 +690,16 @@ Use CREATE-TEMP-F for creating temp copy."
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
 
-  ;;# Install rope, pymacs, ropemode, ropemacs
+  ;;# Preparation:
   ;;
-  ;; If install from tarball, after uncompress all can be installed by
-  ;; `python setup.py install`, but pymacs needs a bit more steps:
-  ;;
-  ;; 1. make test
-  ;; 2. make install
-  ;; 3. byte-compile pymacs.el and put it into load-path
+  ;; 1. install pymacs, rope, ropemode, ropemacs one by one.
+  ;; 2. put pymacs.el (pymacs) into `load-path'.
+  ;; 3. check whether pymacs is working.
   ;;
   ;; http://pymacs.progiciels-bpi.ca/pymacs.html#check-if-pymacs-would-work
   ;;
-  ;; some useful feature of ropemacs
+  ;;# Useful features of ropemacs:
+  ;;
   ;; 1. full code completion of modules/classes/methods (M-/)
   ;; 2. instant documentation for element under cursor (C-c d)
   ;; 3. jump to modules/classes/methods definition (C-c g)
@@ -721,8 +719,8 @@ Use CREATE-TEMP-F for creating temp copy."
           ropemacs-enable-autoimport t)
     (ropemacs-mode t)
 
-    (deh-try-require 'pycomplete))
-  )
+    ;; (deh-try-require 'pycomplete)
+    ))
 
 (deh-section "sh-mode"
   (deh-add-hook 'sh-mode-hook

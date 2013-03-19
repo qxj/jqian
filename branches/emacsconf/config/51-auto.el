@@ -433,7 +433,7 @@ will be deleted together."
       ?\n
       "#define " v1 "\n\n"
       _
-      "\n\n#endif"
+      "\n\n#endif // " v1
       '(progn (set-auto-mode))))
 
   (define-auto-insert '("\\.\\(hh\\|hpp\\)$" . "C++ header")
@@ -448,7 +448,7 @@ will be deleted together."
       ?\n
       "#define " v1 "\n\n"
       _
-      "\n\n#endif"))
+      "\n\n#endif // " v1))
 
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
