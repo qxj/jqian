@@ -2,4 +2,4 @@
 # name: node[shape=..,color=..]
 # key: node
 # --
-node[shape=${1:box$$(yas/choose-value '("record" "ellipse" "circle" "egg" "point" "plaintext" "box"))} style=${2:rounded$$(yas/choose-value '("dashed" "dotted" "solid" "bold" "filled" "rounded"))} color=${3:lightskyblue$$(yas/choose-value '("lightgray" "lightpink" "lightsalmon" "lightblue" "lightskyblue"))} fontsize="${4:12}"];
+node[shape=${1:box$$(yas-choose-value '("record" "ellipse" "circle" "egg" "point" "plaintext" "box"))} style=${2:rounded$$(yas-choose-value '("dashed" "dotted" "solid" "bold" "filled" "rounded"))} color=${3:lightskyblue$$(yas-choose-value '("lightgray" "lightpink" "lightsalmon" "lightblue" "lightskyblue"))} fontsize="${4:12}"];

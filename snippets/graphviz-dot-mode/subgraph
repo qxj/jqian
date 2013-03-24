@@ -3,8 +3,8 @@
 # key: subgraph
 # --
 subgraph cluster_$1 {
-    style=${2:filled$$(yas/choose-value '("bold" "rounded" "filled"))};
-	color=${3:lightgray$$(yas/choose-value '("lightpink" "lightsalmon" "lightblue" "lightskyblue" "lightgray"))};
+    style=${2:filled$$(yas-choose-value '("bold" "rounded" "filled"))};
+	color=${3:lightgray$$(yas-choose-value '("lightpink" "lightsalmon" "lightblue" "lightskyblue" "lightgray"))};
 	label="$4";
     $0
 }

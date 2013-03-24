@@ -2,4 +2,4 @@
 # name: \usecolortheme{"dove"}
 # key: uct
 # --
-\usecolortheme{${1:default$$(yas/choose-value '("default" "albatross" "beaver" "beetle" "crane" "dolphin" "dove" "fly" "lily" "orchid" "rose" "seagull" "seahorse" "sidebartab" "structure" "whale" "wolverine"))}}
+\usecolortheme{${1:default$$(yas-choose-value '("default" "albatross" "beaver" "beetle" "crane" "dolphin" "dove" "fly" "lily" "orchid" "rose" "seagull" "seahorse" "sidebartab" "structure" "whale" "wolverine"))}}

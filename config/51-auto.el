@@ -186,8 +186,15 @@ indent line."
         (define-key yas-keymap (kbd "<right>") 'yas-next-field-or-maybe-expand)
         (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
 
-  ;; List all snippets for current mode
-  (define-key yas-minor-mode-map (kbd "C-c y") 'yas-insert-snippet)
+  (deh-define-key yas-minor-mode-map
+    ([(tab)]     nil)
+    ((kbd "TAB") nil)                    ; Remove yas-expand keybind
+    ((kbd "C-c TAB") 'yas-expand)
+    ((kbd "C-c y") 'yas-insert-snippet)) ; List all snippets for current mode
+
+  (defadvice yas-insert-snippet (around use-completing-prompt activate)
+    "Use `yas/completing-prompt' for `yas/prompt-functions' but only here..."
+    (let ((yas-prompt-functions '(yas-completing-prompt))) ad-do-it))
 
 ;;;###autoload
   (defun yasnippet-reload-after-save ()

@@ -3,7 +3,7 @@
 # key: ACE_Svc
 # --
 class ${1:Sample} :
-  public ACE_Svc_Handler<ACE_SOCK_STREAM, ${2:ACE_NULL_SYNCH$$(yas/choose-value '("ACE_NULL_SYNCH" "ACE_MT_SYNCH"))}>
+  public ACE_Svc_Handler<ACE_SOCK_STREAM, ${2:ACE_NULL_SYNCH$$(yas-choose-value '("ACE_NULL_SYNCH" "ACE_MT_SYNCH"))}>
 {
   typedef ACE_Svc_Handler<ACE_SOCK_STREAM, $2> super;
 

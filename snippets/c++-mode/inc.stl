@@ -2,4 +2,4 @@
 #name : #include <...>
 #key: inccc
 # --
-#include <${1:$$(yas/choose-value '("iterator" "utility" "algorithm" "functional" "memory" "set" "map" "vector" "string"))}>
+#include <${1:$$(yas-choose-value '("iterator" "utility" "algorithm" "functional" "memory" "set" "map" "vector" "string"))}>
