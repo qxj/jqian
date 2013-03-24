@@ -53,6 +53,7 @@
   (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+  (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
   (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
   (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\|\\.mak\\)$" . makefile-mode))
   (add-to-list 'auto-mode-alist '("\\.schemas" . xml-mode))

@@ -17,7 +17,7 @@ import org.apache.hadoop.util.*;
 
 public class ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`} extends Configured implements Tool {
 
-    public static class $1Mapper extends Mapper <LongWritable, Text, ${2:Text$$(yas/choose-value '("IntWritable" "Text"))}, ${3:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
+    public static class $1Mapper extends Mapper <LongWritable, Text, ${2:Text$$(yas-choose-value '("IntWritable" "Text"))}, ${3:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
 
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             // ...
@@ -25,7 +25,7 @@ public class ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file
         }
     }
 
-    public static class $1Reducer extends Reducer<$2, $3, ${4:Text$$(yas/choose-value '("IntWritable" "Text"))}, ${5:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
+    public static class $1Reducer extends Reducer<$2, $3, ${4:Text$$(yas-choose-value '("IntWritable" "Text"))}, ${5:Text$$(yas/choose-value '("IntWritable" "Text"))}> {
 
         public void reduce($4 key, Iterable <$5> values,
                 Context context) throws IOException, InterruptedException {

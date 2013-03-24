@@ -2,4 +2,4 @@
 # name: rankdir=..
 # key: rankdir
 # --
-rankdir=${1:LR$$(yas/choose-value '("BL" "BR" "TL" "TR" "RB" "RT" "LB" "LT" "LR"))}
+rankdir=${1:LR$$(yas-choose-value '("BL" "BR" "TL" "TR" "RB" "RT" "LB" "LT" "LR"))}

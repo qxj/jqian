@@ -75,9 +75,9 @@
   ;;# Compatible with yasnippet.el
   (if (featurep 'yasnippet)
       (deh-add-hook 'org-mode-hook
-        (org-set-local 'yas/trigger-key [tab])
-        (define-key yas/keymap [tab] 'yas/next-field-or-maybe-expand)
-        (define-key yas/keymap (kbd "M-j") 'yas/next-field-or-maybe-expand)))
+        ;; (org-set-local 'yas-trigger-key [tab])
+        (define-key yas-keymap [tab] 'yas-next-field-or-maybe-expand)
+        (define-key yas-keymap (kbd "M-j") 'yas-next-field-or-maybe-expand)))
   )
 
 (deh-section-after "org-latex"

@@ -3,6 +3,6 @@
 # expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
 # key: src
 # --
-#+BEGIN_SRC ${1:emacs-lisp$$(yas/choose-value '("org" "table" "dot" "perl" "latex" "gnuplot" "css" "js" "python" "sh" "sql" "emacs-lisp" "C"))}
+#+BEGIN_SRC ${1:emacs-lisp$$(yas-choose-value '("org" "table" "dot" "perl" "latex" "gnuplot" "css" "js" "python" "sh" "sql" "emacs-lisp" "C"))}
 $0
 #+END_SRC
