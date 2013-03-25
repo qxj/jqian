@@ -16,3 +16,6 @@ set print object
 
 # set tui mode window border style
 set tui border-kind ascii
+
+# fix issue: Cannot find new threads: generic error
+set env LD_PRELOAD /lib/libpthread.so.0
