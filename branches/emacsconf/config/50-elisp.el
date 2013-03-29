@@ -960,7 +960,7 @@ mouse-3: Remove current window from display")
     "Run `multi-occur' to find 'TODO' in all buffers."
     (interactive)
     ;; (moccur-word-all-buffers "\\<\\([Tt][Oo][Dd][Oo]\\|[Ff][Ii][Xx][Mm][Ee]\\)\\>")
-    (moccur-word-all-buffers "\\<\\(FIXME\\|TODO\\):")
+    (moccur-word-all-buffers "\\<\\(FIXME\\|TODO\\)")
     )
   )
 
@@ -1111,7 +1111,7 @@ mouse-3: Remove current window from display")
 ;;       (ad-activate 'isearch-repeat)))
   )
 
-(deh-require 'key-chord
+(deh-require-reserved 'key-chord
   (key-chord-mode 1)
   (setq key-chord-two-keys-delay 0.2
         key-chord-in-macros nil)

@@ -6,12 +6,12 @@
     (shell-command "echo | LC_ALL=\"en\" cpp -xc++ -Wp,-v" t)
     (goto-char (point-min))
     (let* ((start (search-forward "#include <...> search starts here:\n" nil t))
-           (end (progn (search-forward "End of search list." nil t)
-                       (beginning-of-line)
-                       (backward-char 1)
-                       (point)))
-           (lines (split-string (buffer-substring start end) "\n")))
-      (mapcar (lambda (x) (substring x 1)) lines))))
+           (end (and start (progn (search-forward "End of search list." nil t)
+                                  (beginning-of-line)
+                                  (backward-char 1)
+                                  (point)))))
+      (and start end (mapcar (lambda (x) (substring x 1))
+                             (split-string (buffer-substring start end) "\n"))))))
 
 (defun kill-buffer-when-shell-command-exit ()
   "Close current buffer when `shell-command' exit."
