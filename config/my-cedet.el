@@ -93,7 +93,8 @@ the mru bookmark stack."
                         (point) 'mark) ad-do-it)
 
   ;; integrated with external tools
-  (when (executable-find "gcc") (semantic-gcc-setup))
+  (unless (eq system-type 'windows-nt)
+    (when (executable-find "gcc") (semantic-gcc-setup)))
   (when (executable-find "global")
     (semanticdb-enable-gnu-global-databases 'c-mode)
     (semanticdb-enable-gnu-global-databases 'c++-mode))
