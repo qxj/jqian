@@ -91,6 +91,7 @@
     (subword-mode 1)
     ;; (when (fboundp 'whitespace-mode) (whitespace-mode t))
     (hs-minor-mode 1)
+    (turn-on-eldoc-mode)
     (ignore-errors (imenu-add-menubar-index))
 
     ;; (local-set-key (kbd "RET")
@@ -663,8 +664,7 @@ Use CREATE-TEMP-F for creating temp copy."
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
 
   (deh-add-hook 'emacs-lisp-mode-hook
-    (my-mode-common-hook)
-    (turn-on-eldoc-mode))
+    (my-mode-common-hook))
 
   (deh-after-load "lisp-mode"
     (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
