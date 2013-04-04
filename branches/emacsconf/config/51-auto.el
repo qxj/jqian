@@ -187,9 +187,9 @@ indent line."
         (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
 
   (deh-define-key yas-minor-mode-map
-    ([(tab)]     nil)
-    ((kbd "TAB") nil)                    ; Remove yas-expand keybind
-    ((kbd "C-c TAB") 'yas-expand)
+    ;; ([(tab)]     nil)
+    ;; ((kbd "TAB") nil)                    ; Remove yas-expand keybind
+    ;; ((kbd "C-c TAB") 'yas-expand)
     ((kbd "C-c y") 'yas-insert-snippet)) ; List all snippets for current mode
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
@@ -386,7 +386,7 @@ for example:
       (replace-match (string last-command-event))
       (delete-region (match-beginning 0) (match-end 0))
       (insert (string last-command-event))
-      ;; (indent-according-to-mode)
+      (indent-according-to-mode)
       )
      (t
       (self-insert-command (prefix-numeric-value arg))

@@ -12,6 +12,8 @@ input=$input0
 output=$(latest_output "${2:/path/to/output}" $input0)
 
 if [[ $? -eq 0 ]]; then
+    debug
+
     hadoop jar /home/hadoop/hadoop/contrib/streaming/hadoop-0.20.2-streaming.jar \
         -D mapred.reduce.tasks=100 \
         -D mapred.output.compress=true \
