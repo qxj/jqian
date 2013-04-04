@@ -305,8 +305,8 @@ ds2ts() {
 #
 # USAGE:
 #
-# ssh_exec wbsvr wbsvr@Weibo 10.177.153.150 "cd $HOME/jqian/guess-you-like && gzip -d result.gz"
-# ssh_to wbsvr wbsvr@Weibo 10.177.153.150 $stat_file /data/wbsvr/jqian/wpd-apply-helper
+# ssh_exec wbsvr password 10.177.153.150 "cd $HOME/jqian/guess-you-like && gzip -d result.gz"
+# ssh_to wbsvr password 10.177.153.150 $stat_file /data/wbsvr/jqian/wpd-apply-helper
 ################
 _expect_passwd() {
     passwd=$1
