@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#) common.sh  Time-stamp: <Julian Qian 2013-04-04 10:43:03>
+# @(#) common.sh  Time-stamp: <Julian Qian 2013-04-08 23:51:52>
 # Copyright 2012, 2013
 # Author:  <junist@gmail.com>
 # Version: $Id: common.sh,v 0.1 2012-03-24 11:26:17 jqian Exp $
@@ -7,6 +7,9 @@
 
 export PATH=/home/hadoop/hadoop/bin:$PATH
 
+################
+# helper functions
+################
 die() {
     # @arg dying message
     #
@@ -42,7 +45,81 @@ error() {
     $toagent 32 "mail|sms|rtx" "jqian" "[ERROR] $msg" ""
 }
 
+################
+# timestamp
+################
+ts2str() {
+    date -d "1970-01-01 utc $1 seconds" "+%Y-%m-%d %H:%M:%S"
+}
 
+str2ts() {
+    date -d "$1" +%s
+}
+
+ts2ds() {
+    date -d "1970-01-01 utc $1 seconds" "+%Y%m%d"
+}
+
+ds2ts() {
+    date -d "$1" +%s
+}
+
+################
+# ssh & scp
+#
+# USAGE:
+#
+# ssh_exec wbsvr password 10.177.153.150 "cd $HOME/jqian/guess-you-like && gzip -d result.gz"
+# ssh_to wbsvr password 10.177.153.150 $stat_file /data/wbsvr/jqian/wpd-apply-helper
+################
+_expect_passwd() {
+    passwd=$1
+    cmd=$2
+    expect -c "set timeout 3600
+spawn $cmd
+expect {
+    \"assword:\" {
+        send \"$passwd\r\"
+    }
+        \"yes/no)?\" {
+        send \"yes\r\"
+        expect \"assword:\" {
+            send \"$passwd\r\"
+        }
+            }
+    \"warning*\" {
+        puts \"\nRETURN WARNING!!!\n\"
+        exit 1
+    }
+        timeout {
+        puts \"\nCHECK WARNING: $ip logon TIMEOUT!!!\n\"
+        exit 1
+    }
+        }
+        expect eof
+        "
+}
+
+ssh_exec() {
+    ip=$1
+    user=$2
+    passwd=$3
+    cmd=$4
+    _expect_passwd $passwd "/usr/local/bin/ssh $user@$ip \"$cmd\""
+}
+
+ssh_to() {
+    ip=$1
+    user=$2
+    passwd=$3
+    source=$4
+    target=$5
+    _expect_passwd $passwd "/usr/local/bin/scp -c blowfish -r $source $user@$ip:$target"
+}
+
+################
+# clean data
+################
 clean_data() {
     # @arg path in hdfs
     # @arg how many recent directories to clean
@@ -141,6 +218,7 @@ latest_input () {
     pred=$3                     # for no _SUCCESS directories, customize
                                 # individual predication.
                                 # specify how many MB
+    from_ds=$4                  # from one date until `num`
     if [[ -z $num ]]; then
         num=1
     fi
@@ -150,6 +228,13 @@ latest_input () {
     dirs=($(hadoop fs -dus $input 2> /dev/null | awk '{i=$1; sub(/.*:[0-9]*\//,"/",i); print i;}'))
     declare -a latest_dirs
     j=0
+    matched_ds=
+    from_ts=
+    if [[ -z $from_ds ]]; then
+        matched_ds="ok"
+    else
+        from_ts=$(ds2ts $from_ds)
+    fi
     for((i=${#dirs[*]}-1;i>=0;i--)); do
         dir=${dirs[$i]}
 
@@ -161,7 +246,14 @@ latest_input () {
             fi
         fi
 
-        if [[ $filled == "ok" || $(check_completed_dir $dir) == "ok" ]]; then
+        if [[ -z $matched_ds ]]; then
+            day=$(get_tailing_date $dir)
+            day_ts=$(ds2ts $day)
+            if((day_ts<=from_ts)); then
+                matched_ds="ok"
+            fi
+        fi
+        if [[ $matched_ds == "ok" && ( $filled == "ok" || $(check_completed_dir $dir) == "ok" ) ]]; then
             latest_dirs[$j]=$dir
             ((j++))
             ((num--))
@@ -279,78 +371,6 @@ debug() {
 ################
 latest_user_input() {
     echo $(hadoop fs -dus /user/garyci/active_user/ds=* 2> /dev/null | awk '$2>600000000' | awk '{i=$1; sub(/.*:[0-9]*\//,"/",i); print i;}' | tail -1)
-}
-
-################
-# timestamp
-################
-ts2str() {
-    date -d "1970-01-01 utc $1 seconds" "+%Y-%m-%d %H:%M:%S"
-}
-
-str2ts() {
-    date -d "$1" +%s
-}
-
-ts2ds() {
-    date -d "1970-01-01 utc $1 seconds" "+%Y%m%d"
-}
-
-ds2ts() {
-    date -d "$1" +%s
-}
-
-################
-# ssh & scp
-#
-# USAGE:
-#
-# ssh_exec wbsvr password 10.177.153.150 "cd $HOME/jqian/guess-you-like && gzip -d result.gz"
-# ssh_to wbsvr password 10.177.153.150 $stat_file /data/wbsvr/jqian/wpd-apply-helper
-################
-_expect_passwd() {
-    passwd=$1
-    cmd=$2
-    expect -c "set timeout 3600
-spawn $cmd
-expect {
-    \"assword:\" {
-        send \"$passwd\r\"
-    }
-        \"yes/no)?\" {
-        send \"yes\r\"
-        expect \"assword:\" {
-            send \"$passwd\r\"
-        }
-            }
-    \"warning*\" {
-        puts \"\nRETURN WARNING!!!\n\"
-        exit 1
-    }
-        timeout {
-        puts \"\nCHECK WARNING: $ip logon TIMEOUT!!!\n\"
-        exit 1
-    }
-        }
-        expect eof
-        "
-}
-
-ssh_exec() {
-    ip=$1
-    user=$2
-    passwd=$3
-    cmd=$4
-    _expect_passwd $passwd "/usr/local/bin/ssh $user@$ip \"$cmd\""
-}
-
-ssh_to() {
-    ip=$1
-    user=$2
-    passwd=$3
-    source=$4
-    target=$5
-    _expect_passwd $passwd "/usr/local/bin/scp -c blowfish -r $source $user@$ip:$target"
 }
 
 ################################################################
