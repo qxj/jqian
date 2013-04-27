@@ -184,15 +184,6 @@
   (setq printer-name ""))
 ;;;}}}
 
-;;{{{ Hooks
-;; no trailing whitespace
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-;; update copyright
-(add-hook 'before-save-hook 'copyright-update)
-;; update timestamp
-(add-hook 'before-save-hook 'time-stamp)
-;;}}}
-
 ;;{{{ Customized keywords
 (dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode python-mode
                        php-mode lisp-interaction-mode sh-mode sgml-mode))

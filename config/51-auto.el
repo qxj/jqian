@@ -609,7 +609,6 @@ will be deleted together."
      "\n"))
 
   ;;# copy from template-simple.el
-  (add-hook 'write-file-functions 'my-update-header)
   (defun my-update-header ()
     (interactive)
     (when (and buffer-file-name
