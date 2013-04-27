@@ -252,7 +252,7 @@ mouse-3: Remove current window from display")
      t)))
 
 (deh-section-after "dired-x"
-  (dolist (ext '(".bak"))
+  (dolist (ext '(".bak" ".dSYM"))
     (add-to-list 'dired-omit-extensions ext))
 
   (setq dired-omit-files
