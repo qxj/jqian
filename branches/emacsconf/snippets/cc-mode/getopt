@@ -6,7 +6,7 @@ int opt;
 while ( (opt = getopt(argc, argv, "${1:f}:")) != -1 ) {
     switch (opt) {
     case '$1':
-        $2 = optarg;
+        ${2:$1} = optarg;
         break;
     }
 }

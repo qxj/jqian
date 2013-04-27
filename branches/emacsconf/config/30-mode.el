@@ -100,8 +100,14 @@
     ;;                    (if (boundp 'autopair-newline) (autopair-newline)
     ;;                      (newline-and-indent)))))
 
-    ;; untabify source code
-    (add-hook 'write-contents-hooks 'my-untabify nil t)
+    (deh-add-hook 'before-save-hook
+      (when (> 3000 (count-lines (point-min) (point-max)))
+        (delete-trailing-whitespace)        ; no trailing whitespace
+        (my-untabify)                       ; untabify source code
+        (my-update-header)                  ; update header
+        (copyright-update)                  ; update copyright
+        (time-stamp)                        ; update timestamp
+        ))
     )
 
   ;; comment new line and indent `M-j', as VIM acts.
