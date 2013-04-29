@@ -1,7 +1,8 @@
 #name: int ACE_TMAIN(argc, argv) { ... }
 #key: tmain
 # --
-int ACE_TMAIN(int argc, ACE_TCHAR *argv[]){
+int ACE_TMAIN(int argc, ACE_TCHAR *argv[])
+{
     $0
     return 0;
 }

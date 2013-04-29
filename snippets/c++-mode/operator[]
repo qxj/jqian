@@ -2,6 +2,7 @@
 # name: operator[]
 # key: o[]
 # --
-${1:Type}& operator[](${2:int index}) {
+${1:Type}& operator[](${2:int index})
+{
     $0
 }
