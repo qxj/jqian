@@ -1484,7 +1484,7 @@ mouse-3: Remove current window from display")
 
 (deh-require 'diminish
   (diminish 'abbrev-mode "Abv")
-  (diminish 'highlight-parentheses-mode)
+  (deh-after-load "highlight-parentheses" (diminish 'highlight-parentheses-mode))
   (diminish 'hi-lock-mode)
   (diminish 'undo-tree-mode)
   (deh-after-load "eldoc" (diminish 'eldoc-mode)))
