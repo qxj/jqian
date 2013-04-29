@@ -133,6 +133,23 @@
       (when (search-forward "\t" nil t)
         (untabify (1- (point)) (point-max)))
       nil))
+
+  ;;# copy from template-simple.el
+  (defun my-update-header ()
+    (interactive)
+    (when (and buffer-file-name
+               (not (string-match (regexp-opt (list my-data-dir my-template-dir)) buffer-file-name)))
+      (save-excursion
+        (goto-char (point-min))
+        (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
+              (regexp "@(#)\\([^ \t\n]+\\)")
+              (fn (file-name-sans-versions (file-name-nondirectory buffer-file-name))))
+          (goto-char (point-min))
+          (while (search-forward-regexp regexp end t)
+            (and (not (string= (match-string 1) fn))
+                 (y-or-n-p (format "Update file header %s to %s? "
+                                   (match-string 1) fn))
+                 (replace-match fn nil t nil 1)))))))
   )
 
 ;;; tags
