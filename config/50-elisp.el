@@ -1451,23 +1451,14 @@ mouse-3: Remove current window from display")
         ediff-window-setup-function 'ediff-setup-windows-plain))
 
 ;;; highlight
-(deh-require 'highlight-parentheses
+(deh-require-reserved 'highlight-parentheses
   ;; colors is applied by reversed order
   (setq hl-paren-colors
         '("orange1" "yellow1" "greenyellow" "green1"
           "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
   (deh-add-hook '(emacs-lisp-mode-hook
-                   c-mode-common-hook)
-    (highlight-parentheses-mode 1)
-    ;; compatible with autopair-mode
-    (deh-after-load "autopair"
-      (setq autopair-handle-action-fns
-            (append (if (boundp 'autopair-handle-action-fns)
-                        autopair-handle-action-fns
-                      '(autopair-default-handle-action))
-                    '((lambda (action pair pos-before)
-                        (hl-paren-color-update))))))
-    ))
+                  c-mode-common-hook)
+    (highlight-parentheses-mode 1)))
 
 (deh-section "highlight-line"
   ;; (global-hl-line-mode 1)
@@ -1477,8 +1468,8 @@ mouse-3: Remove current window from display")
 
 (deh-require 'highlight-symbol
   (deh-add-hook '(emacs-lisp-mode-hook
-                   java-mode-hook
-                   c-mode-common-hook)
+                  python-mode-hook
+                  c-mode-common-hook)
     (when window-system
       (highlight-symbol-mode 1)
       (setq highlight-symbol-idle-delay 0.5

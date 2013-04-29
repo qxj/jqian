@@ -7,7 +7,7 @@
 
 
 ;; disable autopair, looking forward electric-pair-mode in emacs24
-(deh-require-reserved 'autopair
+(deh-require 'autopair
   ;; It's not an ideal way to turn on autopair-global-mode, because it's
   ;; unstable and its keybinds often works in unexcepted manner.
   (deh-add-hook (java-mode-hook
@@ -285,7 +285,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   )
 
 ;;;; autopair
-(deh-section "skeleton-pair"
+(deh-section-reserved "skeleton-pair"
   (setq skeleton-pair t
         skeleton-pair-on-word nil)
 
@@ -607,23 +607,6 @@ will be deleted together."
                   )
                 "\n")
      "\n"))
-
-  ;;# copy from template-simple.el
-  (defun my-update-header ()
-    (interactive)
-    (when (and buffer-file-name
-               (not (string-match (regexp-opt (list my-data-dir my-template-dir)) buffer-file-name)))
-      (save-excursion
-        (goto-char (point-min))
-        (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
-              (regexp "@(#)\\([^ \t\n]+\\)")
-              (fn (file-name-sans-versions (file-name-nondirectory buffer-file-name))))
-          (goto-char (point-min))
-          (while (search-forward-regexp regexp end t)
-            (and (not (string= (match-string 1) fn))
-                 (y-or-n-p (format "Update file header %s to %s? "
-                                   (match-string 1) fn))
-                 (replace-match fn nil t nil 1)))))))
   )
 
 ;;; hippie

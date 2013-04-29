@@ -105,6 +105,7 @@
     ;; (c-add-style "Personal" my-c-style t)
     ;; (c-set-style "stroustrup")
     ;; (call-interactively 'google-set-c-style)
+    ;; (c-set-style "Google")
     (my-c-indent-lineup-arglist)
     (my-c-correct-hpp-mode)
     (my-c-mode-common-hook-if0)
