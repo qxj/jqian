@@ -94,10 +94,10 @@ the mru bookmark stack."
 
   ;; integrated with external tools
   (unless (eq system-type 'windows-nt)
-    (when (executable-find "gcc") (semantic-gcc-setup)))
-  (when (executable-find "global")
-    (semanticdb-enable-gnu-global-databases 'c-mode)
-    (semanticdb-enable-gnu-global-databases 'c++-mode))
+    (when (executable-find "gcc") (semantic-gcc-setup))
+    (when (executable-find "global")
+      (semanticdb-enable-gnu-global-databases 'c-mode)
+      (semanticdb-enable-gnu-global-databases 'c++-mode)))
 
   ;;# Semantic search scope of header files
   (mapc (lambda (dir)
