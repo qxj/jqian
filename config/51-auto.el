@@ -156,8 +156,8 @@ indent line."
                (memq beyond-autopair ac-trigger-commands)
                (and ac-completing
                     (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
-  (deh-after-load "autopair"
-    (ac-settings-4-autopair)) )
+  ;; (deh-after-load "autopair" (ac-settings-4-autopair))
+  )
 
 (deh-section-if "completion"
   (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function)
