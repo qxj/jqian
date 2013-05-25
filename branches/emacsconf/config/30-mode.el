@@ -779,6 +779,7 @@ Use CREATE-TEMP-F for creating temp copy."
         (graphviz-dot-complete-word)
       (indent-for-tab-command))))
 
+(autoload 'protobuf-mode "protobuf-mode" "Major mode for editing protobuf language." t)
 (deh-section-if "protobuf"
   (executable-find "protoc")
   )
