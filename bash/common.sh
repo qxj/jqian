@@ -20,7 +20,7 @@ die() {
 single_instance() {
     # @arg locking file name, optional
     #
-    LOCKFILE=$(dirname $0).lck
+    local LOCKFILE=$(dirname $0).lck
     if [[ -n $1 ]]; then
         LOCKFILE=$1
     fi
@@ -32,7 +32,7 @@ single_instance() {
 info() {
     # @arg info msg
     #
-    msg=$1
+    local msg=$1
     toagent=$(find /usr/local/tips_agent* -name 'toagent')
     $toagent 32 "mail" "jqian" "[INFO] $msg" ""
 }
@@ -40,7 +40,7 @@ info() {
 error() {
     # @arg error msg
     #
-    msg=$1
+    local msg=$1
     toagent=$(find /usr/local/tips_agent* -name 'toagent')
     $toagent 32 "mail|sms|rtx" "jqian" "[ERROR] $msg" ""
 }
@@ -73,47 +73,45 @@ ds2ts() {
 # ssh_to wbsvr password 10.177.153.150 $stat_file /data/wbsvr/jqian/wpd-apply-helper
 ################
 _expect_passwd() {
-    passwd=$1
-    cmd=$2
-    expect -c "set timeout 3600
-spawn $cmd
-expect {
-    \"assword:\" {
-        send \"$passwd\r\"
-    }
-        \"yes/no)?\" {
-        send \"yes\r\"
-        expect \"assword:\" {
-            send \"$passwd\r\"
-        }
-            }
-    \"warning*\" {
-        puts \"\nRETURN WARNING!!!\n\"
-        exit 1
-    }
-        timeout {
-        puts \"\nCHECK WARNING: $ip logon TIMEOUT!!!\n\"
-        exit 1
-    }
-        }
-        expect eof
-        "
+    local passwd=$1 cmd=$2
+    expect -c "set timeout 3600                                                 
+log_user 0                                                                      
+spawn $cmd                                                                      
+expect {                                                                        
+    \"assword:\" {                                                              
+        send \"$passwd\r\"                                                      
+    }                                                                           
+    \"yes/no)?\" {                                                              
+        send \"yes\r\"                                                          
+        expect \"assword:\" {                                                   
+            send \"$passwd\r\"                                                  
+        }                                                                       
+    }                                                                           
+    \"warning*\" {                                                              
+        puts \"\nRETURN WARNING!!!\n\"                                          
+        exit 1                                                                  
+    }                                                                           
+    timeout {                                                                   
+        puts \"\nCHECK WARNING: logon TIMEOUT!!!\n\"                        
+        exit 1                                                                  
+    }                                                                           
+}                                                                               
+expect {                                                                        
+    \"Authentication*\" {}                                                      
+    \"Received*\" {}                                                            
+}                                                                               
+log_user 1                                                                      
+expect eof                                                                      
+"
 }
 
 ssh_exec() {
-    ip=$1
-    user=$2
-    passwd=$3
-    cmd=$4
+    local ip=$1 user=$2 passwd=$3 cmd=$4
     _expect_passwd $passwd "/usr/local/bin/ssh $user@$ip \"$cmd\""
 }
 
 ssh_to() {
-    ip=$1
-    user=$2
-    passwd=$3
-    source=$4
-    target=$5
+    local ip=$1 user=$2 passwd=$3 source=$4 target=$5
     _expect_passwd $passwd "/usr/local/bin/scp -c blowfish -r $source $user@$ip:$target"
 }
 
@@ -124,8 +122,7 @@ clean_data() {
     # @arg path in hdfs
     # @arg how many recent directories to clean
     #
-    path=$1
-    num=$2                      # reserved recent three copy
+    local path=$1 num=$2                      # reserved recent three copy
     if [[ -z $num ]]; then
         num=3
     fi
@@ -148,7 +145,7 @@ get_tailing_date () {
     # @arg a string tailing with "ds=??????"
     # @echo tail data string, 8 charactors
     #
-    str=$1
+    local str=$1
     # echo ${str##*=}
     echo ${str:${#str}-8:8}
 }
@@ -159,14 +156,13 @@ check_completed_dir () {
     # @arg flooring size, optional
     # @echo ok / failed
     #
-    dir=$1
-    floorSize=$2
-    is_success="no"
+    local dir=$1 floorSize=$2
+    local is_success="no"
     hadoop fs -test -e $dir"/_SUCCESS" 2> /dev/null >/dev/null
     if [[ $? -eq 0 ]]; then
         is_success="yes"
     fi
-    is_completed="yes"
+    local is_completed="yes"
     if [[ -n $floorSize ]]; then
         is_completed="no"
         dirsize=$(hadoop fs -dus $dir 2> /dev/null | awk '{print $2}')
@@ -187,13 +183,12 @@ check_completed_dir () {
 # -> /user/jqian/wbfilter-logs/flaged_20130327.txt.gz
 ################
 latest_files () {
-    pattern=$1
-    num=$2
+    local pattern=$1 num=$2
     if [[ -z $num ]]; then
         num=1
     fi
-    files=($(hadoop fs -ls $pattern 2>/dev/null | tail -$num | awk '{print $NF}'))
-    rets=
+    local files=($(hadoop fs -ls $pattern 2>/dev/null | tail -$num | awk '{print $NF}'))
+    local rets=
     for file in ${files[@]}; do
         rets=$file","$rets
     done
@@ -213,32 +208,32 @@ latest_input () {
     # @arg flooring Size, notest/ ?MB, optional
     # @echo a string containing lastest input pathes, seperated by comma
     #
-    input=$1
-    num=$2
-    pred=$3                     # for no _SUCCESS directories, customize
+    local input=$1
+    lolca num=$2
+    local pred=$3               # for no _SUCCESS directories, customize
                                 # individual predication.
                                 # specify how many MB
-    from_ds=$4                  # from one date until `num`
+    local from_ds=$4            # from one date until `num`
     if [[ -z $num ]]; then
         num=1
     fi
     if [[ $pred == "notest" ]]; then
         pred=0
     fi
-    dirs=($(hadoop fs -dus $input 2> /dev/null | awk '{i=$1; sub(/.*:[0-9]*\//,"/",i); print i;}'))
+    local dirs=($(hadoop fs -dus $input 2> /dev/null | awk '{i=$1; sub(/.*:[0-9]*\//,"/",i); print i;}'))
     declare -a latest_dirs
-    j=0
-    matched_ds=
-    from_ts=
+    local j=0
+    local matched_ds=
+    local from_ts=
     if [[ -z $from_ds ]]; then
         matched_ds="ok"
     else
         from_ts=$(ds2ts $from_ds)
     fi
     for((i=${#dirs[*]}-1;i>=0;i--)); do
-        dir=${dirs[$i]}
+        local dir=${dirs[$i]}
 
-        filled=
+        local filled=
         if [[ -n $pred ]]; then
             dirsize=$(hadoop fs -dus $dir 2> /dev/null | awk '{print $2}')
             if ((dirsize>pred*1000000)); then
@@ -266,7 +261,7 @@ latest_input () {
         # error "No proper input result for $input, at $model"
         exit 1
     fi
-    ret=
+    local ret=
     for dir in ${latest_dirs[*]}; do
         ret=$dir","$ret
     done
@@ -280,9 +275,9 @@ latest_output () {
     # @echo output directory
     # @return succeed 0/ failed 1, 255
     #
-    dir=$1
-    input=$2                    # output date depends on input's
-    output=$dir
+    local dir=$1
+    local input=$2               # output date depends on input's
+    local output=$dir
     if [[ -n $input ]]; then
         date=$(get_tailing_date $input)
         if [[ -z $date ]]; then
@@ -319,8 +314,8 @@ latest_output () {
 check_output() {
     # @arg input path in hdfs
     #
-    dir=$1
-    sleep 60                    # wait hdfs to flush
+    local dir=$1
+    sleep 30                    # wait hdfs to flush
     hadoop fs -test -e $dir"/_SUCCESS" 2> /dev/null >/dev/null
     if [[ $? -eq 0 ]]; then
         info "SUCCEED to generate output $dir."
