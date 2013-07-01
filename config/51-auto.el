@@ -285,7 +285,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   )
 
 ;;;; autopair
-(deh-section-reserved "skeleton-pair"
+(deh-section "skeleton-pair"
   (setq skeleton-pair t
         skeleton-pair-on-word nil)
 
@@ -346,7 +346,8 @@ for example:
     (set (make-local-variable 'skeleton-pair-alist)
          '((?( _ ?))
            (?[ _ ?])
-           (?{ \n  _ \n ?} >)
+           ;; (?{ \n  _ \n ?} >)
+           (?{ _ ?})
            (?\' _ ?\')
            (?\" _ ?\")))
     (skeleton-autopair-define-key c-mode-base-map ((?( ?)) (?[ ?]) (?{ ?}) (?\') (?\"))))
@@ -368,7 +369,8 @@ for example:
              (eq (car pair) (char-after)))
         (skeleton-autopair-close arg))
        (t
-        (skeleton-pair-insert-maybe arg)))))
+        (skeleton-pair-insert-maybe arg)
+        (indent-according-to-mode)))))
 
   (defun skeleton-autopair-close (arg)
     (interactive "P")
@@ -420,7 +422,7 @@ will be deleted together."
   )
 
 ;;; auto insert
-(deh-section "autoinsert"
+(deh-section-reserved "autoinsert"
   (auto-insert-mode 1)
   (setq auto-insert-directory my-template-dir
         auto-insert-query 'function
