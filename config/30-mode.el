@@ -103,7 +103,9 @@
     (deh-add-hook 'before-save-hook
       (when (> 3000 (count-lines (point-min) (point-max)))
         (delete-trailing-whitespace)        ; no trailing whitespace
-        (my-untabify)                       ; untabify source code
+        (unless (eq major-mode 'makefile-mode)
+          (my-untabify)                       ; untabify source code
+          )
         (my-update-header)                  ; update header
         (copyright-update)                  ; update copyright
         (time-stamp)                        ; update timestamp

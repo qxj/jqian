@@ -252,7 +252,7 @@ mouse-3: Remove current window from display")
      t)))
 
 (deh-section-after "dired-x"
-  (dolist (ext '(".bak" ".dSYM"))
+  (dolist (ext '(".bak" ".dSYM" ".dsp" ".plg" ".vcproj" ".d"))
     (add-to-list 'dired-omit-extensions ext))
 
   (setq dired-omit-files
@@ -328,8 +328,8 @@ mouse-3: Remove current window from display")
         ido-ignore-directories
         '("^auto/" "^CVS/" "^\\.")
         ido-ignore-files
-        '("^[.#]"
-          "~$" "\\.\\(log\\|out\\)$"
+        '("^[.#]" "~$"
+          "\\.\\(log\\|out\\|d\\)$"
           "\\(TAGS\\|GPATH\\|GSYMS\\)")
         ido-work-directory-list-ignore-regexps
         `(,tramp-file-name-regexp))
