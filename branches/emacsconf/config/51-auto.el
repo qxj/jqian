@@ -7,7 +7,7 @@
 
 
 ;; disable autopair, looking forward electric-pair-mode in emacs24
-(deh-require 'autopair
+(deh-require-reserved 'autopair
   ;; It's not an ideal way to turn on autopair-global-mode, because it's
   ;; unstable and its keybinds often works in unexcepted manner.
   (deh-add-hook (java-mode-hook
