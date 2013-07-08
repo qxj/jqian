@@ -346,8 +346,7 @@ for example:
     (set (make-local-variable 'skeleton-pair-alist)
          '((?( _ ?))
            (?[ _ ?])
-           ;; (?{ \n  _ \n ?} >)
-           (?{ _ ?})
+           (?{ > \n  _ \n ?} >)
            (?\' _ ?\')
            (?\" _ ?\")))
     (skeleton-autopair-define-key c-mode-base-map ((?( ?)) (?[ ?]) (?{ ?}) (?\') (?\"))))
@@ -369,8 +368,7 @@ for example:
              (eq (car pair) (char-after)))
         (skeleton-autopair-close arg))
        (t
-        (skeleton-pair-insert-maybe arg)
-        (indent-according-to-mode)))))
+        (skeleton-pair-insert-maybe arg)))))
 
   (defun skeleton-autopair-close (arg)
     (interactive "P")
