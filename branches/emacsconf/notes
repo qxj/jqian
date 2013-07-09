@@ -79,3 +79,9 @@ M-x add-dir-local-variable
 
 * treat underline _ as a part of words
 (modify-syntax-entry ?_ "w")
+
+* move forward down one level of parentheses
+C-M-d, M-x down-list
+
+* make the current definition and/or comment visible.
+C-M-l, M-x reposition-window
