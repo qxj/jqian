@@ -1,6 +1,5 @@
 # -*- mode: snippet -*-
 # name: try {...} catch(exception& e){...}
-# key: try
 # --
 try {
     $1

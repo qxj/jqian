@@ -1,7 +1,0 @@
-#name: for i in $(find ... ); do .. done
-#key: findx
-# --
-for i in $(find ${1:. -maxdepth 1 -iname ".."} -print);
-do
-    $0
-done

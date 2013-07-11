@@ -1,6 +1,5 @@
 # -*- mode: snippet; coding: utf-8 -*-
 # name: define a class
-# key: class
 # --
 class ${1:ClassName}(${2:object}):
     """$3

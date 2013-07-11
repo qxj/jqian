@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name: boost::split(...)
+# --
+boost::split(${1:cols}, ${2:line}, boost::is_any_of("\t "), boost::token_compress_on);

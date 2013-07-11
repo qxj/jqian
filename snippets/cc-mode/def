@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 #name : #define A B
 # --
-#define $1 $2
+#define ${1:A} ${2:B}

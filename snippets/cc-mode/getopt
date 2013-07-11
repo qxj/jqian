@@ -1,12 +1,14 @@
 # -*- mode: snippet -*-
 #name: getopt
-#key: getopt
 # --
 int opt;
-while ( (opt = getopt(argc, argv, "${1:f}:")) != -1 ) {
+while ( (opt = getopt(argc, argv, "${1:f}:h")) != -1 ) {
     switch (opt) {
     case '$1':
-        ${2:$1} = optarg;
+        ${2:$1}v = optarg;
         break;
+    case 'h':
+        usage(argv[0]);         // help
+        exit(0);
     }
 }

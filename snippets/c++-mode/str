@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name: std::string
+# --
+std::string ${1:str};

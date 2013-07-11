@@ -1,16 +1,15 @@
 # -*- mode: snippet -*-
 # name: getopt template
 # expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
-# key: getopt
 # --
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "$1", ["$2"])
+    opts, args = getopt.getopt(sys.argv[1:], "${f:}")
 except getopt.GetoptError, e:
     print e
     sys.exit(2)
 if opts:
     for o, a in opts:
-        if o in ("-$1", "--$2"):
+        if o in ("-$1",):
             $0
 else:
     print """
