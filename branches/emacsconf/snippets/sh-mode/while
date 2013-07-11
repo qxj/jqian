@@ -1,5 +1,5 @@
+# -*- mode: snippet -*-
 #name: while [[ .. ]]; do .. done
-#key: while
 # --
 while [[ $1 ]];
 do

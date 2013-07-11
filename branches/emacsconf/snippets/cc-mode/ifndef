@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: #ifndef XXX; #define XXX; #endif
+# --
+#ifndef ${1:NAME}
+#define $1 $0
+#endif // $1

@@ -1,7 +1,8 @@
+# -*- mode: snippet -*-
 #name: die function
-#key: die
 # --
-die() {
+die()
+{
     echo "Error: ${1}. Abort."
     exit 1
 }

@@ -1,4 +1,4 @@
+# -*- mode: snippet -*-
 #name: import ...
-#key: imp
 # --
 import ${1:$$(yas-choose-value '("getopt" "time" "os" "sys"))}

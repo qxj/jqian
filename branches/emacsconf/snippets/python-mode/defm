@@ -1,6 +1,5 @@
 # -*- mode: snippet; coding: utf-8 -*-
 # name: define a function in a class
-# key: defm
 # --
 def ${1:foo}(self, $2):
 ${2:$(let* ((indent

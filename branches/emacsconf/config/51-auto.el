@@ -159,7 +159,7 @@ indent line."
   ;; (deh-after-load "autopair" (ac-settings-4-autopair))
   )
 
-(deh-section-if "completion"
+(deh-section "completion"
   (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function)
   (setq completion-cycle-threshold 5)
   (add-to-list 'completion-styles 'substring)
@@ -173,7 +173,8 @@ indent line."
   (setq yas-wrap-around-region t)
 
   (require 'dropdown-list)
-  (setq yas-prompt-functions '(yas-dropdown-prompt
+  (setq yas-prompt-functions '(
+                               yas-dropdown-prompt
                                yas-ido-prompt
                                yas-completing-prompt))
 
@@ -193,7 +194,7 @@ indent line."
     ((kbd "C-c y") 'yas-insert-snippet)) ; List all snippets for current mode
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
-    "Use `yas/completing-prompt' for `yas/prompt-functions' but only here..."
+    "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
     (let ((yas-prompt-functions '(yas-completing-prompt))) ad-do-it))
 
 ;;;###autoload
