@@ -716,6 +716,13 @@ Use CREATE-TEMP-F for creating temp copy."
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
 
+  (autoload 'doctest-mode "doctest-mode" "Python doctest editing mode." t)
+
+  (deh-try-require 'flymake-python-pyflakes
+    (if (executable-find "pyflakes")
+        (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
+    )
+
   ;;# Preparation:
   ;;
   ;; 1. install pymacs, rope, ropemode, ropemacs one by one.
