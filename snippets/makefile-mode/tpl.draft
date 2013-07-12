@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: another makefile template
 # expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
-# key: tpl.draft
 # --
 
 .SUFFIXES: .c .cpp
@@ -22,20 +21,20 @@ all: $0
 
 # flymake
 check-syntax:
-	$(CXX) $(CXXFLAGS) -Wall -Wextra -pedantic -fsyntax-only $(SRCS)
+    $(CXX) $(CXXFLAGS) -Wall -Wextra -pedantic -fsyntax-only $(SRCS)
 
 
 %: %.c
-	$(CC) -o $@ $^ $(CFLAGS) $(INCS) $(LIBS)
+    $(CC) -o $@ $^ $(CFLAGS) $(INCS) $(LIBS)
 
 %.o: %.c
-	$(CC) -o $@ -c $^ $(CFLAGS) $(INCS) $(LIBS)
+    $(CC) -o $@ -c $^ $(CFLAGS) $(INCS) $(LIBS)
 
 %: %.cpp
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(INCS) $(LIBS)
+    $(CXX) -o $@ $^ $(CXXFLAGS) $(INCS) $(LIBS)
 
 %.o: %.cpp
-	$(CXX) -o $@ -c $^ $(CXXFLAGS) $(INCS) $(LIBS)
+    $(CXX) -o $@ -c $^ $(CXXFLAGS) $(INCS) $(LIBS)
 
 clean:
-	-rm *.o
+    -rm *.o

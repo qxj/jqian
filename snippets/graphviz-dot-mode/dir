@@ -1,5 +1,4 @@
 # -*- mode: snippet -*-
 # name: dir=..
-# key: dir
 # --
 dir=${1:forward$$(yas-choose-value '("back" "both" "none" "forward"))}

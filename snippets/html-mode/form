@@ -1,4 +1,4 @@
-#contributor : Jimmy Wu <frozenthrone88@gmail.com>
+# -*- mode: snippet -*-
 #name :<form method="..." id="..." action="..."></form>
 # --
 <form method="$1" id="$2" action="$3">

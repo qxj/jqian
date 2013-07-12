@@ -1,17 +1,16 @@
 # -*- mode: snippet -*-
 # name: a graph example
-# key: tpl1
 # --
 graph G {
     compound=true;
     // rankdir=LR;
-	size="6,6";
+    size="6,6";
 
     $0
 
     // optional, node statement
     node [shape=box] box1 box2;
-	node [shape=ellipse] {node [label="same"] same1 same2} ellipse;
+    node [shape=ellipse] {node [label="same"] same1 same2} ellipse;
 
     // usually, node define
     // default type is ellipse
@@ -22,8 +21,8 @@ graph G {
     // subgraph statement
     subgraph cluster_1 {
         style=filled;
-    	label="Sub Graph";
-    	color=lightgrey;
+        label="Sub Graph";
+        color=lightgrey;
 
         box1 -- same1 -- n1;
     }
