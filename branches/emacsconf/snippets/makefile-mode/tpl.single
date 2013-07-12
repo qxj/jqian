@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
 # name: A simple makefile template
-# key: tpl
 # --
 
 .SUFFIXES: .h .cpp
@@ -14,15 +13,15 @@ $1_O = $2.o $0
 ALL: \${$1}
 
 \${$1}: \${$1_O}
-	$(CC) -o \${$1} \${$1_O}
+    $(CC) -o \${$1} \${$1_O}
 
 %.o:%.cpp %.h
-	$(CC) -Wall -g -O0 -o $@ -c $<
+    $(CC) -Wall -g -O0 -o $@ -c $<
 
 # for solo cpp
 %.o:%.cpp
-	$(CC) -Wall -g -O0 -o $@ -c $<
+    $(CC) -Wall -g -O0 -o $@ -c $<
 
 clean:
-	-rm -f *.o
-	-rm -f $2
+    -rm -f *.o
+    -rm -f $2

@@ -1,3 +1,4 @@
+# -*- mode: snippet -*-
 #name : align=".."
 # --
 align="${1:$$(yas-choose-value '("right" "center" "left"))}"

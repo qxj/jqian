@@ -644,6 +644,14 @@ mouse-3: Remove current window from display")
           (bm-repository-save))))
     ))
 
+
+(deh-require 'revive-mode-config
+  ;; (setq revive:configuration-file (expand-file-name "revive.layout" my-data-dir))
+  (deh-add-hook 'kill-emacs-hook 'emacs-save-layout)
+  (deh-define-key ctl-x-map
+    ("S" 'emacs-save-layout)
+    ("L" 'emacs-load-layout)))
+
 (deh-require-reserved 'session
   (setq session-save-file (expand-file-name "emacs.session" my-data-dir))
   (setq session-save-file-coding-system 'utf-8-unix)

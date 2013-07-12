@@ -26,6 +26,45 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
+(deh-require 'yasnippet
+  (setq yas-snippet-dirs my-snippet-dir)
+  (yas-load-directory yas-snippet-dirs)
+  (yas-global-mode 1)
+
+  (setq yas-wrap-around-region t)
+
+  (require 'dropdown-list)
+  (setq yas-prompt-functions '(yas-dropdown-prompt
+                               yas-ido-prompt
+                               yas-completing-prompt))
+
+  ;; FOR `hippie-try-expand' setting
+  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
+
+  ;; FOR `auto-complete-mode', so disable default yasnippet expand action
+  (if (fboundp 'auto-complete-mode)
+      (progn
+        (define-key yas-keymap (kbd "<right>") 'yas-next-field-or-maybe-expand)
+        (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
+
+  (deh-define-key yas-minor-mode-map
+    ([(tab)]     nil)
+    ((kbd "TAB") nil)                    ; Remove yas-expand keybind
+    ((kbd "<C-tab>") 'yas-expand)
+    ((kbd "C-c TAB") 'yas-expand)
+    ((kbd "C-c y") 'yas-insert-snippet)) ; List all snippets for current mode
+
+  (defadvice yas-insert-snippet (around use-completing-prompt activate)
+    "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
+    (let ((yas-prompt-functions '(yas-completing-prompt))) ad-do-it))
+
+;;;###autoload
+  (defun yasnippet-reload-after-save ()
+    (let* ((bfn (expand-file-name (buffer-file-name)))
+           (root (expand-file-name yas-snippet-dirs)))
+      (when (string-match (concat "^" root) bfn)
+        (yas-load-snippet-buffer)))) )
+
 (deh-section "auto-complete"
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
@@ -35,7 +74,7 @@
         ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
         ac-ignore-case nil
         ac-show-menu-immediately-on-auto-complete nil
-        ;; ac-expand-on-auto-complete nil
+        ac-expand-on-auto-complete nil
         ;; ac-trigger-key nil
         ac-quick-help-delay 1.5
         ac-disable-faces nil
@@ -61,20 +100,20 @@
 
   (ac-config-default)
 
+  (ac-set-trigger-key "TAB")
+
   ;; donot use RET for auto complete, only TAB
   (deh-define-key ac-completing-map
     ((kbd "<return>")  nil)
     ((kbd "RET")       nil)
     ((kbd "TAB")       'ac-complete)
-    ;; ((kbd "M-/") . 'ac-stop)
+    ;; ((kbd "M-/")       'ac-stop)
     )
   ;; when completion menu is displayed
   (setq ac-use-menu-map t)
   (deh-define-key ac-menu-map
     ("\C-n"  'ac-next)
     ("\C-p"  'ac-previous))
-
-  (ac-set-trigger-key "TAB")
 
   ;; press <TAB> to active `auto-complete'
   ;; (deh-define-key ac-mode-map
@@ -86,6 +125,11 @@ indent line."
     (if (looking-at "\\>")
         (auto-complete)
       (indent-for-tab-command)))
+
+  ;; Exclude very large buffers from dabbrev
+  (defun sanityinc/dabbrev-friend-buffer (other-buffer)
+    (< (buffer-size other-buffer) (* 1 1024 1024)))
+  (setq dabbrev-friend-buffer-function 'sanityinc/dabbrev-friend-buffer)
 
   ;; c/c++
   ;; hack auto-complete.el (deperated)
@@ -160,49 +204,11 @@ indent line."
   )
 
 (deh-section "completion"
-  (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function)
+  (deh-after-load "semantic"
+    (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function))
   (setq completion-cycle-threshold 5)
   (add-to-list 'completion-styles 'substring)
   )
-
-(deh-require 'yasnippet
-  (setq yas-snippet-dirs my-snippet-dir)
-  (yas-load-directory yas-snippet-dirs)
-  (yas-global-mode 1)
-
-  (setq yas-wrap-around-region t)
-
-  (require 'dropdown-list)
-  (setq yas-prompt-functions '(
-                               yas-dropdown-prompt
-                               yas-ido-prompt
-                               yas-completing-prompt))
-
-  ;; FOR `hippie-try-expand' setting
-  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
-
-  ;; FOR `auto-complete-mode', so disable default yasnippet expand action
-  (if (fboundp 'auto-complete-mode)
-      (progn
-        (define-key yas-keymap (kbd "<right>") 'yas-next-field-or-maybe-expand)
-        (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
-
-  (deh-define-key yas-minor-mode-map
-    ;; ([(tab)]     nil)
-    ;; ((kbd "TAB") nil)                    ; Remove yas-expand keybind
-    ;; ((kbd "C-c TAB") 'yas-expand)
-    ((kbd "C-c y") 'yas-insert-snippet)) ; List all snippets for current mode
-
-  (defadvice yas-insert-snippet (around use-completing-prompt activate)
-    "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
-    (let ((yas-prompt-functions '(yas-completing-prompt))) ad-do-it))
-
-;;;###autoload
-  (defun yasnippet-reload-after-save ()
-    (let* ((bfn (expand-file-name (buffer-file-name)))
-           (root (expand-file-name yas-snippet-dirs)))
-      (when (string-match (concat "^" root) bfn)
-        (yas-load-snippet-buffer)))) )
 
 ;;; abbrev
 (deh-section "abbrev-table"
@@ -253,7 +259,7 @@ indent line."
       ("theta" "θ" nil 0)
       ("iota" "ι" nil 0)
       ("kappa" "κ" nil 0)
-      ("lambda" "λ" nil 0)
+      ("lambada" "λ" nil 0)            ; avoid conflict with lambda
       ("mu" "μ" nil 0)
       ("tau" "τ" nil 0)
       ("upsilon" "υ" nil 0)
@@ -369,6 +375,15 @@ for example:
            (?` _ ?`)
            (?\" _ ?\")))
     (skeleton-autopair-define-key sh-mode-map))
+
+  (deh-add-hook python-mode-hook
+    (set (make-local-variable 'skeleton-pair-alist)
+         '((?( _ ?))
+           (?[ _ ?])
+           (?{ _ ?})
+           (?' _ ?')
+           (?\" _ ?\")))
+    (skeleton-autopair-define-key python-mode-map))
 
   (deh-add-hook c-mode-common-hook
     (set (make-local-variable 'skeleton-pair-alist)

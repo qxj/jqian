@@ -1,5 +1,4 @@
 # -*- mode: snippet -*-
 # name: color=..
-# key: color
 # --
 color=${1:navyblue$$(yas-choose-value '("lightgrey" "pink" "maroon" "lightblue" "navyblue"))}
