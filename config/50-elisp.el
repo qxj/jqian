@@ -19,9 +19,10 @@
   ;; .vimrc syntax hightlight
   (require 'vimrc-mode))
 
-;; (deh-require 'auto-install
-;;   ;; (auto-install-update-emacswiki-package-name t)
-;;   (auto-install-compatibility-setup))
+(deh-require 'package
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  (package-initialize))
 
 (deh-section "mode-line"
   (size-indication-mode 1)
