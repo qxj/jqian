@@ -667,6 +667,8 @@ Use CREATE-TEMP-F for creating temp copy."
                  flymake-simple-make-gcc-init))
   )
 
+(deh-section "flycheck")
+
 (deh-section "makefile"
   (deh-add-hook 'makefile-mode-hook
     ;; (my-mode-common-hook)
