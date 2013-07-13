@@ -132,8 +132,6 @@ indent line."
   (setq dabbrev-friend-buffer-function 'sanityinc/dabbrev-friend-buffer)
 
   ;; c/c++
-  ;; hack auto-complete.el (deperated)
-  ;; add ac-prefix "->" to function `ac-prefix-c-dot'
   (defun ac-cc-mode-setup ()
     "customized setup for `c-mode-common-hook'"
     (dolist (command `(c-electric-backspace
@@ -143,11 +141,16 @@ indent line."
                                ;; ac-source-gtags
                                ac-source-semantic
                                ac-source-imenu) ac-sources))
-    ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
-    (when (executable-find "clang")
-      (require 'auto-complete-clang)
-      (add-to-list 'ac-sources 'ac-source-clang))
-    )
+    (cond
+     ;; https://github.com/Golevka/emacs-clang-complete-async
+     ((executable-find "clang-complete")
+      (deh-try-require 'auto-complete-clang-async
+        (setq ac-sources '(ac-source-clang-async)) ;discard other sources
+        (ac-clang-launch-completion-process)))
+     ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
+     ((executable-find "clang")
+      (deh-try-require 'auto-complete-clang
+        (setq ac-sources '(ac-source-clang))))))
 
   ;; python
   (defun ac-python-mode-setup ()
@@ -463,7 +466,7 @@ will be deleted together."
   )
 
 ;;; auto insert
-(deh-section-reserved "autoinsert"
+(deh-section "autoinsert"
   (auto-insert-mode 1)
   (setq auto-insert-directory my-template-dir
         auto-insert-query 'function
