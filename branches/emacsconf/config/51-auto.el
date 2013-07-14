@@ -589,6 +589,10 @@ will be deleted together."
     '(nil
       (my-common-header "# ")
       "\n" _))
+  (define-auto-insert '("make\\.inc$" . "make.inc")
+    ["make.inc"])
+  (define-auto-insert '("make\\.rules$" . "make.rules")
+    ["make.rules"])
 
   (define-auto-insert '(python-mode . "Python script")
     '(nil

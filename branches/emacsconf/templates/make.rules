@@ -1,0 +1,69 @@
+#---------------------------------------------------------------------------
+all : $(LOCAL_OBJ) $(TARGET) $(TARGETS)
+	@echo "[1;31m[DONE][0m "$(TARGET) $(TARGETS)
+
+#---------------------------------------------------------------------------
+$(filter %.a,$(TARGET)) : $(LOCAL_OBJ) $(REMOTE_OBJ)
+	$(CXXLINK) r $@ $(LOCAL_OBJ)
+
+$(filter %.so,$(TARGET)) : $(LOCAL_OBJ) $(REMOTE_OBJ)
+	$(CC) -shared -o $@ $(LOCAL_OBJ)
+
+$(filter-out %.so %.a,$(TARGET)) : $(LOCAL_OBJ) $(REMOTE_OBJ)
+	$(CXX) $(CFLAGS) -o $(PROJ_ROOT)/../bin/$@ $^ $(INC) $(LIB)
+
+$(filter-out %.so %.a %.y,$(TARGETS)) : % : $(OBJ_DIR)/%.o
+	$(CXX) $(CFLAGS) -o $(PROJ_ROOT)/../bin/$@ $^ $(INC) $(LIB)
+
+
+#---------------------------------------------------------------------------
+
+tar: $(TARGET) $(CONFIG)
+	@if [ -d $(TARGET)_tmp_dir ]; then \
+		echo "dir has exist:$(TARGET)_tmp_dir, abort."; \
+		exit 1; \
+	else \
+		mkdir $(TARGET)_tmp_dir $(TARGET)_tmp_dir/$(TARGET);\
+		cp $(TARGET) $(CONFIG) $(TARGET)_tmp_dir/$(TARGET)/; \
+		cd $(TARGET)_tmp_dir; tar cvfz $(TARGET).tgz $(TARGET)/; cd ..; \
+		if [ -f "$(TARGET).tgz" ]; then \
+			mv -vf $(TARGET).tgz $(TARGET).`date +%Y%m%d%H%M%S`.tgz; \
+		fi; \
+		mv $(TARGET)_tmp_dir/$(TARGET).tgz ./; \
+		rm -rf $(TARGET)_tmp_dir; \
+		echo "tar cvfz $(TARGET).tgz ..."; \
+	fi
+#---------------------------------------------------------------------------
+clean:
+	rm -vf $(LOCAL_OBJ) $(TARGET) $(TARGETS) ${CLEANFILE} .*.d.tmp gmon.out
+cleanall:
+	rm -vf $(LOCAL_OBJ) $(TARGET) $(TARGETS) $(DEP_FILE) ${CLEANFILE} *.o .*.d.tmp .*.d gmon.out core.* *.log
+-include $(DEP_FILE)
+
+#---------------------------------------------------------------------------
+
+.%.d: %.cpp
+	@echo "update $@ ..."; \
+	echo -n $< | sed "s/^/$(OBJ_DIR_SED)/" | sed s/\.cpp/\.o:/ > $@; \
+	$(NCXX) $(INC) -MM $< | sed '1s/.*.://' >> $@;
+
+$(OBJ_DIR)/%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INC) -o $@ -c $<
+
+.%.d: %.cc
+	@echo "update $@ ..."; \
+	echo -n $< | sed "s/^/$(OBJ_DIR_SED)/" | sed s/\.cc/\.o:/ > $@; \
+	$(NCXX) $(INC) -MM $< | sed '1s/.*.://' >> $@;
+
+$(OBJ_DIR)/%.o: %.cc
+	$(CXX) $(CFLAGS) $(INC) -o $@ -c $<
+
+.%.d: %.c
+	@echo "update $@ ..."; \
+	echo -n $< | sed "s/^/$(OBJ_DIR_SED)/" | sed s/\.c/\.o:/ > $@; \
+	$(NCC) $(INC) -MM $< | sed '1s/.*.://' >> $@;
+
+$(OBJ_DIR)/%.o: %.c
+	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
+
+#---------------------------------------------------------------------------

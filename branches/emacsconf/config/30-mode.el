@@ -55,7 +55,7 @@
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
   (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
-  (add-to-list 'auto-mode-alist '("\\(Makefile\\|Build\\|\\.mak\\)$" . makefile-mode))
+  (add-to-list 'auto-mode-alist '("\\([Mm]akefile\\|Build\\|\\.mak\\|make\\.\\(inc\\|rules\\)\\)$" . makefile-mode))
   (add-to-list 'auto-mode-alist '("\\.schemas" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
   (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
@@ -103,8 +103,9 @@
     (deh-add-hook 'before-save-hook
       (when (> 3000 (count-lines (point-min) (point-max)))
         (delete-trailing-whitespace)        ; no trailing whitespace
-        (unless (eq major-mode 'makefile-mode)
-          (my-untabify)                       ; untabify source code
+        (if (reduce (lambda (a b) (or a b))
+                    (mapcar (lambda (x) (eq major-mode x)) '(c-mode c++-mode python-mode sh-mode php-mode)))
+            (my-untabify)                       ; untabify source code
           )
         (my-update-header)                  ; update header
         (copyright-update)                  ; update copyright
