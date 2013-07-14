@@ -4,7 +4,7 @@
 
 (defvar my-include-dirs
   (let (dirs
-        (incs '("include" "inc" "common" "public" "hdr"))
+        (incs '("include" "inc" "common"))
         (updirs '("./" "../" "../../" "../../../" "../../../../")))
     (dolist (dir updirs)
       (setq dirs (append dirs (mapcar (lambda (x) (concat dir x)) incs))))
