@@ -726,6 +726,19 @@ Use CREATE-TEMP-F for creating temp copy."
         (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
     )
 
+  ;; # Preparation:
+  ;; 1. virtualenv
+  ;; 2. $ sudo pip install jedi epc sexpdata
+  ;; 3. emacs-epc, emacs-deferred, emacs-ctable
+  ;; 4. download and uncompress emacs-jedi, then `make requirements`
+  ;;
+  ;; http://tkf.github.io/emacs-jedi/released/#install
+  (deh-section-reserved "jedi"
+    (autoload 'jedi:ac-setup "jedi" nil t)
+    (add-hook 'python-mode-hook 'jedi:ac-setup)
+    (setq jedi:setup-keys t
+          jedi:tooltip-method nil))
+
   ;;# Preparation:
   ;;
   ;; 1. install pymacs, rope, ropemode, ropemacs one by one.
