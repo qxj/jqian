@@ -132,6 +132,10 @@ indent line."
   (setq dabbrev-friend-buffer-function 'sanityinc/dabbrev-friend-buffer)
 
   ;; c/c++
+  (defmethod ede-include-path ((this ede-cpp-root-project))
+    "Get the system include path used by ede-project."
+    (oref this include-path))
+
   (defun ac-cc-mode-setup ()
     "customized setup for `c-mode-common-hook'"
     (dolist (command `(c-electric-backspace
@@ -145,8 +149,39 @@ indent line."
      ;; https://github.com/Golevka/emacs-clang-complete-async
      ((executable-find "clang-complete")
       (deh-try-require 'auto-complete-clang-async
+        (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
+
+        ;;- work with Project.ede (M-x ede-new)
+        (deh-after-load "ede"
+          (when (ede-current-project)
+            (let* ((prj (ede-current-project))
+                   (root (ede-project-root-directory prj))
+                   ;; 1) parse the ede :spp-table.
+                   ;; 2) parse the ede :include dirs
+                   ;; 3) parse the ede :system-include dirs
+                   ;; 4) add the ac-cc-mode-system-includes
+                   (cxxflags (append
+                              (mapcar (lambda (def)
+                                        (let ((sym (car def))
+                                              (val (cdr def)))
+                                          (cond ((and (stringp val)
+                                                      (not (zerop (length val))))
+                                                 (format "-D%s=\"%s\"" sym val))
+                                                ((numberp val)
+                                                 (format "-D%s=%s" sym (number-to-string val)))
+                                                (t
+                                                 (concat "-D" sym)))))
+                                      (ede-preprocessor-map prj))
+                              (mapcar (lambda (dir) (format "-I%s%s" root (substring dir 1 nil)))
+                                      (ede-include-path prj))
+                              (mapcar (lambda (dir) (format "-I%s" dir))
+                                      (ede-system-include-path prj)))))
+              (setq ac-clang-cflags (append cxxflags ac-clang-cflags)))))
+
+        ;; (local-set-key (kbd "C-<tab>") 'ac-complete-clang-async)
         (setq ac-sources '(ac-source-clang-async)) ;discard other sources
         (ac-clang-launch-completion-process)))
+
      ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
      ((executable-find "clang")
       (deh-try-require 'auto-complete-clang
@@ -531,6 +566,21 @@ will be deleted together."
         )
       & "\"\n" | -10
       _))
+
+  (define-auto-insert '("\\.ede$" . "Project.ede")
+    '("Project name: "
+      "-*- mode: emacs-lisp -*-\n"
+      "(ede-cpp-root-project \"" str "\"\n"
+      > ":name \"" str "\"\n"
+      > ":file \"" (file-name-directory buffer-file-name) "Makefile\"\n"
+      > ":include-path '(\"" (read-string "project include path: ")"\"" _ ")\n"
+      > ":system-include-path '(\"/usr/local/include\")\n"
+      > ":spp-table '((\"DEBUG\" . \"\")\n"
+      > "(\"SYMBOL\" . \"\")\n"
+      > "(\"ZERO\" . 0)\n"
+      > "(\"ONE\" . 1)\n"
+      > "(\"PROJECT_NAME\" . \"" str "\")\n"
+      > "(\"PROJECT_VERSION\" . \"1.0.0\")))"))
 
   ;; (define-auto-insert '(makefile-mode . "Makefile")
   ;;   ["makefile.tpl"])
