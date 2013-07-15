@@ -195,87 +195,34 @@ refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
   ) ;- ede end
 
 (deh-require 'pulse
-  (setq pulse-command-advice-flag (if window-system 1 nil))
+  (setq pulse-command-advice-flag (if window-system 1 nil)
+        pulse-delay 0.08)
   (add-hook 'next-error-hook 'pulse-line-hook-function)
   ;; pre defines in cedet trunk
-  (defadvice goto-line (after pulse-advice activate)
-    "Cause the line that is `goto'd to pulse when the cursor gets there."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice exchange-point-and-mark (after pulse-advice activate)
-    "Cause the line that is `goto'd to pulse when the cursor gets there."
-    (when (and pulse-command-advice-flag (interactive-p)
-               (> (abs (- (point) (mark))) 400))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice find-tag (after pulse-advice activate)
-    "After going to a tag, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice tags-search (after pulse-advice activate)
-    "After going to a hit, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice tags-loop-continue (after pulse-advice activate)
-    "After going to a hit, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice pop-tag-mark (after pulse-advice activate)
-    "After going to a hit, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice imenu-default-goto-function (after pulse-advice activate)
-    "After going to a tag, pulse the line the cursor lands on."
-    (when pulse-command-advice-flag
-      (pulse-momentary-highlight-one-line (point))))
-  ;; some other pulse
-  (defadvice my-switch-recent-buffer (after pulse-advice activate)
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice ibuffer-visit-buffer (after pulse-advice activate)
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice joc-dired-single-buffer (after pulse-advice activate)
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice exchange-point-and-mark-nomark (after pulse-advice activate)
-    "Cause the line that is `goto'd to pulse when the cursor gets there."
-    (when (and pulse-command-advice-flag (interactive-p)
-               (> (abs (- (point) (mark))) 400))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice cua-exchange-point-and-mark (after pulse-advice activate)
-    "Cause the line that is `goto'd to pulse when the cursor gets there."
-    (when (and pulse-command-advice-flag (interactive-p)
-               (> (abs (- (point) (mark))) 400))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice switch-to-buffer (after pulse-advice activate)
-    "After switch-to-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice previous-buffer (after pulse-advice activate)
-    "After previous-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice next-buffer (after pulse-advice activate)
-    "After next-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice ido-switch-buffer (after pulse-advice activate)
-    "After ido-switch-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice beginning-of-buffer (after pulse-advice activate)
-    "After beginning-of-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice viss-bookmark-next-buffer (after pulse-advice activate)
-    "After viss-bookmark-next-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice viss-bookmark-prev-buffer (after pulse-advice activate)
-    "After viss-bookmark-prev-buffer, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point))))
-  (defadvice sourcepair-load (after pulse-advice activate)
-    "After sourcepair-load, pulse the line the cursor lands on."
-    (when (and pulse-command-advice-flag (interactive-p))
-      (pulse-momentary-highlight-one-line (point)))))
+  (defmacro pulse-defadvice (func-name)
+    `(defadvice ,func-name (after pulse-advice activate)
+       (when (and pulse-command-advice-flag (called-interactively-p))
+         (pulse-momentary-highlight-one-line (point)))))
+  (pulse-defadvice goto-line)
+  (pulse-defadvice exchange-dot-and-mark)
+  (pulse-defadvice exchange-point-and-mark-nomark)
+  (pulse-defadvice find-tag)
+  (pulse-defadvice tags-search)
+  (pulse-defadvice tags-loop-continue)
+  (pulse-defadvice pop-tag-mark)
+  (pulse-defadvice imenu-default-goto-function)
+  (pulse-defadvice my-switch-recent-buffer)
+  (pulse-defadvice ibuffer-visit-buffer)
+  (pulse-defadvice joc-dired-single-buffer)
+  (pulse-defadvice switch-to-buffer)
+  (pulse-defadvice ido-switch-buffer)
+  (pulse-defadvice previous-buffer)
+  (pulse-defadvice next-buffer)
+  (pulse-defadvice beginning-of-buffer)
+  (pulse-defadvice end-of-buffer)
+  (pulse-defadvice viss-bookmark-next-buffer)
+  (pulse-defadvice viss-bookmark-prev-buffer)
+  (pulse-defadvice sourcepair-load)
+  (pulse-defadvice pager-page-up)
+  (pulse-defadvice pager-page-down)
+  (pulse-defadvice recenter-top-bottom))

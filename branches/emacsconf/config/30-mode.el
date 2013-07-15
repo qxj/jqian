@@ -727,16 +727,18 @@ Use CREATE-TEMP-F for creating temp copy."
     )
 
   ;; # Preparation:
-  ;; 1. virtualenv
-  ;; 2. $ sudo pip install jedi epc sexpdata
-  ;; 3. emacs-epc, emacs-deferred, emacs-ctable
-  ;; 4. download and uncompress emacs-jedi, then `make requirements`
+  ;; 1. $ sudo pip install jedi epc sexpdata
+  ;; 2. emacs-epc, emacs-deferred, emacs-ctable (copy .el into `load-path`)
+  ;; 3. download and uncompress emacs-jedi, then `make requirements` (depends on virtualenv)
   ;;
   ;; http://tkf.github.io/emacs-jedi/released/#install
-  (deh-section-reserved "jedi"
-    (autoload 'jedi:ac-setup "jedi" nil t)
-    (add-hook 'python-mode-hook 'jedi:ac-setup)
+  ;;
+  ;; (autoload 'jedi:setup "jedi" nil t)
+  (deh-require 'jedi
+    (autoload 'jedi-direx:pop-to-buffer "jedi-direx" nil t)
+    (add-hook 'python-mode-hook 'jedi:setup)
     (setq jedi:setup-keys t
+          jedi:complete-on-dot t
           jedi:tooltip-method nil))
 
   ;;# Preparation:
@@ -757,7 +759,7 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;
   ;; http://rope.sourceforge.net/ropemacs.html
   ;;
-  (deh-try-require 'pymacs
+  (deh-require-reserved 'pymacs
     (pymacs-load "ropemacs" "rope-")
     (autoload 'pymacs-apply "pymacs")
     (autoload 'pymacs-call "pymacs")
