@@ -104,7 +104,7 @@
       (when (> 3000 (count-lines (point-min) (point-max)))
         (delete-trailing-whitespace)        ; no trailing whitespace
         (if (reduce (lambda (a b) (or a b))
-                    (mapcar (lambda (x) (eq major-mode x)) '(c-mode c++-mode python-mode sh-mode php-mode)))
+                    (mapcar (lambda (x) (eq major-mode x)) '(c-mode c++-mode python-mode php-mode)))
             (my-untabify)                       ; untabify source code
           )
         (my-update-header)                  ; update header
