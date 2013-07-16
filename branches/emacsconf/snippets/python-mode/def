@@ -1,5 +1,5 @@
 # -*- mode: snippet; coding: utf-8 -*-
-# name: define a function
+#name: define a function
 # --
 def ${1:name}($2):
 ${2:$(let* ((indent
