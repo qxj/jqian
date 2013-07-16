@@ -35,8 +35,8 @@ CXX         = $(QUIET_CXX)g++
 CFLAGS      += -g -O2 -Wall -DVERSION=\"$(VERSION)\" -fstack-protector -fstack-protector-all -fno-strict-aliasing
 
 #---------------------------------------------------------------------------
-TOP_DIR     := $(dir $(lastword $(MAKEFILE_LIST)))
-PROJ_ROOT   := $(TOP_DIR)
+TOP_DIR     := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
+PROJ_ROOT   := $(shell cd $(dir $(TOP_DIR));pwd)
 CUR_DIR     =  $(shell pwd | awk -F \/ '{print $$NF;}' )
 LOCAL_SRC   += $(sort $(wildcard *.cpp *.cc *.c))
 OBJ_DIR     += $(PROJ_ROOT)/obj/$(CUR_DIR)
