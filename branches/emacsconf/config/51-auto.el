@@ -423,6 +423,16 @@ for example:
            (?\" _ ?\")))
     (skeleton-autopair-define-key python-mode-map))
 
+  (deh-add-hook markdown-mode-hook
+    (set (make-local-variable 'skeleton-pair-alist)
+         '((?( _ ?))
+           (?[ _ ?])
+           (?{ _ ?})
+           (?` _ ?`)
+           (?' _ ?')
+           (?\" _ ?\")))
+    (skeleton-autopair-define-key markdown-mode-map))
+
   (deh-add-hook c-mode-common-hook
     (set (make-local-variable 'skeleton-pair-alist)
          '((?( _ ?))
@@ -728,3 +738,9 @@ will be deleted together."
           try-complete-lisp-symbol
           try-complete-lisp-symbol-partially
           try-expand-whole-kill)))
+
+;;; unicode characters
+(autoload 'xmsi-mode "xmsi-math-symbols-input" "Load xmsi minor mode for inputting math (Unicode) symbols." t)
+(deh-section "xmsi-mode"
+  ;; (xmsi-mode 1) ; activate the mode.
+  )
