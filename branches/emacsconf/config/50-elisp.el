@@ -1118,6 +1118,14 @@ mouse-3: Remove current window from display")
 ;;       (isearch-repeat (if isearch-forward 'forward))
 ;;       (ad-enable-advice 'isearch-repeat 'after 'isearch-no-fail)
 ;;       (ad-activate 'isearch-repeat)))
+
+  ;;# recenter after C-s/C-r, no need to C-l anymore
+  (defadvice isearch-repeat-forward
+    (after isearch-repeat-forward-recenter activate) (recenter))
+  (ad-activate 'isearch-repeat-forward)
+  (defadvice isearch-repeat-backward
+    (after isearch-repeat-backward-recenter activate) (recenter))
+  (ad-activate 'isearch-repeat-backward)
   )
 
 (deh-require-reserved 'key-chord
