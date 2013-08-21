@@ -103,7 +103,9 @@
   )
 
 (setq auto-save-list-file-prefix
-      (expand-file-name "emacs.autosave-" my-data-dir))
+      (expand-file-name "emacs.autosave-" my-data-dir)
+      auto-save-file-name-transforms
+      `((".*" ,my-data-dir t)))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
