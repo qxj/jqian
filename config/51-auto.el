@@ -26,6 +26,17 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
+(deh-require-reserved 'smartparens-config
+  (smartparens-global-mode t)
+  (define-key sp-keymap (kbd "M-o") 'sp-backward-sexp)
+  (define-key sp-keymap (kbd "M-i") 'sp-forward-sexp)
+  (define-key sp-keymap (kbd "C-{") 'sp-select-previous-thing)
+  (define-key sp-keymap (kbd "C-}") 'sp-select-next-thing)
+  (define-key sp-keymap (kbd "C-\\") 'sp-select-previous-thing-exchange)
+  (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
+  ;; "fix"" highlight issue in scratch buffer
+  (custom-set-faces '(sp-pair-overlay-face ((t ())))))
+
 (deh-require 'yasnippet
   (setq yas-snippet-dirs my-snippet-dir)
   (yas-load-directory yas-snippet-dirs)
@@ -76,6 +87,7 @@
         ac-show-menu-immediately-on-auto-complete nil
         ac-expand-on-auto-complete nil
         ;; ac-trigger-key nil
+        ac-quick-help-height 40
         ac-quick-help-delay 1.5
         ac-disable-faces nil
         ac-dwim t)
@@ -246,6 +258,10 @@ indent line."
     (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function))
   (setq completion-cycle-threshold 5)
   (add-to-list 'completion-styles 'substring)
+  (add-to-list 'completion-styles 'initials t)
+  (add-to-list 'completion-at-point-functions
+               (lambda ()
+                 (unless (minibufferp) (auto-complete))))
   )
 
 ;;; abbrev
@@ -315,8 +331,9 @@ indent line."
       ("inf" "∞" nil 0)
       ("ar1" "→" nil 0)
       ("ar2" "⇒" nil 0)
-      ("ggt" "»" nil 0)
-      ("llt" "«" nil 0)))
+      ("ra1" "←" nil 0)
+      ("gt" "»" nil 0)
+      ("lt" "«" nil 0)))
 )
 
 ;;; skeleton

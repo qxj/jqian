@@ -38,10 +38,8 @@
                  'find-file) file))
 
   (deh-add-hook 'org-mode-hook
-    (org-set-local 'comment-start "#+COMMENT:")
-    (toggle-truncate-lines nil)
-    (auto-fill-mode 1)
-    (outline-minor-mode t))
+    (my-text-mode-hook)
+    (org-set-local 'comment-start "#+COMMENT:"))
 
   ;; org keybinds
   (deh-define-key org-mode-map
@@ -331,6 +329,4 @@
 (deh-section "rst"
   (add-hook 'rst-adjust-hook 'rst-toc-update)
   ;; Auto fill and outline mode
-  (deh-add-hook 'rst-mode-hook
-    (auto-fill-mode 1)
-    (outline-minor-mode t)))
+  (deh-add-hook rst-mode-hook my-text-mode-hook))

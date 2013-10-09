@@ -18,28 +18,28 @@
   )
 
 (deh-section "coding-system"
- (if (eq system-type 'windows-nt)
-     (progn
-       (set-language-environment "Chinese-GBK")
-       (set-selection-coding-system 'chinese-gbk)
-       (set-terminal-coding-system 'chinese-gbk)
-       (set-keyboard-coding-system 'chinese-gbk)
-       (set-clipboard-coding-system 'chinese-gbk)
-       ;; (set-buffer-file-coding-system 'chinese-gbk)
-       (modify-coding-system-alist 'process "*" 'chinese-gbk))
-  (set-language-environment "UTF-8")
-  (set-locale-environment "zh_CN.UTF-8")
-  (set-selection-coding-system 'utf-8-unix)
-  (set-terminal-coding-system 'utf-8-unix)
-  (set-keyboard-coding-system 'utf-8-unix)
-  (set-clipboard-coding-system 'utf-8-unix)
-  (set-buffer-file-coding-system 'utf-8-unix)
-  (modify-coding-system-alist 'process "*" 'utf-8-unix))
+  (if (eq system-type 'windows-nt)
+      (progn
+        (set-language-environment "Chinese-GBK")
+        (set-selection-coding-system 'chinese-gbk)
+        (set-terminal-coding-system 'chinese-gbk)
+        (set-keyboard-coding-system 'chinese-gbk)
+        (set-clipboard-coding-system 'chinese-gbk)
+        ;; (set-buffer-file-coding-system 'chinese-gbk)
+        (modify-coding-system-alist 'process "*" 'chinese-gbk))
+    (set-language-environment "UTF-8")
+    (set-locale-environment "zh_CN.UTF-8")
+    (set-selection-coding-system 'utf-8-unix)
+    (set-terminal-coding-system 'utf-8-unix)
+    (set-keyboard-coding-system 'utf-8-unix)
+    (set-clipboard-coding-system 'utf-8-unix)
+    (set-buffer-file-coding-system 'utf-8-unix)
+    (modify-coding-system-alist 'process "*" 'utf-8-unix)
 
- (add-to-list 'auto-coding-alist '("\\.nfo\\'" . cp437))
- (dolist (char (append "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】"
-                       "；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
-   (modify-syntax-entry char "." (standard-syntax-table))))
+    (add-to-list 'auto-coding-alist '("\\.nfo\\'" . cp437))
+    (dolist (char (append "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】"
+                          "；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
+      (modify-syntax-entry char "." (standard-syntax-table)))))
 
 (deh-section "PATH"
   ;; add more directory to environment variable PATH and exec-path

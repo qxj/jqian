@@ -101,7 +101,7 @@
      '((my-c-mode-font-lock-if0 (0 font-lock-comment-face prepend))) 'add-to-end))
 
   (defun my-c-mode-common-hook ()
-    (my-mode-common-hook)
+    (my-prog-mode-hook)
     ;; (c-add-style "Personal" my-c-style t)
     ;; (c-set-style "stroustrup")
     ;; (call-interactively 'google-set-c-style)

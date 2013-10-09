@@ -79,10 +79,16 @@
 
 ;;; common mode hook
 (deh-section "mode-common"
+  (setq-default tab-width 4
+                c-basic-offset tab-width
+                indent-tabs-mode nil
+                c-hungry-delete-key t)
+
   (defun my-mode-common-hook ()
-    (setq tab-width 4)
-    (setq c-basic-offset tab-width)
-    (setq indent-tabs-mode nil)
+
+    )
+
+  (defun my-prog-mode-hook ()           ; programming hook
     (set (make-local-variable 'comment-style) 'indent)
     (set (make-local-variable 'tab-stop-list)
          (number-sequence tab-width 80 tab-width))
@@ -92,6 +98,7 @@
     ;; (when (fboundp 'whitespace-mode) (whitespace-mode t))
     (hs-minor-mode 1)
     (turn-on-eldoc-mode)
+    (toggle-truncate-lines 1)
     (ignore-errors (imenu-add-menubar-index))
 
     ;; (local-set-key (kbd "RET")
@@ -111,6 +118,16 @@
         (copyright-update)                  ; update copyright
         (time-stamp)                        ; update timestamp
         ))
+    )
+
+  ;; (add-hook 'prog-mode-hook 'my-prog-mode-hook)
+
+  (defun my-text-mode-hook              ; literal hook
+    (abbrev-mode 1)
+    (outline-minor-mode 1)
+    (toggle-truncate-lines -1)
+    (turn-off-auto-fill)
+    ;; (auto-fill-mode 1)
     )
 
   ;; comment new line and indent `M-j', as VIM acts.
@@ -373,33 +390,6 @@ etc).  The following options will be available:
           (setq gtags-previous-window-conf nil))))
   )
 
-(deh-section "svn"
-  (autoload 'svn-status-in-vc-mode? "psvn" "Is vc-svn active?")
-
-  ;; inspired from git-emacs-autoloads
-  (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
-    "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
-    (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
-
-  (deh-after-load "psvn"
-    (defsubst svn-status-interprete-state-mode-color (stat)
-      "Interpret vc-svn-state symbol to mode line color"
-      (case stat
-        ('up-to-date "GreenYellow")
-        ('edited     "tomato")
-        ('unknown    "gray")
-        ('added      "blue")
-        ('deleted    "red")
-        ('unmerged   "purple")
-        (t           "black"))))
-
-  ;; (setq vc-svn-diff-switches nil
-  ;;       vc-diff-switches '("--normal" "-bB"))
-  )
-
-(deh-require 'git-emacs-autoloads
-  (setq git-state-modeline-decoration 'git-state-decoration-large-dot)
-)
 
 (deh-section "woman"
   ;; (add-hook 'woman-mode-hook 'view-mode)
@@ -668,11 +658,15 @@ Use CREATE-TEMP-F for creating temp copy."
                  flymake-simple-make-gcc-init))
   )
 
-(deh-section "flycheck")
+(deh-section "flycheck"
+  (autoload 'flycheck-mode "flycheck" "flycheck-mode" t)
+  (dolist (mode '(sh-mode-hook python-mode-hook c-mode-common-hook))
+    (add-hook mode 'flycheck-mode))
+  (setq flycheck-indication-mode 'right-fringe))
 
 (deh-section "makefile"
   (deh-add-hook 'makefile-mode-hook
-    ;; (my-mode-common-hook)
+    ;; (my-code-common-hook)
     ))
 
 (deh-section "change-log"
@@ -692,7 +686,7 @@ Use CREATE-TEMP-F for creating temp copy."
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
 
   (deh-add-hook 'emacs-lisp-mode-hook
-    (my-mode-common-hook))
+    (my-prog-mode-hook))
 
   (deh-after-load "lisp-mode"
     (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
@@ -714,7 +708,7 @@ Use CREATE-TEMP-F for creating temp copy."
 ;;; scripts setting
 (deh-require 'python
   (deh-add-hook 'python-mode-hook
-    (my-mode-common-hook)
+    (my-prog-mode-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
@@ -776,12 +770,12 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-section "sh-mode"
   (deh-add-hook 'sh-mode-hook
     ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
-    (my-mode-common-hook)
+    (my-prog-mode-hook)
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     ))
 
 (deh-section "text-mode"
-  (deh-add-hook text-mode-hook abbrev-mode))
+  (deh-add-hook text-mode-hook my-text-mode-hook))
 
 ;;; tools
 (deh-section-after "gnuplot"
@@ -794,6 +788,8 @@ Use CREATE-TEMP-F for creating temp copy."
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
+
+  (deh-add-hook graphviz-dot-mode-hook my-prog-mode-hook)
 
   (deh-define-key graphviz-dot-mode-map
     ("\C-cc" nil)                     ; it's prefix key
@@ -820,8 +816,8 @@ Use CREATE-TEMP-F for creating temp copy."
     (require 'jde)
     (jde-mode))
   (deh-add-hook 'java-mode-hook
-    (c-set-style "java")
-    (setq c-basic-offset 4)))
+    (my-code-common-hook)
+    (c-set-style "java")))
 
 ;;; web related
 (deh-require 'multi-web-mode
@@ -842,29 +838,8 @@ Use CREATE-TEMP-F for creating temp copy."
 
 (deh-section "html"
   (setq sgml-xml-mode t)
-  (add-hook 'sgml-mode-hook 'my-mode-common-hook)
-  (set 'html-mode-hook
-       (lambda ()
-         ;; (tempo-use-tag-list 'tempo-html-tags)
-         (let ((str '(""))
-               (align '(("align" ("left") ("center") ("right")))))
-           (setq sgml-tag-alist `(("style"
-                                   ("href" ,str)
-                                   ("type" "text/css"))
-                                  ("meta"
-                                   t
-                                   ("http-equiv" ("Content-Type"))
-                                   ("content" ("text/html; charset=utf-8" "text/plain") ("Copyright &#169;"))
-                                   ("name" ,str))
-                                  ("script" (nil "//<![CDATA[" \n _ \n "//]]>")
-                                   ("src" ,str)
-                                   ("type" "text/javascript"))
-                                  ("div" n
-                                   ("class" ,str)
-                                   ("src", str))
-                                  ("object" ("id" ,str))
-                                  ("code")
-                                  ,@sgml-tag-alist))))))
+  (add-hook 'sgml-mode-hook 'sgml-electric-tag-pair-mode)
+  )
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-section "js2"
@@ -890,6 +865,7 @@ Use CREATE-TEMP-F for creating temp copy."
     )
 
   (deh-add-hook 'php-mode-hook
+    (my-prog-mode-hook)
     ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
     (setq php-beginning-of-defun-regexp "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(")
@@ -941,9 +917,8 @@ Use CREATE-TEMP-F for creating temp copy."
         TeX-clean-confirm nil
         TeX-show-compilation nil)
   (deh-add-hook 'LaTeX-mode-hook
-    (turn-off-auto-fill)
+    (my-text-mode-hook)
     ;; (LaTeX-math-mode 1)
-    (outline-minor-mode 1)
 
     (TeX-PDF-mode t)
 
