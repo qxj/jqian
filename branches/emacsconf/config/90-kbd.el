@@ -47,10 +47,14 @@
   ((kbd "M-q")    'compact-uncompact-block)
   ((kbd "M-[")    'recent-jump-jump-backward)
   ((kbd "M-]")    'recent-jump-jump-forward)
+  ;; similar to pager-row-up/down
+  ;; ((kbd "<up>") (lambda () (interactive) (scroll-up-command 1)))
+  ;; ((kbd "M-n") (lambda () (interactive) (scroll-up-command 1)))
+  ;; ((kbd "<down>") (lambda () (interactive) (scroll-down-command 1)))
+  ;; ((kbd "M-p")  (lambda () (interactive) (scroll-down-command 1)))
   ((kbd "<C-M-down>")  'my-move-line-down)
   ((kbd "<C-M-up>")    'my-move-line-up)
   ((kbd "<M-S-down>")  'my-dup-line-down)
-  ((kbd "<S-down>")    'my-dup-line-down-continued)
 ;;;; highlight symbol
   ((kbd "<C-f3>")  'highlight-symbol-at-point)
   ((kbd "<f3>")    'highlight-symbol-next)
@@ -88,7 +92,8 @@
   ("\C-k" 'kmacro-keymap)
   ("$"  'toggle-truncate-lines)
   ;; ("f"  'comint-dynamic-complete)
-  ;; ("g"  'fold-dwim-hide-all)
+  ("g"  'magit-status)
+  ("l"  'magit-log)
   ("i"  'imenu)
   ("j"  'ffap)
   ("r"  'org-capture)
@@ -171,36 +176,13 @@
      "ROOT"
      '(
        (("t" . "Toggle") . one-key-menu-toggle)
-       (("a" . "Anything") . one-key-menu-anything)
-       ;; (("a" . "Helm") . one-key-menu-helm)
+       (("a" . "Helm") . one-key-menu-helm)
        (("g" . "Gtags") . one-key-menu-gtags)
        (("c" . "Cscope") . one-key-menu-cscope)
        (("h" . "Highlight") . one-key-menu-highlight)
        (("s" . "Show Hide") . one-key-menu-hideshow)
        (("v" . "Version Control") . one-key-menu-vc)
        (("w" . "Window") . one-key-menu-window))))
-
-;;;; Anything
-  (defun one-key-menu-anything ()
-    "The `one-key' menu for ANYTHING."
-    (interactive)
-    (require 'anything-config nil t)    ; latter load
-    (one-key-menu
-     "ANYTHING"
-     '(
-       (("a" . "Anything") . anything)
-       (("b" . "Buffers") . anything-buffers+)
-       (("B" . "Bookmarks") . anything-c-pp-bookmarks)
-       (("c" . "Commands") . anything-M-x)
-       (("f" . "Files") . anything-for-files)
-       (("i" . "Imenu") . anything-imenu)
-       (("I" . "Info") . anything-info-pages)
-       (("k" . "Kill Ring") . anything-show-kill-ring)
-       (("o" . "Occur") . anything-occur)
-       (("r" . "Register") . anything-register)
-       (("m" . "Man Pages") . anything-man-woman)
-       (("SPC" . "Execute anything commands") . anything-execute-anything-command)
-       ) t))
 
 ;;;; helm
   (defun one-key-menu-helm ()

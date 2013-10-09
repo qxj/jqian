@@ -578,7 +578,6 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
                 (some (lambda (f) (file-newer-than-file-p f autoload-file)) files))
         (message "Updating autoloads...")
         (dolist (file files)
-          (message "autoload file %s..." file)
           (generate-file-autoloads file))
         (write-region (point-min) (point-max) autoload-file)
         (load autoload-file)))))

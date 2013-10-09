@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8 -*-
 
+;; customize variables
+
 (setq debug-on-error nil debug-on-quit nil)
 
 ;;{{{ Generic Settings
@@ -38,30 +40,40 @@
 (setq show-trailing-whitespace t)
 
 ;; Wrap too long lines
-(toggle-truncate-lines nil)
-(setq hscroll-margin 1)
-(setq hscroll-step 1)
+(toggle-truncate-lines 1)
 
 ;; delete whole line
 (setq-default kill-whole-line t)
-(setq kill-ring-max 50)
+(setq kill-ring-max 1000
+      mark-ring-max 1000)
+(setq history-length 100)
 ;; indent without tab '\t' but white space
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 4)
 (setq tab-stop-list nil)
+
+;; (setq confirm-nonexistent-file-or-buffer nil)
+(setq eval-expression-print-length nil ; do not truncate printed expressions
+      eval-expression-print-level nil) ; print nested expressions
+
 (setq display-time-mail-file "~/.emacs.d/mail")
 
 ;; chinese charactor at the end of sentences
 (setq sentence-end "\\([。！？]\\|……\\|[.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*"
       sentence-end-double-space nil)
-;; scroll-margin, which conflict with pager-mode, thus set to zero
-(setq scroll-margin 0
-      scroll-conservatively 10000)
+;; smooth scrolling
+;; (setq hscroll-margin 1
+;;       hscroll-step 1)
+;; (setq redisplay-dont-pause t
+;;       scroll-margin 1 ; conflict with pager-mode
+;;       scroll-step 1
+;;       scroll-conservatively 10000
+;;       scroll-preserve-screen-position 1)
 ;; show matching parentheses
 (show-paren-mode t)
 (setq show-paren-style 'parentheses)
 
-(mouse-avoidance-mode 'animate)
+;; (mouse-avoidance-mode 'animate)
 
 (auto-image-file-mode t)
 ;; Highlight selected regions in Gnu Emacs
@@ -102,10 +114,11 @@
   ;;           bpath)))
   )
 
+(setq kill-buffer-query-functions
+      (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
+
 (setq auto-save-list-file-prefix
-      (expand-file-name "emacs.autosave-" my-data-dir)
-      auto-save-file-name-transforms
-      `((".*" ,my-data-dir t)))
+      (expand-file-name "emacs.autosave-" my-data-dir))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
@@ -134,6 +147,12 @@
 
 ;; find-dired
 (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
+
+(deh-section "ediff"
+  ;; (global-set-key "\C-cd" 'ediff-show-registry)
+  (setq diff-switches "-ubB"
+        ediff-split-window-function 'split-window-horizontally
+        ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (deh-section "abbrev"
   (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-data-dir))
@@ -209,6 +228,9 @@
 
 (setq user-full-name "Julian Qian"
       user-mail-address "junist@gmail.com")
+
+;; for morden machine, initiate GC every 20MB allocated
+(setq gc-cons-threshold 20000000)
 
 ;;; customization
 (setq custom-file (expand-file-name "emacs.custom.el" my-data-dir))

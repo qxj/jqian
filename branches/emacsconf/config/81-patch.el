@@ -1,6 +1,13 @@
 ;;; * patch for some elisp
 
 (deh-section "defadvice"
+  ;; bury *scratch* buffer instead of kill it
+  (defadvice kill-buffer (around kill-buffer-around-advice activate)
+    (let ((buffer-to-kill (ad-get-arg 0)))
+      (if (equal buffer-to-kill "*scratch*")
+          (bury-buffer)
+        ad-do-it)))
+
   (defadvice kill-line (before check-position activate)
     "killing the newline between indented lines and remove extra
 spaces."
@@ -165,12 +172,10 @@ clipboard/external selection to the kill ring"
                 (setq now-buffer-list (cdr now-buffer-list))))))
       (setq buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
       (set-buffer buffer)
-                                        ;
-                                        ; Path style is defined in gtags-path-style:
-                                        ;   root: relative from the root of the project (Default)
-                                        ;   relative: relative from the current directory
-                                        ;   absolute: absolute (relative from the system root directory)
-                                        ;
+      ;; Path style is defined in gtags-path-style: root: relative from
+      ;; the root of the project (Default) relative: relative from the
+      ;; current directory absolute: absolute (relative from the system
+      ;; root directory)
       (cond
        ((equal gtags-path-style 'absolute)
         (setq option (concat option "a")))
