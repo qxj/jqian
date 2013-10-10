@@ -93,7 +93,7 @@
 (winner-mode 1)
 ;; (auto-insert-mode 1)
 
-(deh-section "backup"
+(deh-section "backup"                   ;backup & autosave
   (setq make-backup-files t
         version-control t
         kept-new-versions 3
@@ -103,7 +103,8 @@
         backup-by-copying t)
   ;; DO NOT depends on the backup, it is not really useful
   (add-to-list 'backup-directory-alist
-               (cons "." (expand-file-name "backup" my-data-dir)))
+               (cons ".*" (expand-file-name "backup" my-data-dir)))
+
   ;; (setq make-backup-file-name-function
   ;;       (lambda (fpath)
   ;;         "Return a new file path of a given file path.
@@ -112,13 +113,15 @@
   ;;                (bpath (concat backup-root fpath "~")))
   ;;           (make-directory (file-name-directory bpath) bpath)
   ;;           bpath)))
-  )
+
+  ;; Put autosave files (ie #foo#) and backup files (ie foo~) in a
+  ;; separated place. http://snarfed.org/gnu_emacs_backup_files
+  (setq auto-save-file-name-transforms `((".*" ,(concat my-data-dir "/\\1") t))
+        auto-save-list-file-prefix (expand-file-name "emacs.autosave-" my-data-dir))
+)
 
 (setq kill-buffer-query-functions
       (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
-
-(setq auto-save-list-file-prefix
-      (expand-file-name "emacs.autosave-" my-data-dir))
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t)
