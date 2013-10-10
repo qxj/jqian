@@ -428,8 +428,8 @@ mouse-3: Remove current window from display")
 
 (deh-require 'flx-ido
   (flx-ido-mode 1)
-  ;; disable ido faces to see flx highlights.
-  (setq ido-use-faces nil))
+  (setq ido-use-faces nil
+        flx-ido-use-faces nil))
 
 (deh-require 'smex
   (setq smex-save-file (expand-file-name "emacs.smex-items" my-data-dir)

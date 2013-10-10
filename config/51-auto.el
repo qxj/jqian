@@ -40,7 +40,8 @@
 (deh-require 'yasnippet
   (setq yas-snippet-dirs my-snippet-dir)
   (yas-load-directory yas-snippet-dirs)
-  (yas-global-mode 1)
+  ;; (yas-global-mode 1)
+  (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
 
   (setq yas-wrap-around-region t)
 
@@ -80,6 +81,10 @@
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
+  (add-to-list 'ac-dictionary-directories
+               (expand-file-name "ac-dict" my-startup-dir))
+  (add-to-list 'ac-user-dictionary-files
+               (expand-file-name "ac.dict" my-startup-dir))
   (setq ac-auto-start 3
         ac-auto-show-menu 1.5
         ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
@@ -100,11 +105,6 @@
   ;; for terminal, works well with `global-hl-line-mode'
   (if (null window-system)
       (set-face-background 'ac-completion-face "blue"))
-
-  (add-to-list 'ac-dictionary-directories
-               (expand-file-name "ac-dict" my-startup-dir))
-  (add-to-list 'ac-user-dictionary-files
-               (expand-file-name "ac.dict" my-startup-dir))
 
   ;;# enable auto-complete in some modes
   (add-to-list 'ac-modes 'org-mode)
