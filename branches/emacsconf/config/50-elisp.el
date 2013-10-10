@@ -170,6 +170,15 @@
 ;; which unconditionally pushes onto the global mark ring, functionality
 ;; which is not possible using vanilla ‘push-mark’.
 (deh-require 'back-button
+  ;; Global mark-ring:
+  ;; C-x C-<SPC>
+  ;; C-x C-<left>
+  ;; C-x C-<right>
+  ;;
+  ;; Local mark-ring:
+  ;; C-x <SPC>
+  ;; C-x <left>
+  ;; C-x <right>
   (setq back-button-never-push-mark t)
   (back-button-mode 1))
 
@@ -631,6 +640,8 @@
 
 (deh-section "highlight-symbol"
   (autoload 'highlight-symbol-mode "highlight-symbol" "hl-s" t)
+  (autoload 'highlight-symbol-at-point "highlight-symbol" "hl-s" t)
+
   (setq highlight-symbol-idle-delay 0.5
         highlight-symbol-on-navigation-p t)
   (when window-system

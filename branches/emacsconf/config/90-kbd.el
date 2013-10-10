@@ -2,6 +2,7 @@
 
 ;; Hi-lock: (("^;;; .*" (0 (quote hi-black-hb) t)))
 ;; Hi-lock: (("^;;;; .*" (0 (quote hi-black-b) t)))
+;; Hi-lock: (("^\s+;;#.*" (0 (quote hi-blue) t)))
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
@@ -14,118 +15,125 @@
 (define-prefix-command 'multi-term-prefix nil "mul-term prefix: C-c t")
 
 ;;; global key binding
-(deh-define-key global-map
-  ((kbd "C-c")    'ctl-c-map)
-  ((kbd "C-z")    'ctl-z-map)
-  ((kbd "C-d")    'delete-char-or-region)
-  ((kbd "<C-delete>")    'delete-char-or-region)
-  ((kbd "C-1")    'extend-selection)
-  ((kbd "C-2")    'set-mark-command)
-  ((kbd "M-9")    'anything)
-  ((kbd "C-m")    'newline-and-indent)
-  ((kbd "C-j")    'newline)
-  ((kbd "C-a")    'my-beginning-of-line)
-  ((kbd "C-e")    'my-end-of-line)
-  ((kbd "C-S-k")  'my-delete-line-backward)
-  ((kbd "C-k")    'my-delete-line)
-  ((kbd "M-d")    'my-delete-word)
-  ((kbd "<M-backspace>")  'my-backward-delete-word)
-  ((kbd "M-DEL")  'my-backward-delete-word) ; mac os x
-  ((kbd "C-o")    'vi-open-next-line)
-  ((kbd "C-M-o")  'split-line)
-  ((kbd "C-'")    'redo)
-  ((kbd "C-\\")   'my-comment-or-uncomment-region)
-  ((kbd "M-5")    'my-display-buffer-path)
-  ((kbd "M-0")    'other-window)
-  ((kbd "C-M-0")  'sr-speedbar-select-window)
-  ((kbd "M-1")    'sdcv-search)
-  ((kbd "M-'")    'just-one-space)
-  ((kbd "M--")    'delete-blank-lines)
-  ((kbd "M-J")    'vi-join-lines)
-  ((kbd "C-M-j")  'vi-merge-lines)
-  ;; ((kbd "M-m")    'smart-mark)
-  ((kbd "M-q")    'compact-uncompact-block)
-  ((kbd "M-[")    'recent-jump-jump-backward)
-  ((kbd "M-]")    'recent-jump-jump-forward)
-  ;; similar to pager-row-up/down
-  ;; ((kbd "<up>") (lambda () (interactive) (scroll-up-command 1)))
-  ;; ((kbd "M-n") (lambda () (interactive) (scroll-up-command 1)))
-  ;; ((kbd "<down>") (lambda () (interactive) (scroll-down-command 1)))
-  ;; ((kbd "M-p")  (lambda () (interactive) (scroll-down-command 1)))
-  ((kbd "<C-M-down>")  'my-move-line-down)
-  ((kbd "<C-M-up>")    'my-move-line-up)
-  ((kbd "<M-S-down>")  'my-dup-line-down)
+(deh-section "kbd-global"
+  (deh-define-key global-map
+    ((kbd "C-c")    'ctl-c-map)
+    ((kbd "C-z")    'ctl-z-map)
+    ((kbd "C-d")    'delete-char-or-region)
+    ((kbd "<C-delete>")    'delete-char-or-region)
+    ((kbd "C-1")    'extend-selection)
+    ((kbd "C-2")    'set-mark-command)
+    ((kbd "M-9")    'anything)
+    ((kbd "C-m")    'newline-and-indent)
+    ((kbd "C-j")    'newline)
+    ((kbd "C-a")    'my-beginning-of-line)
+    ((kbd "C-e")    'my-end-of-line)
+    ((kbd "C-S-k")  'my-delete-line-backward)
+    ((kbd "C-k")    'my-delete-line)
+    ((kbd "M-d")    'my-delete-word)
+    ((kbd "<M-backspace>")  'my-backward-delete-word)
+    ((kbd "M-DEL")  'my-backward-delete-word) ; mac os x
+    ((kbd "C-o")    'vi-open-next-line)
+    ((kbd "C-M-o")  'split-line)
+    ((kbd "C-'")    'redo)
+    ((kbd "C-\\")   'my-comment-or-uncomment-region)
+    ((kbd "M-5")    'my-display-buffer-path)
+    ((kbd "M-0")    'other-window)
+    ((kbd "C-M-0")  'sr-speedbar-select-window)
+    ((kbd "M-1")    'sdcv-search)
+    ((kbd "M-'")    'just-one-space)
+    ((kbd "M--")    'delete-blank-lines)
+    ((kbd "M-J")    'vi-join-lines)
+    ((kbd "C-M-j")  'vi-merge-lines)
+    ;; ((kbd "M-m")    'smart-mark)
+    ((kbd "M-q")    'compact-uncompact-block)
+    ((kbd "M-[")    'recent-jump-jump-backward)
+    ((kbd "M-]")    'recent-jump-jump-forward)
+    ;; similar to pager-row-up/down
+    ;; ((kbd "<up>") (lambda () (interactive) (scroll-up-command 1)))
+    ;; ((kbd "M-n") (lambda () (interactive) (scroll-up-command 1)))
+    ;; ((kbd "<down>") (lambda () (interactive) (scroll-down-command 1)))
+    ;; ((kbd "M-p")  (lambda () (interactive) (scroll-down-command 1)))
+    ((kbd "<C-M-down>")  'my-move-line-down)
+    ((kbd "<C-M-up>")    'my-move-line-up)
+    ((kbd "<M-S-down>")  'my-dup-line-down)
 ;;;; highlight symbol
-  ((kbd "<C-f3>")  'highlight-symbol-at-point)
-  ((kbd "<f3>")    'highlight-symbol-next)
-  ((kbd "<S-f3>")  'highlight-symbol-prev)
+    ((kbd "<C-f3>")  'highlight-symbol-at-point)
+    ((kbd "<f3>")    'highlight-symbol-next)
+    ((kbd "<S-f3>")  'highlight-symbol-prev)
 ;;;; one key
-  ((kbd "<f12>") 'one-key-menu-toggle)
+    ((kbd "<f12>") 'one-key-menu-toggle)
 
-  ((kbd "<f8>")   'org-agenda)
-  ((kbd "<f7>")   'calendar)
-  ((kbd "C-h j")  (lambda () (interactive) (info "elisp")))
-  ((kbd "C-h C-w")  'woman)
-  ((kbd "<C-mouse-4>")  'text-scale-increase)
-  ((kbd "<C-mouse-5>")  'text-scale-decrease)
-  ((kbd "<C-down-mouse-1>")  'undefined)
-  )
+    ((kbd "<f8>")   'org-agenda)
+    ((kbd "<f7>")   'calendar)
+    ((kbd "C-h j")  (lambda () (interactive) (info "elisp")))
+    ((kbd "C-h C-w")  'woman)
+    ((kbd "<C-mouse-4>")  'text-scale-increase)
+    ((kbd "<C-mouse-5>")  'text-scale-decrease)
+    ((kbd "<C-down-mouse-1>")  'undefined)
+    ))
 
-(deh-define-key ctl-x-map
-  ("\C-b"  'ibuffer)
-  ("\C-j"  'dired-jump)
-  ("\C-t"  'transpose-sexps)
-  ("\C-r"  'find-file-root)
-  ("\C-k"  'kill-this-buffer)
-  ("\C-o"  'my-switch-recent-buffer)
-  ("\C-_"  'fit-frame)
-  ;; ("t"     'template-expand-template)
-  ;; ("m"     'message-mail)
-  ("\\" 'align-regexp)
-  )
+(deh-section "kbd-ctl-x"
+  (deh-define-key ctl-x-map
+    ("\C-b"  'ibuffer)
+    ("\C-j"  'dired-jump)
+    ("\C-t"  'transpose-sexps)
+    ("\C-r"  'find-file-root)
+    ("\C-k"  'kill-this-buffer)
+    ("\C-o"  'my-switch-recent-buffer)
+    ("\C-_"  'fit-frame)
+    ;; ("t"     'template-expand-template)
+    ;; ("m"     'message-mail)
+    ("\\" 'align-regexp)
+    ))
 
-(deh-define-key ctl-c-map
-  ("b"  'bm-prefix)
-  ("k"  'one-key-prefix)
-  ("t"  'multi-term-prefix)
-  ("c"  'ctl-cc-map)
-  ("\C-k" 'kmacro-keymap)
-  ("$"  'toggle-truncate-lines)
-  ;; ("f"  'comint-dynamic-complete)
-  ("g"  'magit-status)
-  ("l"  'magit-log)
-  ("i"  'imenu)
-  ("j"  'ffap)
-  ("r"  'org-capture)
-  ;; ("k"  'auto-fill-mode)
-  ;; ("q"  'refill-mode)
-  ;; ("u"  'revert-buffer)
-  ;; ("v"  'imenu-tree)
-  ;; ("w"  'my-favorite-window-config)
-  ("\C-b"  'browse-url-at-point)
-  ;; ("\C-b"  'browse-url-of-buffer)
-  ("\C-t"  'tv-view-history)
-  ("\t"  'tempo-complete-tag)
-  )
+(deh-section "kbd-ctl-c"
+  (deh-define-key ctl-c-map
+    ("b"  'bm-prefix)
+    ("k"  'one-key-prefix)
+    ("t"  'multi-term-prefix)
+    ("c"  'ctl-cc-map)
+    ("\C-k" 'kmacro-keymap)
+    ("$"  'toggle-truncate-lines)
+    ;; ("f"  'comint-dynamic-complete)
+    ("g"  'magit-status)
+    ("l"  'magit-log)
+    ("i"  'imenu)
+    ("j"  'ffap)
+    ("r"  'org-capture)
+    ("\C-j" 'ace-jump-mode)
+    ("\C-p" 'ace-jump-mode-pop-mark)
+    ;; ("k"  'auto-fill-mode)
+    ;; ("q"  'refill-mode)
+    ;; ("u"  'revert-buffer)
+    ;; ("v"  'imenu-tree)
+    ;; ("w"  'my-favorite-window-config)
+    ("\C-b"  'browse-url-at-point)
+    ;; ("\C-b"  'browse-url-of-buffer)
+    ("\C-t"  'tv-view-history)
+    ("\t"  'tempo-complete-tag)
+    ))
 
-(deh-define-key ctl-cc-map
-  ("b"  'my-revert-buffer)
-  ("c"  'my-switch-scratch)
-  ("d"  'deh-customize-inplace)
-  ("f"  'find-library)
-  ("h"  'highlight-symbol-at-point)
-  ("i"  'ispell-word)
-  ("m"  'desktop-menu)
-  ("n"  'my-clone-buffer)
-  ("o"  'recentf-open-files-compl)
-  ("r"  'buffer-action-run)
-  ("s"  'buffer-action-compile)
-  ("t"  'auto-insert)
-  ("u"  'undo-tree-visualize)
-  ("v"  'view-mode)
-  ("\t" 'ispell-complete-word)
-  )
+(deh-section "kbd-ctl-cc"
+  (deh-define-key ctl-cc-map
+    ("b"  'my-revert-buffer)
+    ("c"  'my-switch-scratch)
+    ("d"  'deh-customize-inplace)
+    ("f"  'find-library)
+    ("h"  'highlight-symbol-at-point)
+    ("i"  'ispell-word)
+    ("m"  'desktop-menu)
+    ("n"  'my-clone-buffer)
+    ("o"  'recentf-open-files-compl)
+    ("r"  'buffer-action-run)
+    ("s"  'buffer-action-compile)
+    ("t"  'auto-insert)
+    ("u"  'undo-tree-visualize)
+    ("v"  'view-mode)
+    ("\t" 'ispell-complete-word)
+    ))
 
+;;; Other keybinds
 (deh-define-key bm-prefix
   ("b"  'bm-toggle)
   ("n"  'bm-next)
@@ -150,7 +158,6 @@
 
 ;;; one-key settings
 (deh-require 'one-key
-
   (custom-set-faces
    '(one-key-keystroke ((t (:foreground "DarkRed" :weight bold))))
    '(one-key-prompt ((t (:foreground "navy"))))
@@ -166,9 +173,10 @@
     ("s"  'one-key-menu-hideshow)
     ("v"  'one-key-menu-vc)
     ("w"  'one-key-menu-window)
+    ("p"  'one-key-menu-projectile)
     )
 
-;;;; Root
+  ;;# Root
   (defun one-key-menu-root ()
     "The `one-key' menu for root."
     (interactive)
@@ -182,9 +190,10 @@
        (("h" . "Highlight") . one-key-menu-highlight)
        (("s" . "Show Hide") . one-key-menu-hideshow)
        (("v" . "Version Control") . one-key-menu-vc)
-       (("w" . "Window") . one-key-menu-window))))
+       (("w" . "Window") . one-key-menu-window)
+       (("p" . "Projectile") . one-key-menu-projectile))))
 
-;;;; Anything
+  ;;# Anything
   (defun one-key-menu-anything ()
     "The `one-key' menu for ANYTHING."
     (interactive)
@@ -206,7 +215,7 @@
        (("SPC" . "Execute anything commands") . anything-execute-anything-command)
        ) t))
 
-;;;; helm
+  ;;# helm
   (defun one-key-menu-helm ()
     "The `one-key' menu for HELM."
     (interactive)
@@ -226,7 +235,7 @@
        (("m" . "Man Pages") . helm-man-woman)
        ) t))
 
-;;;; Toggle
+  ;;# Toggle
   (defun one-key-menu-toggle ()
     "The `one-key' menu for TOGGLE."
     (interactive)
@@ -244,7 +253,7 @@
        (("w" . "W3m") . my-toggle-w3m)
        ) t))
 
-;;;; Gtags
+  ;;# Gtags
   (defun one-key-menu-gtags ()
     "The `one-key' menu for GTAGS."
     (interactive)
@@ -269,7 +278,7 @@
        (("v" . "Visit Root Directory") . gtags-visit-rootdir)
        (("r" . "Return Window") . gtags-select-tag-return-window)) t))
 
-;;;; Cscope
+  ;;# Cscope
   (defun one-key-menu-cscope ()
     "The `one-key' menu for CSCOPE."
     (interactive)
@@ -286,7 +295,7 @@
        (("p" . "Pattern") . cscope-find-egrep-pattern)
        (("t" . "This String") . cscope-find-this-text-string)) t))
 
-;;;; Highlight
+  ;;# Highlight
   (defun one-key-menu-highlight ()
     "The `one-key' menu for Highlight."
     (interactive)
@@ -301,7 +310,7 @@
        (("P" . "Previous Highlight In Defun") . highlight-symbol-prev-in-defun)
        (("q" . "Replace symbol At Point") . highlight-symbol-query-replace)) t))
 
-;;;; Hideshow
+  ;;# Hideshow
   (defun one-key-menu-hideshow ()
     "The `one-key' menu for HIDESHOW."
     (interactive)
@@ -314,7 +323,7 @@
        (("j" . "Show All") . hs-show-all)
        (("k" . "Hide All") . hs-hide-all)) t))
 
-;;;; Window
+  ;;# Window
   (defun one-key-menu-window ()
     "The `one-key' menu for WINDOW."
     (interactive)
@@ -328,7 +337,7 @@
        (("h" . "Enlarge H.") . enlarge-window-horizontally)
        (("y" . "Shrink H.") . shrink-window-horizontally)) t))
 
-;;;; Verson control
+  ;;# Verson control
   (defun one-key-menu-vc ()
     "The `one-key' menu for VERSION CONTROL."
     (interactive)
@@ -352,5 +361,25 @@
        (("s" . "Create Tag") . vc-create-tag)
        (("u" . "Revert") . vc-revert)
        (("v" . "Commit") . vc-next-action)
+       ) t))
+  ;;# projectile
+  (defun one-key-menu-projectile ()
+    "The `one-key' menu for Projectile."
+    (interactive)
+    (one-key-menu
+     "Projectile"
+     '(
+       (("f" . "Find file") . projectile-find-file)
+       (("z" . "Add to cache") . projectile-cache-current-file)
+       (("s" . "Swith project") . projectile-switch-project)
+       (("g" . "Grep") . projectile-grep)
+       (("b" . "Swith buffer") . projectile-switch-to-buffer)
+       (("o" . "Multi occur") . projectile-multi-occur)
+       (("r" . "Replace") . projectile-replace)
+       (("e" . "Recent opened") . projectile-recentf)
+       (("k" . "Kill all buffers") . projectile-kill-buffers)
+       (("D" . "Root dired") . projectile-dired)
+       (("R" . "Regenerate Tags") . projectile-regenerate-tags)
+       (("c" . "Compile!") . projectile-compile-project)
        ) t))
   )

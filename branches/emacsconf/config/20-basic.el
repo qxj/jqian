@@ -25,7 +25,7 @@
   (defun get-lines-4-mode-line ()
     (let ((lines (count-lines (point-min) (point-max))))
       (concat (propertize
-               (concat "%l:" (format "%dL" lines))
+               (concat "%l:%c " (format "%dL" lines))
                'mouse-face 'mode-line-highlight
                ;; 'face 'mode-line-lines-face
                'help-echo (format "%d lines" lines)) " ")))
@@ -614,13 +614,14 @@ mouse-3: Remove current window from display")
   (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
 
   (deh-define-key global-map
-    ((kbd "C-c C-a") 'ace-jump-mode)
+    ((kbd "C-c C-j") 'ace-jump-mode)
     ((kbd "C-M-SPC") 'ace-jump-mode)
     ((kbd "C-c C-p") 'ace-jump-mode-pop-mark)
     ((kbd "M-4") 'ace-jump-char-mode)
     ((kbd "C-4") 'ace-jump-mode)))
 
-(deh-require-reserved 'iy-go-to-char    ; simulate `f' in VIM
+;; simulate `f' in VIM
+(deh-require-reserved 'iy-go-to-char    ; obsolete by jump-char
   (deh-define-key global-map
     ;; ((kbd "C-c f") 'iy-go-to-char)
     ;; ((kbd "C-c ;") 'iy-go-to-char-continue)
@@ -631,6 +632,12 @@ mouse-3: Remove current window from display")
 
   (setq iy-go-to-char-key-forward ?\;
         iy-go-to-char-key-backward ?\,))
+
+(deh-section "jump-char"
+  (autoload 'jump-char-forward "jump-char" "Jump forward" t)
+  (autoload 'jump-char-backward "jump-char" "Jump backward" t)
+  (global-set-key [(meta m)] 'jump-char-forward) ;override back-to-indentation
+  (global-set-key [(shift meta m)] 'jump-char-backward))
 
 (deh-section "occur"
   (deh-add-hook 'occur-mode-hook
@@ -798,12 +805,12 @@ mouse-3: Remove current window from display")
 
 (deh-section-after "hideshow"           ; for semantic code
   (deh-define-key hs-minor-mode-map
-    ("\C-c\C-hh"  'hs-hide-block)
-    ("\C-c\C-hs"  'hs-show-block)
-    ("\C-c\C-hH"  'hs-hide-all)
-    ("\C-c\C-hS"  'hs-show-all)
-    ("\C-c\C-ht"  'hs-toggle-hiding)
-    ("\C-c\C-h\C-h"  'hs-toggle-hiding)
+    ("\C-c\C-ah"  'hs-hide-block)
+    ("\C-c\C-as"  'hs-show-block)
+    ("\C-c\C-aH"  'hs-hide-all)
+    ("\C-c\C-aS"  'hs-show-all)
+    ("\C-c\C-at"  'hs-toggle-hiding)
+    ("\C-c\C-a\C-a"  'hs-toggle-hiding)
     ((kbd "<left-fringe> <mouse-2>")  'hs-mouse-toggle-hiding))
 
   (defvar hs--overlay-keymap nil "keymap for folding overlay")
@@ -824,12 +831,12 @@ mouse-3: Remove current window from display")
             (overlay-put ov 'pointer 'hand)))))
 
 (deh-section-after "outline"            ; for literal text
-  (setq outline-minor-mode-prefix (kbd "C-c C-h"))
+  (setq outline-minor-mode-prefix (kbd "C-c C-a"))
   (deh-define-key outline-minor-mode-map
-    ("\C-c\C-hs"  'show-subtree)
-    ("\C-c\C-hS"  'show-all)
-    ("\C-c\C-hh"  'hide-subtree)
-    ("\C-c\C-hH"  'hide-body)
+    ("\C-c\C-as"  'show-subtree)
+    ("\C-c\C-aS"  'show-all)
+    ("\C-c\C-ah"  'hide-subtree)
+    ("\C-c\C-aH"  'hide-body)
     ;; shortcuts
     ((kbd "<right>")  'show-subtree)
     ((kbd "<M-right>")  'show-all)
@@ -840,11 +847,11 @@ mouse-3: Remove current window from display")
     ((kbd "<M-up>")  'outline-previous-visible-heading)
     ((kbd "<M-down>")  'outline-next-visible-heading)
     ;; xwl keybinds
-    ("\C-c\C-hn"  'xwl-narrow-to-outline-level)
-    ("\C-c\C-hu"  'xwl-outline-toggle-enter-exit)
-    ("\C-c\C-hq"  'xwl-outline-toggle-show-hide)
-    ("\C-c\C-ht"  'xwl-outline-toggle-show-hide)
-    ("\C-c\C-h\C-h"  'xwl-outline-toggle-show-hide))
+    ("\C-c\C-an"  'xwl-narrow-to-outline-level)
+    ("\C-c\C-au"  'xwl-outline-toggle-enter-exit)
+    ("\C-c\C-aq"  'xwl-outline-toggle-show-hide)
+    ("\C-c\C-at"  'xwl-outline-toggle-show-hide)
+    ("\C-c\C-a\C-a"  'xwl-outline-toggle-show-hide))
 
   (defadvice outline-mode (after hide-sublevels)
     "Enter overview after start up `outline-mode'."
