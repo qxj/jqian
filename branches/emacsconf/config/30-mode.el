@@ -122,7 +122,7 @@
 
   ;; (add-hook 'prog-mode-hook 'my-prog-mode-hook)
 
-  (defun my-text-mode-hook              ; literal hook
+  (defun my-text-mode-hook ()           ; literal hook
     (abbrev-mode 1)
     (outline-minor-mode 1)
     (toggle-truncate-lines -1)
