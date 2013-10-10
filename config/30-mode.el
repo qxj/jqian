@@ -173,11 +173,11 @@
   )
 
 ;;; tags
-(deh-section "ebrowse"
+(deh-section-reserved "ebrowse"
   (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
   (setq ebrowse-global-prefix-key "\C-z"))
 
-(deh-section "etags"
+(deh-section-reserved "etags"
   (defun my-find-top-directory (file &optional dir)
     (or dir (setq dir (expand-file-name default-directory)))
     (let ((thefile (expand-file-name file dir)))
