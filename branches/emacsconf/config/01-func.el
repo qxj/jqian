@@ -569,18 +569,18 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
   "Auto generate autoloads into '100-loaddefs.el'."
   (interactive "P")
   (require 'autoload)
-  (with-temp-buffer
-    (let* ((autoload-file (or autoload-file
-                              (expand-file-name "100-loaddefs.el" my-config-dir)))
-           (files (find-files-in-directory my-startup-dir "\\.el$")))
-      (when (or force-generate
-                (not (file-exists-p autoload-file))
-                (some (lambda (f) (file-newer-than-file-p f autoload-file)) files))
-        (message "Updating autoloads...")
-        (dolist (file files)
-          (generate-file-autoloads file))
-        (write-region (point-min) (point-max) autoload-file)
-        (load autoload-file)))))
+  (let* ((autoload-file (or autoload-file
+                            (expand-file-name "100-loaddefs.el" my-config-dir)))
+         (files (find-files-in-directory my-startup-dir "\\.el$")))
+    (when (or force-generate
+              (not (file-exists-p autoload-file))
+              (some (lambda (f) (file-newer-than-file-p f autoload-file)) files))
+      (message "Updating autoloads...")
+      (find-file autoload-file)
+      (dolist (file files) (generate-file-autoloads file))
+      (save-buffer)
+      (kill-buffer)
+      (load autoload-file))))
 
 (defun my-byte-recompile-directory-recursively (&optional specified)
   "Recompile all the .el files under DIR, if they're not up to
