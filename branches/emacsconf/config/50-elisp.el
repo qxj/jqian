@@ -645,6 +645,11 @@
   (setq hi-lock-file-patterns-range 5000
         hi-lock-file-patterns-policy '(lambda (dummy) t)))
 
+(deh-section "rainbow-mode"
+  (autoload 'rainbow-mode "rainbow-mode" "Background colors" t)
+  ;; (add-hook 'prog-mode-hook 'rainbow-mode)
+  )
+
 ;;; Project
 
 ;; Currently git, mercurial, darcs and bazaar repos are considered
@@ -653,8 +658,29 @@
 ;; create an empty .projectile file in it.
 (deh-require 'projectile
   (projectile-global-mode)
-  (setq projectile-cache-file (expand-file-name "projectile.cache" my-data-dir)
-        projectile-known-projects-file (expand-file-name "projectile-bookmarks.eld" my-data-dir))
+  (setq projectile-cache-file
+        (expand-file-name "projectile.cache" my-data-dir)
+        projectile-known-projects-file
+        (expand-file-name "projectile-bookmarks.eld" my-data-dir))
+  (setq projectile-switch-project-action 'projectile-dired
+        projectile-completion-system 'ido)
+  (dolist (dir '(".svn" "CVS" "bin"))
+    (add-to-list 'projectile-globally-ignored-directories dir))
+  (dolist (dir '("ede-project.el"))
+    (add-to-list 'projectile-project-root-files dir))
+  (dolist (file '("GTAGS" "GPATH" "GRTAGS"))
+    (add-to-list 'projectile-globally-ignored-files file))
+
+  ;; C-c p f projectile-find-file
+  ;; C-c p z projectile-cache-current-file
+  ;; C-c p s projectile-switch-project
+  ;; C-c p g projectile-grep
+  ;; C-c p b projectile-switch-to-buffer
+  ;; C-c p o projectile-multi-occur
+  ;; C-c p r projectile-replace
+  ;; C-c p e projectile-recentf
+  ;; C-c p R projectile-regenerate-tags
+  ;; C-c p c projectile-compile-project
   )
 
 ;; Grizzl is a small utility library to be used in other Elisp code
@@ -698,10 +724,6 @@
   ;;       vc-diff-switches '("--normal" "-bB"))
   )
 
-(deh-require-reserved 'git-emacs-autoloads
-  (setq git-state-modeline-decoration 'git-state-decoration-large-dot)
-  )
-
 ;; Crash Course on Emacswiki:
 ;;
 ;; - M-x magit-status to see git status, and in the status buffer:
@@ -726,6 +748,7 @@
 (deh-require 'diminish
   (diminish 'abbrev-mode "Abv")
   (deh-after-load "undo-tree" (diminish 'undo-tree-mode))
+  (deh-after-load "back-button" (diminish 'back-button-mode))
   (deh-after-load "projectile" (diminish 'projectile-mode))
   (deh-after-load "helm-mode" (diminish 'helm-mode))
   (deh-after-load "highlight-symbol" (diminish 'highlight-symbol-mode))
