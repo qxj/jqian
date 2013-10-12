@@ -727,13 +727,15 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;
   ;; http://tkf.github.io/emacs-jedi/released/#install
   ;;
-  ;; (autoload 'jedi:setup "jedi" nil t)
-  (deh-require 'jedi
+  (deh-section "jedi"
+    (autoload 'jedi:setup "jedi" nil t)
     (autoload 'jedi-direx:pop-to-buffer "jedi-direx" nil t)
-    (add-hook 'python-mode-hook 'jedi:setup)
-    (setq jedi:setup-keys t
+
+    (setq jedi:setup-keys t             ;set it before jedi loaded
           jedi:complete-on-dot t
-          jedi:tooltip-method nil))
+          jedi:tooltip-method nil
+          jedi:use-shortcuts t)
+    (add-hook 'python-mode-hook 'jedi:setup))
 
   ;;# Preparation:
   ;;
