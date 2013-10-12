@@ -581,6 +581,10 @@ mouse-3: Remove current window from display")
     (deh-define-key Info-mode-map
       ((kbd "M-p") 'pager-row-up)
       ((kbd "M-n") 'pager-row-down)))
+  (deh-after-load "help-mode"
+    (deh-define-key help-mode-map
+      ((kbd "M-p") 'pager-row-up)
+      ((kbd "M-n") 'pager-row-down)))
   (deh-after-load "man"
     (deh-define-key Man-mode-map
       ((kbd "M-p") 'pager-row-up)
