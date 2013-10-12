@@ -711,6 +711,7 @@ Use CREATE-TEMP-F for creating temp copy."
     (my-prog-mode-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
+    (call-interactively 'run-python)    ;workaound for eldoc error
     )
 
   (autoload 'doctest-mode "doctest-mode" "Python doctest editing mode." t)
@@ -734,7 +735,8 @@ Use CREATE-TEMP-F for creating temp copy."
     (setq jedi:setup-keys t             ;set it before jedi loaded
           jedi:complete-on-dot t
           jedi:tooltip-method nil
-          jedi:use-shortcuts t)
+          jedi:use-shortcuts t
+          jedi:install-imenu t)
     (add-hook 'python-mode-hook 'jedi:setup))
 
   ;;# Preparation:
