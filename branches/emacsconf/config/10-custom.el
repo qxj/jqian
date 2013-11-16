@@ -4,14 +4,16 @@
 
 (setq debug-on-error nil debug-on-quit nil)
 
+(defconst my-iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
+
 ;;{{{ Generic Settings
 ;; syntax highlight
-(cond ((fboundp 'global-font-lock-mode)
-       ;; Turn on font-lock in all modes that support it
-       (global-font-lock-mode t)
-       ;; Maximum colors
-       (setq font-lock-maximum-decoration t)
-       (setq scalable-fonts-allowed t)))
+;; (cond ((fboundp 'global-font-lock-mode)
+;;        ;; Turn on font-lock in all modes that support it
+;;        (global-font-lock-mode t)
+;;        ;; Maximum colors
+;;        (setq font-lock-maximum-decoration t
+;;              scalable-fonts-allowed t)))
 (setq font-lock-maximum-size
       (quote ((t . 1280000) (c-mode . 256000) (c++-mode . 256000))))
 (setq-default default-directory (expand-file-name "~/"))

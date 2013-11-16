@@ -10,7 +10,7 @@
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
-(deh-require 'undo-tree
+(deh-require-reserved 'undo-tree        ; disable it, cause C-g abnormal
   (global-undo-tree-mode))
 
 (deh-require 'browse-kill-ring
