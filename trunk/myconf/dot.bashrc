@@ -46,7 +46,7 @@ if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
     # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
     # a case would tend to support setf rather than setaf.)
     color_prompt=yes
-else
+fi
 
 if [ "$color_prompt" = yes ]; then
     if [ "$(/usr/bin/id -u)" != "0" ]; then
