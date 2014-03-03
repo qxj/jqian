@@ -85,3 +85,12 @@ C-M-d, M-x down-list
 
 * make the current definition and/or comment visible.
 C-M-l, M-x reposition-window
+
+* profiling emacs performance
+** elp.el (old instrumenting profiler)
+** profiler.el, Emacs 24.3+
+M-x profiler-start
+M-x profiler-report
+M-x profiler-stop
+
+http://stackoverflow.com/questions/568150/tips-for-profiling-misbehaving-emacs-lisp

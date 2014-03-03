@@ -28,6 +28,8 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
 (require 'ring)
 
 (require 'epc)
@@ -230,8 +232,9 @@ Default is `jedi:create-nested-imenu-index'."
 (defcustom jedi:setup-keys nil
   "Setup recommended keybinds.
 
-.. warning:: Use of this value is obsolete now.
-   As of 0.1.3, jedi.el has default keybinds.
+.. warning:: Use of this value is obsolete now.  As of 0.1.3,
+   jedi.el has default keybinds, which are different than these. See also
+   `jedi-mode'.
 
 .. admonition:: Default keybinds
 
@@ -242,7 +245,7 @@ Default is `jedi:create-nested-imenu-index'."
        Goto the definition of the object at point. (`jedi:goto-definition')
 
    ``C-c d`` : = `jedi:key-show-doc'
-       Goto the definition of the object at point. (`jedi:show-doc')
+       Show the documentation of the object at point. (`jedi:show-doc')
 
    ``C-c r`` : = `jedi:key-related-names'
        Find related names of the object at point.
@@ -561,7 +564,7 @@ See: https://github.com/tkf/emacs-jedi/issues/54"
     (deferred:nextc (jedi:complete-request)
       (lambda ()
         (let ((ac-expand-on-auto-complete expand))
-          (ac-start))))))
+          (ac-start :triggered 'command))))))
 ;; Calling `auto-complete' or `ac-update-greedy' instead of `ac-start'
 ;; here did not work.
 
@@ -569,7 +572,9 @@ See: https://github.com/tkf/emacs-jedi/issues/54"
   "Insert dot and complete code at point."
   (interactive)
   (insert ".")
-  (unless (ac-cursor-on-diable-face-p)
+  (unless (or (ac-cursor-on-diable-face-p)
+              ;; don't complete if the dot is immediately after int literal
+              (looking-back "\\(\\`\\|[^._[:alnum:]]\\)[0-9]+\\."))
     (jedi:complete :expand nil)))
 
 
