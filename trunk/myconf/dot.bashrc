@@ -35,33 +35,40 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-fi
-
-color_prompt=
-if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-    # We have color support; assume it's compliant with Ecma-48
-    # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-    # a case would tend to support setf rather than setaf.)
-    color_prompt=yes
-fi
-
-if [ "$color_prompt" = yes ]; then
-    if [ "$(/usr/bin/id -u)" != "0" ]; then
-        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[00m\]@\[\033[01;32m\]\h\[\033[00m\][\[\033[01;33m\]\t\[\033[00m\]]:\[\033[01;34m\]\w\[\033[00m\]\n$ '
-    else
-        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\h\[\033[00m\][\[\033[01;33m\]\t\[\033[00m\]]:\[\033[01;34m\]\w\[\033[00m\]\n# '
+# make prompt more friendly
+function my_prompt()
+{
+    if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+        debian_chroot=$(cat /etc/debian_chroot)
     fi
-else
-    if [ "$(/usr/bin/id -u)" != "0" ]; then
-        PS1='${debian_chroot:+($debian_chroot)}\u@\h[\t]:\w\n$ '
-    else
-        PS1='${debian_chroot:+($debian_chroot)}\h[\t]:\w\n# '
+    local is_color=
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        is_color=yes
     fi
-fi
-unset color_prompt
+    local is_root=
+    if [ $(/usr/bin/id -u) -eq 0 ]; then
+        is_root=yes
+    fi
+    local git_branch=
+    if [ $(which git) ]; then
+        git_branch='`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'
+    fi
+
+    if [ $is_color ]; then
+        if [ $is_root ]; then
+            PS1="${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\h\[\033[00m\][\[\033[01;33m\]\t\[\033[00m\]]:\[\033[01;34m\]\w\[\033[00m\]\n# "
+        else
+            PS1="${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[00m\]@\[\033[01;32m\]\h\[\033[00m\][\[\033[01;33m\]\t\[\033[00m\]]:\[\033[01;35m\]$git_branch\[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\n$ "
+        fi
+    else
+        if [ $is_root ]; then
+            PS1="${debian_chroot:+($debian_chroot)}\h[\t]:\w\n# "
+        else
+            PS1="${debian_chroot:+($debian_chroot)}\u@\h[\t]:\w\n$ "
+        fi
+    fi
+}
+my_prompt
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -73,6 +80,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
+alias ls='ls -G'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -91,7 +99,8 @@ alias urldecode="python -c \"import re,sys;print re.sub(r'%([0-9a-hA-H]{2})',lam
 
 # timestamp to date string
 # e.g.: ts2ds "2013-01-01 12:01:05" "+%Y-%m-%d %H:%M:%S"
-function ts2ds() {
+function ts2ds()
+{
     if [[ -n $2 ]]; then
         fmt=$2
     else
@@ -101,13 +110,15 @@ function ts2ds() {
 }
 
 # date string to timestamp
-function ds2ts() {
+function ds2ts()
+{
     date -d "$1" +%s
 }
 
 # print date string one-by-one from one day to another day
 # e.g.: print_ds 20130103 20130604 +%Y%m%d
-function print_ds() {
+function print_ds()
+{
     if [[ -n $1 ]]; then
         ds1=today
     else
@@ -143,7 +154,8 @@ function print_ds() {
     done
 }
 
-function settitle() {
+function settitle()
+{
   echo -ne "\e]2;$@\a\e]1;$@\a";
 }
 
@@ -153,7 +165,8 @@ function settitle() {
 # acd_func 1.0.5, 10-nov-2004
 # Petar Marinov, http:/geocities.com/h2428, this is public domain
 
-function cd_func() {
+function cd_func()
+{
   local x2 the_new_dir adir index
   local -i cnt
 
@@ -216,6 +229,11 @@ fi
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-fi
+case $OSTYPE in
+    darwin*)
+        test -f $(brew --prefix)/etc/bash_completion && . $(brew --prefix)/etc/bash_completion
+        ;;
+    linux)
+        test -f /etc/bash_completion && . /etc/bash_completion
+        ;;
+esac
