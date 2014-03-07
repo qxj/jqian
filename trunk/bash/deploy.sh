@@ -1,4 +1,11 @@
 #!/bin/sh
+# @(#) deploy.sh  Time-stamp: <Julian Qian 2014-03-06 11:00:37>
+# Copyright 2011, 2014 Tencent Inc.
+# Author: Julian Qian <jqian@tencent.com>
+# Version: $Id: deploy.sh,v 0.1 2011-12-06 10:54:38 jqian Exp $
+#
+
+VERBOSE=1
 
 ipfile=$1
 user=$2
@@ -79,7 +86,11 @@ _ssh_login() {
     user=$1
     passwd=$2
     ip=$3
+    if [[ -n $VERBOSE ]]; then
+        echo "[1;31mLOGIN[0m $user[1;31m:[0m$passwd[1;31m@[0m$ip"
+    fi
     expect -c "set timeout 30
+log_user 0
 spawn ssh $user@$ip -q
 expect {
     \"assword:\" {
@@ -106,6 +117,7 @@ expect {
         exit 1
     }
 }
+log_user 1
 "
 }
 
@@ -113,6 +125,7 @@ _ssh_run() {
     passwd=$1
     cmd=$2
     expect -c "set timeout 3600
+log_user 0
 spawn $cmd
 expect {
     \"assword:\" {
@@ -133,6 +146,11 @@ expect {
         exit 1
     }
 }
+expect {
+    \"Authentication*\" {}
+    \"Received*\" {}
+}
+log_user 1
 expect eof
 "
 }
@@ -142,7 +160,10 @@ _ssh_exec() {
     passwd=$2
     ip=$3
     cmd=$4
-    _ssh_run $passwd "ssh $user@$ip \"$cmd\""
+    if [[ -n $VERBOSE ]]; then
+        echo "[1;31mEXEC[0m $ip[1;31m:[0m $cmd"
+    fi
+    _ssh_run $passwd "ssh -o StrictHostKeyChecking=no $user@$ip \"$cmd\""
 }
 
 _ssh_to() {
@@ -151,7 +172,11 @@ _ssh_to() {
     ip=$3
     fa=$4
     fb=$5
-    _ssh_run $passwd "scp -r $fa $user@$ip:$fb"
+    if [[ -n $VERBOSE ]]; then
+        echo "[1;31mSCP[0m local:$fa [1;31m->[0m $ip:$fb"
+    fi
+    _ssh_run $passwd "scp -o StrictHostKeyChecking=no -c blowfish -r $fa $user@$ip:$fb"
+    # _ssh_run $passwd "scp -C -c blowfish -r $fa $user@$ip:$fb"
 }
 
 _ssh_from() {
@@ -160,7 +185,10 @@ _ssh_from() {
     ip=$3
     fa=$4
     fb=$5
-    _ssh_run $passwd "scp -r $user@$ip:$fa $fb"
+    if [[ -n $VERBOSE ]]; then
+        echo "[1;31mSCP[0m $ip:$fa [1;31m->[0m local:$fb"
+    fi
+    _ssh_run $passwd "scp -o StrictHostKeyChecking=no -c blowfish -r $user@$ip:$fa $fb"
 }
 
 cmdlogin() {
@@ -305,4 +333,4 @@ case $1X in
         ;;
 esac
 
-exit 0
+exit 0 
