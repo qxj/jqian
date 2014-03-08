@@ -6,6 +6,14 @@
 
 (defconst my-iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
 
+(defvar my-include-dirs
+  (let (dirs
+        (incs '("include" "inc" "common"))
+        (updirs '("./" "../" "../../" "../../../" "../../../../")))
+    (dolist (dir updirs)
+      (setq dirs (append dirs (mapcar (lambda (x) (concat dir x)) incs))))
+    (append updirs dirs)))
+
 ;;{{{ Generic Settings
 ;; syntax highlight
 ;; (cond ((fboundp 'global-font-lock-mode)
