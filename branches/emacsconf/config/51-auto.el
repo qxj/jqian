@@ -197,6 +197,7 @@ indent line."
      ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
      ((executable-find "clang")
       (deh-try-require 'auto-complete-clang
+        (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
         (setq ac-sources '(ac-source-clang))))))
 
   ;; python

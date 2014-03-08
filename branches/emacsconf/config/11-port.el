@@ -2,14 +2,6 @@
 ;; This config is for portable. The platform relate configuration
 ;; should appear here.
 
-(defvar my-include-dirs
-  (let (dirs
-        (incs '("include" "inc" "common"))
-        (updirs '("./" "../" "../../" "../../../" "../../../../")))
-    (dolist (dir updirs)
-      (setq dirs (append dirs (mapcar (lambda (x) (concat dir x)) incs))))
-    (append updirs dirs)))
-
 (deh-section "env"
   (setenv "GIT_PAGER" "cat")
   (setenv "PAGER" "cat")
