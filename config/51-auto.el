@@ -198,7 +198,11 @@ indent line."
      ((executable-find "clang")
       (deh-try-require 'auto-complete-clang
         (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
-        (setq ac-sources '(ac-source-clang))))))
+        (setq ac-sources '(ac-source-clang)))))
+
+    (deh-try-require 'auto-complete-c-headers
+      (add-to-list 'ac-sources 'ac-source-c-headers)
+      (setq achead:include-directories (append achead:include-directories my-include-dirs))))
 
   ;; python
   (defun ac-python-mode-setup ()

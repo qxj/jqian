@@ -662,7 +662,17 @@ Use CREATE-TEMP-F for creating temp copy."
   (autoload 'flycheck-mode "flycheck" "flycheck-mode" t)
   (dolist (mode '(sh-mode-hook python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
-  (setq flycheck-indication-mode 'right-fringe))
+  (setq flycheck-indication-mode 'right-fringe)
+
+  (deh-after-load "flycheck"
+    (deh-try-require 'flycheck-google-cpplint
+      ;; Add Google C++ Style checker.
+      ;; In default, syntax checked by Clang and Cppcheck.
+      (flycheck-add-next-checker 'c/c++-cppcheck
+                                 '(warnings-only . c/c++-googlelint))
+      (setq flycheck-c/c++-googlelint-executable
+            (expand-file-name "misc/cpplint.py" my-startup-dir)
+            flycheck-googlelint-linelength "100"))))
 
 (deh-section "makefile"
   (deh-add-hook 'makefile-mode-hook
