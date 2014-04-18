@@ -104,8 +104,8 @@
     (my-prog-mode-hook)
     ;; (c-add-style "Personal" my-c-style t)
     ;; (c-set-style "stroustrup")
-    ;; (call-interactively 'google-set-c-style)
-    ;; (c-set-style "Google")
+    ;; google code style
+    (google-set-c-style) (google-make-newline-indent)
     (my-c-indent-lineup-arglist)
     (my-c-correct-hpp-mode)
     (my-c-mode-common-hook-if0)
