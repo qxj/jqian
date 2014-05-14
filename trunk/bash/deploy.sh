@@ -108,7 +108,7 @@ expect {
             interact
         }
     }
-    \"warning*\" {
+    \"warning:*\" {
         puts \"\nRETURN WARNING!!!\n\"
         exit 1
     }
@@ -130,10 +130,6 @@ spawn $cmd
 expect {
     \"assword:\" {
         send \"$passwd\r\"
-        expect \"warning*\" {
-            puts \"\nRETURN WARNING!!!\n\"
-            exit 1
-        }
     }
     \"yes/no)?\" {
         send \"yes\r\"
@@ -141,7 +137,7 @@ expect {
             send \"$passwd\r\"
         }
     }
-    \"warning*\" {
+    \"warning:*\" {
         puts \"\nRETURN WARNING!!!\n\"
         exit 1
     }
@@ -151,6 +147,10 @@ expect {
     }
 }
 expect {
+    \"warning:*\" {
+        puts \"\nRETURN WARNING!!!\n\"
+        exit 1
+    }
     \"Authentication*\" {}
     \"Received*\" {}
 }
