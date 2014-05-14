@@ -130,6 +130,10 @@ spawn $cmd
 expect {
     \"assword:\" {
         send \"$passwd\r\"
+        expect \"warning*\" {
+            puts \"\nRETURN WARNING!!!\n\"
+            exit 1
+        }
     }
     \"yes/no)?\" {
         send \"yes\r\"
