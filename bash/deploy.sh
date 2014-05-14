@@ -94,7 +94,7 @@ log_user 0
 spawn ssh $user@$ip -q
 expect {
     \"assword:\" {
-        send \"$passwd\r\"
+        send -- \"$passwd\r\"
         expect -re {[>$]} { send \"export LC_ALL=en_US.UTF-8\r\"
                             send \"export LC_CTYPE=zh_CN.UTF-8\r\" }
         interact
@@ -102,7 +102,7 @@ expect {
     \"yes/no)?\" {
         send \"yes\r\"
         expect \"assword:\" {
-            send \"$passwd\r\"
+            send -- \"$passwd\r\"
             expect -re {[>$]} { send \"export LC_ALL=en_US.UTF_8\r\"
                                 send \"export LC_CTYPE=zh_CN.UTF-8\r\" }
             interact
@@ -129,12 +129,12 @@ log_user 0
 spawn $cmd
 expect {
     \"assword:\" {
-        send \"$passwd\r\"
+        send -- \"$passwd\r\"
     }
     \"yes/no)?\" {
         send \"yes\r\"
         expect \"assword:\" {
-            send \"$passwd\r\"
+            send -- \"$passwd\r\"
         }
     }
     \"warning:*\" {
