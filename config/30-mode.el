@@ -198,7 +198,8 @@
   (autoload 'gtags-mode "gtags" "Toggle Gtags mode, a minor mode for GLOBAL." t)
 
   (deh-add-hook '(c-mode-common-hook)
-    (gtags-mode t))
+    (when (derived-mode-p 'c-mode 'c++-mode)
+      (gtags-mode t)))
 
   (setq gtags-mode-hook
     '(lambda ()
@@ -211,6 +212,36 @@
        (hl-line-mode 1)))
 
   (deh-after-load "gtags"
+    (defun gtags-root-dir ()
+      "Returns GTAGS root directory or nil if doesn't exist."
+      (with-temp-buffer
+        (if (zerop (call-process "global" nil t nil "-pr"))
+            (buffer-substring (point-min) (1- (point-max))) nil)))
+    (defun gtags-update-single (filename)
+      "Update Gtags database for changes in a single file"
+      (interactive)
+      (start-process "update-gtags" "update-gtags" "bash" "-c" (concat "cd " (gtags-root-dir) " ; gtags --single-update " filename )))
+    (defun gtags-update-current-file ()
+      (interactive)
+      (defvar filename)
+      (setq filename (replace-regexp-in-string (gtags-root-dir) "." (buffer-file-name (current-buffer))))
+      (gtags-update-single filename)
+      (message "Gtags updated for %s" filename))
+    (defun gtags-update-hook ()
+      "Update GTAGS file incrementally upon saving a file"
+      (when gtags-mode
+        (when (gtags-root-dir)
+          (gtags-update-current-file))))
+
+    (add-hook 'after-save-hook 'gtags-update-hook)
+
+    (defun gtags-append-tags ()
+      (interactive)
+      (if gtags-mode
+          (progn
+            (message "start to global -u")
+            (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
+
     (deh-define-key gtags-mode-map
       ;; Instead of `find-tag' & `pop-tag-mark'
       ((kbd "M-.") 'gtags-find-tag)
@@ -226,92 +257,17 @@
       ("\C-cgi"  'gtags-find-with-idutils)
       ("\C-cgf"  'gtags-find-file)
       ("\C-cga"  'gtags-parse-file)
-      ("\C-cgb"  'gtags-append-tags)
-      ("\C-cgd"  'gtags-display-tag)
-      ("\C-cgq"  'gtags-display-tag-quit)))
+      ("\C-cgb"  'gtags-append-tags))
+  ))
 
-  (defun gtags-append-tags ()
-    (interactive)
-    (if gtags-mode
-        (progn
-          (message "start to global -u")
-          (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
+;; (deh-section-if "ggtags"
+;;   (executable-find "global")
 
-  ;; Only display tags in another window, hacked by julian
-  (defvar gtags-previous-window-conf nil
-    "Window configuration before switching to gtags buffer.")
-  (defun gtags-display-tag ()
-    "Input tag name and move to the definition."
-    (interactive)
-    (let (tagname prompt input)
-      (setq tagname (gtags-current-token))
-      (if tagname
-          (setq prompt (concat "Find tag: (default " tagname ") "))
-        (setq prompt "Find tag: "))
-      (setq input (completing-read prompt 'gtags-completing-gtags
-                                   nil nil nil gtags-history-list))
-      (if (not (equal "" input)) (setq tagname input))
-      (if (and (boundp 'gtags-select-buffer-single) ; >= v5.9.0
-               gtags-select-buffer-single)
-          (progn
-            (let ((now-buffer-list (buffer-list)) now-buffer)
-              (while now-buffer-list
-                (setq now-buffer (car now-buffer-list))
-                (if (string-match "*GTAGS SELECT*" (buffer-name now-buffer))
-                    (kill-buffer now-buffer))
-                (setq now-buffer-list (cdr now-buffer-list))))))
+;;   (autoload 'ggtags-mode "ggtags" "Emacs frontend to GNU Global." t)
 
-      ;; save windows configuration
-      (setq gtags-previous-window-conf (current-window-configuration))
-
-      (let* ((option "-x")
-             (save (current-buffer))
-             (prefix "(D)")
-             (buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
-             context
-             lines)
-        ;; (set-buffer buffer)
-        (pop-to-buffer buffer nil t)    ; keep pop buffer in the same window
-
-        (cond
-         ((equal gtags-path-style 'absolute)
-          (setq option (concat option "a")))
-         ((equal gtags-path-style 'root)
-          (let (rootdir)
-            (if gtags-rootdir
-                (setq rootdir gtags-rootdir)
-              (setq rootdir (gtags-get-rootpath)))
-            (if rootdir (cd rootdir)))))
-        (message "Searching %s ..." tagname)
-        (if (not (= 0 (call-process "global" nil t nil option tagname)))
-        ;; (if (not (= 0 (call-process "global" nil t nil option "--encode-path=\" \t\"" tagname)))
-            (message (buffer-substring (point-min)(1- (point-max))))
-          ;; else goto line
-          (goto-char (point-min))
-          (setq lines (count-lines (point-min) (point-max)))
-          (cond
-           ((= 0 lines)
-            (message "%s: tag not found" tagname)
-            (kill-buffer buffer)
-            ;; restore window config?
-            )
-           ((= 1 lines)
-            (message "Searching %s ... Done" tagname)
-            (gtags-select-it t nil)
-            (recenter))
-           (t
-            (switch-to-buffer buffer)
-            (gtags-select-mode)))))))
-  (defun gtags-display-tag-quit ()
-    "Quit gtags display buffer."
-    (interactive)
-    (if (window-configuration-p gtags-previous-window-conf)
-        (progn
-          (bury-buffer)
-          (set-window-configuration gtags-previous-window-conf)
-          (setq gtags-previous-window-conf nil))
-      (self-insert-command 1)))
-  )
+;;   (deh-add-hook 'c-mode-common-hook
+;;     (when (derived-mode-p 'c-mode 'c++-mode)
+;;       (ggtags-mode 1))))
 
 (deh-require-reserved 'xcscope
   (setq cscope-database-regexps

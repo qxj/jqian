@@ -426,6 +426,8 @@ mouse-3: Remove current window from display")
           "~/bin/"
           "~/")))
 
+;; (deh-require 'ido-ubiquitous)
+
 (deh-require 'flx-ido
   (flx-ido-mode 1)
   (setq ido-use-faces nil
