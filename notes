@@ -94,3 +94,8 @@ M-x profiler-report
 M-x profiler-stop
 
 http://stackoverflow.com/questions/568150/tips-for-profiling-misbehaving-emacs-lisp
+
+* Copy something to system clipboard when use emacs in terminal
+Select anything you want to copy, and then
+- M-| xclip, in linux
+- M-| pbcopy, in Mac OSX
