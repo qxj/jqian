@@ -932,6 +932,7 @@ If the flag is set, only complete with local files."
   (setq common-lisp-hyperspec-root (expand-file-name "~/src/HyperSpec/"))
 
   (setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+        slime-complete-symbol*-fancy t
         slime-fuzzy-completion-in-place t
         slime-enable-evaluate-in-emacs t
         slime-autodoc-use-multiline-p t)
@@ -939,7 +940,7 @@ If the flag is set, only complete with local files."
   (deh-define-key slime-mode-map
     ((kbd "TAB") 'slime-indent-and-complete-symbol)
     ((kbd "C-c i") 'slime-inspect)
-    ((kbd "C-c C-s") 'slime-selector)))
+    ((kbd "C-c s") 'slime-selector)))
 
 (deh-section-path "evernote"
   "~/local/emacs-evernote-mode"

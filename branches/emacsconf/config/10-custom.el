@@ -142,7 +142,10 @@
   (add-to-list 'completion-ignored-extensions ext))
 
 ;; use clipboard
-(setq x-select-enable-clipboard t)
+(setq x-select-enable-clipboard t
+      x-select-enable-primary t)
+
+(setq mouse-yank-at-point t)
 
 ;; show arrow in fringe to indicate boundary of current buffer
 (setq-default indicate-buffer-boundaries 'left)
