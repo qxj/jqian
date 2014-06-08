@@ -11,7 +11,12 @@
 ;; Hi-lock: end
 
 (deh-require-reserved 'undo-tree        ; disable it, cause C-g abnormal
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  (setq undo-tree-auto-save-history t
+        undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo"))))
+  (defadvice undo-tree-make-history-save-file-name
+    (after undo-tree activate)
+    (setq ad-return-value (concat ad-return-value ".gz"))))
 
 (deh-require 'browse-kill-ring
   (browse-kill-ring-default-keybindings)
@@ -312,7 +317,7 @@ mouse-3: Remove current window from display")
         org-id-locations-file
         (expand-file-name "emacs.ido-locations" my-data-dir))
   (setq ido-ignore-buffers
-        '("^ " "_region_" "TAGS"
+        '("^ " "_region_" "TAGS$"
           (lambda (buf)
             (with-current-buffer buf
               (or
@@ -329,7 +334,7 @@ mouse-3: Remove current window from display")
         ido-ignore-files
         '("^[.#]" "~$"
           "\\.\\(log\\|out\\|d\\)$"
-          "\\(TAGS\\|GPATH\\|GSYMS\\)")
+          "\\(TAGS\\|GPATH\\|GSYMS\\)$")
         ido-work-directory-list-ignore-regexps
         `(,tramp-file-name-regexp))
   (setq ido-file-extensions-order
@@ -930,4 +935,5 @@ mouse-3: Remove current window from display")
   (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0)))
   (setq imenu-max-item-length 60
         imenu-max-items 500
-        imenu-auto-rescan t))
+        imenu-auto-rescan t
+        imenu-sort-function 'imenu--sort-by-name))
