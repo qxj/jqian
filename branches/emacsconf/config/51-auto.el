@@ -547,9 +547,7 @@ will be deleted together."
       (my-common-header " * ")
       " */" ?\n ?\n
       "#ifndef "
-      (setq v1 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
-                               "_"
-                               (file-name-extension buffer-file-name))))
+      (setq v1 (my-ifndef-header-guard-string))
       ?\n
       "#define " v1 "\n\n"
       _
@@ -562,9 +560,7 @@ will be deleted together."
       (my-common-header "// ")
       "//" ?\n ?\n
       "#ifndef "
-      (setq v1 (upcase (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
-                               "_"
-                               (file-name-extension buffer-file-name))))
+      (setq v1 (my-ifndef-header-guard-string))
       ?\n
       "#define " v1 "\n\n"
       _
@@ -739,6 +735,16 @@ will be deleted together."
                   )
                 "\n")
      "\n"))
+  (defun my-ifndef-header-guard-string ()
+    "ifndef header guard for BLADE"
+    (let ((blade-root (expand-file-name (locate-dominating-file
+                                         buffer-file-name "BLADE_ROOT"))))
+      (concat (upcase (replace-regexp-in-string
+                       "[^a-zA-Z0-9]" "_"
+                       (if blade-root
+                           (substring buffer-file-name (length blade-root))
+                         (file-name-nondirectory buffer-file-name))))
+              "_")))
   )
 
 ;;; hippie
