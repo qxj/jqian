@@ -928,7 +928,6 @@ mouse-3: Remove current window from display")
   )
 
 (deh-require 'which-func
-  (add-to-list 'which-func-modes 'org-mode)
   (which-func-mode 1))
 
 (deh-section-after "imenu"
