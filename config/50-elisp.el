@@ -282,9 +282,6 @@
     ((kbd "<M-left>") 'buf-move-left)
     ((kbd "<M-right>") 'buf-move-right)))
 
-(deh-require 'popwin
-  (setq display-buffer-function 'popwin:display-buffer))
-
 (deh-section-after "help-mode"
   (setq help-window-select t)
   (deh-define-key help-mode-map
@@ -733,6 +730,18 @@
 
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
+  )
+  
+(deh-require 'popwin
+  (popwin-mode 1)
+  ;;# popwin-mode cofflict with occur-mode, which makes buffers read-only.
+  (setq popwin:special-display-config
+        (remove-if (lambda (item) (eq (car item) 'occur-mode))
+                   popwin:special-display-config))
+  (define-key dired-mode-map "o" '(lambda ()
+                                    (interactive)
+                                    (popwin:find-file (dired-get-file-for-visit))))
+  (define-key global-map (kbd "C-,") popwin:keymap)
   )
 
 ;; Crash Course on Emacswiki:
