@@ -736,11 +736,8 @@
   (popwin-mode 1)
   ;;# popwin-mode cofflict with occur-mode, which makes buffers read-only.
   (setq popwin:special-display-config
-        (remove-if (lambda (item) (eq (car item) 'occur-mode))
+        (remove-if (lambda (item) (and (listp item) (eq (car item) 'occur-mode)))
                    popwin:special-display-config))
-  (define-key dired-mode-map "o" '(lambda ()
-                                    (interactive)
-                                    (popwin:find-file (dired-get-file-for-visit))))
   (define-key global-map (kbd "C-,") popwin:keymap)
   )
 
