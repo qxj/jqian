@@ -198,11 +198,30 @@ indent line."
      ((executable-find "clang")
       (deh-try-require 'auto-complete-clang
         (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
+        ;;
+        ;; Customize ac-clang-cflags in .dir-locals.el, put it in the
+        ;; root directory of projects.
+        ;;
+        ;; For more information see (info "(emacs) Directory Variables")
+        ;;
+        ;; One .dir-locals.el example:
+        ;;
+        ;; ((c++-mode
+        ;;   (ac-clang-flags "-I/usr/include/x86_64-linux-gnu/qt5/QtCore"
+        ;;                   "-I/usr/include/x86_64-linux-gnu/qt5/QtDBus"
+        ;;                   "-I.")
+        ;;   (flycheck-clang-include-path "/usr/include/x86_64-linux-gnu/qt5/QtCore"
+        ;;                                "/usr/include/x86_64-linux-gnu/qt5/QtDBus"
+        ;;                                ".")))
+        ;;
         (setq ac-sources '(ac-source-clang)))))
 
     (deh-try-require 'auto-complete-c-headers
       (add-to-list 'ac-sources 'ac-source-c-headers)
       (setq achead:include-directories (append achead:include-directories my-include-dirs))))
+  (deh-add-hook c-mode-common-hook
+    (when (derived-mode-p 'c-mode 'c++-mode)
+      (ac-cc-mode-setup)))
 
   ;; python
   (defun ac-python-mode-setup ()

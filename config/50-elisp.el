@@ -731,8 +731,8 @@
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
   )
-  
-(deh-require 'popwin
+
+(deh-require-reserved 'popwin
   (popwin-mode 1)
   ;;# popwin-mode cofflict with occur-mode, which makes buffers read-only.
   (setq popwin:special-display-config

@@ -10,8 +10,7 @@ M-x flush-lines RET ^$ RET
 M-^
 
 * Dired open directory in the same buffer
-
-a (M-x dired-find-alternate-file)
+M-x dired-find-alternate-file
 
 * Input 100 times 1
 C-u 100 C-u 1
@@ -74,8 +73,10 @@ Then (1) press `m' to select files, or `t' to select them all, (2) press
 * set-goal-column
 C-x C-n
 
-* add .dir-locals.el for a project or a directory
+* customize local variables for a project or a directory
 M-x add-dir-local-variable
+
+.dir-locals.el, for more information see (info "(emacs) Directory Variables")
 
 * treat underline _ as a part of words
 (modify-syntax-entry ?_ "w")
