@@ -756,12 +756,11 @@ will be deleted together."
      "\n"))
   (defun my-ifndef-header-guard-string ()
     "ifndef header guard for BLADE"
-    (let ((blade-root (expand-file-name (locate-dominating-file
-                                         buffer-file-name "BLADE_ROOT"))))
+    (let ((blade-root (locate-dominating-file buffer-file-name "BLADE_ROOT")))
       (concat (upcase (replace-regexp-in-string
                        "[^a-zA-Z0-9]" "_"
                        (if blade-root
-                           (substring buffer-file-name (length blade-root))
+                           (substring buffer-file-name (length (expand-file-name blade-root)))
                          (file-name-nondirectory buffer-file-name))))
               "_")))
   )
