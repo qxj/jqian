@@ -45,9 +45,7 @@
        ("^>.*" . font-lock-warning-face)
        ("^D.*" . font-lock-type-face)))))
 
-(deh-require-if 'desktop
-  (not (emacs-process-duplicated-p))
-
+(deh-require 'desktop
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-path (list my-data-dir)
         desktop-restore-eager 8)        ; firstly restore 8 buffers
@@ -73,10 +71,10 @@
   ;; (condition-case nil
   ;;     (desktop-read)
   ;;   (error nil))
-  (desktop-save-mode 1)
-
-  ;;# persist desktop into file every 10 mins
-  (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir)
+  (unless (emacs-process-duplicated-p)
+    (desktop-save-mode 1)
+    ;;# persist desktop into file every 10 mins
+    (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir))
 
   ;; desktop-menu.el can store many desktops, it works besides
   ;; desktop.el and its settings don't cofflict with desktop.el, so
