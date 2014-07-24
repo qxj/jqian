@@ -70,6 +70,9 @@ M-x find-dired, specify (1) directory and (2) find arguments, e.g.:
 Then (1) press `m' to select files, or `t' to select them all, (2) press
 `Q' to query regexp string, e.g.: \<DEBUG\>, (3) press RET.
 
+* find a file in a directory recursively
+M-x find-name-dired
+
 * set-goal-column
 C-x C-n
 
