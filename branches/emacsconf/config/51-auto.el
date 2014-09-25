@@ -398,7 +398,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   )
 
 ;;;; autopair
-(deh-section "skeleton-pair"
+(deh-section-reserved "skeleton-pair"
   (setq skeleton-pair t
         skeleton-pair-on-word nil)
 
