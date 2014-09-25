@@ -85,10 +85,12 @@
     (setq desktop-menu-directory my-data-dir
           desktop-menu-base-filename (concat "emacs.desktops-" (system-name))
           desktop-menu-list-file "emacs.desktops"
-          desktop-menu-autosave 600     ; auto save every 10mins and when exit
           desktop-menu-clear 'ask)
     ;; customize some standard `desktop' variables
     (setq desktop-load-locked-desktop t)
+    
+    ;; desktop-menu-autosave can NOT be customized by setq                               
+    (customize-set-variable 'desktop-menu-autosave 500)
 
     ;;# save individual bm repository with different desktops
     (deh-after-load "bm"
