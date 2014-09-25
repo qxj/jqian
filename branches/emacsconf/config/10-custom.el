@@ -102,6 +102,7 @@
 (icomplete-mode 1)
 (winner-mode 1)
 ;; (auto-insert-mode 1)
+(electric-pair-mode 1)
 
 (deh-section "backup"                   ;backup & autosave
   (setq make-backup-files t
