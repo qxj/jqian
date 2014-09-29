@@ -119,7 +119,7 @@
     ("b"  'my-revert-buffer)
     ("c"  'my-switch-scratch)
     ("d"  'deh-customize-inplace)
-    ("f"  'find-library)
+    ("f"  'flycheck-mode)
     ("h"  'highlight-symbol-at-point)
     ("i"  'ispell-word)
     ("m"  'desktop-menu)
