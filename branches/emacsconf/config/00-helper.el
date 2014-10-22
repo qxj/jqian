@@ -214,3 +214,19 @@ files that match PATTERN."
               (add-to-list 'ret path))))
       (setq files (cdr files)))
     ret))
+
+;; following functions were removed from advice.el in emacs24.4
+(unless (functionp 'ad-advised-definition-p)
+  (defmacro ad-macro-p (definition)
+    ;;"non-nil if DEFINITION is a macro."
+    (` (eq (car-safe (, definition)) 'macro)))
+
+  (defun ad-advised-definition-p (definition)
+    ;;"non-nil if DEFINITION was generated from advice information."
+    (if (or (ad-lambda-p definition)
+            (ad-macro-p definition)
+            (ad-compiled-p definition))
+        (let ((docstring (ad-docstring definition)))
+          (and (stringp docstring)
+               (string-match
+                ad-advised-definition-docstring-regexp docstring))))))
