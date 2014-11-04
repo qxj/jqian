@@ -84,7 +84,8 @@
     ("\C-_"  'fit-frame)
     ;; ("t"     'template-expand-template)
     ;; ("m"     'message-mail)
-    ("\\" 'align-regexp)
+    ("\\"    'align-regexp)
+    ("\C-2"  'pop-global-mark)
     ))
 
 (deh-section "kbd-ctl-c"
@@ -139,7 +140,8 @@
   ("n"  'bm-next)
   ("p"  'bm-previous)
   ("s"  'bm-show)
-  ("a"  'bm-show-all))
+  ("a"  'bm-show-all)
+  ("t"  'bm-toggle-cycle-all-buffers))
 
 (deh-define-key multi-term-prefix
   ("c"  'multi-term)
