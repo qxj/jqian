@@ -8,6 +8,7 @@
 
 ;;; prefix key
 (define-prefix-command 'ctl-c-map nil "Command prefix: C-c")
+(define-prefix-command 'ctl-x-map nil "Command prefix: C-x")
 (define-prefix-command 'ctl-z-map nil "Command prefix: C-z")
 (define-prefix-command 'ctl-cc-map nil "Command prefix: C-c c")
 (define-prefix-command 'one-key-prefix nil "one-key prefix: C-c k")
@@ -82,10 +83,10 @@
     ("\C-k"  'kill-this-buffer)
     ("\C-o"  'my-switch-recent-buffer)
     ("\C-_"  'fit-frame)
-    ;; ("t"     'template-expand-template)
-    ;; ("m"     'message-mail)
+    ;; ;; ("t"     'template-expand-template)
+    ;; ;; ("m"     'message-mail)
     ("\\"    'align-regexp)
-    ("\C-2"  'pop-global-mark)
+    ((kbd "C-2")  'pop-global-mark)
     ))
 
 (deh-section "kbd-ctl-c"
