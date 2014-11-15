@@ -1,17 +1,20 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
+# -*- mode: sh -*-
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-# don't put duplicate lines in the history. See bash(1) for more options
-# ... or force ignoredups and ignorespace
-HISTCONTROL=ignoredups:ignorespace
+# don't put duplicate lines in the history.
+HISTCONTROL=ignoredups:ignorespace:erasedups
 HISTSIZE=10000
 HISTFILESIZE=20000
+
 # Make some commands not show up in history
 HISTIGNORE="?:??:cd -:top:pwd:exit:date:* --help"
+
+# Keep the same history in all sessions
+PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # Don’t clear the screen after quitting a manual page
 MANPAGER="less -X"
@@ -69,27 +72,6 @@ function my_prompt()
     fi
 }
 my_prompt
-
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-# some more ls aliases
-alias ls='ls -G'
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Easier navigation: .., ..., ~ and -
-alias ..="cd .."
-alias ...="cd ../.."
-alias ~="cd ~" # `cd` is probably faster to type though
-alias -- -="cd -"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -218,14 +200,6 @@ function cd_func()
 }
 alias cd=cd_func
 
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -237,3 +211,9 @@ case $OSTYPE in
         test -f /etc/bash_completion && . /etc/bash_completion
         ;;
 esac
+
+# Env variables
+test -d $HOME/bin && export PATH=$PATH:$HOME/bin
+
+test -f ~/.bash_aliases && . ~/.bash_aliases
+test -f ~/.bash_local && . ~/.bash_local
