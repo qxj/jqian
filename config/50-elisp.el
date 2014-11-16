@@ -88,8 +88,8 @@
           desktop-menu-clear 'ask)
     ;; customize some standard `desktop' variables
     (setq desktop-load-locked-desktop t)
-    
-    ;; desktop-menu-autosave can NOT be customized by setq                               
+
+    ;; desktop-menu-autosave can NOT be customized by setq
     (customize-set-variable 'desktop-menu-autosave 500)
 
     ;;# save individual bm repository with different desktops
@@ -132,7 +132,7 @@
   (savehist-mode t))
 
 (deh-require 'bm
-  (setq bm-cycle-all-buffers t
+  (setq bm-cycle-all-buffers nil
         bm-highlight-style (if window-system
                                'bm-highlight-line-and-fringe
                              'bm-highlight-line)
@@ -672,7 +672,7 @@
         (expand-file-name "projectile-bookmarks.eld" my-data-dir))
   (setq projectile-switch-project-action 'projectile-dired
         projectile-completion-system 'ido)
-  (dolist (dir '(".svn" "CVS" "bin"))
+  (dolist (dir '(".svn" "CVS" "bin" ".git"))
     (add-to-list 'projectile-globally-ignored-directories dir))
   (dolist (dir '("ede-project.el"))
     (add-to-list 'projectile-project-root-files dir))

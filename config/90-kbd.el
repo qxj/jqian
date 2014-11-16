@@ -140,6 +140,7 @@
   ("n"  'bm-next)
   ("p"  'bm-previous)
   ("s"  'bm-show)
+  ("l"  'bm-show)
   ("a"  'bm-show-all)
   ("t"  'bm-toggle-cycle-all-buffers))
 
