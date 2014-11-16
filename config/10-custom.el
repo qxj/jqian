@@ -34,6 +34,7 @@
 
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
+(setq initial-major-mode 'text-mode)
 (setq column-number-mode t)
 (setq ring-bell-function 'ignore)
 ;; (setq visible-bell t)

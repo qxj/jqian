@@ -669,6 +669,14 @@ will be deleted together."
       (my-common-header "# ")
       "#\n\n"
        _
+       ))
+
+  (define-auto-insert '(sql-mode . "SQL script")
+    '(nil
+      "-- -*- coding: utf-8; tab-width: 2; -*-" ?\n
+      (my-common-header "-- ")
+      "--\n\n"
+      _
       ))
 
   (define-auto-insert '(org-mode . "Org document")
@@ -740,7 +748,7 @@ will be deleted together."
                 `(
                   ,(format "@(#) %s %s Time-stamp: <>"
                            (file-name-nondirectory (buffer-file-name))
-                           (if encoding " -*- coding: utf-8 -*-" ""))
+                           (if encoding (concat " -*- coding: " encoding " -*-") ""))
                   ,(format "Copyright %s %s"
                            (substring (current-time-string) -4)
                            (or (getenv "ORGANIZATION") user-full-name))

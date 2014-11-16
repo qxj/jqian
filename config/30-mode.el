@@ -125,7 +125,7 @@
   (defun my-text-mode-hook ()           ; literal hook
     (abbrev-mode 1)
     (outline-minor-mode 1)
-    (toggle-truncate-lines -1)
+    (toggle-truncate-lines 1)
     (turn-off-auto-fill)
     ;; (auto-fill-mode 1)
     )
