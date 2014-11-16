@@ -358,7 +358,8 @@ Subsequent calls expands the selection to larger semantic unit."
 (defun my-switch-scratch ()
   "switch to *scratch* buffer, bind to \\[my-switch-scratch]."
   (interactive)
-  (switch-to-buffer "*scratch*"))
+  (switch-to-buffer "*scratch*")
+  (my-set-paste))
 
 ;;{{{ Redefine basic operation, non-kill versions
 (defun delete-char-or-region ()
@@ -563,6 +564,7 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
   "Avoid content indent when paste from clipboard."
   (interactive)
   (fundamental-mode)
+  (toggle-truncate-lines 1)
   (setq indent-line-function 'ignore))
 
 (defun my-generate-loaddefs (&optional force-generate autoload-file)
