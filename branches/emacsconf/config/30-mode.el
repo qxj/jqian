@@ -673,7 +673,10 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; scripts setting
 (deh-require 'python
-  ;; (call-interactively 'run-python)          ;workaound for eldoc error when enable jedi
+  ;; Start an inferior python process, wordaround for eldoc error
+  (let ((python-cmd (python-shell-parse-command)))
+    (if python-cmd (run-python python-cmd t nil)))
+
   (deh-add-hook 'python-mode-hook
     (my-prog-mode-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
