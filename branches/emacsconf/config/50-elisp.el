@@ -169,7 +169,7 @@
 ;; to call from Lisp. It is essentially a replacement for ‘push-mark’
 ;; which unconditionally pushes onto the global mark ring, functionality
 ;; which is not possible using vanilla ‘push-mark’.
-(deh-require 'back-button
+(deh-require-reserved 'back-button
   ;; Global mark-ring:
   ;; C-x C-<SPC>
   ;; C-x C-<left>
