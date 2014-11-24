@@ -11,9 +11,7 @@
 
 ;; Created: Mon Jan  9 22:41:43 2012 (+0800)
 ;; Version: 0.1
-;; Last-Updated: Thu May 30 01:58:45 2013 (+0800)
 ;;           By: Le Wang
-;;     Update #: 132
 ;; URL: https://github.com/lewang/jump-char
 ;; Keywords:
 ;; Compatibility: 23+
@@ -59,7 +57,7 @@
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 3, or
-:;; (at your option) any later version.
+;; (at your option) any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,8 +75,6 @@
 
 (eval-when-compile (require 'cl))
 
-
-(provide 'jump-char)
 
 (defgroup jump-char nil
   "navigation by char")
@@ -106,14 +102,18 @@ Set this to nil if you don't need it."
 
 (defvar jump-char-isearch-map
   (let ((map (make-sparse-keymap))
-        (exception-list '(isearch-abort isearch-describe-key))
-        isearch-commands)
-    (flet ((remap (key def)
-                  (if (symbolp def)
-                      (setq isearch-commands (cons def isearch-commands))
-                    (when (keymapp def)
-                      (map-keymap 'remap def)))))
-      (map-keymap 'remap isearch-mode-map))
+        (exception-list '(isearch-abort isearch-describe-key isearch-quote-char))
+        isearch-commands
+        (maps (list isearch-mode-map)))
+    (while (car maps)
+      (let (my-maps)
+        (map-keymap (lambda (key def)
+                      (if (symbolp def)
+                          (push def isearch-commands)
+                        (when (keymapp def)
+                          (push def my-maps))))
+                    (car maps))
+        (setq maps (nconc (cdr maps) my-maps))))
     (setq isearch-commands (delete-dups isearch-commands))
     (dolist (cmd isearch-commands)
       (unless (memq cmd exception-list)
@@ -246,6 +246,11 @@ Specifically, make sure point is at beginning of match."
       (call-interactively 'ace-jump-char-mode)
     (ace-jump-char-mode jump-char-initial-char)))
 
+(defun jump-char-isearch-unread (keylist)
+  (if (fboundp 'isearch-unread)
+      (apply 'isearch-unread keylist)
+    (isearch-unread-key-sequence keylist)))
+
 (defun jump-char-process-char (&optional arg)
   (interactive "P")
   (let* ((did-action-p t)
@@ -277,7 +282,7 @@ Specifically, make sure point is at beginning of match."
           (t
            (setq did-action-p nil)))
     (unless did-action-p
-      (isearch-unread-key-sequence keylist)
+      (jump-char-isearch-unread keylist)
       (setq prefix-arg arg)
       (let ((search-nonincremental-instead nil))
         (isearch-exit)))))
@@ -334,6 +339,8 @@ e.g.
   (interactive)
   (isearch-exit))
 
+
+(provide 'jump-char)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; jump-char.el ends here
