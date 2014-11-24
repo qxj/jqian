@@ -648,7 +648,11 @@ mouse-3: Remove current window from display")
   (autoload 'jump-char-forward "jump-char" "Jump forward" t)
   (autoload 'jump-char-backward "jump-char" "Jump backward" t)
   (global-set-key [(meta m)] 'jump-char-forward) ;override back-to-indentation
-  (global-set-key [(shift meta m)] 'jump-char-backward))
+  (global-set-key [(shift meta m)] 'jump-char-backward)
+  (deh-define-key global-map
+    ((kbd "C-c C-f") 'jump-char-forward)
+    ((kbd "C-c C-M-f") 'jump-char-backward))
+  )
 
 (deh-section "occur"
   (deh-add-hook 'occur-mode-hook
