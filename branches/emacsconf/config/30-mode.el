@@ -614,21 +614,26 @@ Use CREATE-TEMP-F for creating temp copy."
                  flymake-simple-make-gcc-init))
   )
 
-(deh-section "flycheck"
-  (autoload 'flycheck-mode "flycheck" "flycheck-mode" t)
+(autoload 'flycheck-mode "flycheck" "flycheck-mode" t)
+(deh-section-after "flycheck"
   (dolist (mode '(sh-mode-hook python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
-  (setq flycheck-indication-mode 'right-fringe)
+  ;; (setq flycheck-indication-mode 'right-fringe)
+  (setq flycheck-keymap-prefix (kbd "C-c f"))
 
-  (deh-after-load "flycheck"
-    (deh-try-require 'flycheck-google-cpplint
-      ;; Add Google C++ Style checker.
-      ;; In default, syntax checked by Clang and Cppcheck.
-      (flycheck-add-next-checker 'c/c++-cppcheck
-                                 '(warnings-only . c/c++-googlelint))
-      (setq flycheck-c/c++-googlelint-executable
-            (expand-file-name "misc/cpplint.py" my-startup-dir)
-            flycheck-googlelint-linelength "100"))))
+  ;; python code style
+  ;; flake8 works with git:
+  ;;     http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
+  (setq flycheck-python-flake8-executable "flake8")
+
+  (deh-try-require 'flycheck-google-cpplint
+    ;; Add Google C++ Style checker.
+    ;; In default, syntax checked by Clang and Cppcheck.
+    ;(flycheck-add-next-checker 'c/c++-cppcheck
+    ;                          '(warnings-only . c/c++-googlelint))
+    (setq flycheck-c/c++-googlelint-executable
+          (expand-file-name "misc/cpplint.py" my-startup-dir)
+          flycheck-googlelint-linelength "100")))
 
 (deh-section "makefile"
   (deh-add-hook 'makefile-mode-hook
