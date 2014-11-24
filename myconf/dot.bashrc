@@ -14,7 +14,7 @@ HISTFILESIZE=20000
 HISTIGNORE="?:??:cd -:top:pwd:exit:date:* --help"
 
 # Keep the same history in all sessions
-PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a; history -c; history -r;"
 
 # Don’t clear the screen after quitting a manual page
 MANPAGER="less -X"
@@ -214,6 +214,8 @@ esac
 
 # Env variables
 test -d $HOME/bin && export PATH=$PATH:$HOME/bin
+export PAGER=less
+export EDITOR=vim
 
-test -f ~/.bash_aliases && . ~/.bash_aliases
+test -f ~/.bash_alias && . ~/.bash_alias
 test -f ~/.bash_local && . ~/.bash_local
