@@ -618,19 +618,26 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-section-after "flycheck"
   (dolist (mode '(sh-mode-hook python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
-  ;; (setq flycheck-indication-mode 'right-fringe)
+
+  ;;# rebind flycheck prefix key
+  (define-key flycheck-mode-map flycheck-keymap-prefix nil)
   (setq flycheck-keymap-prefix (kbd "C-c f"))
+  (define-key flycheck-mode-map flycheck-keymap-prefix flycheck-command-map)
+
+  ;;# workaround to avoid eldoc override flycheck error message
+  (setq flycheck-display-errors-delay 1.1)
+  ;; (setq flycheck-indication-mode 'right-fringe)
 
   ;; python code style
   ;; flake8 works with git:
   ;;     http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
-  (setq flycheck-python-flake8-executable "flake8")
+  (setq flycheck-python-flake8-executable (executable-find "flake8"))
 
   (deh-try-require 'flycheck-google-cpplint
     ;; Add Google C++ Style checker.
     ;; In default, syntax checked by Clang and Cppcheck.
-    ;(flycheck-add-next-checker 'c/c++-cppcheck
-    ;                          '(warnings-only . c/c++-googlelint))
+    (flycheck-add-next-checker 'c/c++-cppcheck
+                               '(warning . c/c++-googlelint))
     (setq flycheck-c/c++-googlelint-executable
           (expand-file-name "misc/cpplint.py" my-startup-dir)
           flycheck-googlelint-linelength "100")))
