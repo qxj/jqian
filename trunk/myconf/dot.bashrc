@@ -207,8 +207,9 @@ case $OSTYPE in
     darwin*)
         test -f $(brew --prefix)/etc/bash_completion && . $(brew --prefix)/etc/bash_completion
         ;;
-    linux)
+    linux*)
         test -f /etc/bash_completion && . /etc/bash_completion
+        test -f /usr/share/autojump/autojump.sh && . /usr/share/autojump/autojump.sh
         ;;
 esac
 
