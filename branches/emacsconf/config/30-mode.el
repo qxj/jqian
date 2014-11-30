@@ -686,7 +686,8 @@ Use CREATE-TEMP-F for creating temp copy."
 ;;; scripts setting
 (deh-require 'python
   ;; Start an inferior python process, wordaround for eldoc error
-  (let ((python-cmd (python-shell-parse-command)))
+  (let ((python-cmd (if (executable-find python-shell-interpreter)
+                        (python-shell-parse-command))))
     (if python-cmd (run-python python-cmd t nil)))
 
   (deh-add-hook 'python-mode-hook
