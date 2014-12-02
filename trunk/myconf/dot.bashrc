@@ -13,9 +13,6 @@ HISTFILESIZE=20000
 # Make some commands not show up in history
 HISTIGNORE="?:??:cd -:top:pwd:exit:date:* --help"
 
-# Keep the same history in all sessions
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a; history -c; history -r;"
-
 # Don’t clear the screen after quitting a manual page
 MANPAGER="less -X"
 
@@ -41,37 +38,81 @@ shopt -s cdspell
 # make prompt more friendly
 function my_prompt()
 {
-    if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
-        debian_chroot=$(cat /etc/debian_chroot)
-    fi
-    local is_color=
+    local last_cmd=$?
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        is_color=yes
-    fi
-    local is_root=
-    if [ $(/usr/bin/id -u) -eq 0 ]; then
-        is_root=yes
-    fi
-    local git_branch=
-    if [ $(which git) ]; then
-        git_branch='`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'
+        # Reset
+        Color_Off='\e[0m'       # Text Reset
+
+        # Regular Colors
+        Black='\e[0;30m'        # Black
+        Red='\e[0;31m'          # Red
+        Green='\e[0;32m'        # Green
+        Yellow='\e[0;33m'       # Yellow
+        Blue='\e[0;34m'         # Blue
+        Purple='\e[0;35m'       # Purple
+        Cyan='\e[0;36m'         # Cyan
+        White='\e[0;37m'        # White
+
+        # Bold
+        BBlack='\e[1;30m'       # Black
+        BRed='\e[1;31m'         # Red
+        BGreen='\e[1;32m'       # Green
+        BYellow='\e[1;33m'      # Yellow
+        BBlue='\e[1;34m'        # Blue
+        BPurple='\e[1;35m'      # Purple
+        BCyan='\e[1;36m'        # Cyan
+        BWhite='\e[1;37m'       # White
+
+        # Underline
+        UBlack='\e[4;30m'       # Black
+        URed='\e[4;31m'         # Red
+        UGreen='\e[4;32m'       # Green
+        UYellow='\e[4;33m'      # Yellow
+        UBlue='\e[4;34m'        # Blue
+        UPurple='\e[4;35m'      # Purple
+        UCyan='\e[4;36m'        # Cyan
+        UWhite='\e[4;37m'       # White
+
+        # Background
+        On_Black='\e[40m'       # Black
+        On_Red='\e[41m'         # Red
+        On_Green='\e[42m'       # Green
+        On_Yellow='\e[43m'      # Yellow
+        On_Blue='\e[44m'        # Blue
+        On_Purple='\e[45m'      # Purple
+        On_Cyan='\e[46m'        # Cyan
+        On_White='\e[47m'       # White
     fi
 
-    if [ $is_color ]; then
-        if [ $is_root ]; then
-            PS1="${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\h\[\033[00m\][\[\033[01;33m\]\t\[\033[00m\]]:\[\033[01;34m\]\w\[\033[00m\]\n# "
-        else
-            PS1="${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u\[\033[00m\]@\[\033[01;32m\]\h\[\033[00m\][\[\033[01;33m\]\t\[\033[00m\]]:\[\033[01;35m\]$git_branch\[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\n$ "
-        fi
-    else
-        if [ $is_root ]; then
-            PS1="${debian_chroot:+($debian_chroot)}\h[\t]:\w\n# "
-        else
-            PS1="${debian_chroot:+($debian_chroot)}\u@\h[\t]:\w\n$ "
-        fi
+    local p_user=$Red"\u"$Color_Off
+    local p_host=$Green"\h"$Color_Off
+    local p_path=$Blue"\w"$Color_Off
+    local p_time=$Yellow"\t"$Color_Off
+    local p_flag="$"
+
+    # local p_last=$Green'\342\234\223'$Color_Off
+    local p_last=
+    if [ $last_cmd -ne 0 ]; then
+        p_last=$On_Red'\342\234\227'$Color_Off
     fi
+    if [ $(/usr/bin/id -u) -eq 0 ]; then
+        p_user=""
+        p_host=$Red"\h"$Color_Off
+        p_flag="#"
+    fi
+    if [ -n "$SSH_CLIENT" ]; then
+        p_host=$On_Green"\h"$Color_Off
+    fi
+    local p_git=
+    if [ $(which git) ]; then
+        p_git=$Purple'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$Color_Off
+    fi
+    PS1=$p_last$p_user"@"$p_host"["$p_time"]:"$p_git$p_path"\n"$p_flag" "
 }
-my_prompt
+PROMPT_COMMAND=my_prompt
+
+# Keep the same history in all sessions
+# PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ;} history -a; history -c; history -r;"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -199,6 +240,33 @@ function cd_func()
   return 0
 }
 alias cd=cd_func
+
+function colors() {
+	local fgc bgc vals seq0
+
+	printf "Color escapes are %s\n" '\e[${value};...;${value}m'
+	printf "Values 30..37 are \e[33mforeground colors\e[m\n"
+	printf "Values 40..47 are \e[43mbackground colors\e[m\n"
+	printf "Value  1 gives a  \e[1mbold-faced look\e[m\n\n"
+
+	# foreground colors
+	for fgc in {30..37}; do
+		# background colors
+		for bgc in {40..47}; do
+			fgc=${fgc#37} # white
+			bgc=${bgc#40} # black
+
+			vals="${fgc:+$fgc;}${bgc}"
+			vals=${vals%%;}
+
+			seq0="${vals:+\e[${vals}m}"
+			printf "  %-9s" "${seq0:-(default)}"
+			printf " ${seq0}TEXT\e[m"
+			printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
+		done
+		echo; echo
+	done
+}
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
