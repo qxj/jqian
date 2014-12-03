@@ -75,7 +75,7 @@ set so=5 " Keep 10 lines (top/bottom) for scope
 set novisualbell " don't blink
 set noerrorbells " no noises
 set titlestring=%F
-set statusline=%k(%02n)%t%m%r%h%w\ \[%{&ff}:%{&fenc}:%Y]\ \[line=%04l/%04L\ col=%03c/%03{col(\"$\")-1}]\ [%p%%]
+set statusline=%k(%02n)%t%m%r%h%w\ \[%{&ff}:%{&fenc}:%Y]\ \[%l/%L,%c]\ [%p%%]
 set laststatus=2 " always show the status line
 "set cursorline
 
@@ -141,3 +141,4 @@ endif
 """" Keybind
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
+

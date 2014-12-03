@@ -39,7 +39,8 @@ shopt -s cdspell
 function my_prompt()
 {
     local last_cmd=$?
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+    #if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+    if true; then
         # Reset
         Color_Off='\e[0m'       # Text Reset
 
