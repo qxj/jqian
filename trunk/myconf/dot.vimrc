@@ -20,14 +20,15 @@ set shellslash
 """" Theme/Colors
 syntax on " syntax highlighting on
 if (has("gui_running"))
-	set background=dark " we are using a dark background
-	set nowrap
+    set background=dark " we are using a dark background
+    set nowrap
     set guifont=Consolas:h11
- 	colorscheme morning
+    set lines=50 columns=90
+    colorscheme morning
 else
-	set paste "this option is useful when using Vim in a terminal
-	set wrap
-	colo ron
+    set paste "this option is useful when using Vim in a terminal
+    set wrap
+    colo ron
 endif
 
 """" Vim UI
@@ -56,8 +57,8 @@ set guioptions-=T "get rid of toolbar
 "avoid windows explain alt combining keybinds
 set winaltkeys=no
 if version>=700
-	set pumheight=10 "set popup menu hight
-	set showtabline=2
+    set pumheight=10 "set popup menu hight
+    set showtabline=2
 endif
 
 """" Visual Cues
