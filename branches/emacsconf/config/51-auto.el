@@ -44,7 +44,8 @@
   (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
 
   (setq yas-wrap-around-region t)
-
+  (setq yas/indent-line nil)            ; stop auto-indent behavior when expanding snippets
+  
   (require 'dropdown-list)
   (setq yas-prompt-functions '(yas-dropdown-prompt
                                yas-ido-prompt
