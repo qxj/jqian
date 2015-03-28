@@ -285,6 +285,7 @@ esac
 # Env variables
 test -d $HOME/bin && export PATH=$PATH:$HOME/bin
 test -d $HOME/.local/bin && export PATH=$PATH:$HOME/.local/bin
+test -d $HOME/.cask/bin && export PATH=$PATH:$HOME/.cask/bin
 export PAGER=less
 export LESS="-XR"               # interpret "raw" control sequences (ipython) 
 export EDITOR=vim
