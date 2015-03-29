@@ -6,32 +6,15 @@
 ;; Hi-lock: end
 
 
-(deh-section "std-lib"
-  ;; (filesets-init)
-  (require 'generic-x)
-
-  ;; smart mark, useful when edit markuped documents
-;  (require 'smart-mark)
-  ;; visible-line
-  (require 'visible-lines nil t)
-  ;; for normal term
-  ;; (add-hook 'term-mode-hook 'kill-buffer-when-shell-command-exit)
-  ;; .vimrc syntax hightlight
-  (require 'vimrc-mode))
-
-(deh-require 'package
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (package-initialize))
-
-
 ;;; Session management
-(deh-section-after "bookmark"
+(deh-package bookmark
+  :defer
+  :config
   ;; autosave bookmark into the diskete
   (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-data-dir)
         bookmark-save-flag 1)
   (add-to-list 'bookmark-after-jump-hook 'recenter)
-  (deh-add-hook 'bookmark-bmenu-mode-hook
+  (deh-add-hook bookmark-bmenu-mode-hook
     (font-lock-add-keywords
      nil
      '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
@@ -45,7 +28,8 @@
        ("^>.*" . font-lock-warning-face)
        ("^D.*" . font-lock-type-face)))))
 
-(deh-require 'desktop
+(deh-package desktop
+  :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-path (list my-data-dir)
         desktop-restore-eager 8)        ; firstly restore 8 buffers
@@ -81,7 +65,8 @@
   ;; please don't mix up `desktop-base-file-name' and
   ;; `desktop-menu-base-filename'.
   ;;
-  (deh-require 'desktop-menu
+  (deh-package desktop-menu
+    :config
     (setq desktop-menu-directory my-data-dir
           desktop-menu-base-filename (concat "emacs.desktops-" (system-name))
           desktop-menu-list-file "emacs.desktops"
@@ -108,30 +93,48 @@
     ))
 
 
-(deh-require 'revive-mode-config
+(deh-package revive-mode-config
+  :config
   ;; (setq revive:configuration-file (expand-file-name "revive.layout" my-data-dir))
-  (deh-add-hook 'kill-emacs-hook 'emacs-save-layout)
-  (deh-define-key ctl-x-map
-    ("S" 'emacs-save-layout)
-    ("L" 'emacs-load-layout)))
+  (deh-add-hook kill-emacs-hook 'emacs-save-layout)
+  (bind-keys
+   :map ctl-x-map
+    ("S" . emacs-save-layout)
+    ("L" . emacs-load-layout)))
 
-(deh-require-reserved 'session
+(deh-package session
+  :disabled
+  :config
   (setq session-save-file (expand-file-name "emacs.session" my-data-dir))
   (setq session-save-file-coding-system 'utf-8-unix)
   (add-to-list 'session-globals-exclude 'org-mark-ring)
   (add-hook 'after-init-hook 'session-initialize))
 
-(deh-require 'saveplace
+(deh-package saveplace
+  :config
   (setq save-place-file (expand-file-name "emacs.saveplace" my-data-dir))
   (setq-default save-place t))
 
-(deh-require 'savehist
-  (setq savehist-additional-variables '(kill-ring mark-ring global-mark-ring search-ring regexp-search-ring extended-command-history)
+(deh-package savehist
+  :config
+  (setq savehist-additional-variables
+        '(kill-ring mark-ring global-mark-ring search-ring regexp-search-ring
+                    extended-command-history)
         savehist-autosave-interval 60
         savehist-file (expand-file-name "emacs.savehist" my-data-dir))
   (savehist-mode t))
 
-(deh-require 'bm
+(deh-package bm
+  :commands (bm-toggle bm-next bm-previous bm-show bm-show-all bm-toggle-cycle-all-buffers)
+  :bind
+  ("C-c b b" . bm-toggle)
+  ("C-c b n" . bm-next)
+  ("C-c b p" . bm-previous)
+  ("C-c b s" . bm-show)
+  ("C-c b l" . bm-show)
+  ("C-c b a" . bm-show-all)
+  ("C-c b t" . bm-toggle-cycle-all-buffers)
+  :config
   (setq bm-cycle-all-buffers nil
         bm-highlight-style (if window-system
                                'bm-highlight-line-and-fringe
@@ -159,17 +162,22 @@
   (global-set-key [left-margin mouse-2] 'bm-toggle-mouse)
   (global-set-key [left-margin mouse-3] 'bm-next-mouse)
 
-  (deh-define-key bm-show-mode-map
-    ("n"  'bm-show-next)
-    ("p"  'bm-show-prev)))
+  (bind-keys
+   :map bm-show-mode-map
+    ("n"  . bm-show-next)
+    ("p"  . bm-show-prev)))
 
-(deh-require-reserved 'recent-jump)     ; deprecated by back-button
+(deh-package recent-jump                ; deprecated by back-button
+  :disabled)
 
 ;; The function ‘back-button-push-mark-local-and-global’ may be useful
 ;; to call from Lisp. It is essentially a replacement for ‘push-mark’
 ;; which unconditionally pushes onto the global mark ring, functionality
 ;; which is not possible using vanilla ‘push-mark’.
-(deh-require-reserved 'back-button
+(deh-package back-button
+  :disabled
+  :diminish
+  :config
   ;; Global mark-ring:
   ;; C-x C-<SPC>
   ;; C-x C-<left>
@@ -182,7 +190,8 @@
   (setq back-button-never-push-mark t)
   (back-button-mode 1))
 
-(deh-section "recentf"
+(deh-package recentf
+  :config
   ;; recent finded buffers
   (setq recentf-max-saved-items 1000
         recentf-save-file (expand-file-name "emacs.recentf" my-data-dir)
@@ -235,12 +244,12 @@
 
   (deh-after-load "recentf"
     ;; Also store recent opened directories besides files
-    (deh-add-hook 'dired-mode-hook
+    (deh-add-hook dired-mode-hook
       (recentf-add-file dired-directory))))
 
-(deh-section "ffap"
-  (autoload 'ffap "ffap" "Alias of find-file-at-point")
-
+(deh-package ffap
+  :commands (ffap)
+  :config
   ;; (ffap-bindings)
 
   ;; for windows path recognize
@@ -251,88 +260,100 @@
           (machine "-a-zA-Z0-9." "" ".")
           (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
 
-  (deh-after-load "ffap"
-    (setq ffap-c-path (append ffap-c-path my-include-dirs)))
-  )
+  (setq ffap-c-path (append ffap-c-path my-include-dirs)))
 
-(deh-section "filecache"
-  (deh-define-key minibuffer-local-map
-    ((kbd "C-M-f")  'file-cache-minibuffer-complete))
-
+(deh-package filecache
+  :commands file-cache-minibuffer-complete
+  :init
+  (bind-keys
+   :map minibuffer-local-map
+    ("C-M-f" . file-cache-minibuffer-complete))
+  :config
   (setq file-cache-ignore-case t)
-
-  (deh-after-load "filecache"
-    (message "Loading file cache...")
-    (file-cache-add-directory my-config-dir)
-    (file-cache-add-directory-list load-path)
-    (file-cache-add-directory-using-find (expand-file-name "~/works"))))
+  (message "Loading file cache...")
+  (file-cache-add-directory my-config-dir)
+  (file-cache-add-directory-list load-path)
+  (file-cache-add-directory-using-find (expand-file-name "~/works")))
 
 ;;; Buffer
-(deh-section "windmove"
+(deh-package windmove
+  :commands windmove-default-keybindings
+  :init
   ;; <S-up> windmove-up
   ;; <S-down> windmove-down
   ;; <S-left> windmove-left
   ;; <S-right> windmove-right
   (windmove-default-keybindings 'shift))
 
-(deh-require 'buffer-move
-  (deh-define-key global-map
-    ((kbd "<M-up>") 'buf-move-up)
-    ((kbd "<M-down>") 'buf-move-down)
-    ((kbd "<M-left>") 'buf-move-left)
-    ((kbd "<M-right>") 'buf-move-right)))
+(deh-package buffer-move
+  :bind
+  ("<M-up>" . buf-move-up)
+  ("<M-down>" . buf-move-down)
+  ("<M-left>" . buf-move-left)
+  ("<M-right>" . buf-move-right))
 
-(deh-section-after "help-mode"
+(deh-package help-mode
+  :commands (help-go-back help-go-forward)
+  :config
   (setq help-window-select t)
-  (deh-define-key help-mode-map
-    ((kbd "<left>")  'help-go-back)
-    ((kbd "<right>") 'help-go-forward) ))
+  (bind-keys
+   :map help-mode-map
+    ("<left>"  . help-go-back)
+    ("<right>" . help-go-forward) ))
 
-(deh-section-after "view"
+(deh-package view
+  :bind
+  ("C-c c v" . view-mode)
+  :config
   (setq view-read-only t)
 
-  (deh-define-key view-mode-map
+  (bind-keys
+   :map view-mode-map
     ;; simulate vi keybinds
-    ("h"  'backward-char)
-    ("l"  'forward-char)
-    ("j"  'next-line)
-    ("k"  'previous-line)
-    ("c"  'recenter-top-bottom)
-    ("0"  'beginning-of-line)
-    ("$"  'end-of-line)
-    ("g"  'beginning-of-buffer)
-    ("G"  'end-of-buffer)
-    ("n"  'View-scroll-line-forward)
-    ("p"  'View-scroll-line-backward)
-    ((kbd "<backspace>")  'View-scroll-page-backward)
-    ((kbd "SPC")  'View-scroll-page-forward)
-    ("?"  'View-search-regexp-backward)
+    ("h"  .  backward-char)
+    ("l"  .  forward-char)
+    ("j"  .  next-line)
+    ("k"  .  previous-line)
+    ("c"  .  recenter-top-bottom)
+    ("0"  .  beginning-of-line)
+    ("$"  .  end-of-line)
+    ("g"  .  beginning-of-buffer)
+    ("G"  .  end-of-buffer)
+    ("n"  .  View-scroll-line-forward)
+    ("p"  .  View-scroll-line-backward)
+    ("<backspace>" .  View-scroll-page-backward)
+    ("SPC"  . View-scroll-page-forward)
+    ("?"  . View-search-regexp-backward)
     ;; register
-    ("m"  'point-to-register)
-    ("'"  'register-to-point)
+    ("m"  .  point-to-register)
+    ("'"  .  register-to-point)
     ;; gtags
-    ("."  'gtags-find-tag)
-    (","  'gtags-pop-stack)
-    ("i"  'gtags-find-tag)
-    ("u"  'gtags-pop-stack)
+    ("."  .  gtags-find-tag)
+    (","  .  gtags-pop-stack)
+    ("i"  .  gtags-find-tag)
+    ("u"  .  gtags-pop-stack)
     ;; sourcepair
-    ("a"  'sourcepair-load)
+    ("a"  .  sourcepair-load)
     ;; eassist
-    ("L"  'eassist-list-methods)
+    ("L"  .  eassist-list-methods)
     ;; generic
-    ("f"  'ido-find-file)
-    ("d"  'dired-jump)
-    ("o"  'my-switch-recent-buffer)
+    ("f"  .  ido-find-file)
+    ("d"  .  dired-jump)
+    ("o"  .  my-switch-recent-buffer)
     ;; ("q"  'bury-buffer)
-    ("q"   'View-quit)
-    ("\C-k"  'kill-this-buffer)))
+    ("q"   . View-quit)
+    ("C-k" . kill-this-buffer)))
 
-(deh-section "doc-view"
-  (deh-add-hook 'doc-view-mode-hook
+(deh-package doc-view
+  :defer
+  :config
+  (deh-add-hook doc-view-mode-hook
     (define-key doc-view-mode-map [remap move-beginning-of-line] 'image-bol)
     (define-key doc-view-mode-map [remap move-end-of-line] 'image-eol)))
 
-(deh-section "image"
+(deh-package image
+  :defer
+  :config
   (defun image-display-info ()
     (interactive)
     (let ((image (image-get-display-property))
@@ -356,9 +377,12 @@
                           (cdr item))))
         (display-buffer (current-buffer)))))
   (deh-add-hook image-mode-hook
-    (deh-define-key image-mode-map "I" 'image-display-info)))
+    (define-key image-mode-map "I" 'image-display-info)))
 
-(deh-section-after "w3m"
+(deh-section w3m
+  :defer
+  :load-path "~/.emacs.d/site-lisp/w3m"
+  :config
   (setq w3m-verbose t                   ; log in *Messages*
         w3m-default-display-inline-images t
         w3m-use-favicon nil
@@ -366,16 +390,17 @@
         w3m-use-cookies t
         w3m-cookie-accept-bad-cookies t
         w3m-session-crash-recovery nil)
-  (deh-define-key w3m-mode-map
-    ("f" 'w3m-go-to-linknum)
-    ("L" 'w3m-lnum-mode)
-    ("o" 'w3m-previous-anchor)
-    ("i" 'w3m-next-anchor)
-    ("w" 'w3m-search-new-session)
-    ("p" 'w3m-previous-buffer)
-    ("n" 'w3m-next-buffer)
-    ("z" 'w3m-delete-buffer)
-    ("O" 'w3m-goto-new-session-url))
+  (bind-keys
+   :map w3m-mode-map
+    ("f" . w3m-go-to-linknum)
+    ("L" . w3m-lnum-mode)
+    ("o" . w3m-previous-anchor)
+    ("i" . w3m-next-anchor)
+    ("w" . w3m-search-new-session)
+    ("p" . w3m-previous-buffer)
+    ("n" . w3m-next-buffer)
+    ("z" . w3m-delete-buffer)
+    ("O" . w3m-goto-new-session-url))
   (defun w3m-go-to-linknum ()
     "Turn on link numbers and ask for one to go to."
     (interactive)
@@ -398,29 +423,20 @@
   )
 
 ;;; Edit
-(deh-section "mark-multiple"
-  (deh-try-require 'inline-string-rectangle
-    (deh-define-key global-map
-      ((kbd "C-x r t") 'inline-string-rectangle)))
+(deh-package inline-string-rectangle
+  :bind
+  ("C-x r t" . inline-string-rectangle))
 
-  (deh-try-require 'mark-more-like-this
-    (deh-define-key global-map
-      ((kbd "C-<") 'mark-previous-like-this)
-      ((kbd "C->") 'mark-next-like-this)
-      ((kbd "C-M-m") 'mark-more-like-this)
-      ((kbd "C-*") 'mark-all-like-this)))
+(deh-package mark-more-like-this
+  :bind
+  ("C-<" . mark-previous-like-this)
+  ("C->" . mark-next-like-this)
+  ("C-M-m" . mark-more-like-this)
+  ("C-*" . mark-all-like-this))
 
-  (deh-after-load "sgml-mode"
-    (deh-try-require 'rename-sgml-tag
-      (deh-define-key sgml-mode-map
-        ((kbd "C-c C-r") 'rename-sgml-tag))))
-
-  (deh-after-load "js2"
-    (deh-try-require 'js2-rename-var
-      (deh-define-key js2-mode-map
-        ((kbd "C-c C-r") 'js2-rename-var)))))
-
-(deh-require-reserved 'key-chord
+(deh-package key-chord
+  :disabled
+  :config
   (key-chord-mode 1)
   (setq key-chord-two-keys-delay 0.2
         key-chord-in-macros nil)
@@ -434,7 +450,8 @@
     (key-chord-define python-mode-map "''" "\"\"\"\"\"\"\C-b\C-b\C-b"))
   )
 
-(deh-require 'midnight
+(deh-package midnight
+  :config
   (setq midnight-mode t
         clean-buffer-list-delay-general 2 ; delete after two days
         ;; clean-buffer-list-kill-never-buffer-names '("*scratch*"
@@ -446,34 +463,40 @@
         ))
 
 ;;; Enhanced terminal
-(deh-require 'multi-term
+(deh-package multi-term
+  :bind
+  ("c" . multi-term)
+  ("t" . multi-term-dedicated-open-select)
+  ("q" . multi-term-dedicated-close)
+  ("s" . multi-term-dedicated-select)
+  ("g" . multi-term-dedicated-toggle)
+  :config
   (setq multi-term-dedicated-window-height 10
         multi-term-dedicated-max-window-height 10)
 
-  (deh-after-load "multi-term"
-    ;; compatible with normal terminal keybinds
-    (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
-    (add-to-list 'term-bind-key-alist '("<C-backspace>" . term-send-backward-kill-word))
-    (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
-    (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
-    (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
-    (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
-    (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
-    (add-to-list 'term-bind-key-alist '("<tab>" . (lambda nil (interactive) (term-send-raw-string "\C-i"))))
-    ;; some helpful key bindings
-    (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
-    (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
-    (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
-    ;; Only close dedicated window
-    (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
-    ;; unbind keys
-    (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
+  ;; compatible with normal terminal keybinds
+  (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<C-backspace>" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
+  (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
+  (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
+  (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<tab>" . (lambda nil (interactive) (term-send-raw-string "\C-i"))))
+  ;; some helpful key bindings
+  (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
+  (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
+  (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
+  ;; Only close dedicated window
+  (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
+  ;; unbind keys
+  (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
 
-    ;; hack to backward kill word as it does in terminal
-    (defun term-send-backward-kill-word ()
-      "Backward kill word in term mode."
-      (interactive)
-      (term-send-raw-string "\e\C-?")))
+  ;; hack to backward kill word as it does in terminal
+  (defun term-send-backward-kill-word ()
+    "Backward kill word in term mode."
+    (interactive)
+    (term-send-raw-string "\e\C-?"))
 
   (defun multi-term-dedicated-open-select ()
     (interactive)
@@ -481,6 +504,7 @@
       (multi-term-dedicated-open))
     (multi-term-dedicated-select))
 
+  :init
   (defun my-toggle-multi-term ()
     "Toggle dedicated `multi-term' window and select."
     (interactive)
@@ -489,10 +513,12 @@
       (multi-term-dedicated-open-select)))
   )
 
-(deh-section "shell"
+(deh-package shell
+  :defer
+  :config
   (setenv "HISTFILE" (expand-file-name "shell.history" my-data-dir))
 
-  (deh-add-hook 'shell-mode-hook
+  (deh-add-hook shell-mode-hook
     (rename-buffer (concat "*shell: " default-directory "*") t)
     (ansi-color-for-comint-mode-on)
     (setq-default comint-dynamic-complete-functions
@@ -505,7 +531,8 @@
                             (kill-buffer (process-buffer process)))))
 
   ;; shell-completion
-  (deh-try-require 'shell-completion
+  (deh-package shell-completion
+    :config
     (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
     (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
                               (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
@@ -516,31 +543,22 @@
                    ("open" my-lftp-sites)
                    ("bookmark" "add")))))
 
-;; fold content
-;; (deh-require 'fold
-;;   (setq fold-mode-prefix-key "\C-c\C-o")
-;;   (setq fold-autoclose-other-folds nil)
-;;   (add-hook 'find-file-hook 'fold-find-file-hook t))
-
-;; (deh-section "linum"
-;;   (setq linum-format (concat (propertize "%6d " 'face 'default)
-;;                              (propertize " " 'face 'fringe)))
-;;   (autoload 'linum-mode "linum" "Display line number" t))
-
-(deh-section-reserved "anything"        ; deprecated by helm
-  (autoload 'anything "anything" "" t)
-
-  (deh-after-load "anything"
-    (deh-define-key anything-map
-      ("\C-n"  'anything-next-line)
-      ("\C-p"  'anything-previous-line)
-      ("\M-n"  'anything-next-source)
-      ("\M-p"  'anything-previous-source)))
+(deh-package anything                   ; deprecated by helm
+  :disabled
+  :commands (anything)
+  :config
+  (bind-keys
+   :map anything-map
+      ("C-n"  . anything-next-line)
+      ("C-p"  . anything-previous-line)
+      ("M-n"  . anything-next-source)
+      ("M-p"  . anything-previous-source))
 
   ;; redefine anything-command-map-prefix-key
   (setq anything-command-map-prefix-key "")
 
-  (deh-after-load "anything-config"
+  (deh-package anything-config
+    :config
     (setq anything-c-adaptive-history-file
           (expand-file-name "anything-c-adaptive-history" my-data-dir)
           anything-c-yaoddmuse-cache-file
@@ -558,29 +576,32 @@
       (anything-other-buffer 'anything-c-source-info-pages "*info pages*"))
     ))
 
-(deh-require-reserved 'helm-config
+(deh-package helm-config
+  :disabled
+  :diminish
+  :init
+  ("<C-return>" . helm-mini)
+  :config
   (setq enable-recursive-minibuffers t)
   (helm-mode 1)
   (setq helm-idle-delay 0.1
         helm-input-idle-delay 0.1
         helm-buffer-max-length 50
         helm-M-x-always-save-history t)
-  (deh-try-require 'helm-ls-git)
-  (deh-try-require 'helm-gtags
-    (helm-gtags-mode 1))
-  (deh-try-require 'helm-descbinds
-    (helm-descbinds-mode 1))
-  (deh-try-require 'helm-M-x
-    ;; (global-set-key (kbd "M-x") 'helm-M-x)
-    (global-set-key (kbd "C-c M-x") 'execute-extended-command))
-  (deh-try-require 'helm-projectile
-    (global-set-key (kbd "C-h h") 'helm-projectile))
-
-  (global-set-key (kbd "<C-return>") 'helm-mini)
-  )
+  (deh-package helm-ls-git)
+  (deh-package helm-gtags
+    :config (helm-gtags-mode 1))
+  (deh-package helm-descbinds
+    :config (helm-descbinds-mode 1))
+  (deh-package helm-M-x
+    :bind ("C-c M-x" . execute-extended-command))
+  (deh-package helm-projectile
+    :bind ("C-h h" . helm-projectile)))
 
 ;;; Speedbar
-(deh-section-after "speedbar"
+(deh-package speedbar
+  :defer
+  :config
   (setq speedbar-directory-unshown-regexp
         "^\\(CVS\\|RCS\\|SCCS\\|\\.bak\\|\\..*\\)\\'")
 
@@ -596,18 +617,22 @@
   (add-to-list 'speedbar-fetch-etags-parse-list
                '("\\.php" . speedbar-parse-c-or-c++tag))
 
-  (deh-define-key speedbar-key-map
-    ("j"  'speedbar-next)
-    ("k"  'speedbar-prev)
-    ("\M-u"  'speedbar-up-directory))
-  (deh-define-key speedbar-file-key-map
-    ((kbd "RET")  'speedbar-toggle-line-expansion)) ; SPC
+  (bind-keys
+   :map speedbar-key-map
+    ("j"  . speedbar-next)
+    ("k"  . speedbar-prev)
+    ("M-u"  . speedbar-up-directory))
+  (bind-keys
+   :map speedbar-file-key-map
+    ("RET" .  speedbar-toggle-line-expansion)) ; SPC
 
   ;; WORKAROUND: shortkey cofflict, disable view-mode in speedbar
   (setq speedbar-mode-hook '(lambda () (View-exit))))
 
 ;; speedbar in one frame
-(deh-require-reserved 'sr-speedbar
+(deh-package sr-speedbar
+  :disabled
+  :config
   (setq sr-speedbar-skip-other-window-p t
         ;; sr-speedbar-delete-windows t
         sr-speedbar-width-x 22
@@ -620,41 +645,49 @@
   )
 
 ;;; highlight
-(deh-require-reserved 'highlight-parentheses
+(deh-package highlight-parentheses
+  :disabled
+  :diminish
+  :init
+  (deh-add-hook (emacs-lisp-mode-hook
+                 c-mode-common-hook)
+    (highlight-parentheses-mode 1))
+  :commands highlight-parentheses-mode
+  :config
   ;; colors is applied by reversed order
   (setq hl-paren-colors
         '("orange1" "yellow1" "greenyellow" "green1"
-          "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
-  (deh-add-hook '(emacs-lisp-mode-hook
-                  c-mode-common-hook)
-    (highlight-parentheses-mode 1)))
+          "springgreen1" "cyan1" "slateblue1" "magenta1" "purple")))
 
-(deh-section "highlight-line"
+(deh-package hl-line
+  :config
   ;; (global-hl-line-mode 1)
   (setq hl-line-face 'underline)
   ;; (set-face-background 'hl-line "white smoke") ; list-colors-display
   )
 
-(deh-section "highlight-symbol"
-  (autoload 'highlight-symbol-mode "highlight-symbol" "hl-s" t)
-  (autoload 'highlight-symbol-at-point "highlight-symbol" "hl-s" t)
-
-  (setq highlight-symbol-idle-delay 0.5
-        highlight-symbol-on-navigation-p t)
+(deh-package highlight-symbol
+  :commands (highlight-symbol-mode highlight-symbol-at-point)
+  :diminish
+  :init
   (when window-system
-    (deh-add-hook '(emacs-lisp-mode-hook
-                    python-mode-hook
-                    c-mode-common-hook)
+    (deh-add-hook (emacs-lisp-mode-hook
+                   python-mode-hook
+                   c-mode-common-hook)
       (highlight-symbol-mode 1)))       ; NOTE: maybe performance issue
-  )
+  :config
+  (setq highlight-symbol-idle-delay 0.5
+        highlight-symbol-on-navigation-p t))
 
 
-(deh-section "hi-lock"
+(deh-package hi-lock
+  :diminish
+  :config
   (setq hi-lock-file-patterns-range 5000
         hi-lock-file-patterns-policy '(lambda (dummy) t)))
 
-(deh-section "rainbow-mode"
-  (autoload 'rainbow-mode "rainbow-mode" "Background colors" t)
+(deh-package rainbow-mode
+  :commands rainbow-mode
   ;; (add-hook 'prog-mode-hook 'rainbow-mode)
   )
 
@@ -664,7 +697,9 @@
 ;; projects by default. So are lein, maven, sbt, rebar and bundler
 ;; projects. If you want to mark a folder manually as a project just
 ;; create an empty .projectile file in it.
-(deh-require 'projectile
+(deh-package projectile
+  :diminish
+  :config
   (projectile-global-mode)
   (setq projectile-cache-file
         (expand-file-name "projectile.cache" my-data-dir)
@@ -696,43 +731,45 @@
 ;; using a special type of lookup table and supporting incremental
 ;; searches (searches where the result can be narrowed-down by only
 ;; searching what is already matched).
-(deh-require 'grizzl
-  (setq *grizzl-read-max-results* 30)
-  )
+(deh-package grizzl
+  :config
+  (setq *grizzl-read-max-results* 30))
 
 ;; diff-hl-mode highlights uncommitted changes on the left side of the
 ;; window, allows you to jump between and revert them selectively.
-(deh-require 'diff-hl
+(deh-package diff-hl
+  :config
   (global-diff-hl-mode 1)
   (add-hook 'magit-refresh-file-buffer-hook
             (lambda ()
               (with-current-buffer (current-buffer) (diff-hl-update)))))
 
-(deh-section "svn"
-  (autoload 'svn-status-in-vc-mode? "psvn" "Is vc-svn active?")
-
+(deh-package psvn
+  :commands 'svn-status-in-vc-mode?
+  :init
   ;; inspired from git-emacs-autoloads
   (defadvice vc-find-file-hook (after svn-status-vc-svn-find-file-hook activate)
     "vc-find-file-hook advice for synchronizing psvn with vc-svn interface"
     (when (svn-status-in-vc-mode?) (svn-status-update-modeline)))
-
-  (deh-after-load "psvn"
-    (defsubst svn-status-interprete-state-mode-color (stat)
-      "Interpret vc-svn-state symbol to mode line color"
-      (case stat
-        ('up-to-date "GreenYellow")
-        ('edited     "tomato")
-        ('unknown    "gray")
-        ('added      "blue")
-        ('deleted    "red")
-        ('unmerged   "purple")
-        (t           "black"))))
+  :config
+  (defsubst svn-status-interprete-state-mode-color (stat)
+    "Interpret vc-svn-state symbol to mode line color"
+    (case stat
+      ('up-to-date "GreenYellow")
+      ('edited     "tomato")
+      ('unknown    "gray")
+      ('added      "blue")
+      ('deleted    "red")
+      ('unmerged   "purple")
+      (t           "black")))
 
   ;; (setq vc-svn-diff-switches nil
   ;;       vc-diff-switches '("--normal" "-bB"))
   )
 
-(deh-require-reserved 'popwin
+(deh-package popwin
+  :disabled
+  :config
   (popwin-mode 1)
   ;;# popwin-mode cofflict with occur-mode, which makes buffers read-only.
   (setq popwin:special-display-config
@@ -755,27 +792,121 @@
 ;;
 ;; try to press TAB
 ;;
-(deh-require 'magit
-  ;; (global-set-key (kbd "C-c g") 'magit-status)
-  ;; (global-set-key (kbd "C-c l") 'magit-log)
+(use-package magit
+  :bind
+  ("C-c g"  . magit-status)
+  ("C-c l"  . magit-log)
+  :config
+    ;; Subtler highlight
+    (set-face-background 'magit-item-highlight "#121212")
+    (set-face-background 'diff-file-header "#121212")
+    (set-face-foreground 'diff-context "#666666")
+    (set-face-foreground 'diff-added "#00cc33")
+    (set-face-foreground 'diff-removed "#ff0000")
+
+    (set-default 'magit-stage-all-confirm nil)
+    (set-default 'magit-unstage-all-confirm nil)
+
+    (add-hook 'magit-mode-hook 'magit-load-config-extensions)
+    (defun magit-save-and-exit-commit-mode ()
+      (interactive)
+      (save-buffer)
+      (server-edit)
+      (delete-window))
+
+    (defun magit-exit-commit-mode ()
+      (interactive)
+      (kill-buffer)
+      (delete-window))
+
+    (eval-after-load "git-commit-mode"
+      '(define-key git-commit-mode-map (kbd "C-c C-k") 'magit-exit-commit-mode))
+
+    ;; C-c C-a to amend without any prompt
+
+    (defun magit-just-amend ()
+      (interactive)
+      (save-window-excursion
+        (magit-with-refresh
+          (shell-command "git --no-pager commit --amend --reuse-message=HEAD"))))
+
+    (eval-after-load "magit"
+      '(define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend))
+
+    ;; C-x C-k to kill file on line
+
+    (defun magit-kill-file-on-line ()
+      "Show file on current magit line and prompt for deletion."
+      (interactive)
+      (magit-visit-item)
+      (delete-current-buffer-file)
+      (magit-refresh))
+
+    (define-key magit-status-mode-map (kbd "C-x C-k") 'magit-kill-file-on-line)
+
+    ;; full screen magit-status
+
+    (defadvice magit-status (around magit-fullscreen activate)
+      (window-configuration-to-register :magit-fullscreen)
+      ad-do-it
+      (delete-other-windows))
+
+    (defun magit-quit-session ()
+      "Restores the previous window configuration and kills the magit buffer"
+      (interactive)
+      (kill-buffer)
+      (jump-to-register :magit-fullscreen))
+
+    (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+
+    ;; full screen vc-annotate
+
+    (defun vc-annotate-quit ()
+      "Restores the previous window configuration and kills the vc-annotate buffer"
+      (interactive)
+      (kill-buffer)
+      (jump-to-register :vc-annotate-fullscreen))
+
+    (eval-after-load "vc-annotate"
+      '(progn
+         (defadvice vc-annotate (around fullscreen activate)
+           (window-configuration-to-register :vc-annotate-fullscreen)
+           ad-do-it
+           (delete-other-windows))
+
+         (define-key vc-annotate-mode-map (kbd "q") 'vc-annotate-quit)))
+
+    ;; ignore whitespace
+
+    (defun magit-toggle-whitespace ()
+      (interactive)
+      (if (member "-w" magit-diff-options)
+          (magit-dont-ignore-whitespace)
+        (magit-ignore-whitespace)))
+
+    (defun magit-ignore-whitespace ()
+      (interactive)
+      (add-to-list 'magit-diff-options "-w")
+      (magit-refresh))
+
+    (defun magit-dont-ignore-whitespace ()
+      (interactive)
+      (setq magit-diff-options (remove "-w" magit-diff-options))
+      (magit-refresh))
+
+    (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)
+
+    ;; Show blame for current line
+
+    (use-package git-messenger
+      :bind ("C-x v p" . git-messenger:popup-message))
   )
 
 ;;; others
 
-(deh-require 'diminish
-  (diminish 'abbrev-mode "Abv")
-  (deh-after-load "undo-tree" (diminish 'undo-tree-mode))
-  (deh-after-load "back-button" (diminish 'back-button-mode))
-  (deh-after-load "projectile" (diminish 'projectile-mode))
-  (deh-after-load "helm-mode" (diminish 'helm-mode))
-  (deh-after-load "highlight-symbol" (diminish 'highlight-symbol-mode))
-  (deh-after-load "outline" (diminish 'outline-minor-mode "ol"))
-  (deh-after-load "highlight-parentheses" (diminish 'highlight-parentheses-mode))
-  (deh-after-load "hi-lock" (diminish 'hi-lock-mode))
-  (deh-after-load "eldoc" (diminish 'eldoc-mode)))
-
 ;; ;; erc
-;; (deh-section "erc"
+;; (deh-package erc
+;;   :config
 ;;   (setq erc-log-channels-directory (expand-file-name "erc" my-data-dir))
 ;;   (deh-after-load "erc"
 ;;     (deh-require 'emoticons
@@ -786,10 +917,13 @@
 ;;                    (eldoc-mode t)
 ;;                    (setq eldoc-documentation-function 'emoticons-help-echo))))))
 
-(deh-section-after "epa-file"
+(deh-package epa-file
+  :commands epa-file-enable
+  :config
   (setq epa-file-cache-passphrase-for-symmetric-encryption t))
 
-(deh-require-reserved 'gmail-notifier
+(deh-package gmail-notifier
+  :config
   ;;# set user/passwd in ~/.authinfo.gpg
   (file-exists-p "~/.authinfo")
   (gmail-notifier-start)

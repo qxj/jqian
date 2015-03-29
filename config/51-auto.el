@@ -7,7 +7,9 @@
 
 
 ;; disable autopair, looking forward electric-pair-mode in emacs24
-(deh-require-reserved 'autopair
+(deh-package autopair
+  :disabled
+  :config
   ;; It's not an ideal way to turn on autopair-global-mode, because it's
   ;; unstable and its keybinds often works in unexcepted manner.
   (deh-add-hook (java-mode-hook
@@ -26,7 +28,9 @@
     (push '(?` . ?') (getf autopair-extra-pairs :comment))
     (push '(?` . ?') (getf autopair-extra-pairs :string))) )
 
-(deh-require-reserved 'smartparens-config
+(deh-package smartparens
+  :disabled
+  :config
   (smartparens-global-mode t)
   (define-key sp-keymap (kbd "M-o") 'sp-backward-sexp)
   (define-key sp-keymap (kbd "M-i") 'sp-forward-sexp)
@@ -37,7 +41,8 @@
   ;; "fix"" highlight issue in scratch buffer
   (custom-set-faces '(sp-pair-overlay-face ((t ())))))
 
-(deh-require 'yasnippet
+(deh-package yasnippet
+  :config
   (setq yas-snippet-dirs my-snippet-dir)
   (yas-load-directory yas-snippet-dirs)
   ;; (yas-global-mode 1)
@@ -45,8 +50,8 @@
 
   (setq yas-wrap-around-region t)
   (setq yas/indent-line nil)            ; stop auto-indent behavior when expanding snippets
-  
-  (require 'dropdown-list)
+
+  (require 'dropdown-list nil t)
   (setq yas-prompt-functions '(yas-dropdown-prompt
                                yas-ido-prompt
                                yas-completing-prompt))
@@ -60,12 +65,12 @@
         (define-key yas-keymap (kbd "<right>") 'yas-next-field-or-maybe-expand)
         (define-key yas-keymap (kbd "<left>") 'yas-prev-field)))
 
-  (deh-define-key yas-minor-mode-map
-    ([(tab)]     nil)
-    ((kbd "TAB") nil)                    ; Remove yas-expand keybind
-    ((kbd "<C-tab>") 'yas-expand)
-    ((kbd "C-c TAB") 'yas-expand)
-    ((kbd "C-c y") 'yas-insert-snippet)) ; List all snippets for current mode
+  (bind-keys
+   :map yas-minor-mode-map
+    ("TAB" . nil)                    ; Remove yas-expand keybind
+    ("<C-tab>" . yas-expand)
+    ("C-c TAB" . yas-expand)
+    ("C-c y" . yas-insert-snippet)) ; List all snippets for current mode
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
@@ -78,7 +83,8 @@
       (when (string-match (concat "^" root) bfn)
         (yas-load-snippet-buffer)))) )
 
-(deh-section "auto-complete"
+(deh-package auto-complete
+  :config
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
   (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
@@ -124,9 +130,10 @@
     )
   ;; when completion menu is displayed
   (setq ac-use-menu-map t)
-  (deh-define-key ac-menu-map
-    ("\C-n"  'ac-next)
-    ("\C-p"  'ac-previous))
+  (bind-keys
+   :map ac-menu-map
+    ("C-n"  . ac-next)
+    ("C-p"  . ac-previous))
 
   ;; press <TAB> to active `auto-complete'
   ;; (deh-define-key ac-mode-map
@@ -161,7 +168,8 @@ indent line."
     (cond
      ;; https://github.com/Golevka/emacs-clang-complete-async
      ((executable-find "clang-complete")
-      (deh-try-require 'auto-complete-clang-async
+      (use-package auto-complete-clang-async
+        :config
         (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
 
         ;;- work with Project.ede (M-x ede-new)
@@ -197,7 +205,8 @@ indent line."
 
      ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
      ((executable-find "clang")
-      (deh-try-require 'auto-complete-clang
+      (use-package auto-complete-clang
+        :config
         (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
         ;;
         ;; Customize ac-clang-cflags in .dir-locals.el, put it in the
@@ -278,7 +287,9 @@ indent line."
   ;; (deh-after-load "autopair" (ac-settings-4-autopair))
   )
 
-(deh-section "completion"
+(deh-package completion
+  :disabled
+  :config
   (deh-after-load "semantic"
     (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function))
   (setq completion-cycle-threshold 5)
@@ -290,7 +301,7 @@ indent line."
   )
 
 ;;; abbrev
-(deh-section "abbrev-table"
+(deh-section abbrev-table
   ;; Digested from (Emacswiki)[http://www.emacswiki.org/emacs/AbbrevMode#toc7]
   (require 'cl)
   (defvar my-abbrev-tables nil)
@@ -362,7 +373,7 @@ indent line."
 )
 
 ;;; skeleton
-(deh-section "skeleton"
+(deh-section skeleton
   ;; avoid abbre-mode when expand skeleton
   (setq skeleton-further-elements '((abbrev-mode nil))
         skeleton-end-hook nil)
@@ -398,162 +409,9 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-skel-comment "c++" "//" "//" ?/)
   )
 
-;;;; autopair
-(deh-section-reserved "skeleton-pair"
-  (setq skeleton-pair t
-        skeleton-pair-on-word nil)
-
-  ;;# `skeleton-pair-alist' will override `skeleton-pair-default-alist'
-  (setq skeleton-pair-alist
-        '((?( _ ?))
-          (?[ _ ?])
-          (?{ _ ?})
-          ;; (?` _ ?')
-          (?\" _ ?\")))
-
-  (setq skeleton-pair-filter-function
-        '(lambda ()
-           (cond
-            ((eq last-command-event ?\")
-             (or (looking-at   (regexp-quote (string last-command-event)))
-                 (looking-back (regexp-quote (string last-command-event)))
-                 (looking-back "[[:graph:]]")))
-            (t
-             (looking-at (regexp-quote (string last-command-event)))))))
-
-  (defmacro skeleton-autopair-define-key (keymap &optional alist)
-    "Helper to define keymap for all autopair keys in customized
-`skeleton-pair-alist'. While `skeleton-pair-alist' is a skeleton
-definition, so this macro is only suitable for such skeleton
-definition:
-
-    '((KEY-BEFORE ... KEY-AFTER) ...)
-
-for example:
-
-    '((?( _ ?))
-      (?{ \n _ \n ?})
-      ...)
-
-"
-    (declare (debug t))
-    (nconc (list 'progn)
-           (mapcan (lambda (pair)
-                     (list
-                      `(define-key ,keymap ,(string (car pair)) 'skeleton-autopair-insert)
-                      `(define-key ,keymap ,(string (car (last pair))) 'skeleton-autopair-insert)
-                      ))
-                   (or alist skeleton-pair-alist))))
-
-  (skeleton-autopair-define-key global-map)
-
-  (deh-add-hook sh-mode-hook
-    (set (make-local-variable 'skeleton-pair-alist)
-         '((?( _ ?))
-           (?[ _ ?])
-           (?{ _ ?})
-           (?` _ ?`)
-           (?\" _ ?\")))
-    (skeleton-autopair-define-key sh-mode-map))
-
-  (deh-add-hook python-mode-hook
-    (set (make-local-variable 'skeleton-pair-alist)
-         '((?( _ ?))
-           (?[ _ ?])
-           (?{ _ ?})
-           (?' _ ?')
-           (?\" _ ?\")))
-    (skeleton-autopair-define-key python-mode-map))
-
-  (deh-add-hook markdown-mode-hook
-    (set (make-local-variable 'skeleton-pair-alist)
-         '((?( _ ?))
-           (?[ _ ?])
-           (?{ _ ?})
-           (?` _ ?`)
-           (?' _ ?')
-           (?\" _ ?\")))
-    (skeleton-autopair-define-key markdown-mode-map))
-
-  (deh-add-hook c-mode-common-hook
-    (set (make-local-variable 'skeleton-pair-alist)
-         '((?( _ ?))
-           (?[ _ ?])
-           (?{ > \n  _ \n ?} >)
-           (?\' _ ?\')
-           (?\" _ ?\")))
-    (skeleton-autopair-define-key c-mode-base-map ((?( ?)) (?[ ?]) (?{ ?}) (?\') (?\"))))
-
-  (defun skeleton-autopair-insert (arg)
-    (interactive "P")
-    (cond
-     ((assq last-command-event skeleton-pair-alist)
-      (skeleton-autopair-open arg))
-     (t
-      (skeleton-autopair-close arg))))
-
-  (defun skeleton-autopair-open (arg)
-    (interactive "P")
-    (let ((pair (assq last-command-event skeleton-pair-alist)))
-      (cond
-       ((and (not mark-active)
-             (eq (car pair) (car (last pair)))
-             (eq (car pair) (char-after)))
-        (skeleton-autopair-close arg))
-       (t
-        (skeleton-pair-insert-maybe arg)))))
-
-  (defun skeleton-autopair-close (arg)
-    (interactive "P")
-    (cond
-     (mark-active
-      (let (pair open)
-        (dolist (pair skeleton-pair-alist)
-          (when (eq last-command-event (car (last pair)))
-            (setq open (car pair))))
-        (setq last-command-event open)
-        (skeleton-pair-insert-maybe arg)))
-     ((looking-at
-       (concat "[ \t\n]*"
-               (regexp-quote (string last-command-event))))
-      (replace-match (string last-command-event))
-      (delete-region (match-beginning 0) (match-end 0))
-      (insert (string last-command-event))
-      (indent-according-to-mode)
-      )
-     (t
-      (self-insert-command (prefix-numeric-value arg))
-      ;; (indent-according-to-mode)
-      )))
-
-  (defadvice delete-backward-char (before autopair activate)
-    "When you \\[delete-backward-char] a character, if both
-charactors surrounding the current cursor belong to a pair, they
-will be deleted together."
-    (when (and (char-after)
-               (eq this-command 'delete-backward-char)
-               (eq (char-after)
-                   (car (last (assq (char-before) skeleton-pair-alist)))))
-      (delete-char 1))))
-
-;;; tempo
-;; skeleton and tempo can be replaced by yasnippet now
-(deh-require-reserved 'tempo
-  (setq tempo-interactive t)
-  (tempo-define-template "lambda"
-                         '(> "(lambda (" p ")" n> r> ")">)
-                         nil            ; tag
-                         "Insert a template for an anonymous procedure"
-                         nil            ; taglist
-                         )
-  ;; combine with abbrev
-  (define-abbrev lisp-mode-abbrev-table "lambda" "" 'tempo-template-lambda)
-  (global-set-key (kbd "<C-tab>") 'tempo-complete-tag)
-  (global-set-key "\C-c\C-f" 'tempo-forward-mark)
-  )
-
 ;;; auto insert
-(deh-section "autoinsert"
+(deh-package autoinsert
+  :config
   (auto-insert-mode 1)
   (setq auto-insert-directory my-template-dir
         auto-insert-query 'function
@@ -775,7 +633,7 @@ will be deleted together."
   )
 
 ;;; hippie
-(deh-section "hippie-expand"
+(deh-section hippie-exp
   ;; Recommand hippie-expand other than dabbrev-expand for `M-/'
   (deh-after-load "dabbrev" (defalias 'dabbrev-expand 'hippie-expand))
   (setq hippie-expand-try-functions-list
@@ -795,7 +653,7 @@ will be deleted together."
           try-expand-whole-kill)))
 
 ;;; unicode characters
-(autoload 'xmsi-mode "xmsi-math-symbols-input" "Load xmsi minor mode for inputting math (Unicode) symbols." t)
-(deh-section "xmsi-mode"
+(deh-package xmsi-mode
+  :commands xmsi-mode
   ;; (xmsi-mode 1) ; activate the mode.
   )

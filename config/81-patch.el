@@ -1,6 +1,16 @@
 ;;; * patch for some elisp
 
-(deh-section "defadvice"
+(deh-section defadvice
+  ;; When popping the mark, continue popping until the cursor actually moves
+  ;; Also, if the last command was a copy - skip past all the expand-region cruft.
+  (defadvice pop-to-mark-command (around ensure-new-position activate)
+    (let ((p (point)))
+      (when (eq last-command 'save-region-or-current-line)
+        ad-do-it
+        ad-do-it
+        ad-do-it)
+      (dotimes (i 10)
+        (when (= p (point)) ad-do-it))))
   ;; bury *scratch* buffer instead of kill it
   (defadvice kill-buffer (around kill-buffer-around-advice activate)
     (let ((buffer-to-kill (ad-get-arg 0)))

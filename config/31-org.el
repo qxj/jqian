@@ -5,17 +5,14 @@
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
-(deh-section-path "org-external"
-  "~/src/org-mode"
-  ;; load-path
-  (add-to-list 'load-path (expand-file-name "lisp" deh-this-path))
-  (add-to-list 'load-path (expand-file-name "contrib/lisp" deh-this-path))
-  ;; load required org libraries
-  (require 'org-install nil t)
+(deh-package org-install
+  :load-path ("~/src/org-mode/lisp" "~/src/org-mode/contrib/lisp")
   ;;(require 'org-export-freemind-install)
 )
 
-(deh-section-after "org"
+(deh-package org
+  :defer
+  :config
   (setq org-CUA-compatible t)
 
   (setq org-directory my-org-dir
@@ -28,7 +25,7 @@
         org-export-with-sub-superscripts nil
         org-file-apps-defaults-gnu '((t . emacs)))
 
-  (deh-add-hook 'org-load-hook
+  (deh-add-hook org-load-hook
     (add-to-list 'org-link-frame-setup
                  '(file . my-find-file-function)))
   (defun my-find-file-function (file)
@@ -37,29 +34,30 @@
                                 'string-match)
                  'find-file) file))
 
-  (deh-add-hook 'org-mode-hook
+  (deh-add-hook org-mode-hook
     (my-text-mode-hook)
     (org-set-local 'comment-start "#+COMMENT:"))
 
   ;; org keybinds
-  (deh-define-key org-mode-map
-    ((kbd "C-c o l")  'org-store-link)
-    ((kbd "C-c o a")  'org-agenda)
-    ((kbd "C-c o b")  'org-iswitchb)
-    ((kbd "C-c o o")  'org-open-at-point) ; "\C-c\C-o"
-    ((kbd "C-c o j")  'org-open-at-point) ; "\C-c\C-o"
-    ("\M-\C-l"  'org-table-sort-lines)
-    ("\M-\C-w"  'org-table-copy-region)
-    ("\M-\C-y"  'org-table-paste-rectangle)
-    ("\M-I"  'org-toggle-iimage-in-org)
+  (bind-keys
+   :map org-mode-map
+    ("C-c o l" . org-store-link)
+    ("C-c o a" . org-agenda)
+    ("C-c o b" . org-iswitchb)
+    ("C-c o o" . org-open-at-point) ; "\C-c\C-o"
+    ("C-c o j" . org-open-at-point) ; "\C-c\C-o"
+    ("M-C-l"  . org-table-sort-lines)
+    ("M-C-w"  . org-table-copy-region)
+    ("M-C-y"  . org-table-paste-rectangle)
+    ("M-I"  . org-toggle-iimage-in-org)
     ;;## Org Keybinds Reminds ;;;;;;;;;;;;;;;;;;;
-    ((kbd "C-c C-b")  'org-beamer-select-environment)
-    ;; ((kbd "C-c C-x p")  'org-set-property)
-    ;; ((kbd "C-c /")  'org-sparse-tree)
-    ;; ((kbd "C-c C-x C-c")  'org-columns)
-    ;; ((kbd "C-c C-x C-l")  'org-preview-latex-fragment)
-    ;; ((kbd "C-c C-e")  'org-export)
-    ;; ((kbd "C-c C-a")  'org-attach)
+    ("C-c C-b"  . org-beamer-select-environment)
+    ;; ("C-c C-x p" . org-set-property)
+    ;; ("C-c /" . org-sparse-tree)
+    ;; ("C-c C-x C-c" . org-columns)
+    ;; ("C-c C-x C-l" . org-preview-latex-fragment)
+    ;; ("C-c C-e" . org-export)
+    ;; ("C-c C-a" . org-attach)
     )
 
   (defun org-toggle-iimage-in-org ()
@@ -72,13 +70,13 @@
 
   ;;# Compatible with yasnippet.el
   (if (featurep 'yasnippet)
-      (deh-add-hook 'org-mode-hook
+      (deh-add-hook org-mode-hook
         ;; (org-set-local 'yas-trigger-key [tab])
         (define-key yas-keymap [tab] 'yas-next-field-or-maybe-expand)
         (define-key yas-keymap (kbd "M-j") 'yas-next-field-or-maybe-expand)))
   )
 
-(deh-section-after "org-latex"
+(deh-section org-latex
   (setq org-latex-to-pdf-process
         '("xelatex -interaction=nonstopmode -output-directory=%o %f"
           "xelatex -interaction=nonstopmode -output-directory=%o %f"
@@ -167,14 +165,14 @@
   (defalias 'C-mode 'c-mode)
   )
 
-(deh-section "org-html"
+(deh-section org-html
   (setq org-export-html-inline-images t
         org-export-html-with-timestamp t)
 
   (setq org-export-html-style
         "<link rel=\"stylesheet\" type=\"text/css\" href=\"wheer.css\">"))
 
-(deh-section "org-agenda"
+(deh-section org-agenda
   ;; (setq org-agenda-include-diary t) ; contain calendar
   ;; (setq org-log-done t)
   ;; (setq org-log-done 'note) ; completed task notes
@@ -193,9 +191,10 @@
           (todo priority-down category-keep)
           (tags priority-down category-keep))))
 
-(deh-section-after "org-capture"
+(deh-package org-capture
+  :defer
+  :config
   ;; org-capture supersedes org-remember
-  (>= (string-to-int org-version) 7.5)
   (setq org-capture-templates
         '(("a" "Appointments" entry
            (file+headline "taskdiary.org" "Calendar")
@@ -229,7 +228,9 @@
     Reference: %a")
           )))
 
-(deh-section-after "footnode"
+(deh-package footnote
+  :defer
+  :config
   (defun ywb-footnote-detect-style (start end)
     "Detect `footnote-style' by counting match regexp of each style in
 `footnote-style-alist', and select the style matches most."
@@ -326,7 +327,9 @@
 
   (add-hook 'footnote-mode-hook 'ywb-footnote-rescan))
 
-(deh-section "rst"
-  (add-hook 'rst-adjust-hook 'rst-toc-update)
+(deh-package rst
+  :defer
+  :config
+  (deh-add-hook rst-adjust-hook rst-toc-update)
   ;; Auto fill and outline mode
   (deh-add-hook rst-mode-hook my-text-mode-hook))

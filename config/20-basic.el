@@ -10,20 +10,26 @@
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
-(deh-require-reserved 'undo-tree        ; disable it, cause C-g abnormal
+(deh-package generic-x)
+
+(deh-package undo-tree        ; disable it, cause C-g abnormal
+  :disabled
+  :diminish
+  :config
   (global-undo-tree-mode)
   (setq undo-tree-auto-save-history t
         undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo"))))
   (defadvice undo-tree-make-history-save-file-name
-    (after undo-tree activate)
+      (after undo-tree activate)
     (setq ad-return-value (concat ad-return-value ".gz"))))
 
-(deh-require 'browse-kill-ring
+(deh-package browse-kill-ring
+  :config
   (browse-kill-ring-default-keybindings)
   (setq browse-kill-ring-highlight-current-entry t))
 
 ;;; mode line
-(deh-section "mode-line"
+(deh-section mode-line
   (size-indication-mode 1)
   ;; (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
 
@@ -90,10 +96,9 @@ mouse-3: Remove current window from display")
 
 ;;; minibuffer
 
-(deh-section "minibuffer"
-  (autoload 'minibuf-isearch-next "minibuf-isearch" "" t)
-  (autoload 'minibuf-isearch-prev "minibuf-isearch" "" t)
-
+(deh-package minibuffer
+  :commands (minibuf-isearch-next minibuf-isearch-prev)
+  :config
   (mapcar (lambda (keymap)
             (define-key keymap "\C-r" 'minibuf-isearch-prev)
             (define-key keymap "\C-s" 'minibuf-isearch-next))
@@ -109,7 +114,9 @@ mouse-3: Remove current window from display")
 
 ;;; Directories and buffers
 
-(deh-section-after "dired"
+(deh-package dired
+  :bind (("C-x C-j" . dired-jump))
+  :config
   ;; Setting for dired
   (unless (eq system-type 'usg-unix-v)  ; solaris
     (setq dired-listing-switches "-alvh"))
@@ -122,33 +129,34 @@ mouse-3: Remove current window from display")
 
   ;; No confirm operations
   (setq dired-no-confirm
-        '(byte-compile chgrp chmod chown compress copy delete hardlink load move print shell symlink uncompress))
+        '(byte-compile chgrp chmod chown compress copy delete hardlink
+                       load move print shell symlink uncompress))
 
   ;;# Keybind for dired
-  (deh-define-key dired-mode-map
-    ([return]  'dired-find-file-single-buffer)
-    ("\M-u"  'dired-up-directory)   ; remember previous upper directory
-    ;; ("\M-="  'dired-backup-diff)
-    ("b"     'browse-url-of-dired-file)
-    ("W"     'woman-dired-find-file)
-    ("r"     'wdired-change-to-wdired-mode) ; editable mode, 'C-c C-k' abort
-    (" "     'dired-count-directory-size)
-    ("E"     'dired-w3m-visit)
-    ;; ("!"     'dired-do-shell-command)
-    ("z"     'dired-compress-directory)
-    ("s"     'one-key-menu-dired-sort)
-    ("/"     'one-key-menu-dired-filter))
+  (bind-keys
+   :map dired-mode-map
+    ("RET"  . dired-find-file-single-buffer)
+    ("M-u"  . dired-up-directory)   ; remember previous upper directory
+    ;; ("M-="  . dired-backup-diff)
+    ("b"     . browse-url-of-dired-file)
+    ("W"     . woman-dired-find-file)
+    ("r"     . wdired-change-to-wdired-mode) ; editable mode, "C-c C-k" abort
+    (" "     . dired-count-directory-size)
+    ("E"     . dired-w3m-visit)
+    ;; ("!"     . dired-do-shell-command)
+    ("z"     . dired-compress-directory)
+    ("s"     . one-key-menu-dired-sort)
+    ("/"     . one-key-menu-dired-filter))
 
   ;;# hooks
-  (deh-add-hook 'dired-mode-hook
-    (dired-omit-mode t))
-  (deh-add-hook 'dired-load-hook
+  (deh-add-hook dired-mode-hook (dired-omit-mode t))
+  (deh-add-hook dired-load-hook
     (load "dired-x")
     ;; Make the execuatable file with different color
     (add-to-list 'dired-font-lock-keywords
                  (list dired-re-exe
                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
-  (deh-add-hook 'dired-after-readin-hook
+  (deh-add-hook dired-after-readin-hook
     (set (make-local-variable 'truncate-lines) t)
     (save-excursion                     ; sort directories first
       (let (buffer-read-only)
@@ -251,11 +259,30 @@ mouse-3: Remove current window from display")
     (one-key-menu
      "DIRED-SORT"
      '((("r" . "Filter by regexp")    . ywb-dired-filter-regexp)
-       (("." . "Filter by extension") . ywb-dired-filter-extension)
-       (("/" . "Filter match")        . my-dired-omit-expunge))
-     t)))
+       (("." . "Filter by extension") . ywb-dired-filter-extension))
+     t))
 
-(deh-section-after "dired-x"
+  (defun ywb-dired-filter-regexp (regexp &optional arg)
+    (interactive
+     (list (dired-read-regexp
+            (concat (if current-prefix-arg "Exclude" "Exclude not")
+                    " match (regexp): "))
+           current-prefix-arg))
+    (dired-mark-files-regexp regexp)
+    (or arg (dired-toggle-marks))
+    (dired-do-kill-lines))
+
+  (defun ywb-dired-filter-extension (extension &optional arg)
+    (interactive
+     (list (read-from-minibuffer
+            (concat "Exclude extension is "
+                    (if current-prefix-arg "" "not") ": "))
+           current-prefix-arg))
+    (ywb-dired-filter-regexp (concat "\\." extension "\\'") arg)))
+
+(deh-package dired-x
+  :defer
+  :config
   (dolist (ext '(".bak" ".dSYM" ".dsp" ".plg" ".vcproj" ".d"))
     (add-to-list 'dired-omit-extensions ext))
 
@@ -282,7 +309,8 @@ mouse-3: Remove current window from display")
 
   ;; Redefine of this function
   (defun dired-run-shell-command (command)
-    "Replace `shell-command' to `start-process-shell-command' to run command asynchronously. Originally defined in dired-aux.el"
+    "Replace `shell-command' to `start-process-shell-command' to
+run command asynchronously. Originally defined in dired-aux.el"
     (let ((handler
            (find-file-name-handler (directory-file-name default-directory)
                                    'shell-command)))
@@ -292,7 +320,8 @@ mouse-3: Remove current window from display")
     ;; Return nil for sake of nconc in dired-bunch-files.
     nil))
 
-(deh-require 'ido
+(deh-package ido
+  :config
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
   (ido-everywhere t)
   (add-hook 'term-setup-hook 'ido-mode)
@@ -341,19 +370,20 @@ mouse-3: Remove current window from display")
         '(".h" ".c" ".cpp" ".py" ".sh" ".el" ".txt" ".org" ".md"))
 
   (deh-add-hook ido-setup-hook
-    (deh-define-key ido-completion-map
-      ((kbd "C-n")    'ido-next-match-dir)
-      ((kbd "C-p")    'ido-prev-match-dir)
-      ((kbd "M-u")    'ido-up-directory)
-      ((kbd "C-M-h")  'ido-goto-home)
-      ((kbd "C-u")    'ido-clean-text)
-      ((kbd "C-w")    'ido-delete-backward-word-updir)
+    (bind-keys
+     :map ido-completion-map
+      ("C-n"    .  ido-next-match-dir)
+      ("C-p"    .  ido-prev-match-dir)
+      ("M-u"    .  ido-up-directory)
+      ("C-M-h"  .  ido-goto-home)
+      ("C-u"    .  ido-clean-text)
+      ("C-w"    .  ido-delete-backward-word-updir)
       ;; Remind keybinds
-      ;; ((kbd "C-a")  'ido-toggle-ignore)
-      ((kbd "C-S-p")  'ido-toggle-prefix)
-      ;; ((kbd "C-t")  'ido-enable-regexp)
-      ;; ((kbd "M-n")  'ido-next-work-directory)
-      ;; ((kbd "M-p")  'ido-prev-work-directory)
+      ;; ("C-a" .  .  ido-toggle-ignore)
+      ("C-S-p"  .  ido-toggle-prefix)
+      ;; ("C-t"  .  ido-enable-regexp)
+      ;; ("M-n"  .  ido-next-work-directory)
+      ;; ("M-p"  .  ido-prev-work-directory)
       ))
 
   (defun ido-clean-text ()
@@ -424,7 +454,7 @@ mouse-3: Remove current window from display")
           (add-to-list 'ido-work-directory-list
                        (expand-file-name dir)))
         '("~/.emacs.d/config/"
-          "~/.emacs.d/site-lisp/"
+          "~/.emacs.d/lisp/"
           "~/projects/"
           "~/works/"
           "~/temp/"
@@ -433,29 +463,37 @@ mouse-3: Remove current window from display")
 
 ;; (deh-require 'ido-ubiquitous)
 
-(deh-require 'flx-ido
+(deh-package flx-ido
+  :config
   (flx-ido-mode 1)
   (setq ido-use-faces nil
         flx-ido-use-faces nil))
 
-(deh-require 'smex
+(deh-package smex
+  :commands smex-initialize
+  :bind
+  ("M-x"     . smex)
+  ("C-c M-x" . smex-major-mode-commands)
+  ("C-c C-c M-x"  . execute-extended-command)
+  :config
   (setq smex-save-file (expand-file-name "emacs.smex-items" my-data-dir)
         smex-history-length 50)
-  (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "C-c M-X") 'smex-major-mode-commands)
-  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command))
+  )
 
-(deh-section-after "ibuffer"
+(deh-package ibuffer
+  :bind
+  ("C-x C-b" . ibuffer)
+  :config
   (setq ibuffer-old-time 24
         ibuffer-show-empty-filter-groups nil)
   ;; keybinds
   ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (deh-define-key ibuffer-mode-map
-    ("s"  'one-key-menu-ibuffer-sort)
-    ("r"  'ibuffer-rename-buffer)
-    ("\C-x\C-f"  'ibuffer-find-file)
-    (" "  'scroll-up))
+  (bind-keys
+   :map ibuffer-mode-map
+    ("s"  . one-key-menu-ibuffer-sort)
+    ("r"  . ibuffer-rename-buffer)
+    ("C-x C-f"  . ibuffer-find-file)
+    (" "  . scroll-up))
 
   (defun one-key-menu-ibuffer-sort ()
     "The `one-key' menu for IBUFFER-SORT."
@@ -498,39 +536,41 @@ mouse-3: Remove current window from display")
                                  default-directory))))
       (call-interactively 'ido-find-file)))
 
-  (deh-add-hook 'ibuffer-mode-hook
+  (deh-add-hook ibuffer-mode-hook
     (require 'ibuf-ext nil t)
-    (ibuffer-switch-to-saved-filter-groups "default"))
+    (ibuffer-switch-to-saved-filter-groups "default")))
 
-  (deh-after-load "ibuf-ext"
-    (setq ibuffer-saved-filter-groups
-          '(("default"
-             ("*buffers*" (or (mode . term-mode)
-                              (name . "^\\*gud")
-                              (name . "^\\*scratch")
-                              ;; slime
-                              (name . "^\\*slime-repl")
-                              (mode . message-mode)))
-             ("programming" (or (mode . c++-mode)
-                                (mode . c-mode)
-                                (mode . makefile-mode)))
-             ("script" (or (mode . python-mode)
-                           (mode . sh-mode)
-                           (mode . perl-mode)
-                           (mode . org-mode)
-                           (mode . LaTeX-mode)))
-             ("web" (or  (mode . html-mode)
-                         (mode . css-mode)
-                         (mode . php-mode)
-                         (mode . javascript-mode)
-                         (mode . js2-mode)))
-             ("elisp" (or (mode . emacs-lisp-mode)
-                          (mode . lisp-interaction-mode)))
-             ("dired" (mode . dired-mode))
-             ("*others*" (name . "\\*.*\\*"))))))
-  )
+(use-package ibuf-ext
+  :defer
+  :config
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("*buffers*" (or (mode . term-mode)
+                            (name . "^\\*gud")
+                            (name . "^\\*scratch")
+                            ;; slime
+                            (name . "^\\*slime-repl")
+                            (mode . message-mode)))
+           ("programming" (or (mode . c++-mode)
+                              (mode . c-mode)
+                              (mode . makefile-mode)))
+           ("script" (or (mode . python-mode)
+                         (mode . sh-mode)
+                         (mode . perl-mode)
+                         (mode . org-mode)
+                         (mode . LaTeX-mode)))
+           ("web" (or  (mode . html-mode)
+                       (mode . css-mode)
+                       (mode . php-mode)
+                       (mode . javascript-mode)
+                       (mode . js2-mode)))
+           ("elisp" (or (mode . emacs-lisp-mode)
+                        (mode . lisp-interaction-mode)))
+           ("dired" (mode . dired-mode))
+           ("*others*" (name . "\\*.*\\*"))))))
 
-(deh-require 'uniquify
+(deh-package uniquify
+  :config
   (setq uniquify-buffer-name-style 'forward
         ;; uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-separator "/"
@@ -538,7 +578,8 @@ mouse-3: Remove current window from display")
         uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
   )
 
-(deh-section "tramp"
+(deh-package tramp
+  :defer
   ;; If Tramp still isn’t fast enough for you (or if you don’t use
   ;; linux), try [Accelerating OpenSSH connections with ControlMaster |
   ;; http://linux.com/feature/54498]
@@ -557,6 +598,7 @@ mouse-3: Remove current window from display")
   ;; delete it away from emacs. To be fixed.
   ;;
 
+  :config
   ;; (setq tramp-mode nil)                  ; disable tramp
   (setq tramp-auto-save-directory my-data-dir
         tramp-persistency-file-name (expand-file-name "tramp" my-data-dir)
@@ -574,88 +616,97 @@ mouse-3: Remove current window from display")
 
 ;;; Better scrolling
 
-(deh-require 'pager
+(deh-package pager
+  :bind
+  ("C-v"  .  pager-page-down)
+  ("M-v"  .  pager-page-up)
+  ("<up>" .  pager-row-up)
+  ("M-p"  .  pager-row-up)
+  ("<down>" .  pager-row-down)
+  ("M-n"  .  pager-row-down)
+  :config
   (setq scroll-margin 1) ; scroll-margin conflict with pager-mode, it should be 0
-  (deh-define-key global-map
-    ((kbd "C-v")  'pager-page-down)
-    ((kbd "M-v")  'pager-page-up)
-    ((kbd "<up>") 'pager-row-up)
-    ((kbd "M-p")  'pager-row-up)
-    ((kbd "<down>") 'pager-row-down)
-    ((kbd "M-n")  'pager-row-down))
+
   ;; Some individual keybind overrides
   (deh-after-load "info"
-    (deh-define-key Info-mode-map
-      ((kbd "M-p") 'pager-row-up)
-      ((kbd "M-n") 'pager-row-down)))
+    (bind-keys
+     :map Info-mode-map
+      ("M-p" . pager-row-up)
+      ("M-n" . pager-row-down)))
   (deh-after-load "help-mode"
-    (deh-define-key help-mode-map
-      ((kbd "M-p") 'pager-row-up)
-      ((kbd "M-n") 'pager-row-down)))
+    (bind-keys
+     :map help-mode-map
+     ("M-p" . pager-row-up)
+     ("M-n" . pager-row-down)))
   (deh-after-load "man"
-    (deh-define-key Man-mode-map
-      ((kbd "M-p") 'pager-row-up)
-      ((kbd "M-n") 'pager-row-down)))
+    (bind-keys
+     :map Man-mode-map
+     ("M-p" . pager-row-up)
+     ("M-n" . pager-row-down)))
   (deh-after-load "woman"
-    (deh-define-key woman-mode-map
-      ((kbd "M-p") 'pager-row-up)
-      ((kbd "M-n") 'pager-row-down)))
+    (bind-keys
+     :map woman-mode-map
+     ("M-p" . pager-row-up)
+     ("M-n" . pager-row-down)))
   (deh-after-load "w3m"
-    (deh-define-key w3m-mode-map
-      ((kbd "M-p") 'pager-row-up)
-      ((kbd "M-n") 'pager-row-down)))
+    (bind-keys
+     :map w3m-mode-map
+     ("M-p" . pager-row-up)
+     ("M-n" . pager-row-down)))
   (deh-after-load "markdown"
-    (deh-define-key markdown-mode-map
-      ((kbd "M-p")    'pager-row-up)
-      ((kbd "M-n")    'pager-row-down)))
+    (bind-keys
+     :map markdown-mode-map
+     ("M-p" . pager-row-up)
+     ("M-n" . pager-row-down)))
   )
 
-(deh-require 'on-screen
+(deh-package on-screen
+  :config
   (on-screen-global-mode 1)
   (setq on-screen-highlight-method 'narrow-line)
   (set-face-underline 'on-screen-narrow-line '(:color "#444" :style wave)))
 
 ;;; Search
 
-(deh-section "ace-jump-mode"
-  (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
-  (autoload 'ace-jump-char-mode "ace-jump-mode" "Ace jump char mode" t)
-  (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back:-)" t)
-
-  (eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
-
-  (deh-define-key global-map
-    ((kbd "C-c C-j") 'ace-jump-mode)
-    ((kbd "C-M-SPC") 'ace-jump-mode)
-    ((kbd "C-c C-p") 'ace-jump-mode-pop-mark)
-    ((kbd "M-4") 'ace-jump-char-mode)
-    ((kbd "C-4") 'ace-jump-mode)))
+(deh-package ace-jump-mode
+  :commands (ace-jump-mode
+             ace-jump-char-mode
+             ace-jump-word-mode
+             ace-jump-line-mode
+             ace-jump-mode-pop-mark)
+  :bind
+  ("C-c C-j" . ace-jump-mode)
+  ("C-M-SPC" . ace-jump-mode)
+  ("C-c C-p" . ace-jump-mode-pop-mark)
+  ("M-4" . ace-jump-char-mode)
+  ("C-4" . ace-jump-mode)
+  :config
+  (ace-jump-mode-enable-mark-sync))
 
 ;; simulate `f' in VIM
-(deh-require-reserved 'iy-go-to-char    ; obsolete by jump-char
-  (deh-define-key global-map
-    ;; ((kbd "C-c f") 'iy-go-to-char)
-    ;; ((kbd "C-c ;") 'iy-go-to-char-continue)
-    ;; ((kbd "C-c F") 'iy-go-to-char-backward)
-    ;; ((kbd "C-c ,") 'iy-go-to-char-continue-backward)
-    ((kbd "M-3") 'iy-go-to-char)
-    ((kbd "C-3") 'iy-go-to-char))
-
+(deh-package iy-go-to-char    ; obsolete by jump-char
+  :disabled
+  :bind
+  ("M-3" . iy-go-to-char)
+  ("C-3" . iy-go-to-char)
+  :config
   (setq iy-go-to-char-key-forward ?\;
         iy-go-to-char-key-backward ?\,))
 
-(deh-section "jump-char"
-  (autoload 'jump-char-forward "jump-char" "Jump forward" t)
-  (autoload 'jump-char-backward "jump-char" "Jump backward" t)
-  (global-set-key [(meta m)] 'jump-char-forward) ;override back-to-indentation
-  (global-set-key [(shift meta m)] 'jump-char-backward)
-  (deh-define-key global-map
-    ((kbd "C-c C-f") 'jump-char-forward)
-    ((kbd "C-c C-M-f") 'jump-char-backward))
-  )
+(deh-package jump-char
+  :commands (jump-char-forward jump-char-backward)
+  :bind
+  ("M-m"   . jump-char-forward)         ;override back-to-indentation
+  ("S-M-m" . jump-char-backward)
+  ("C-c C-f"   . jump-char-forward)
+  ("C-c C-M-f" . jump-char-backward)
+  :config
+  ;; Don't highlight matches with jump-char - it's distracting
+  (setq jump-char-lazy-highlight-face nil))
 
-(deh-section "occur"
-  (deh-add-hook 'occur-mode-hook
+(deh-package occur
+  :config
+  (deh-add-hook occur-mode-hook
     (require 'moccur-edit nil t)
     (set (make-local-variable 'truncate-lines) t))
 
@@ -694,14 +745,12 @@ mouse-3: Remove current window from display")
     )
   )
 
-(deh-section "grep"
-  (autoload 'grep-tag-default "grep")
-  (autoload 'grep-apply-setting "grep")
-
-  (deh-after-load "grep"
-    (add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp"))
-    ;;# avoid print NUL when grep something in Windows.
-    (if (eq system-type 'windows-nt) (setq grep-use-null-device nil)))
+(deh-package grep
+  :commands (grep-tag-default grep-apply-setting)
+  :config
+  (add-to-list 'grep-files-aliases '("hcpp" . "*.h *.c *.[hc]pp"))
+  ;;# avoid print NUL when grep something in Windows.
+  (if (eq system-type 'windows-nt) (setq grep-use-null-device nil))
 
   (defun grep-current-dir (&optional prompt wd)
     "Run `grep' to find current word in current directory."
@@ -723,27 +772,29 @@ mouse-3: Remove current window from display")
     (grep-current-dir nil "TODO|FIXME")))
 
 
-(deh-section "isearch"
+(deh-package isearch
+  :config
   (setq isearch-case-fold-search t)     ; case insensitive
-  (deh-define-key isearch-mode-map
-    ("\t"  'isearch-complete)
-    ("\M-<"  'isearch-beginning-of-buffer)
-    ("\M->"  'isearch-end-of-buffer)
-    ("\M-i"  'isearch-query-replace-current)
-    ("\C-u"  'isearch-clean)
-    ("\C-\M-y"  'isearch-yank-symbol-regexp)
-    ("\C-y"  'isearch-yank-symbol) ; instead of `isearch-yank-line'
-    ("\C-o" 'isearch-occur)
+  (bind-keys
+   :map isearch-mode-map
+    ("t"  . isearch-complete)
+    ("M-<"  . isearch-beginning-of-buffer)
+    ("M->"  . isearch-end-of-buffer)
+    ("M-i"  . isearch-query-replace-current)
+    ("C-u"  . isearch-clean)
+    ("C-M-y"  . isearch-yank-symbol-regexp)
+    ("C-y"  . isearch-yank-symbol) ; instead of `isearch-yank-line'
+    ("C-o" . isearch-occur)
     ;; Remind other useful keybinds
-    ;; ("\M-e"  'isearch-edit-string)
-    ;; ("\M-y"  'isearch-yank-kill)
-    ;; ("\M-e" 'isearch-edit-string)
-    ;; ("\M-c" 'isearch-toggle-case-fold)
-    ;; ("\M-r" 'isearch-toggle-regexp)
-    ;; ("\M-sr" 'isearch-toggle-regexp)
-    ;; ("\M-sw" 'isearch-toggle-word)
-    ;; ("\M-so" 'isearch-occur)
-    ;; ("\M-shr" 'isearch-highlight-regexp)
+    ;; ("M-e"  . isearch-edit-string)
+    ;; ("M-y"  . isearch-yank-kill)
+    ;; ("M-e" . isearch-edit-string)
+    ;; ("M-c" . isearch-toggle-case-fold)
+    ;; ("M-r" . isearch-toggle-regexp)
+    ;; ("M-sr" . isearch-toggle-regexp)
+    ;; ("M-sw" . isearch-toggle-word)
+    ;; ("M-so" . isearch-occur)
+    ;; ("M-shr" . isearch-highlight-regexp)
     )
 
   (defun isearch-beginning-of-buffer ()
@@ -818,15 +869,18 @@ mouse-3: Remove current window from display")
 
 ;;; navigation
 
-(deh-section-after "hideshow"           ; for semantic code
-  (deh-define-key hs-minor-mode-map
-    ("\C-c\C-ah"  'hs-hide-block)
-    ("\C-c\C-as"  'hs-show-block)
-    ("\C-c\C-aH"  'hs-hide-all)
-    ("\C-c\C-aS"  'hs-show-all)
-    ("\C-c\C-at"  'hs-toggle-hiding)
-    ("\C-c\C-a\C-a"  'hs-toggle-hiding)
-    ((kbd "<left-fringe> <mouse-2>")  'hs-mouse-toggle-hiding))
+(deh-package hideshow           ; for semantic code
+  :commands hs-minor-mode
+  :config
+  (bind-keys
+   :map hs-minor-mode-map
+    ("C-c C-ah"  . hs-hide-block)
+    ("C-c C-as"  . hs-show-block)
+    ("C-c C-aH"  . hs-hide-all)
+    ("C-c C-aS"  . hs-show-all)
+    ("C-c C-at"  . hs-toggle-hiding)
+    ("C-c C-a C-a"  . hs-toggle-hiding)
+    ("<left-fringe> <mouse-2>"  . hs-mouse-toggle-hiding))
 
   (defvar hs--overlay-keymap nil "keymap for folding overlay")
   (let ((map (make-sparse-keymap)))
@@ -845,28 +899,33 @@ mouse-3: Remove current window from display")
             (overlay-put ov 'keymap hs--overlay-keymap)
             (overlay-put ov 'pointer 'hand)))))
 
-(deh-section-after "outline"            ; for literal text
-  (setq outline-minor-mode-prefix (kbd "C-c C-a"))
-  (deh-define-key outline-minor-mode-map
-    ("\C-c\C-as"  'show-subtree)
-    ("\C-c\C-aS"  'show-all)
-    ("\C-c\C-ah"  'hide-subtree)
-    ("\C-c\C-aH"  'hide-body)
+(deh-package outline            ; for literal text
+  :commands (outline-mode outline-minor-mode)
+  :diminish
+  :bind-keymap
+  ("C-c C-a" . outline-minor-mode-prefix)
+  :config
+  (bind-keys
+   :map outline-minor-mode-map
+    ("s"  . show-subtree)
+    ("S"  . show-all)
+    ("h"  . hide-subtree)
+    ("H"  . hide-body)
     ;; shortcuts
-    ((kbd "<right>")  'show-subtree)
-    ((kbd "<M-right>")  'show-all)
-    ((kbd "<left>")  'hide-subtree)
-    ((kbd "<M-left>")  'hide-body)
-    ((kbd "<up>")  'outline-previous-heading)
-    ((kbd "<down>")  'outline-next-heading)
-    ((kbd "<M-up>")  'outline-previous-visible-heading)
-    ((kbd "<M-down>")  'outline-next-visible-heading)
+    ("<right>" . show-subtree)
+    ("<M-right>" . show-all)
+    ("<left>" . hide-subtree)
+    ("<M-left>" . hide-body)
+    ("<up>" . outline-previous-heading)
+    ("<down>" . outline-next-heading)
+    ("<M-up>" . outline-previous-visible-heading)
+    ("<M-down>" . outline-next-visible-heading)
     ;; xwl keybinds
-    ("\C-c\C-an"  'xwl-narrow-to-outline-level)
-    ("\C-c\C-au"  'xwl-outline-toggle-enter-exit)
-    ("\C-c\C-aq"  'xwl-outline-toggle-show-hide)
-    ("\C-c\C-at"  'xwl-outline-toggle-show-hide)
-    ("\C-c\C-a\C-a"  'xwl-outline-toggle-show-hide))
+    ("n"  . xwl-narrow-to-outline-level)
+    ("u"  . xwl-outline-toggle-enter-exit)
+    ("q"  . xwl-outline-toggle-show-hide)
+    ("t"  . xwl-outline-toggle-show-hide)
+    ("C-a"  . xwl-outline-toggle-show-hide))
 
   (defadvice outline-mode (after hide-sublevels)
     "Enter overview after start up `outline-mode'."
@@ -931,12 +990,14 @@ mouse-3: Remove current window from display")
         (narrow-to-region (point) end))))
   )
 
-(deh-require 'which-func
+(deh-package which-func
+  :config
   (which-func-mode 1))
 
-(deh-section-after "imenu"
-  (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0)))
+(deh-package imenu
+  :config
   (setq imenu-max-item-length 60
         imenu-max-items 500
         imenu-auto-rescan t
-        imenu-sort-function 'imenu--sort-by-name))
+        imenu-sort-function 'imenu--sort-by-name)
+  (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0))))

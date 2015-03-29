@@ -7,6 +7,15 @@
 
 ;; Most useful interactive function and commands for keybinds
 
+(defun indent-marked-files ()
+  "Firstly mark files in `dired-mode', then indent them."
+  (interactive)
+  (dolist (file (dired-get-marked-files))
+    (find-file file)
+    (indent-region (point-min) (point-max))
+    (save-buffer)
+    (kill-buffer nil)))
+
 ;; Workaound for `kill-ring-save` in emacs24 under mac os x 10.7 lion
 (defun clipboard-kill-ring-save (beg end)
   "Copy region to kill ring, and save in the X clipboard.
@@ -358,8 +367,7 @@ Subsequent calls expands the selection to larger semantic unit."
 (defun my-switch-scratch ()
   "switch to *scratch* buffer, bind to \\[my-switch-scratch]."
   (interactive)
-  (switch-to-buffer "*scratch*")
-  (my-set-paste))
+  (switch-to-buffer "*scratch*"))
 
 ;;{{{ Redefine basic operation, non-kill versions
 (defun delete-char-or-region ()
@@ -476,21 +484,6 @@ newline after “}” or “;” for c-like syntaxes."
       (put this-command 'stateIsCompact-p
            (if currentStateIsCompact
                nil t)) ) ) )
-
-(defvar switch-major-mode-history nil)
-(defun switch-major-mode (mode)
-  "Switch major mode"
-  (interactive
-   (list
-    (intern
-     (completing-read "Switch to mode: "
-                      obarray (lambda (s)
-                                (and (fboundp s)
-                                     (string-match "-mode$" (symbol-name s))))
-                      t nil 'switch-major-mode-history))))
-  (setq switch-major-mode-history
-        (cons (symbol-name major-mode) switch-major-mode-history))
-  (funcall mode))
 
 (defun my-display-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
@@ -629,7 +622,7 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
     (message (format "Total: %d (cn: %d, en: %d) words, %d bytes."
                      total-word cn-word en-word total-byte))))
 
-(defun print-to-pdf (file)
+(defun my-print-to-pdf (file)
   "Print current buffer to a pdf file."
   (interactive
    (list (read-file-name "Choose a filename: ")))

@@ -2,14 +2,14 @@
 ;; This config is for portable. The platform relate configuration
 ;; should appear here.
 
-(deh-section "env"
+(deh-section env
   (setenv "GIT_PAGER" "cat")
   (setenv "PAGER" "cat")
   (setenv "EDITOR" "emacsclient")
-  (if (eq system-type 'darwin) (setenv "LC_CTYPE" "zh_CN.UTF-8"))
+  (setenv "LC_CTYPE" "zh_CN.UTF-8")
   )
 
-(deh-section "coding-system"
+(deh-section coding-system
   (if (eq system-type 'windows-nt)
       (progn
         (set-language-environment "Chinese-GBK")
@@ -19,21 +19,14 @@
         (set-clipboard-coding-system 'chinese-gbk)
         ;; (set-buffer-file-coding-system 'chinese-gbk)
         (modify-coding-system-alist 'process "*" 'chinese-gbk))
-    (set-language-environment "UTF-8")
-    (set-locale-environment "zh_CN.UTF-8")
-    (set-selection-coding-system 'utf-8-unix)
-    (set-terminal-coding-system 'utf-8-unix)
-    (set-keyboard-coding-system 'utf-8-unix)
-    (set-clipboard-coding-system 'utf-8-unix)
-    (set-buffer-file-coding-system 'utf-8-unix)
-    (modify-coding-system-alist 'process "*" 'utf-8-unix)
+    (setq locale-coding-system 'utf-8) ; pretty
+    (set-terminal-coding-system 'utf-8) ; pretty
+    (set-keyboard-coding-system 'utf-8) ; pretty
+    (set-selection-coding-system 'utf-8) ; please
+    (prefer-coding-system 'utf-8) ; with sugar on top
+    ))
 
-    (add-to-list 'auto-coding-alist '("\\.nfo\\'" . cp437))
-    (dolist (char (append "、。．，·ˉˇ¨〃々―～‖…’”）〕〉》」』〗】"
-                          "；：？！±×÷∶°′″℃／＼＂＿￣｜ㄥ"  nil))
-      (modify-syntax-entry char "." (standard-syntax-table)))))
-
-(deh-section "PATH"
+(deh-section PATH
   ;; add more directory to environment variable PATH and exec-path
   (let (path)
     (mapc (lambda (p)
@@ -50,19 +43,19 @@
            (split-string (getenv "PATH") path-separator)))
     (setenv "PATH" (mapconcat 'identity path path-separator))))
 
-(deh-section-if "win32"
-  (eq system-type 'windows-nt)
-  (setq abbreviated-home-dir nil)
-  (setenv "SHELL" "d:/cygwin/bin/bash.exe")
-  (setq explicit-shell-file-name "bash.exe")
-  (setq ffap-c-path '("d:/Programs/MSYS/mingw/include/"
-                      "d:/Programs/MSYS/mingw/include/c++/3.4.0/"))
-  (add-hook 'shell-mode-hook
-            (lambda ()
-              (comint-send-string (get-buffer-process (current-buffer)) "set PERLIO=:unix\n"))))
+(deh-section win32
+  (when (eq system-type 'windows-nt)
+    (setq abbreviated-home-dir nil)
+    (setenv "SHELL" "d:/cygwin/bin/bash.exe")
+    (setq explicit-shell-file-name "bash.exe")
+    (setq ffap-c-path '("d:/Programs/MSYS/mingw/include/"
+                        "d:/Programs/MSYS/mingw/include/c++/3.4.0/"))
+    (add-hook 'shell-mode-hook
+              (lambda ()
+                (comint-send-string (get-buffer-process (current-buffer)) "set PERLIO=:unix\n")))))
 
-(deh-section-if "linux"
-  (eq system-type 'gnu/linux)
+(deh-section linux
+  (when (eq system-type 'gnu/linux)
   (make-variable-buffer-local 'compile-command)
 
   (dolist (dir '("/usr/lib/info"
@@ -72,20 +65,19 @@
                  "/usr/share/lib/info"
                  "/usr/local/share/lib/info"
                  "/usr/gnu/lib/emacs/info"))
-    (add-to-list 'Info-default-directory-list dir))
-  )
+    (add-to-list 'Info-default-directory-list dir))))
 
-(deh-section-if "macosx"
-  (eq system-type 'darwin)
-  (setq ns-command-modifier 'meta)
-  (dolist (dir '("/usr/include/c++/v1"))
-    (add-to-list 'my-include-dirs dir))
-  ;; fix launching from spotlight
-  ;; $ cat > $HOME/.launchd.conf
-  ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
-  (setq browse-url-generic-program "open"))
+(deh-section macosx
+  (when (eq system-type 'darwin)
+    (setq ns-command-modifier 'meta)
+    (dolist (dir '("/usr/include/c++/v1"))
+      (add-to-list 'my-include-dirs dir))
+    ;; fix launching from spotlight
+    ;; $ cat > $HOME/.launchd.conf
+    ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
+    (setq browse-url-generic-program "open")))
 
-(deh-section "window-system"
+(deh-section window-system
   (cond ((eq window-system 'x)
          (setq x-select-enable-clipboard t)
          ;; fix issue that ibus input method issue cannot be started in emacs
@@ -157,8 +149,8 @@
 (when (executable-find "gcc")
   (setq my-include-dirs (append (gcc-include-path) my-include-dirs)))
 
-(let ((autoload-file (expand-file-name "100-loaddefs.el" my-config-dir)))
-  (unless (file-exists-p autoload-file) (my-generate-loaddefs t autoload-file)))
+;; (let ((autoload-file (expand-file-name "100-loaddefs.el" my-config-dir)))
+;;   (unless (file-exists-p autoload-file) (my-generate-loaddefs t autoload-file)))
 
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)

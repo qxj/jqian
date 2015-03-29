@@ -3,7 +3,9 @@
 ;; (load "cedet")
 
 ;; internal cedet setting for emacs23.2+
-(deh-require-reserved 'semantic
+(deh-package semantic
+  :disabled
+  :config
   (load-library "semantic/loaddefs")
   (setq semantic-default-submodes '(global-semanticdb-minor-mode
                                     global-semantic-idle-summary-mode
@@ -47,9 +49,8 @@
   (setq semantic-imenu-bucketize-file nil
         semantic-imenu-buckets-to-submenu nil
         semantic-imenu-sort-bucket-function 'semantic-sort-tags-by-type-increasing)
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (setq imenu-create-index-function 'semantic-create-imenu-index)))
+  (deh-add-hook c-mode-common-hook
+    (setq imenu-create-index-function 'semantic-create-imenu-index))
 
   ;; WORKAROUND: it should be unnecessary, maybe it's a bug of internal
   ;; semantic
@@ -58,14 +59,15 @@
   ;;# include path
   ;; (add-to-list 'semantic-c-dependency-system-include-path "/usr/local/include")
 
-  (deh-define-key semantic-mode-map
-    ("\C-c,c" 'semantic-ia-complete-symbol)
-    ("\C-c,=" 'semantic-decoration-include-visit)
-    ("\C-c,q" 'semantic-ia-show-doc)
-    ("\C-c,s" 'semantic-ia-show-summary)
-    ("\C-c,t" 'semantic-analyze-proto-impl-toggle)
-    ("\C-c,b" 'semantic-ia-fast-jump-or-back)
-    ("\C-c,B" 'semantic-ia-fast-jump-back))
+  (bind-keys
+   :map semantic-mode-map
+    ("C-c , c" . semantic-ia-complete-symbol)
+    ("C-c , =" . semantic-decoration-include-visit)
+    ("C-c , q" . semantic-ia-show-doc)
+    ("C-c , s" . semantic-ia-show-summary)
+    ("C-c , t" . semantic-analyze-proto-impl-toggle)
+    ("C-c , b" . semantic-ia-fast-jump-or-back)
+    ("C-c , B" . semantic-ia-fast-jump-back))
 
   ;;# wrap `semantic-ia-fast-jump'
   (defun semantic-ia-fast-jump-back ()
@@ -105,39 +107,50 @@ the mru bookmark stack."
             (semantic-add-system-include dir mode)))
         my-include-dirs))
 
-(deh-section-reserved "hippie-semantic"
+(deh-package senator
+  :disabled
+  :commands (senator-try-expand-semantic)
   ;; hippie-try-expand setting
-  (autoload 'senator-try-expand-semantic "senator")
   (dolist (hook '(c-mode-common-hook
                   emacs-lisp-mode-hook))
     (add-to-list 'hippie-expand-try-functions-list
-                 'senator-try-expand-semantic
-                 'semantic-ia-complete-symbol)))
+                 'senator-try-expand-semantic)))
 
 ;; contrib/semantic-tag-folding.el
-(deh-require-reserved 'semantic-tag-folding
+(deh-package semantic-tag-folding
+  :disabled
+  :bind
+  ("C-?" . global-semantic-tag-folding-mode)
+  :config
   (global-semantic-tag-folding-mode 1)
-  (global-set-key (kbd "C-?") 'global-semantic-tag-folding-mode)
-  (deh-define-key semantic-tag-folding-mode-map
-    ((kbd "C-c , -") 'semantic-tag-folding-fold-block)
-    ((kbd "C-c , +") 'semantic-tag-folding-show-block)
-    ((kbd "C-_")     'semantic-tag-folding-fold-all)
-    ((kbd "C-+")     'semantic-tag-folding-show-all)))
+  (bind-keys
+   :map semantic-tag-folding-mode-map
+    ("C-c , -" . semantic-tag-folding-fold-block)
+    ("C-c , +" . semantic-tag-folding-show-block)
+    ("C-_"     . semantic-tag-folding-fold-all)
+    ("C-+"     . semantic-tag-folding-show-all)))
 
-(deh-require-reserved 'linemark
+(deh-package linemark
+  :disabled
+  :bind
+  ("<f2>"     . viss-bookmark-toggle)
+  ("<C-f2>"   . viss-bookmark-next-buffer)
+  ("<S-f2>"   . viss-bookmark-prev-buffer)
+  ("<C-S-f2>" . viss-bookmark-clear-all-buffer)
+  :config
   (enable-visual-studio-bookmarks) ; vss is useful
-  (deh-define-key global-map
-    ((kbd "<f2>")     'viss-bookmark-toggle)
-    ((kbd "<C-f2>")   'viss-bookmark-next-buffer)
-    ((kbd "<S-f2>")   'viss-bookmark-prev-buffer)
-    ((kbd "<C-S-f2>") 'viss-bookmark-clear-all-buffer)))
+  )
 
-(deh-require 'eassist
-  (deh-define-key semantic-mode-map
-    ("\C-cA" 'eassist-switch-h-cpp)
-    ("\C-cL" 'eassist-list-methods)))
+(deh-package eassist
+  :disabled
+  :config
+  (bind-keys
+   :map semantic-mode-map
+    ("C-c A" . eassist-switch-h-cpp)
+    ("C-c L" . eassist-list-methods)))
 
-(deh-require 'ede
+(deh-package ede
+  :config
   ;; (setq semantic-c-obey-conditional-section-parsing-flag nil) ; ignore #if
   (setq ede-project-placeholder-cache-file
         (expand-file-name "ede-project.el" my-data-dir)
@@ -194,7 +207,8 @@ refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
       (concat "cd " root-dir ";" compile-cmd)))
   ) ;- ede end
 
-(deh-require 'pulse
+(deh-package pulse
+  :config
   (setq pulse-command-advice-flag (if window-system 1 nil)
         pulse-delay 0.08)
   (add-hook 'next-error-hook 'pulse-line-hook-function)
@@ -203,26 +217,11 @@ refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
     `(defadvice ,func-name (after pulse-advice activate)
        (when (and pulse-command-advice-flag (called-interactively-p))
          (pulse-momentary-highlight-one-line (point)))))
-  (pulse-defadvice goto-line)
-  (pulse-defadvice exchange-dot-and-mark)
-  (pulse-defadvice exchange-point-and-mark-nomark)
-  (pulse-defadvice find-tag)
-  (pulse-defadvice tags-search)
-  (pulse-defadvice tags-loop-continue)
-  (pulse-defadvice pop-tag-mark)
-  (pulse-defadvice imenu-default-goto-function)
-  (pulse-defadvice my-switch-recent-buffer)
-  (pulse-defadvice ibuffer-visit-buffer)
-  (pulse-defadvice joc-dired-single-buffer)
-  (pulse-defadvice switch-to-buffer)
-  (pulse-defadvice ido-switch-buffer)
-  (pulse-defadvice previous-buffer)
-  (pulse-defadvice next-buffer)
-  (pulse-defadvice beginning-of-buffer)
-  (pulse-defadvice end-of-buffer)
-  (pulse-defadvice viss-bookmark-next-buffer)
-  (pulse-defadvice viss-bookmark-prev-buffer)
-  (pulse-defadvice sourcepair-load)
-  (pulse-defadvice pager-page-up)
-  (pulse-defadvice pager-page-down)
-  (pulse-defadvice recenter-top-bottom))
+  (dolist (func '(goto-line exchange-dot-and-mark exchange-point-and-mark-nomark find-tag
+                            tags-search tags-loop-continue pop-tag-mark imenu-default-goto-function
+                            my-switch-recent-buffer ibuffer-visit-buffer joc-dired-single-buffer
+                            switch-to-buffer ido-switch-buffer previous-buffer next-buffer
+                            beginning-of-buffer end-of-buffer viss-bookmark-next-buffer
+                            viss-bookmark-prev-buffer sourcepair-load pager-page-up
+                            pager-page-down recenter-top-bottom))
+    (pulse-defadvice func)))

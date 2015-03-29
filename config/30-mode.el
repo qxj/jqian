@@ -5,80 +5,8 @@
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
-;;; autoload
-(deh-section "autoloads"
-  ;; loading dired-x.el
-  (autoload 'dired-jump "dired-x" "Jump to dired buffer corresponding to current buffer." t)
-  (autoload 'dired-omit-mode "dired-x" "Toggle dired omit mode" t)
-  ;; c++ member function
-  (autoload 'expand-member-functions "member-functions" "Expand C++ member function declarations" t)
-  ;; browse-el
-  (autoload 'browse-el-find-funtion "browse-el" "")
-  (autoload 'browse-el-go-back "browse-el" "")
-  ;; yaml
-  (autoload 'yaml-mode "yaml-mode" "YAML major mode" t)
-  ;; sourcepair
-  (autoload 'sourcepair-load "sourcepair" nil t)
-  ;; emacs lock
-  (autoload 'toggle-emacs-lock "emacs-lock" "Emacs lock" t)
-  ;; iimage
-  (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
-  (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
-  ;; htmlize
-  (autoload 'htmlize-buffer "htmlize" "htmlize buffer" t)
-  ;; moccur
-  (autoload 'moccur-grep "moccur-edit" "Glob search file" t)
-  (autoload 'moccur "moccur-edit" "moccur" t)
-  ;; A visual table editor, very cool
-  (autoload 'table-insert "table" "WYGIWYS table editor")
-  ;; ansit
-  (autoload 'ansit-ansify-this "ansit" "Ansi the region." t)
-  ;; rst-mode
-  (autoload 'rst-mode "rst" "Major mode for editing reStructuredText documents." t)
-  ;; markdown mode
-  (autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
-  ;; sdcv
-  (autoload 'sdcv-search "sdcv-mode" "Search dictionary using sdcv" t)
-  (autoload 'epa-file-enable "epa-file" "" t))
-
-;;; auto detect mode
-(deh-section "auto-mode"
-  (add-to-list 'auto-mode-alist '("\\.*mutt-*\\|.article\\|\\.followup" . mail-mode))
-  (add-to-list 'auto-mode-alist '("\\.doc\\'" . antiword))
-  (add-to-list 'auto-mode-alist '("\\.proc?$" . sql-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(ya?ml\\|fb\\)$" . yaml-mode))
-  (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.\\(php[345]?\\|module\\|phtml\\|inc\\)$" . php-mode))
-  (add-to-list 'auto-mode-alist '("\\.gp$" . gnuplot-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(frm\\|bas\\)$" . visual-basic-mode))
-  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-  (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("apache2?/access" . apache-log-generic-mode))
-  (add-to-list 'auto-mode-alist '("\\([Mm]akefile\\|Build\\|\\.mak\\|make\\.\\(inc\\|rules\\)\\)$" . makefile-mode))
-  (add-to-list 'auto-mode-alist '("\\.schemas" . xml-mode))
-  (add-to-list 'auto-mode-alist '("\\.\\(p6\\|tdy\\|cgi\\|t\\)$" . perl-mode))
-  (add-to-list 'auto-mode-alist '("\\.xs$" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
-  (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
-  (add-to-list 'auto-mode-alist '(".vim\\(rc\\)?$" . vimrc-mode))
-  (add-to-list 'auto-mode-alist '("\\.dot$" . vimrc-mode))
-  )
-
-(deh-section "magic-mode"
-  (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@implementation" . objc-mode))
-  (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@interface" . objc-mode))
-  (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*@protocol" . objc-mode))
-  ;; (add-to-list 'magic-mode-alist '("\\(.\\|\n\\)*class" . c++-mode))
-  ;; (add-to-list 'magic-mode-alist '("\\`<\\?php" . php-mode))
-  )
-
-(deh-section "interpreter-mode"
-  ;; (add-to-list 'interpreter-mode-alist '("php" . php-mode))
-  )
-
 ;;; common mode hook
-(deh-section "mode-common"
+(deh-section mode-common
   (setq-default tab-width 4
                 c-basic-offset tab-width
                 indent-tabs-mode nil
@@ -107,7 +35,7 @@
     ;;                    (if (boundp 'autopair-newline) (autopair-newline)
     ;;                      (newline-and-indent)))))
 
-    (deh-add-hook 'before-save-hook
+    (deh-add-hook before-save-hook
       (when (> 3000 (count-lines (point-min) (point-max)))
         (delete-trailing-whitespace)        ; no trailing whitespace
         (if (reduce (lambda (a b) (or a b))
@@ -173,11 +101,15 @@
   )
 
 ;;; tags
-(deh-section-reserved "ebrowse"
+(deh-package ebrowse
+  :disabled
+  :config
   (add-to-list 'auto-mode-alist '("BROWSE\\.*" . ebrowse-tree-mode))
   (setq ebrowse-global-prefix-key "\C-z"))
 
-(deh-section-reserved "etags"
+(deh-package etags
+  :disabled
+  :config
   (defun my-find-top-directory (file &optional dir)
     (or dir (setq dir (expand-file-name default-directory)))
     (let ((thefile (expand-file-name file dir)))
@@ -192,12 +124,12 @@
         (lambda nil
           (my-find-top-directory "TAGS"))))
 
-(deh-section-if "gtags"
-  (executable-find "global")
-
-  (autoload 'gtags-mode "gtags" "Toggle Gtags mode, a minor mode for GLOBAL." t)
-
-  (deh-add-hook '(c-mode-common-hook)
+(deh-package gtags
+  :disabled
+  :commands (gtags-mode)
+  :if (executable-find "global")
+  :config
+  (deh-add-hook (c-mode-common-hook)
     (when (derived-mode-p 'c-mode 'c++-mode)
       (gtags-mode t)))
 
@@ -211,7 +143,6 @@
        (set (make-local-variable 'hl-line-face) 'underline)
        (hl-line-mode 1)))
 
-  (deh-after-load "gtags"
     (defun gtags-root-dir ()
       "Returns GTAGS root directory or nil if doesn't exist."
       (with-temp-buffer
@@ -242,34 +173,36 @@
             (message "start to global -u")
             (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
 
-    (deh-define-key gtags-mode-map
+    (bind-keys
+     :map gtags-mode-map
       ;; Instead of `find-tag' & `pop-tag-mark'
-      ((kbd "M-.") 'gtags-find-tag)
-      ((kbd "M-*") 'gtags-pop-stack)
+      ("M-." . gtags-find-tag)
+      ("M-*" . gtags-pop-stack)
       ;; other key binds
-      ("\C-cgv"  'gtags-visit-rootdir)
-      ("\C-cgt"  'gtags-find-tag-from-here)
-      ("\C-cgo"  'gtags-find-tag-other-window)
-      ("\C-cgr"  'gtags-find-rtag)
-      ("\C-cgs"  'gtags-find-symbol)
-      ("\C-cgp"  'gtags-find-pattern)
-      ("\C-cgg"  'gtags-find-with-grep)
-      ("\C-cgi"  'gtags-find-with-idutils)
-      ("\C-cgf"  'gtags-find-file)
-      ("\C-cga"  'gtags-parse-file)
-      ("\C-cgb"  'gtags-append-tags))
-  ))
+      ("C-c g v"  . gtags-visit-rootdir)
+      ("C-c g t"  . gtags-find-tag-from-here)
+      ("C-c g o"  . gtags-find-tag-other-window)
+      ("C-c g r"  . gtags-find-rtag)
+      ("C-c g s"  . gtags-find-symbol)
+      ("C-c g p"  . gtags-find-pattern)
+      ("C-c g g"  . gtags-find-with-grep)
+      ("C-c g i"  . gtags-find-with-idutils)
+      ("C-c g f"  . gtags-find-file)
+      ("C-c g a"  . gtags-parse-file)
+      ("C-c g b"  . gtags-append-tags))
+  )
 
-;; (deh-section-if "ggtags"
-;;   (executable-find "global")
+(deh-package ggtags
+  :commands (ggtags-mode)
+  :if (executable-find "global")
+  :config
+  (deh-add-hook 'c-mode-common-hook
+    (when (derived-mode-p 'c-mode 'c++-mode)
+      (ggtags-mode 1))))
 
-;;   (autoload 'ggtags-mode "ggtags" "Emacs frontend to GNU Global." t)
-
-;;   (deh-add-hook 'c-mode-common-hook
-;;     (when (derived-mode-p 'c-mode 'c++-mode)
-;;       (ggtags-mode 1))))
-
-(deh-require-reserved 'xcscope
+(deh-package xcscope
+  :disabled
+  :config
   (setq cscope-database-regexps
         '(
           ("^/home/jqian/nbusrc"
@@ -294,12 +227,15 @@
            ;; Key bind for cscope-minor-mode
            ))
   ;; hack `xcscope.el', remove hooks
-  (deh-remove-hook '(c-mode-hook c++-mode-hook dired-mode-hook)
+  (deh-remove-hook (c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
 
-(deh-require-reserved 'tags-view
-  (deh-define-key tags-history-mode-map
-    ("q" 'tv-view-history-quit))
+(deh-package tags-view
+  :disabled
+  :config
+  (bind-keys
+   :map tags-history-mode-map
+    ("q" . tv-view-history-quit))
 
   (defvar tv-previous-window-conf nil
     "Window configuration before switching to tv buffer.")
@@ -347,7 +283,9 @@ etc).  The following options will be available:
   )
 
 
-(deh-section "woman"
+(deh-package woman
+  :commands (woman woman-find-file)
+  :config
   ;; (add-hook 'woman-mode-hook 'view-mode)
 
   (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-data-dir)
@@ -360,14 +298,15 @@ etc).  The following options will be available:
         woman-manpath-man-regexp (regexp-opt '("man2" "man3" "man7"))
         woman-imenu t
         woman-fontify t
-        woman-use-own-frame nil)
-  )
+        woman-use-own-frame nil))
 
-(deh-section "info"
+(deh-package info
+  :commands (Info-mode)
+  :config
   (add-to-list 'Info-default-directory-list "~/info")
 
-  (deh-after-load "info"
-    (deh-define-key Info-mode-map
+  (bind-keys
+   :map Info-mode-map
       ;;# useful keybind reminds
       ;; ("i" . 'info-index)
       ;; ("T" . 'info-toc)
@@ -380,21 +319,23 @@ etc).  The following options will be available:
     (derived-mode-p 'Info-mode))
   )
 
-(deh-section "flyspell"
+(deh-package flyspell
+  :commands (flyspell-mode flyspell-prog-mode)
+  :config
   ;; flyspell-goto-next-error: `C-,'
   ;; (ispell-change-dictionary)
 
   (setq ispell-program-name "aspell" ; use aspell instead of ispell
         ispell-extra-args '("--sug-mode=ultra"))
 
-  ;; (deh-add-hook '(text-mode-hook org-mode-hook) (flyspell-mode 1))
-  ;; (deh-add-hook '(change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
-  ;; (deh-add-hook '(c-mode-common-hook python-mode-hook) (flyspell-prog-mode))
+  ;; (deh-add-hook (text-mode-hook org-mode-hook) (flyspell-mode 1))
+  ;; (deh-add-hook (change-log-mode-hook log-edit-mode-hook) (flyspell-mode -1))
+  ;; (deh-add-hook (c-mode-common-hook python-mode-hook) (flyspell-prog-mode))
   )
 
-(deh-section-after "flymake"
-  ;; (flymake-mode t)
-
+(deh-package flymake
+  :commands (flymake-mode)
+  :config
   (setq flymake-gui-warnings-enabled nil
         flymake-allowed-file-name-masks '()
         flymake-log-level 0
@@ -404,10 +345,11 @@ etc).  The following options will be available:
   ;;   (condition-case nil (flymake-find-file-hook) (error nil)))
 
   (defvar flymake-mode-map (make-sparse-keymap))
-  (deh-define-key flymake-mode-map
-    ((kbd "C-c <f4>")    'flymake-goto-next-error-disp)
-    ((kbd "C-c <S-f4>")  'flymake-goto-prev-error-disp)
-    ((kbd "C-c <C-f4>")  'flymake-display-err-menu-for-current-line))
+  (bind-keys
+   :map flymake-mode-map
+    ("C-c <f4>"    . flymake-goto-next-error-disp)
+    ("C-c <S-f4>"  . flymake-goto-prev-error-disp)
+    ("C-c <C-f4>"  . flymake-display-err-menu-for-current-line))
   (or (assoc 'flymake-mode minor-mode-map-alist)
       (setq minor-mode-map-alist
             (cons (cons 'flymake-mode flymake-mode-map)
@@ -614,11 +556,12 @@ Use CREATE-TEMP-F for creating temp copy."
                  flymake-simple-make-gcc-init))
   )
 
-(autoload 'flycheck-mode "flycheck" "flycheck-mode" t)
-(deh-section-after "flycheck"
+(deh-package flycheck
+  :commands (flycheck-mode global-flycheck-mode)
+  :init
   (dolist (mode '(sh-mode-hook python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
-
+  :config
   ;;# rebind flycheck prefix key
   (define-key flycheck-mode-map flycheck-keymap-prefix nil)
   (setq flycheck-keymap-prefix (kbd "C-c f"))
@@ -633,7 +576,8 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;     http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
   (setq flycheck-python-flake8-executable (executable-find "flake8"))
 
-  (deh-try-require 'flycheck-google-cpplint
+  (deh-package flycheck-google-cpplint
+    :config
     ;; Add Google C++ Style checker.
     ;; In default, syntax checked by Clang and Cppcheck.
     (flycheck-add-next-checker 'c/c++-cppcheck
@@ -642,13 +586,14 @@ Use CREATE-TEMP-F for creating temp copy."
           (expand-file-name "misc/cpplint.py" my-startup-dir)
           flycheck-googlelint-linelength "100")))
 
-(deh-section "makefile"
-  (deh-add-hook 'makefile-mode-hook
+(deh-section makefile
+  (deh-add-hook makefile-mode-hook
     ;; (my-code-common-hook)
     ))
 
-(deh-section "change-log"
-  (deh-add-hook 'change-log-mode-hook
+(deh-package change-log
+  :config
+  (deh-add-hook change-log-mode-hook
     (auto-fill-mode t)
     (add-to-list 'change-log-font-lock-keywords
                  '("^[0-9-]+:? +\\|^\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\) [A-z][a-z][a-z] [0-9:+ ]+"
@@ -658,19 +603,20 @@ Use CREATE-TEMP-F for creating temp copy."
                     (2 'change-log-email)))))
 )
 
-(deh-section "elisp"
-
+(deh-package lisp-mode
+  :defer
+  :config
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
 
-  (deh-add-hook 'emacs-lisp-mode-hook
+  (deh-add-hook emacs-lisp-mode-hook
     (my-prog-mode-hook))
 
-  (deh-after-load "lisp-mode"
-    (deh-define-key emacs-lisp-mode-map ; lisp-mode-shared-map
-      ("\M-."  'browse-el-find-funtion)
-      ("\M-*"  'browse-el-go-back)
-      ((kbd "C-)")  'my-auto-insert-paren)))
+  (bind-keys
+   :map emacs-lisp-mode-map ; lisp-mode-shared-map
+   ("\M-."  . browse-el-find-funtion)
+   ("\M-*"  . browse-el-go-back)
+   ("C-)"   . my-auto-insert-paren))
 
   (defun my-auto-insert-paren ()
     "Auto close matched parentheses."
@@ -684,24 +630,24 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 ;;; scripts setting
-(deh-require 'python
+(deh-package python
+  :config
   ;; Start an inferior python process, wordaround for eldoc error
   (let ((python-cmd (if (executable-find python-shell-interpreter)
                         (python-shell-parse-command))))
     (if python-cmd (run-python python-cmd t nil)))
 
-  (deh-add-hook 'python-mode-hook
+  (deh-add-hook python-mode-hook
     (my-prog-mode-hook)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
 
-  (autoload 'doctest-mode "doctest-mode" "Python doctest editing mode." t)
+  (deh-package doctest-mode)
 
-  (deh-try-require 'flymake-python-pyflakes
-    (if (executable-find "pyflakes")
-        (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
-    )
+  (use-package flymake-python-pyflakes
+    :if (executable-find "pyflakes")
+    :config (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
 
   ;; # Preparation:
   ;; 1. $ sudo pip install jedi epc sexpdata
@@ -710,10 +656,9 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;
   ;; http://tkf.github.io/emacs-jedi/released/#install
   ;;
-  (deh-section "jedi"
-    (autoload 'jedi:setup "jedi" nil t)
-    (autoload 'jedi-direx:pop-to-buffer "jedi-direx" nil t)
-
+  (deh-package jedi
+    :commands (jedi:setup jedi-direx:pop-to-buffer)
+    :config
     (setq jedi:setup-keys t             ;set it before jedi loaded
           jedi:complete-on-dot t
           jedi:tooltip-method nil
@@ -739,47 +684,55 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;
   ;; http://rope.sourceforge.net/ropemacs.html
   ;;
-  (deh-require-reserved 'pymacs
+  (deh-package pymacs
+    :disabled
+    :commands (pymacs-apply pymacs-call pymacs-eval pymacs-exec pymacs-load)
+    :config
     (pymacs-load "ropemacs" "rope-")
-    (autoload 'pymacs-apply "pymacs")
-    (autoload 'pymacs-call "pymacs")
-    (autoload 'pymacs-eval "pymacs" nil t)
-    (autoload 'pymacs-exec "pymacs" nil t)
-    (autoload 'pymacs-load "pymacs" nil t)
     (setq ropemacs-confirm-saving nil
           ropemacs-enable-autoimport t)
     (ropemacs-mode t)
-
     ;; (deh-try-require 'pycomplete)
-    ))
+    )
+  )
 
-(deh-section "sh-mode"
-  (deh-add-hook 'sh-mode-hook
+(deh-package sh-script
+  :defer
+  :config
+  (deh-add-hook sh-mode-hook
     ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
     (my-prog-mode-hook)
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     ))
 
-(deh-section "text-mode"
+(deh-package text-mode
+  :defer
+  :config
   (deh-add-hook text-mode-hook my-text-mode-hook))
 
 ;;; tools
-(deh-section-after "gnuplot"
-  (deh-add-hook 'gnuplot-after-plot-hook
+(deh-package gnuplot
+  :commands (gnuplot-mode)
+  :mode "\\.gp$"
+  :config
+  (deh-add-hook gnuplot-after-plot-hook
     (select-window (get-buffer-window gnuplot-comint-recent-buffer)))
-  (deh-add-hook 'gnuplot-comint-setup-hook
+  (deh-add-hook gnuplot-comint-setup-hook
     (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof)))
 
-(deh-section-after "graphviz-dot"
+(deh-package graphviz-dot
+  :mode "\\.dot$"
+  :config
   (setq graphviz-dot-auto-indent-on-semi nil
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
 
   (deh-add-hook graphviz-dot-mode-hook my-prog-mode-hook)
 
-  (deh-define-key graphviz-dot-mode-map
-    ("\C-cc" nil)                     ; it's prefix key
-    ("\t" 'graphviz-dot-tab-action))
+  (bind-keys
+   :map graphviz-dot-mode-map
+    ("C-c c" . nil)                     ; it's prefix key
+    ("\t"  . graphviz-dot-tab-action))
 
   (defun graphviz-dot-tab-action ()
     "If cursor at one word end, try complete it. Otherwise, indent line."
@@ -788,25 +741,14 @@ Use CREATE-TEMP-F for creating temp copy."
         (graphviz-dot-complete-word)
       (indent-for-tab-command))))
 
-(autoload 'protobuf-mode "protobuf-mode" "Major mode for editing protobuf language." t)
-(deh-section-if "protobuf"
-  (executable-find "protoc")
-  )
-
-;;; java
-(deh-section "java"
-  (add-to-list 'load-path "/usr/local/jdee/lisp/")
-  (defun jde-init ()
-    (interactive)
-    (require 'cedet)
-    (require 'jde)
-    (jde-mode))
-  (deh-add-hook 'java-mode-hook
-    (my-code-common-hook)
-    (c-set-style "java")))
+(deh-package protobuf
+  :if (executable-find "protoc")
+  :commands protobuf-mode)
 
 ;;; web related
-(deh-require 'multi-web-mode
+(deh-package multi-web-mode
+  :commands multi-web-mode
+  :config
   (setq mweb-default-major-mode 'html-mode)
   (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
                     (js-mode "<script[^>]*>" "</script>")
@@ -814,32 +756,27 @@ Use CREATE-TEMP-F for creating temp copy."
   (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
   (multi-web-global-mode 1))
 
-
-;; ;; [DEPRECATED] nxhtml: javascript + php + html + css
-;; (deh-section-path "nxhtml"
-;;   "~/tools/nxhtml/autostart.el"
-;;   (load-file deh-this-path)
-;;   (setq mumamo-chunk-coloring 5)        ; disable background colors
-;;   )
-
-(deh-section "html"
-  (setq sgml-xml-mode t)
-  (add-hook 'sgml-mode-hook 'sgml-electric-tag-pair-mode)
-  )
-
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
-(deh-section "js2"
+(use-package js2-mode
+  :mode (("\\.js$" . js2-mode)
+         ("Jakefile$" . js2-mode))
+  :interpreter ("node" . js2-mode)
+  :config
   (deh-add-hook 'js2-mode-hook
-    (setq forward-sexp-function nil)))
+    (setq forward-sexp-function nil
+          js2-basic-offset 2)))
 
-(autoload 'php-mode "php-mode" "php mode" t)
-(deh-section-after "php-mode"
-  (deh-try-require 'php-doc
+(deh-package php-mode
+  :commands (php-mode)
+  :config
+  (deh-package php-doc
+    :config
     (setq php-doc-directory "~/src/php_manual/html"
           php-doc-cachefile (expand-file-name "php-doc" my-data-dir))
-    (deh-define-key php-mode-map
-      ("\C-c\t" 'php-doc-complete-function)
-      ("\C-cd"  'php-doc))
+    (bind-keys
+     :map php-mode-map
+      ("C-c \t" . php-doc-complete-function)
+      ("C-c d"  . php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
          'php-doc-eldoc-function)
     (eldoc-mode 1)
@@ -850,7 +787,7 @@ Use CREATE-TEMP-F for creating temp copy."
         (w3m-goto-url url)))
     )
 
-  (deh-add-hook 'php-mode-hook
+  (deh-add-hook php-mode-hook
     (my-prog-mode-hook)
     ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
@@ -884,17 +821,21 @@ Use CREATE-TEMP-F for creating temp copy."
       (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
 
 ;;; edit
-(deh-section-after "markdown-mode"
+(deh-package markdown-mode
+  :commands (markdown-mode)
+  :config
   ;; override markdown's key binding
-  (deh-define-key markdown-mode-map
-    ((kbd "C-M-f")  'forward-sexp)
-    ((kbd "C-M-b")  'backward-sexp)
-    ((kbd "M-p")    'pager-row-up)
-    ((kbd "M-n")    'pager-row-down)))
+  (bind-keys*
+   :map markdown-mode-map
+    ("C-M-f"  . forward-sexp)
+    ("C-M-b"  . backward-sexp)
+    ("M-p"    . pager-row-up)
+    ("M-n"    . pager-row-down)))
 
-(deh-section-reserved "latex"
+(deh-package auctex
+  :disabled
+  :config
   (load "preview-latex.el" nil t t)
-  (load "auctex.el" nil t t)
   (set-default TeX-master nil)
   (setq TeX-auto-save t
         TeX-parse-self t
@@ -943,7 +884,11 @@ If the flag is set, only complete with local files."
       (TeX-argument-insert file optionel)))
   )
 
-(deh-section-after "slime"
+(deh-package slime-helper
+  :commands slime
+  :init
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  :config
   ;;# download [hyperspec|ftp://ftp.lispworks.com/pub/software_tools/reference/HyperSpec-7-0.tar.gz] to localhost, then use "C-c C-d h" to search symbols' hyperspec defines.
   (setq common-lisp-hyperspec-root (expand-file-name "~/src/HyperSpec/"))
 
@@ -958,42 +903,18 @@ If the flag is set, only complete with local files."
     ((kbd "C-c i") 'slime-inspect)
     ((kbd "C-c s") 'slime-selector)))
 
-(deh-section-path "evernote"
-  "~/local/emacs-evernote-mode"
-  (add-to-list 'load-path deh-this-path)
-  (require 'evernote-mode nil t)
+(deh-package evernote-mode
+  :load-path "~/local/emacs-evernote-mode"
+  :bind
+  ("C-c e c" . evernote-create-note)
+  ("C-c e o" . evernote-open-note)
+  ("C-c e s" . evernote-search-notes)
+  ("C-c e S" . evernote-do-saved-search)
+  ("C-c e w" . evernote-write-note)
+  ("C-c e p" . evernote-post-region)
+  ("C-c e b" . evernote-browser)
+  :config
   ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
-  (global-set-key "\C-cec" 'evernote-create-note)
-  (global-set-key "\C-ceo" 'evernote-open-note)
-  (global-set-key "\C-ces" 'evernote-search-notes)
-  (global-set-key "\C-ceS" 'evernote-do-saved-search)
-  (global-set-key "\C-cew" 'evernote-write-note)
-  (global-set-key "\C-cep" 'evernote-post-region)
-  (global-set-key "\C-ceb" 'evernote-browser)
   (setq evernote-mode-hook
         '(lambda () (outline-minor-mode t)))
-  )
-
-(deh-require 'tumblr-mode
-  (setq tumblr-hostname "blog.jqian.net"
-        tumblr-hostnames '("blog.jqian.net" "memo.jqian.net")
-        tumblr-post-header-delimiters '("<!--" . "-->"))
-
-  ;; TUMBLR SYNTAX HIGHLIGHTING
-  ;; Firstly, insert following codes into your tumblr template
-  ;;
-  ;; <!-- http://code.google.com/p/google-code-prettify/ -->
-  ;; <link href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css" type="text/css" rel="stylesheet" />
-  ;; <script type="text/javascript" src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js"></script>
-  ;;
-  (defun tumblr-wrap-pre (begin end lang)
-    "simple wrapper"
-    (interactive "r\nMPlease specify language (optional):")
-    (save-restriction
-      (narrow-to-region begin end)
-      (goto-char (point-min))
-      (insert (format "<pre class=\"prettyprint%s\">\n"
-                      (if (string-match "[:ascii:]+" lang) (format " %s" lang) "")))
-      (goto-char (point-max))
-      (insert "\n</pre>")))
   )

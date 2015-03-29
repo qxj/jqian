@@ -1,5 +1,28 @@
 ;; -*- coding: utf-8 -*-
 
+(setq debug-on-error nil debug-on-quit nil)
+
+;; shorthand for interactive lambdas
+(defalias 'λ 'lambda)
+(defmacro Λ (&rest body)
+  `(λ ()
+       (interactive)
+       ,@body))
+(setq ns-function-modifier 'hyper)
+(global-set-key (kbd "H-l") (Λ (insert "\u03bb")))
+(global-set-key (kbd "H-L") (Λ (insert "\u039B")))
+
+(defconst my-ismac (equal system-type 'darwin))
+(defconst my-iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
+
+(defvar my-include-dirs
+  (let (dirs
+        (incs '("include" "inc" "common"))
+        (updirs '("./" "../" "../../" "../../../" "../../../../")))
+    (dolist (dir updirs)
+      (setq dirs (append dirs (mapcar (lambda (x) (concat dir x)) incs))))
+    (append updirs dirs)))
+
 (defun gcc-include-path ()
   "Get gcc include path, only tested in linux."
   (with-temp-buffer
@@ -23,15 +46,6 @@
          (when (string-match "\\(finished\\|exited\\)" change)
            (kill-buffer (process-buffer proc))))))))
 
-(defun my-command-exists-p (cmd)
-  "Check whether command exists in `exec-path'."
-  ;; TODO: learn `locate-file' and `executable-find' :(
-  (catch 'loop
-    (dolist (path exec-path)
-      (if (file-exists-p (expand-file-name cmd path))
-              (throw 'loop t)))
-      nil))
-
 (defun emacs-process-duplicated-p ()
   "Check whether another emacs process is running concorrently by
 pgrep, so.. make sure pgrep is already installed in your system."
@@ -47,15 +61,6 @@ pgrep, so.. make sure pgrep is already installed in your system."
               (incf process-number)))
           (kill-buffer buffer)
           (> process-number 1)))))
-
-(defun indent-marked-files ()
-  "Firstly mark files in `dired-mode', then indent them."
-  (interactive)
-  (dolist (file (dired-get-marked-files))
-    (find-file file)
-    (indent-region (point-min) (point-max))
-    (save-buffer)
-    (kill-buffer nil)))
 
 (defun remove-from-list (list key)
   "reverse to `add-to-list' function"
@@ -73,76 +78,11 @@ pgrep, so.. make sure pgrep is already installed in your system."
   "how deep of a file or directory."
   (length (split-file-name file-name)))
 
-;; sort line
-(defun sort-lines-1 (reverse beg end predicate)
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      (goto-char (point-min))
-      (sort-subr reverse 'forward-line 'end-of-line nil nil
-                 predicate))))
-
 (defsubst join (separator sequence)
   (mapconcat 'identity sequence separator))
 
 (defmacro my (&rest args)
   `(mapc 'make-local-variable ',args))
-
-(defalias 'pp* 'cl-prettyprint)
-(defalias 'yes-or-no-p 'y-or-n-p)
-(defalias 'chr 'char-to-string)
-(defalias 'list-ascii 'ascii-table-show)
-(defalias 'default-generic-mode 'conf-mode)
-
-;; from xwl-util.el
-(defun my-shell-command-asynchronously (cmd)
-  (start-process-shell-command cmd nil cmd))
-
-(defun my-notify (title message)
-  (my-shell-command-asynchronously
-   (format "zenity --info --title \"%s\" --text \"%s\""
-           title message)))
-
-(defun ascii-table-show ()
-  "Print the ascii table"
-  (interactive)
-  (with-current-buffer (get-buffer-create "*ASCII table*")
-    (setq buffer-read-only nil)
-    (erase-buffer)
-    (let ((i   0)
-          (tmp 0))
-      (insert (propertize
-               "                                [ASCII table]\n\n"
-               'face font-lock-comment-face))
-      (while (< i 32)
-        (dolist (tmp (list i (+ 32 i) (+ 64 i) (+ 96 i)))
-          (insert (concat
-                   (propertize (format "%3d " tmp)
-                               'face font-lock-function-name-face)
-                   (propertize (format "[%2x]" tmp)
-                               'face font-lock-constant-face)
-                   "    "
-                   (propertize (format "%3s" (single-key-description tmp))
-                               'face font-lock-string-face)
-                   (unless (= tmp (+ 96 i))
-                     (propertize " | " 'face font-lock-variable-name-face)))))
-        (newline)
-        (setq i (+ i 1)))
-      (goto-char (point-min)))
-    (toggle-truncate-lines 1)
-    (toggle-read-only 1)
-    (display-buffer (current-buffer))))
-
-(defun run-in-ansi-term (prg &optional use-existing)
-  "Run program PRG in a terminal buffer. If USE_EXISTING is
-non-nil and PRG is already running, switch to that buffer instead
-of starting a new instance."
-  (interactive)
-  (let ((bufname (format "*%s*" prg)))
-    (when (not (and use-existing
-                    (let ((buf (get-buffer bufname)))
-                      (and buf (buffer-name (switch-to-buffer bufname))))))
-      (ansi-term prg prg))))
 
 (defmacro define-mode-toggle (name cmd cond &optional restore)
   "Define a function to toggle buffer visible by its mode.

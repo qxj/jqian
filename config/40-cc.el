@@ -45,8 +45,8 @@
     )
   "My C/C++/ObjC Programming Style")
 
-(deh-section "c-mode"
-  (deh-try-require 'google-c-style)
+(deh-section c-mode
+  (deh-package google-c-style)
   ;; (deh-try-require 'zjl-c-hl)
 
   ;;# if function name is too long, we will indent the parameters forward.
@@ -137,8 +137,8 @@
     )
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
 
-(deh-section "c++-mode"
-  (deh-add-hook 'c++-mode-hook
+(deh-section c++-mode
+  (deh-add-hook c++-mode-hook
     (my-c-mode-common-hook)
     (setq local-abbrev-table c-mode-abbrev-table)
     ;; key binding
@@ -183,9 +183,9 @@ the directories in the INCLUDE environment variable."
                '(buffer-standard-include-p . c++-mode))
   )
 
-(deh-require-if 'cflow-mode
-  (executable-find "cflow")
-
+(deh-package cflow-mode
+  :if (executable-find "cflow")
+  :config
   (defun my-cflow-function (function-name)
     "Get call graph of inputed function. "
     ;; (interactive "sFunction name:\n")
@@ -205,38 +205,41 @@ the directories in the INCLUDE environment variable."
       (cflow-mode)))
   )
 
-(deh-section "gud"
+(deh-package gud
+  :defer
+  :config
   (setq gdb-many-windows nil            ; no need many windows
         gdb-use-separate-io-buffer t)
 
-  (deh-add-hook 'gud-mode-hook
+  (deh-add-hook gud-mode-hook
     (set (make-local-variable 'paragraph-separate) "\\'"))
 
   (define-mode-toggle "gdb"  gdb
     (derived-mode-p 'gud-mode)
     (call-interactively 'gdb-restore-windows))
 
-  (deh-after-load "gud"
-    (deh-define-key gud-mode-map
+  (bind-keys
+   :map gud-mode-map
       ;;# keybinds remind
       ;; M-r 'comint-history-isearch-backward-regexp
-      ((kbd "<M-up>") 'comint-previous-prompt)
-      ((kbd "C-u") 'comint-kill-input))
+      ("<M-up>" . comint-previous-prompt)
+      ("C-u" . comint-kill-input))
 
-    (deh-define-key gud-minor-mode-map
-      ((kbd "<M-up>")  'comint-previous-prompt)
-      ([f5]            'gud-go)
-      ([S-f5]          'gud-kill)
-      ([f8]            'gud-print)
-      ([C-f8]          'gud-pstar)
-      ([f9]            'gud-break-or-remove)
-      ([C-f9]          'gud-enable-or-disable)
-      ([S-f9]          'gud-watch)
-      ([f10]           'gud-next)
-      ([C-f10]         'gud-until)
-      ([C-S-f10]       'gud-jump)
-      ([f11]           'gud-step)
-      ([C-f11]         'gud-finish)))
+  (bind-keys
+   :map gud-minor-mode-map
+      ("<M-up>"      . comint-previous-prompt)
+      ("<f5>"        . gud-go)
+      ("<S-f5>"      . gud-kill)
+      ("<f8>"        . gud-print)
+      ("<C-f8>"      . gud-pstar)
+      ("<f9>"        . gud-break-or-remove)
+      ("<C-f9>"      . gud-enable-or-disable)
+      ("<S-f9>"      . gud-watch)
+      ("<f10>"       . gud-next)
+      ("<C-f10>"     . gud-until)
+      ("<C-S-f10>"   . gud-jump)
+      ("<f11>"       . gud-step)
+      ("<C-f11>"     . gud-finish))
 
   (gud-tooltip-mode 1)
 
@@ -302,12 +305,12 @@ the directories in the INCLUDE environment variable."
 
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
-(deh-section "buffer-action"
-  (autoload 'buffer-action-compile "buffer-action" "Compile current buffer" t)
-  (autoload 'buffer-action-run "buffer-action" "Run exec of current buffer" t)
-  )
+(deh-package buffer-action
+  :commands (buffer-action-compile buffer-action-run))
 
-(deh-section "compilation"
+(deh-package compile
+  :defer
+  :config
   (setq compilation-auto-jump-to-first-error t
         compilation-scroll-output t)
   ;;# Close complication buffer if succeed to compile
@@ -316,9 +319,10 @@ the directories in the INCLUDE environment variable."
           (when (and (string= (buffer-name buf) "*compilation*")
                      (not (string-match "exited abnormally" str))
                      (not (string-match "warning" str)))
-            (run-at-time 0.5 nil 'delete-windows-on buf))))
-  )
+            (run-at-time 0.5 nil 'delete-windows-on buf)))))
 
-(deh-section-after "hideif"
+(deh-package hideif
+  :defer
+  :config
   (setq hide-ifdef-initially t
         hide-ifdef-shadow t))

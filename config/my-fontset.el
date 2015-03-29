@@ -85,7 +85,7 @@
 ;;                   'han '("Microsoft YaHei" . "unicode-bmp"))
 
 
-(deh-section "font"
+(deh-section font
   ;; Make Chinese characters match exactly twice more than English ones.
   ;; use 120 char wide window for largeish displays and smaller 80
   ;; column windows for smaller displays pick whatever numbers make
@@ -96,7 +96,7 @@
                         ":pixelsize=14" ":pixelsize=12"))
         (frame-width (if (> (x-display-pixel-width) 1280) 100 80)))
     ;;## For `emacsclient -c xxx`
-    (deh-add-hook 'after-make-frame-functions
+    (deh-add-hook after-make-frame-functions
       ;; (set-face-attribute 'default nil :height 100 :width 'normal
       ;;                     :family en-font)
       (set-frame-font (concat en-font pixel-size)))
