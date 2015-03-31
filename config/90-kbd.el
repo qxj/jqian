@@ -10,18 +10,18 @@
 (define-prefix-command 'ctl-c-map nil "Command prefix: C-c")
 (define-prefix-command 'ctl-z-map nil "Command prefix: C-z")
 (define-prefix-command 'ctl-cc-map nil "Command prefix: C-c c")
-(define-prefix-command 'one-key-prefix nil "one-key prefix: C-c k")
-(define-prefix-command 'multi-term-prefix nil "mul-term prefix: C-c t")
+
+(bind-keys
+ ("C-c" . ctl-c-map)
+ ("C-z" . ctl-z-map)
+ ("C-c c" . ctl-cc-map))
 
 ;;; global key binding
 (deh-section kbd-global
   (bind-keys
-   :map global-map
-   ("C-c"  .  ctl-c-map)
-   ("C-z"  .  ctl-z-map)
    ("C-d"  .  delete-char-or-region)
    ("<C-delete>"  .  delete-char-or-region)
-   ("C-1"  .  extend-selection)
+   ("C-1"  .  extend-selection)         ; alternative er/expand-region
    ("M-2"  .  extend-selection)
    ("C-2"  .  set-mark-command)
    ("M-9"  .  anything)
@@ -36,34 +36,20 @@
    ("M-DEL" .  my-backward-delete-word) ; mac os x
    ("C-o"   .  vi-open-next-line)
    ("C-M-o" .  split-line)
-   ("C-"   .  redo)
+   ("C-'"   .  redo)
    ("C-\\"  .  my-comment-or-uncomment-region)
    ("M-5"   .  my-display-buffer-path)
    ("M-0"   .  other-window)
    ("C-M-0" .  sr-speedbar-select-window)
-   ("M-1"   .  sdcv-search)
    ("M-'"   .  just-one-space)
    ("M--"   .  delete-blank-lines)
    ("M-J"   .  vi-join-lines)
    ("C-M-j" .  vi-merge-lines)
    ;; ("M-m" .  smart-mark)
    ("M-q"  .   compact-uncompact-block)
-   ("M-["  .   er/expand-region)
-   ("M-]"  .   er/contract-region)
-   ;; similar to pager-row-up/down
-   ;; ("<up>" . (lambda () (interactive) (scroll-up-command 1)))
-   ;; ("M-n" . (lambda () (interactive) (scroll-up-command 1)))
-   ;; ("<down>" . (lambda () (interactive) (scroll-down-command 1)))
-   ;; ("M-p" .  (lambda () (interactive) (scroll-down-command 1)))
    ("<C-M-down>" .  my-move-line-down)
    ("<C-M-up>"   .  my-move-line-up)
    ("<M-S-down>" .  my-dup-line-down)
-;;;; highlight symbol
-   ("<C-f3>" .  highlight-symbol-at-point)
-   ("<f3>"   .  highlight-symbol-next)
-   ("<S-f3>" .  highlight-symbol-prev)
-;;;; one key
-   ("<f12>"  . one-key-menu-toggle)
    ("<f8>"   . org-agenda)
    ("<f7>"   . calendar)
    ("C-h j"  .  (lambda () (interactive) (info "elisp")))
@@ -71,20 +57,19 @@
    ("<C-mouse-4>" .  text-scale-increase)
    ("<C-mouse-5>" .  text-scale-decrease)
    ("<C-down-mouse-1>" .  undefined)
+   ("<S-insert>"  .  yank-unindented)
    ))
 
 (deh-section kbd-ctl-x
   (bind-keys
    :map ctl-x-map
-   ("C-b" . ibuffer)
-   ("C-j" . dired-jump)
    ("C-t" . transpose-sexps)
-   ("C-r" . find-file-root)
+   ("C-r" . sudo-edit)
    ("C-k" . kill-this-buffer)
    ("C-o" . my-switch-recent-buffer)
    ("C-_" . fit-frame)
-   ;; ;; ("t"  .  template-expand-template)
-   ;; ;; ("m"  .  message-mail)
+   ;; ("t"  .  template-expand-template)
+   ;; ("m"  .  message-mail)
    ("\\"  .  align-regexp)
    ("C-2" .  pop-global-mark)
    ))
@@ -92,19 +77,10 @@
 (deh-section kbd-ctl-c
   (bind-keys
    :map ctl-c-map
-   ("k" . one-key-prefix)
-   ("t" . multi-term-prefix)
-   ("c" . ctl-cc-map)
    ("C-k" . kmacro-keymap)
    ("$" . toggle-truncate-lines)
    ;; ("f" . comint-dynamic-complete)
-   ("g" . magit-status)
-   ("l" . magit-log)
-   ("i" . imenu)
-   ("j" . ffap)
    ("r" . org-capture)
-   ("C-j" . ace-jump-mode)
-   ("C-p" . ace-jump-mode-pop-mark)
    ;; ("k" . auto-fill-mode)
    ;; ("q" . refill-mode)
    ;; ("u" . revert-buffer)
@@ -113,6 +89,7 @@
    ("C-b" .  browse-url-at-point)
    ;; ("C-b" . browse-url-of-buffer)
    ("C-t" . tv-view-history)
+   ("'"   . toggle-quotes)
    ("\t"  . tempo-complete-tag)
    ))
 
@@ -121,17 +98,12 @@
    :map ctl-cc-map
    ("b" . my-revert-buffer)
    ("c" . my-switch-scratch)
-   ("d" . deh-customize-inplace)
+   ("d" . deh-locate)
    ("f" . flycheck-mode)
-   ("h" . highlight-symbol-at-point)
    ("i" . ispell-word)
    ("m" . desktop-menu)
    ("n" . my-clone-buffer)
-   ("o" . recentf-open-files-compl)
-   ("r" . buffer-action-run)
-   ("s" . buffer-action-compile)
    ("t" . auto-insert)
-   ("u" . undo-tree-visualize)
    ("v" . view-mode)
    ("\t" . ispell-complete-word)
    ))
@@ -146,6 +118,18 @@
 
 ;;; one-key settings
 (deh-package one-key
+  :bind
+  ("<f12>"    .  one-key-menu-toggle)
+  ("C-c k k"  .  one-key-menu-root)
+  ("C-c k a"  .  one-key-menu-anything)
+  ("C-c k t"  .  one-key-menu-toggle)
+  ("C-c k g"  .  one-key-menu-gtags)
+  ("C-c k c"  .  one-key-menu-cscope)
+  ("C-c k h"  .  one-key-menu-highlight)
+  ("C-c k s"  .  one-key-menu-hideshow)
+  ("C-c k v"  .  one-key-menu-vc)
+  ("C-c k w"  .  one-key-menu-window)
+  ("C-c k p"  .  one-key-menu-projectile)
   :config
   (progn
     (custom-set-faces
@@ -359,17 +343,4 @@
          (("R" . "Regenerate Tags") . projectile-regenerate-tags)
          (("c" . "Compile!") . projectile-compile-project)
          ) t))
-    )
-  :bind
-  (
-   ("k"  .  one-key-menu-root)
-   ("a"  .  one-key-menu-anything)
-   ("t"  .  one-key-menu-toggle)
-   ("g"  .  one-key-menu-gtags)
-   ("c"  .  one-key-menu-cscope)
-   ("h"  .  one-key-menu-highlight)
-   ("s"  .  one-key-menu-hideshow)
-   ("v"  .  one-key-menu-vc)
-   ("w"  .  one-key-menu-window)
-   ("p"  .  one-key-menu-projectile)
-   ))
+    ))

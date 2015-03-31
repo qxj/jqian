@@ -111,56 +111,9 @@ Like eclipse's Ctrl+Alt+F."
   (if line
       (save-excursion
         (comment-or-uncomment-region
-         (progn
-           (beginning-of-line)
-           (point))
-         (progn
-           (end-of-line)
-           (point))))
+         (progn (beginning-of-line) (point))
+         (progn (end-of-line) (point))))
     (call-interactively 'comment-or-uncomment-region)))
-
-;;{{{ sudo find file
-(defvar find-file-root-prefix
-  (if (featurep 'xemacs)
-      "/[sudo/root@localhost]"
-    "/sudo:root@localhost:" )
-  "*The filename prefix used to open a file with `find-file-root'.")
-
-
-(defvar find-file-root-history nil
-  "History list for files found using `find-file-root'.")
-
-(defvar find-file-root-hook nil
-  "Normal hook for functions to run after finding a \"root\" file.")
-
-;;;###autoload
-(defun find-file-root ()
-  "*Open a file as the root user.
-   Prepends `find-file-root-prefix' to the selected file name so that it
-   maybe accessed via the corresponding tramp method."
-  (interactive)
-  (require 'tramp)
-  (let* ((tramp-mode t)                 ; enable tramp-mode internal
-         ;; We bind the variable `file-name-history' locally so we can
-         ;; use a separate history list for "root" files.
-         (file-name-history find-file-root-history)
-         (name (or buffer-file-name default-directory))
-         (tramp (and (tramp-tramp-file-p name)
-                     (tramp-dissect-file-name name)))
-         path dir file)
-
-    ;; If called from a "root" file, we need to fix up the path.
-    ;;     (when tramp
-    ;;       (setq path (tramp-file-name-path tramp)
-    ;;             dir (file-name-directory path)))
-
-    (when (setq file (read-file-name "Find file (UID = 0): " dir path))
-      (find-file (concat find-file-root-prefix file))
-      ;; If this all succeeded save our new history list.
-      (setq find-file-root-history file-name-history)
-      ;; allow some user customization
-      (run-hooks 'find-file-root-hook))))
-;;}}}
 
 ;;{{{ manipulate item
 (defun my-insert-item ()
@@ -674,3 +627,53 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
 All deh-sections defined in `custom-file' will overide the later deh-sections with the same name (they are loaded after 10-custom.el)."
   (interactive)
   (find-file custom-file))
+
+(defun sudo-edit (&optional arg)
+  (interactive "p")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+(defun google ()
+  "Googles a query or region if any."
+  (interactive)
+  (browse-url
+   (concat
+    "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
+    (if (region-active-p)
+        (buffer-substring (region-beginning) (region-end))
+      (read-string "Query: " (current-word))))))
+
+(defun url-decode-region (beg end)
+  (interactive "r")
+  (let ((content (url-unhex-string (buffer-substring beg end))))
+    (goto-char end)
+    (newline)
+    (insert content)))
+
+(defun url-encode-region (beg end)
+  (interactive "r")
+  (let ((content (url-hexify-string (buffer-substring beg end))))
+    (goto-char end)
+    (newline)
+    (insert content)))
+
+(defun toggle-quotes ()
+  (interactive)
+  (if (point-is-in-string-p)
+      (let ((old-quotes (char-to-string (current-quotes-char)))
+            (new-quotes (char-to-string (alternate-quotes-char)))
+            (start (make-marker))
+            (end (make-marker)))
+        (save-excursion
+          (move-point-forward-out-of-string)
+          (backward-delete-char 1)
+          (set-marker end (point))
+          (insert new-quotes)
+          (move-point-backward-out-of-string)
+          (delete-char 1)
+          (insert new-quotes)
+          (set-marker start (point))
+          (replace-string new-quotes (concat "\\" new-quotes) nil start end)
+          (replace-string (concat "\\" old-quotes) old-quotes nil start end)))
+    (error "Point isn't in a string")))

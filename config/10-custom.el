@@ -158,8 +158,8 @@
   (add-to-list 'completion-ignored-extensions ext))
 
 ;; use clipboard
-(setq x-select-enable-clipboard t
-      x-select-enable-primary t)
+(setq x-select-enable-clipboard t)
+;; (setq x-select-enable-primary t)
 
 (setq mouse-yank-at-point t)
 
@@ -282,6 +282,123 @@
   (fset 'print-buffer 'ignore)
   (setq lpr-command "")
   (setq printer-name ""))
+
+(deh-section defadvice
+  ;;   (defadvice pop-to-mark-command (around ensure-new-position activate)
+  ;;     "When popping the mark, continue popping until the cursor
+  ;; actually moves Also, if the last command was a copy - skip past
+  ;; all the expand-region cruft."
+  ;;     (let ((p (point)))
+  ;;       (when (eq last-command 'save-region-or-current-line)
+  ;;         ad-do-it
+  ;;         ad-do-it
+  ;;         ad-do-it)
+  ;;       (dotimes (i 10)
+  ;;         (when (= p (point)) ad-do-it))))
+
+  (defadvice kill-buffer (around bury-scratch-buffer activate)
+    "bury *scratch* buffer instead of kill it"
+    (let ((buffer-to-kill (ad-get-arg 0)))
+      (if (equal buffer-to-kill "*scratch*")
+          (bury-buffer)
+        ad-do-it)))
+
+  (defadvice kill-line (before check-position activate)
+    "killing the newline between indented lines and remove extra
+spaces."
+    (if (member major-mode
+                '(emacs-lisp-mode scheme-mode lisp-mode
+                                  c-mode c++-mode objc-mode python-mode
+                                  latex-mode plain-tex-mode))
+        (if (and (eolp) (not (bolp)))
+            (progn (forward-char 1)
+                   (just-one-space 0)
+                   (backward-char 1)))))
+
+  (defadvice kill-ring-save (before slickcopy activate compile)
+    "When called interactively with no active region, copy the
+current single line to `kill-ring' instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+
+  (defadvice kill-region (before slickcut activate compile)
+    "When called interactively with no active region, kill the
+current single line instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+
+  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+    "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+    (flet ((process-list ())) ad-do-it))
+
+  (defadvice kill-new (before kill-new-push-xselection-on-kill-ring activate)
+    "Before putting new kill onto the kill-ring, add the
+clipboard/external selection to the kill ring"
+    (let ((have-paste (and interprogram-paste-function
+                           (funcall interprogram-paste-function))))
+      (when have-paste (push have-paste kill-ring))))
+
+  ;;;{{{ Auto indent pasted content
+  (defvar yank-advised-indent-threshold 1000
+  "Threshold (# chars) over which indentation does not
+automatically occur. Indent too many content will impact yank
+performance!")
+
+  (defun yank-advised-indent-function (beg end)
+  "Do indentation, as long as the region isn't too large."
+  (if (<= (- end beg) yank-advised-indent-threshold)
+      (indent-region beg end nil)))
+
+  (dolist (command '(yank yank-pop))
+    (eval
+     `(defadvice ,command (after yank-indent-region activate)
+        (and (not (ad-get-arg 0))
+             (member major-mode
+                     '(emacs-lisp-mode
+                       ;; python-mode
+                       c-mode c++-mode
+                       ;; latex-mode
+                       ;; js-mode
+                       ;; php-mode
+                       plain-tex-mode))
+             (let ((mark-even-if-inactive transient-mark-mode))
+               (yank-advised-indent-function
+                (region-beginning) (region-end)))))))
+
+  (defun yank-unindented ()
+    (interactive) (yank 1))
+  ;;;}}}
+
+  (defadvice occur (around occur-mark-region)
+    (save-restriction
+      (if (and mark-active transient-mark-mode)
+          (narrow-to-region (region-beginning) (region-end)))
+      ad-do-it))
+  (ad-activate 'occur)
+
+  ;; (defadvice browse-url-generic (before ywb-browse-url-generic)
+  ;;   (setq url (replace-regexp-in-string "\\cC" 'url-hexify-string url)))
+  ;; (ad-activate 'browse-url-generic)
+
+  (defadvice browse-url-file-url (after ywb-url-han)
+    (let ((file ad-return-value))
+      (while (string-match "[\x7f-\xff]" file)
+        (let ((enc (format "%%%x" (aref file (match-beginning 0)))))
+          (setq file (replace-match enc t t file))))
+      (setq ad-return-value file)))
+  (ad-activate 'browse-url-file-url)
+
+  ;;# this defadvice is un-necessary, apt-get install emacs23-el
+  ;; (defadvice find-library-name (before find-library-new-place activate)
+  ;;   "Find library in another source path."
+  ;;   (ad-set-arg 0 (replace-regexp-in-string "/usr/share/emacs/23.1/"
+  ;;                                           "~/src/emacs-23.2/"
+  ;;                                           (ad-get-arg 0))))
+  )
 
 ;;; customization
 (setq custom-file (expand-file-name "emacs.custom.el" my-data-dir))

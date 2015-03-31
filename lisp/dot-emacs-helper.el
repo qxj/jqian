@@ -52,7 +52,7 @@
                               (cons name ,load-file-name)))))
         (if is-package
             `(use-package ,name ,@args)
-          (nconc args))))
+          `(progn ,@args))))
 
 (defun deh-locate (name)
   "Locate package configuration by name."

@@ -11,7 +11,7 @@
 )
 
 (deh-package org
-  :defer
+  :commands (org-mode org-version)
   :config
   (setq org-CUA-compatible t)
 

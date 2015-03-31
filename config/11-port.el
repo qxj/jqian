@@ -56,16 +56,16 @@
 
 (deh-section linux
   (when (eq system-type 'gnu/linux)
-  (make-variable-buffer-local 'compile-command)
+    (make-variable-buffer-local 'compile-command)
 
-  (dolist (dir '("/usr/lib/info"
-                 "/usr/gnu/info"
-                 "/usr/gnu/lib/info"
-                 "/opt/gnu/info"
-                 "/usr/share/lib/info"
-                 "/usr/local/share/lib/info"
-                 "/usr/gnu/lib/emacs/info"))
-    (add-to-list 'Info-default-directory-list dir))))
+    (dolist (dir '("/usr/lib/info"
+                   "/usr/gnu/info"
+                   "/usr/gnu/lib/info"
+                   "/opt/gnu/info"
+                   "/usr/share/lib/info"
+                   "/usr/local/share/lib/info"
+                   "/usr/gnu/lib/emacs/info"))
+      (add-to-list 'Info-default-directory-list dir))))
 
 (deh-section macosx
   (when (eq system-type 'darwin)
@@ -82,7 +82,8 @@
          (setq x-select-enable-clipboard t)
          ;; fix issue that ibus input method issue cannot be started in emacs
          ;; firstly, $ sudo apt-get install ibus-el
-         (deh-try-require 'ibus
+         (deh-package ibus
+           :config
            (add-hook 'after-init-hook 'ibus-mode-on))
 
          (setq my-dired-guess-command-alist
@@ -117,28 +118,40 @@
   ;; issue.
   (defun init-window-frame (&optional frame)
     (and frame (select-frame frame))
-    (set-variable 'color-theme-is-global nil)
-    ;; only enable color theme in window system
+    ;; Only enable color theme in window system
     ;; the same color-theme  looks bad in terminal
-    (when window-system
-      (load (expand-file-name "my-fontset.el" my-config-dir))
-      (load (expand-file-name "my-theme.el" my-config-dir))
-      ;; no scroll bar
-      (set-scroll-bar-mode nil)
-      ;; no tool bar
-      (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-      ;; transparent frame
-      (set-frame-parameter (selected-frame) 'alpha '(95 85))
-      (add-to-list 'default-frame-alist '(alpha 95 85))
-      ;; for the height, subtract a couple hundred pixels from the
-      ;; screen height (for panels, menubars and whatnot), then divide
-      ;; by the height of a char to get the height we want
-      (add-to-list 'default-frame-alist
-                   (cons 'height (/ (- (x-display-pixel-height) 100)
-                                    (frame-char-height))))))
+    (set-variable 'color-theme-is-global nil)
 
-  (add-hook 'after-make-frame-functions 'init-window-frame)
-  (add-hook 'after-init-hook 'init-window-frame))
+    ;; No scroll bar
+    (set-scroll-bar-mode nil)
+    ;; No tool bar
+    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    ;; Transparent frame
+    ;; (set-frame-parameter (selected-frame) 'alpha '(95 85))
+    ;; (add-to-list 'default-frame-alist '(alpha 95 85))
+    ;; For the height, subtract a couple hundred pixels from the
+    ;; screen height (for panels, menubars and whatnot), then divide
+    ;; by the height of a char to get the height we want
+    (add-to-list 'default-frame-alist
+                 (cons 'height (/ (- (x-display-pixel-height) 100)
+                                  (frame-char-height)))))
+
+  (when window-system
+    (deh-package fit-frame
+      ;; avoid conflicting to winsav.el
+      ;; (add-hook 'after-make-frame-functions 'fit-frame)
+      )
+
+    (add-hook 'after-make-frame-functions 'init-window-frame)
+    (add-hook 'after-init-hook 'init-window-frame)
+
+    (deh-section theme
+      ;; (set-cursor-color "red")
+      (setq custom-theme-directory
+            (expand-file-name "theme" my-startup-dir))
+      (load-theme 'zenburn :no-confirm))
+    ;; font setting
+    (load (expand-file-name "my-fontset.el" my-config-dir))))
 
 ;; (deh-add-hook 'find-file-hook
 ;;   (if (and (buffer-file-name)

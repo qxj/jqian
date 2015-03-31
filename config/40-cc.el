@@ -47,7 +47,7 @@
 
 (deh-section c-mode
   (deh-package google-c-style)
-  ;; (deh-try-require 'zjl-c-hl)
+  ;; (deh-package zjl-c-hl)
 
   ;;# if function name is too long, we will indent the parameters forward.
   (defconst my-c-lineup-maximum-indent 20)
@@ -220,26 +220,26 @@ the directories in the INCLUDE environment variable."
 
   (bind-keys
    :map gud-mode-map
-      ;;# keybinds remind
-      ;; M-r 'comint-history-isearch-backward-regexp
-      ("<M-up>" . comint-previous-prompt)
-      ("C-u" . comint-kill-input))
+   ;;# keybinds remind
+   ;; M-r 'comint-history-isearch-backward-regexp
+   ("<M-up>" . comint-previous-prompt)
+   ("C-u" . comint-kill-input))
 
   (bind-keys
    :map gud-minor-mode-map
-      ("<M-up>"      . comint-previous-prompt)
-      ("<f5>"        . gud-go)
-      ("<S-f5>"      . gud-kill)
-      ("<f8>"        . gud-print)
-      ("<C-f8>"      . gud-pstar)
-      ("<f9>"        . gud-break-or-remove)
-      ("<C-f9>"      . gud-enable-or-disable)
-      ("<S-f9>"      . gud-watch)
-      ("<f10>"       . gud-next)
-      ("<C-f10>"     . gud-until)
-      ("<C-S-f10>"   . gud-jump)
-      ("<f11>"       . gud-step)
-      ("<C-f11>"     . gud-finish))
+   ("<M-up>"      . comint-previous-prompt)
+   ("<f5>"        . gud-go)
+   ("<S-f5>"      . gud-kill)
+   ("<f8>"        . gud-print)
+   ("<C-f8>"      . gud-pstar)
+   ("<f9>"        . gud-break-or-remove)
+   ("<C-f9>"      . gud-enable-or-disable)
+   ("<S-f9>"      . gud-watch)
+   ("<f10>"       . gud-next)
+   ("<C-f10>"     . gud-until)
+   ("<C-S-f10>"   . gud-jump)
+   ("<f11>"       . gud-step)
+   ("<C-f11>"     . gud-finish))
 
   (gud-tooltip-mode 1)
 
@@ -306,7 +306,10 @@ the directories in the INCLUDE environment variable."
   (add-hook 'gdb-mode-hook 'kill-buffer-when-shell-command-exit))
 
 (deh-package buffer-action
-  :commands (buffer-action-compile buffer-action-run))
+  :commands (buffer-action-compile buffer-action-run)
+  :bind*
+  ("C-c c r" . buffer-action-run)
+  ("C-c c s" . buffer-action-compile))
 
 (deh-package compile
   :defer

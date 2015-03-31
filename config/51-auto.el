@@ -13,11 +13,11 @@
   ;; It's not an ideal way to turn on autopair-global-mode, because it's
   ;; unstable and its keybinds often works in unexcepted manner.
   (deh-add-hook (java-mode-hook
-                  sh-mode-hook
-                  c-mode-common-hook
-                  python-mode-hook
-                  emacs-lisp-mode-hook
-                  html-mode-hook)
+                 sh-mode-hook
+                 c-mode-common-hook
+                 python-mode-hook
+                 emacs-lisp-mode-hook
+                 html-mode-hook)
     (autopair-mode 1))
   ;; some tricks
   (deh-add-hook c++-mode-hook
@@ -32,6 +32,10 @@
   :disabled
   :config
   (smartparens-global-mode t)
+  (show-smartparens-global-mode 1)
+  (setq smartparens-strict-mode t
+        sp-autoescape-string-quote nil
+        sp-autoinsert-if-followed-by-word t)
   (define-key sp-keymap (kbd "M-o") 'sp-backward-sexp)
   (define-key sp-keymap (kbd "M-i") 'sp-forward-sexp)
   (define-key sp-keymap (kbd "C-{") 'sp-select-previous-thing)
@@ -67,10 +71,10 @@
 
   (bind-keys
    :map yas-minor-mode-map
-    ("TAB" . nil)                    ; Remove yas-expand keybind
-    ("<C-tab>" . yas-expand)
-    ("C-c TAB" . yas-expand)
-    ("C-c y" . yas-insert-snippet)) ; List all snippets for current mode
+   ("TAB" . nil)                    ; Remove yas-expand keybind
+   ("<C-tab>" . yas-expand)
+   ("C-c TAB" . yas-expand)
+   ("C-c y" . yas-insert-snippet)) ; List all snippets for current mode
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
@@ -122,18 +126,19 @@
   (ac-set-trigger-key "TAB")
 
   ;; donot use RET for auto complete, only TAB
-  (deh-define-key ac-completing-map
-    ((kbd "<return>")  nil)
-    ((kbd "RET")       nil)
-    ((kbd "TAB")       'ac-complete)
-    ;; ((kbd "M-/")       'ac-stop)
-    )
+  (bind-keys
+   :map ac-completing-map
+   ("<return>" .  nil)
+   ("RET"      .  nil)
+   ("TAB"      .  ac-complete)
+   ;; ((kbd "M-/")       'ac-stop)
+   )
   ;; when completion menu is displayed
   (setq ac-use-menu-map t)
   (bind-keys
    :map ac-menu-map
-    ("C-n"  . ac-next)
-    ("C-p"  . ac-previous))
+   ("C-n"  . ac-next)
+   ("C-p"  . ac-previous))
 
   ;; press <TAB> to active `auto-complete'
   ;; (deh-define-key ac-mode-map
@@ -226,7 +231,8 @@ indent line."
         ;;
         (setq ac-sources '(ac-source-clang)))))
 
-    (deh-try-require 'auto-complete-c-headers
+    (deh-package auto-complete-c-headers
+      :config
       (add-to-list 'ac-sources 'ac-source-c-headers)
       (setq achead:include-directories (append achead:include-directories my-include-dirs))))
   (deh-add-hook c-mode-common-hook
@@ -370,7 +376,7 @@ indent line."
       ("ra1" "←" nil 0)
       ("gt" "»" nil 0)
       ("lt" "«" nil 0)))
-)
+  )
 
 ;;; skeleton
 (deh-section skeleton
@@ -518,7 +524,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
       "<?php" ?\n
       (my-common-header "// ")
       "//\n\n"
-       _ ?\n ?\n
+      _ ?\n ?\n
       "?>"
       ))
 
@@ -527,8 +533,8 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
       "#!/bin/sh" ?\n
       (my-common-header "# ")
       "#\n\n"
-       _
-       ))
+      _
+      ))
 
   (define-auto-insert '(sql-mode . "SQL script")
     '(nil
@@ -555,44 +561,44 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
                   "#+LATEX_HEADER: \\setCJKsansfont{Hei}\n"
                   "#+LATEX_HEADER: \\setCJKmonofont{STFangsong}\n"
                   (if (string= selected "beamer")
-                    (concat "#+LATEX_CLASS_OPTIONS: [presentation]\n"
-                            "#+BEAMER_FRAME_LEVEL: "
-                            "#+BEAMER_HEADER_EXTRA: \\usetheme{"
-                            (let ((themes '("default"
-                                            "Berkeley"
-                                            "CambridgeUS"
-                                            "Frankfurt"
-                                            "PaloAlto"
-                                            "Montpellier"
-                                            "Pittsburgh"
-                                            "Rochester"
-                                            "boxes"
-                                            "Goettingen")))
-                              (ido-completing-read "Select a theme: " themes nil nil nil nil (car themes)))
-                            "}"
-                            "\\usecolortheme{"
-                            (let ((colors '("default"
-                                            "albatross"
-                                            "beaver"
-                                            "beetle"
-                                            "crane"
-                                            "dolphin"
-                                            "dove"
-                                            "fly"
-                                            "lily"
-                                            "orchid"
-                                            "rose"
-                                            "seagull"
-                                            "seahorse"
-                                            "sidebartab"
-                                            "structure"
-                                            "whale"
-                                            "wolverine"
-                                            "default")))
-                              (ido-completing-read "Select a color: " colors nil nil nil nil (car colors)))
-                            "}\n"
-                            "#+COLUMNS: %35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)\n"
-                            "#+OPTIONS: tags:nil\n"))) ) )
+                      (concat "#+LATEX_CLASS_OPTIONS: [presentation]\n"
+                              "#+BEAMER_FRAME_LEVEL: "
+                              "#+BEAMER_HEADER_EXTRA: \\usetheme{"
+                              (let ((themes '("default"
+                                              "Berkeley"
+                                              "CambridgeUS"
+                                              "Frankfurt"
+                                              "PaloAlto"
+                                              "Montpellier"
+                                              "Pittsburgh"
+                                              "Rochester"
+                                              "boxes"
+                                              "Goettingen")))
+                                (ido-completing-read "Select a theme: " themes nil nil nil nil (car themes)))
+                              "}"
+                              "\\usecolortheme{"
+                              (let ((colors '("default"
+                                              "albatross"
+                                              "beaver"
+                                              "beetle"
+                                              "crane"
+                                              "dolphin"
+                                              "dove"
+                                              "fly"
+                                              "lily"
+                                              "orchid"
+                                              "rose"
+                                              "seagull"
+                                              "seahorse"
+                                              "sidebartab"
+                                              "structure"
+                                              "whale"
+                                              "wolverine"
+                                              "default")))
+                                (ido-completing-read "Select a color: " colors nil nil nil nil (car colors)))
+                              "}\n"
+                              "#+COLUMNS: %35ITEM %10BEAMER_env(Env) %10BEAMER_envargs(Env Args) %4BEAMER_col(Col) %8BEAMER_extra(Extra)\n"
+                              "#+OPTIONS: tags:nil\n"))) ) )
       ?\n _ ?\n ?\n
       "#+COMMENT: Local Variables:" ?\n
       "#+COMMENT: mode: org" ?\n

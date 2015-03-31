@@ -134,62 +134,62 @@
       (gtags-mode t)))
 
   (setq gtags-mode-hook
-    '(lambda ()
-       (setq gtags-pop-delete t)
-       (setq gtags-path-style 'absolute)))
+        '(lambda ()
+           (setq gtags-pop-delete t)
+           (setq gtags-path-style 'absolute)))
 
   (setq gtags-select-mode-hook
-    '(lambda ()
-       (set (make-local-variable 'hl-line-face) 'underline)
-       (hl-line-mode 1)))
+        '(lambda ()
+           (set (make-local-variable 'hl-line-face) 'underline)
+           (hl-line-mode 1)))
 
-    (defun gtags-root-dir ()
-      "Returns GTAGS root directory or nil if doesn't exist."
-      (with-temp-buffer
-        (if (zerop (call-process "global" nil t nil "-pr"))
-            (buffer-substring (point-min) (1- (point-max))) nil)))
-    (defun gtags-update-single (filename)
-      "Update Gtags database for changes in a single file"
-      (interactive)
-      (start-process "update-gtags" "update-gtags" "bash" "-c" (concat "cd " (gtags-root-dir) " ; gtags --single-update " filename )))
-    (defun gtags-update-current-file ()
-      (interactive)
-      (defvar filename)
-      (setq filename (replace-regexp-in-string (gtags-root-dir) "." (buffer-file-name (current-buffer))))
-      (gtags-update-single filename)
-      (message "Gtags updated for %s" filename))
-    (defun gtags-update-hook ()
-      "Update GTAGS file incrementally upon saving a file"
-      (when gtags-mode
-        (when (gtags-root-dir)
-          (gtags-update-current-file))))
+  (defun gtags-root-dir ()
+    "Returns GTAGS root directory or nil if doesn't exist."
+    (with-temp-buffer
+      (if (zerop (call-process "global" nil t nil "-pr"))
+          (buffer-substring (point-min) (1- (point-max))) nil)))
+  (defun gtags-update-single (filename)
+    "Update Gtags database for changes in a single file"
+    (interactive)
+    (start-process "update-gtags" "update-gtags" "bash" "-c" (concat "cd " (gtags-root-dir) " ; gtags --single-update " filename )))
+  (defun gtags-update-current-file ()
+    (interactive)
+    (defvar filename)
+    (setq filename (replace-regexp-in-string (gtags-root-dir) "." (buffer-file-name (current-buffer))))
+    (gtags-update-single filename)
+    (message "Gtags updated for %s" filename))
+  (defun gtags-update-hook ()
+    "Update GTAGS file incrementally upon saving a file"
+    (when gtags-mode
+      (when (gtags-root-dir)
+        (gtags-update-current-file))))
 
-    (add-hook 'after-save-hook 'gtags-update-hook)
+  (add-hook 'after-save-hook 'gtags-update-hook)
 
-    (defun gtags-append-tags ()
-      (interactive)
-      (if gtags-mode
-          (progn
-            (message "start to global -u")
-            (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
+  (defun gtags-append-tags ()
+    (interactive)
+    (if gtags-mode
+        (progn
+          (message "start to global -u")
+          (start-process "gtags-name" "*gtags-var*" "global" "-u"))))
 
-    (bind-keys
-     :map gtags-mode-map
-      ;; Instead of `find-tag' & `pop-tag-mark'
-      ("M-." . gtags-find-tag)
-      ("M-*" . gtags-pop-stack)
-      ;; other key binds
-      ("C-c g v"  . gtags-visit-rootdir)
-      ("C-c g t"  . gtags-find-tag-from-here)
-      ("C-c g o"  . gtags-find-tag-other-window)
-      ("C-c g r"  . gtags-find-rtag)
-      ("C-c g s"  . gtags-find-symbol)
-      ("C-c g p"  . gtags-find-pattern)
-      ("C-c g g"  . gtags-find-with-grep)
-      ("C-c g i"  . gtags-find-with-idutils)
-      ("C-c g f"  . gtags-find-file)
-      ("C-c g a"  . gtags-parse-file)
-      ("C-c g b"  . gtags-append-tags))
+  (bind-keys
+   :map gtags-mode-map
+   ;; Instead of `find-tag' & `pop-tag-mark'
+   ("M-." . gtags-find-tag)
+   ("M-*" . gtags-pop-stack)
+   ;; other key binds
+   ("C-c g v"  . gtags-visit-rootdir)
+   ("C-c g t"  . gtags-find-tag-from-here)
+   ("C-c g o"  . gtags-find-tag-other-window)
+   ("C-c g r"  . gtags-find-rtag)
+   ("C-c g s"  . gtags-find-symbol)
+   ("C-c g p"  . gtags-find-pattern)
+   ("C-c g g"  . gtags-find-with-grep)
+   ("C-c g i"  . gtags-find-with-idutils)
+   ("C-c g f"  . gtags-find-file)
+   ("C-c g a"  . gtags-parse-file)
+   ("C-c g b"  . gtags-append-tags))
   )
 
 (deh-package ggtags
@@ -222,8 +222,8 @@
         '(lambda ()
            ;; Instead of `find-tag' & `pop-tag-mark'
            (deh-define-key cscope:map
-             ((kbd "M-.") 'cscope-find-this-symbol)
-             ((kbd "M-*") 'cscope-pop-mark))
+                           ((kbd "M-.") 'cscope-find-this-symbol)
+                           ((kbd "M-*") 'cscope-pop-mark))
            ;; Key bind for cscope-minor-mode
            ))
   ;; hack `xcscope.el', remove hooks
@@ -235,7 +235,7 @@
   :config
   (bind-keys
    :map tags-history-mode-map
-    ("q" . tv-view-history-quit))
+   ("q" . tv-view-history-quit))
 
   (defvar tv-previous-window-conf nil
     "Window configuration before switching to tv buffer.")
@@ -265,13 +265,13 @@ etc).  The following options will be available:
     "Jump to tag location and quit tags view history."
     (interactive "d")
     (with-tag-info location (buf posn stack)
-      (switch-to-buffer buf)
-      (goto-char posn)
-      (if (window-configuration-p gtags-previous-window-conf)
-          (progn
-            (bury-buffer)
-            (set-window-configuration gtags-previous-window-conf)
-            (setq gtags-previous-window-conf nil)))))
+                   (switch-to-buffer buf)
+                   (goto-char posn)
+                   (if (window-configuration-p gtags-previous-window-conf)
+                       (progn
+                         (bury-buffer)
+                         (set-window-configuration gtags-previous-window-conf)
+                         (setq gtags-previous-window-conf nil)))))
   (defun tv-view-history-quit ()
     "Quit tags view history buffer."
     (interactive)
@@ -307,13 +307,14 @@ etc).  The following options will be available:
 
   (bind-keys
    :map Info-mode-map
-      ;;# useful keybind reminds
-      ;; ("i" . 'info-index)
-      ;; ("T" . 'info-toc)
-      ("j" 'next-line)
-      ("k" 'previous-line))
-    (deh-try-require 'info+
-      (setq Info-fit-frame-flag nil)))
+   ;;# useful keybind reminds
+   ;; ("i" . 'info-index)
+   ;; ("T" . 'info-toc)
+   ("j" 'next-line)
+   ("k" 'previous-line))
+  (deh-package info+
+    :config
+    (setq Info-fit-frame-flag nil))
 
   (define-mode-toggle "info" info
     (derived-mode-p 'Info-mode))
@@ -347,9 +348,9 @@ etc).  The following options will be available:
   (defvar flymake-mode-map (make-sparse-keymap))
   (bind-keys
    :map flymake-mode-map
-    ("C-c <f4>"    . flymake-goto-next-error-disp)
-    ("C-c <S-f4>"  . flymake-goto-prev-error-disp)
-    ("C-c <C-f4>"  . flymake-display-err-menu-for-current-line))
+   ("C-c <f4>"    . flymake-goto-next-error-disp)
+   ("C-c <S-f4>"  . flymake-goto-prev-error-disp)
+   ("C-c <C-f4>"  . flymake-display-err-menu-for-current-line))
   (or (assoc 'flymake-mode minor-mode-map-alist)
       (setq minor-mode-map-alist
             (cons (cons 'flymake-mode flymake-mode-map)
@@ -601,10 +602,11 @@ Use CREATE-TEMP-F for creating temp copy."
                    ("\\([^<(]+?\\)[   ]*[(<]\\([A-Za-z0-9_.+-]+@[A-Za-z0-9_.-]+\\)[>)]" nil nil
                     (1 'change-log-name)
                     (2 'change-log-email)))))
-)
+  )
 
 (deh-package lisp-mode
-  :defer
+  :interpreter ("emacs" . emacs-lisp-mode)
+  :mode ("Cask" . emacs-lisp-mode)
   :config
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
@@ -692,7 +694,7 @@ Use CREATE-TEMP-F for creating temp copy."
     (setq ropemacs-confirm-saving nil
           ropemacs-enable-autoimport t)
     (ropemacs-mode t)
-    ;; (deh-try-require 'pycomplete)
+    ;; (deh-package pycomplete)
     )
   )
 
@@ -731,8 +733,8 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (bind-keys
    :map graphviz-dot-mode-map
-    ("C-c c" . nil)                     ; it's prefix key
-    ("\t"  . graphviz-dot-tab-action))
+   ("C-c c" . nil)                     ; it's prefix key
+   ("\t"  . graphviz-dot-tab-action))
 
   (defun graphviz-dot-tab-action ()
     "If cursor at one word end, try complete it. Otherwise, indent line."
@@ -775,8 +777,8 @@ Use CREATE-TEMP-F for creating temp copy."
           php-doc-cachefile (expand-file-name "php-doc" my-data-dir))
     (bind-keys
      :map php-mode-map
-      ("C-c \t" . php-doc-complete-function)
-      ("C-c d"  . php-doc))
+     ("C-c \t" . php-doc-complete-function)
+     ("C-c d"  . php-doc))
     (set (make-local-variable 'eldoc-documentation-function)
          'php-doc-eldoc-function)
     (eldoc-mode 1)
@@ -827,10 +829,10 @@ Use CREATE-TEMP-F for creating temp copy."
   ;; override markdown's key binding
   (bind-keys*
    :map markdown-mode-map
-    ("C-M-f"  . forward-sexp)
-    ("C-M-b"  . backward-sexp)
-    ("M-p"    . pager-row-up)
-    ("M-n"    . pager-row-down)))
+   ("C-M-f"  . forward-sexp)
+   ("C-M-b"  . backward-sexp)
+   ("M-p"    . pager-row-up)
+   ("M-n"    . pager-row-down)))
 
 (deh-package auctex
   :disabled
@@ -899,9 +901,9 @@ If the flag is set, only complete with local files."
         slime-autodoc-use-multiline-p t)
 
   (deh-define-key slime-mode-map
-    ((kbd "TAB") 'slime-indent-and-complete-symbol)
-    ((kbd "C-c i") 'slime-inspect)
-    ((kbd "C-c s") 'slime-selector)))
+                  ((kbd "TAB") 'slime-indent-and-complete-symbol)
+                  ((kbd "C-c i") 'slime-inspect)
+                  ((kbd "C-c s") 'slime-selector)))
 
 (deh-package evernote-mode
   :load-path "~/local/emacs-evernote-mode"

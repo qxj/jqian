@@ -94,3 +94,4 @@
 (depends-on "highlight-symbol")
 (depends-on "jump-char")
 (depends-on "ggtags")
+(depends-on "on-screen")

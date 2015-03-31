@@ -14,13 +14,15 @@
 
 (deh-package undo-tree        ; disable it, cause C-g abnormal
   :disabled
-  :diminish
+  :diminish undo-tree-mode
+  :bind
+  ("C-c c u" . undo-tree-visualize)
   :config
   (global-undo-tree-mode)
   (setq undo-tree-auto-save-history t
         undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo"))))
   (defadvice undo-tree-make-history-save-file-name
-      (after undo-tree activate)
+    (after undo-tree activate)
     (setq ad-return-value (concat ad-return-value ".gz"))))
 
 (deh-package browse-kill-ring
@@ -135,18 +137,18 @@ mouse-3: Remove current window from display")
   ;;# Keybind for dired
   (bind-keys
    :map dired-mode-map
-    ("RET"  . dired-find-file-single-buffer)
-    ("M-u"  . dired-up-directory)   ; remember previous upper directory
-    ;; ("M-="  . dired-backup-diff)
-    ("b"     . browse-url-of-dired-file)
-    ("W"     . woman-dired-find-file)
-    ("r"     . wdired-change-to-wdired-mode) ; editable mode, "C-c C-k" abort
-    (" "     . dired-count-directory-size)
-    ("E"     . dired-w3m-visit)
-    ;; ("!"     . dired-do-shell-command)
-    ("z"     . dired-compress-directory)
-    ("s"     . one-key-menu-dired-sort)
-    ("/"     . one-key-menu-dired-filter))
+   ("RET"  . dired-find-file-single-buffer)
+   ("M-u"  . dired-up-directory)   ; remember previous upper directory
+   ;; ("M-="  . dired-backup-diff)
+   ("b"     . browse-url-of-dired-file)
+   ("W"     . woman-dired-find-file)
+   ("r"     . wdired-change-to-wdired-mode) ; editable mode, "C-c C-k" abort
+   (" "     . dired-count-directory-size)
+   ("E"     . dired-w3m-visit)
+   ;; ("!"     . dired-do-shell-command)
+   ("z"     . dired-compress-directory)
+   ("s"     . one-key-menu-dired-sort)
+   ("/"     . one-key-menu-dired-filter))
 
   ;;# hooks
   (deh-add-hook dired-mode-hook (dired-omit-mode t))
@@ -361,7 +363,7 @@ run command asynchronously. Originally defined in dired-aux.el"
         ido-ignore-directories
         '("^auto/" "^CVS/" "^\\.")
         ido-ignore-files
-        '("^[.#]" "~$"
+        '("^[.#]" "~$" "\\.DS_Store"
           "\\.\\(log\\|out\\|d\\)$"
           "\\(TAGS\\|GPATH\\|GSYMS\\)$")
         ido-work-directory-list-ignore-regexps
@@ -371,20 +373,29 @@ run command asynchronously. Originally defined in dired-aux.el"
 
   (deh-add-hook ido-setup-hook
     (bind-keys
+     :map ido-file-completion-map
+     ("~" . (lambda ()
+              (interactive)
+              (cond
+               ((looking-back "~/") (insert "works/"))
+               ((looking-back "/") (insert "~/"))
+               (:else (call-interactively 'self-insert-command))))))
+    (bind-keys
      :map ido-completion-map
-      ("C-n"    .  ido-next-match-dir)
-      ("C-p"    .  ido-prev-match-dir)
-      ("M-u"    .  ido-up-directory)
-      ("C-M-h"  .  ido-goto-home)
-      ("C-u"    .  ido-clean-text)
-      ("C-w"    .  ido-delete-backward-word-updir)
-      ;; Remind keybinds
-      ;; ("C-a" .  .  ido-toggle-ignore)
-      ("C-S-p"  .  ido-toggle-prefix)
-      ;; ("C-t"  .  ido-enable-regexp)
-      ;; ("M-n"  .  ido-next-work-directory)
-      ;; ("M-p"  .  ido-prev-work-directory)
-      ))
+     ("C-n"    .  ido-next-match-dir)
+     ("C-p"    .  ido-prev-match-dir)
+     ("M-u"    .  ido-up-directory)
+     ("C-M-h"  .  ido-goto-home)
+     ("C-u"    .  ido-clean-text)
+     ("C-w"    .  ido-delete-backward-word-updir)
+     ("C-x C-w" . ido-copy-current-file-name)
+     ;; Remind keybinds
+     ;; ("C-a" .  .  ido-toggle-ignore)
+     ("C-S-p"  .  ido-toggle-prefix)
+     ;; ("C-t"  .  ido-enable-regexp)
+     ;; ("M-n"  .  ido-next-work-directory)
+     ;; ("M-p"  .  ido-prev-work-directory)
+     ))
 
   (defun ido-clean-text ()
     "Clean `ido-text'."
@@ -461,7 +472,13 @@ run command asynchronously. Originally defined in dired-aux.el"
           "~/bin/"
           "~/")))
 
-;; (deh-require 'ido-ubiquitous)
+;; ido everywhere
+(use-package ido-ubiquitous
+  :config (ido-ubiquitous-mode 1))
+
+(use-package ido-at-point
+  :init (ido-at-point-mode)
+  :bind ("C-," . completion-at-point))
 
 (deh-package flx-ido
   :config
@@ -490,10 +507,10 @@ run command asynchronously. Originally defined in dired-aux.el"
   ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
   (bind-keys
    :map ibuffer-mode-map
-    ("s"  . one-key-menu-ibuffer-sort)
-    ("r"  . ibuffer-rename-buffer)
-    ("C-x C-f"  . ibuffer-find-file)
-    (" "  . scroll-up))
+   ("s"  . one-key-menu-ibuffer-sort)
+   ("r"  . ibuffer-rename-buffer)
+   ("C-x C-f"  . ibuffer-find-file)
+   (" "  . scroll-up))
 
   (defun one-key-menu-ibuffer-sort ()
     "The `one-key' menu for IBUFFER-SORT."
@@ -631,8 +648,8 @@ run command asynchronously. Originally defined in dired-aux.el"
   (deh-after-load "info"
     (bind-keys
      :map Info-mode-map
-      ("M-p" . pager-row-up)
-      ("M-n" . pager-row-down)))
+     ("M-p" . pager-row-up)
+     ("M-n" . pager-row-down)))
   (deh-after-load "help-mode"
     (bind-keys
      :map help-mode-map
@@ -676,7 +693,6 @@ run command asynchronously. Originally defined in dired-aux.el"
              ace-jump-mode-pop-mark)
   :bind
   ("C-c C-j" . ace-jump-mode)
-  ("C-M-SPC" . ace-jump-mode)
   ("C-c C-p" . ace-jump-mode-pop-mark)
   ("M-4" . ace-jump-char-mode)
   ("C-4" . ace-jump-mode)
@@ -684,28 +700,28 @@ run command asynchronously. Originally defined in dired-aux.el"
   (ace-jump-mode-enable-mark-sync))
 
 ;; simulate `f' in VIM
-(deh-package iy-go-to-char    ; obsolete by jump-char
-  :disabled
-  :bind
-  ("M-3" . iy-go-to-char)
-  ("C-3" . iy-go-to-char)
-  :config
-  (setq iy-go-to-char-key-forward ?\;
-        iy-go-to-char-key-backward ?\,))
-
 (deh-package jump-char
   :commands (jump-char-forward jump-char-backward)
-  :bind
+  :bind*
   ("M-m"   . jump-char-forward)         ;override back-to-indentation
   ("S-M-m" . jump-char-backward)
   ("C-c C-f"   . jump-char-forward)
   ("C-c C-M-f" . jump-char-backward)
+  ("M-3"   . jump-char-forward)
+  ("C-M-3" . jump-char-backward)
   :config
   ;; Don't highlight matches with jump-char - it's distracting
   (setq jump-char-lazy-highlight-face nil))
 
-(deh-package occur
-  :config
+(deh-package misc
+  :commands zap-to-char)
+
+(deh-package expand-region
+  :bind
+  ("M-["  .   er/expand-region)
+  ("M-]"  .   er/contract-region))
+
+(deh-section occur
   (deh-add-hook occur-mode-hook
     (require 'moccur-edit nil t)
     (set (make-local-variable 'truncate-lines) t))
@@ -771,31 +787,32 @@ run command asynchronously. Originally defined in dired-aux.el"
     (interactive)
     (grep-current-dir nil "TODO|FIXME")))
 
+(use-package ag
+  :bind* ("C-c ag" . ag))
 
-(deh-package isearch
-  :config
+(deh-section isearch
   (setq isearch-case-fold-search t)     ; case insensitive
   (bind-keys
    :map isearch-mode-map
-    ("t"  . isearch-complete)
-    ("M-<"  . isearch-beginning-of-buffer)
-    ("M->"  . isearch-end-of-buffer)
-    ("M-i"  . isearch-query-replace-current)
-    ("C-u"  . isearch-clean)
-    ("C-M-y"  . isearch-yank-symbol-regexp)
-    ("C-y"  . isearch-yank-symbol) ; instead of `isearch-yank-line'
-    ("C-o" . isearch-occur)
-    ;; Remind other useful keybinds
-    ;; ("M-e"  . isearch-edit-string)
-    ;; ("M-y"  . isearch-yank-kill)
-    ;; ("M-e" . isearch-edit-string)
-    ;; ("M-c" . isearch-toggle-case-fold)
-    ;; ("M-r" . isearch-toggle-regexp)
-    ;; ("M-sr" . isearch-toggle-regexp)
-    ;; ("M-sw" . isearch-toggle-word)
-    ;; ("M-so" . isearch-occur)
-    ;; ("M-shr" . isearch-highlight-regexp)
-    )
+   ("<tab>"  . isearch-complete)
+   ("M-<"    . isearch-beginning-of-buffer)
+   ("M->"    . isearch-end-of-buffer)
+   ("M-i"    . isearch-query-replace-current)
+   ("C-u"    . isearch-clean)
+   ("C-M-y"  . isearch-yank-symbol-regexp)
+   ("C-y"    . isearch-yank-symbol) ; instead of `isearch-yank-line'
+   ("C-o"    . isearch-occur)
+   ;; Remind other useful keybinds
+   ;; ("M-e"  . isearch-edit-string)
+   ;; ("M-y"  . isearch-yank-kill)
+   ;; ("M-e"  . isearch-edit-string)
+   ;; ("M-c"  . isearch-toggle-case-fold)
+   ;; ("M-r"  . isearch-toggle-regexp)
+   ;; ("M-sr" . isearch-toggle-regexp)
+   ;; ("M-sw" . isearch-toggle-word)
+   ;; ("M-so" . isearch-occur)
+   ;; ("M-shr" . isearch-highlight-regexp)
+   )
 
   (defun isearch-beginning-of-buffer ()
     "Move isearch point to the beginning of the buffer."
@@ -871,16 +888,20 @@ run command asynchronously. Originally defined in dired-aux.el"
 
 (deh-package hideshow           ; for semantic code
   :commands hs-minor-mode
+  :diminish hs-minor-mode
   :config
   (bind-keys
    :map hs-minor-mode-map
-    ("C-c C-ah"  . hs-hide-block)
-    ("C-c C-as"  . hs-show-block)
-    ("C-c C-aH"  . hs-hide-all)
-    ("C-c C-aS"  . hs-show-all)
-    ("C-c C-at"  . hs-toggle-hiding)
-    ("C-c C-a C-a"  . hs-toggle-hiding)
-    ("<left-fringe> <mouse-2>"  . hs-mouse-toggle-hiding))
+   :prefix-map hs-minor-mode-prefix
+   :prefix "C-c C-a"
+   ("h"  . hs-hide-block)
+   ("s"  . hs-show-block)
+   ("H"  . hs-hide-all)
+   ("S"  . hs-show-all)
+   ("t"  . hs-toggle-hiding)
+   ("C-a"  . hs-toggle-hiding))
+  (bind-key "<left-fringe> <mouse-2>" 'hs-mouse-toggle-hiding
+            hs-minor-mode-map)
 
   (defvar hs--overlay-keymap nil "keymap for folding overlay")
   (let ((map (make-sparse-keymap)))
@@ -901,31 +922,32 @@ run command asynchronously. Originally defined in dired-aux.el"
 
 (deh-package outline            ; for literal text
   :commands (outline-mode outline-minor-mode)
-  :diminish
-  :bind-keymap
-  ("C-c C-a" . outline-minor-mode-prefix)
+  :diminish outline-minor-mode
+  ;; :bind-keymap* ("C-c C-a" . outline-minor-mode-prefix)
   :config
   (bind-keys
    :map outline-minor-mode-map
-    ("s"  . show-subtree)
-    ("S"  . show-all)
-    ("h"  . hide-subtree)
-    ("H"  . hide-body)
-    ;; shortcuts
-    ("<right>" . show-subtree)
-    ("<M-right>" . show-all)
-    ("<left>" . hide-subtree)
-    ("<M-left>" . hide-body)
-    ("<up>" . outline-previous-heading)
-    ("<down>" . outline-next-heading)
-    ("<M-up>" . outline-previous-visible-heading)
-    ("<M-down>" . outline-next-visible-heading)
-    ;; xwl keybinds
-    ("n"  . xwl-narrow-to-outline-level)
-    ("u"  . xwl-outline-toggle-enter-exit)
-    ("q"  . xwl-outline-toggle-show-hide)
-    ("t"  . xwl-outline-toggle-show-hide)
-    ("C-a"  . xwl-outline-toggle-show-hide))
+   :prefix-map outline-mode-prefix-map
+   :prefix "C-c C-a"
+   ("s"  . show-subtree)
+   ("S"  . show-all)
+   ("h"  . hide-subtree)
+   ("H"  . hide-body)
+   ;; shortcuts
+   ("<right>" . show-subtree)
+   ("<M-right>" . show-all)
+   ("<left>" . hide-subtree)
+   ("<M-left>" . hide-body)
+   ("<up>" . outline-previous-heading)
+   ("<down>" . outline-next-heading)
+   ("<M-up>" . outline-previous-visible-heading)
+   ("<M-down>" . outline-next-visible-heading)
+   ;; xwl keybinds
+   ("n"  . xwl-narrow-to-outline-level)
+   ("u"  . xwl-outline-toggle-enter-exit)
+   ("q"  . xwl-outline-toggle-show-hide)
+   ("t"  . xwl-outline-toggle-show-hide)
+   ("C-a"  . xwl-outline-toggle-show-hide))
 
   (defadvice outline-mode (after hide-sublevels)
     "Enter overview after start up `outline-mode'."
@@ -944,7 +966,7 @@ run command asynchronously. Originally defined in dired-aux.el"
 
   (deh-after-load "outline" (require 'foldout))
 
-  ;; keys
+  :init
   (defun xwl-hide-body ()
     "Make `hide-body' take effects at any moment."
     (interactive)
@@ -987,17 +1009,44 @@ run command asynchronously. Originally defined in dired-aux.el"
       (call-interactively 'outline-next-visible-heading)
       (let ((end (point)))
         (call-interactively 'outline-previous-visible-heading)
-        (narrow-to-region (point) end))))
-  )
+        (narrow-to-region (point) end)))))
 
 (deh-package which-func
   :config
   (which-func-mode 1))
 
 (deh-package imenu
+  :bind*
+  ("C-c i" . imenu)
   :config
   (setq imenu-max-item-length 60
         imenu-max-items 500
         imenu-auto-rescan t
         imenu-sort-function 'imenu--sort-by-name)
-  (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0))))
+  (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0)))
+  ;; imenu-everywhere
+  (defun ido-imenu-completion (index-alist &optional prompt)
+    (let ((name (thing-at-point 'symbol))
+          choice
+          (prepared-index-alist
+           (if (not imenu-space-replacement) index-alist
+             (mapcar
+              (lambda (item)
+                (cons (subst-char-in-string ?\s (aref imenu-space-replacement 0)
+                                            (car item))
+                      (cdr item)))
+              index-alist))))
+      (when (stringp name)
+        (setq name (or (imenu-find-default name prepared-index-alist) name)))
+      (setq name (ido-completing-read "Index item: "
+                                      (mapcar 'car prepared-index-alist)
+                                      nil t nil 'imenu--history-list
+                                      (and name (imenu--in-alist
+                                                 name prepared-index-alist) name)))
+      (when (stringp name)
+        (setq choice (assoc name prepared-index-alist))
+        (if (imenu--subalist-p choice)
+            (imenu--completion-buffer (cdr choice) prompt)
+          choice))))
+  (defalias 'imenu--completion-buffer 'ido-imenu-completion)
+  )
