@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+#name: argparse template
+#expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+parser = argparse.ArgumentParser(description='${1:some task}')
+parser.add_argument('action', type=str, choices=('prepare',
+                                                 'run',
+                                                 'test'), help='actions')
+parser.add_argument('--logfile', type=str, help='log file path')
+parser.add_argument('--output', type=str, help='output file name')
+parser.add_argument('--dry', action='store_true', help='whether dry run')
+parser.add_argument('--verbose', action='store_true', help='print verbose log')
+args = parser.parse_args()
+$0

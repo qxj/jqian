@@ -230,6 +230,13 @@
   (deh-remove-hook (c-mode-hook c++-mode-hook dired-mode-hook)
     (function cscope:hook)))
 
+(deh-package browse-el
+  :config
+  (bind-keys
+   :map emacs-lisp-mode-map
+   ("M-." . browse-el-find-funtion)
+   ("M-*" . browse-el-go-back)))
+
 (deh-package tags-view
   :disabled
   :config
@@ -641,6 +648,9 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (deh-add-hook python-mode-hook
     (my-prog-mode-hook)
+    ;; Avoid mysterious "Arithmetric error", bug:
+    ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=15975
+    (setq python-indent-offset 4)
     (when (boundp 'rope-completions) (ac-ropemacs-initialize))
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     )
@@ -660,7 +670,7 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;
   (deh-package jedi
     :commands (jedi:setup jedi-direx:pop-to-buffer)
-    :config
+    :init
     (setq jedi:setup-keys t             ;set it before jedi loaded
           jedi:complete-on-dot t
           jedi:tooltip-method nil

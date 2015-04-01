@@ -71,10 +71,10 @@
 
   (bind-keys
    :map yas-minor-mode-map
-   ("TAB" . nil)                    ; Remove yas-expand keybind
+   ("<tab>" . nil)                      ; Remove yas-expand keybind
    ("<C-tab>" . yas-expand)
    ("C-c TAB" . yas-expand)
-   ("C-c y" . yas-insert-snippet)) ; List all snippets for current mode
+   ("C-c y" . yas-insert-snippet))      ; List all snippets for current mode
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
@@ -141,8 +141,8 @@
    ("C-p"  . ac-previous))
 
   ;; press <TAB> to active `auto-complete'
-  ;; (deh-define-key ac-mode-map
-  ;;   ((kbd "TAB")  'auto-complete-tab-action))
+  ;; (bind-keys :map ac-mode-map
+  ;;   ("TAB" . auto-complete-tab-action))
   (defun auto-complete-tab-action ()
     "If cursor at one word end, try auto complete it. Otherwise,
 indent line."

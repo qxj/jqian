@@ -24,7 +24,8 @@
     (set-keyboard-coding-system 'utf-8) ; pretty
     (set-selection-coding-system 'utf-8) ; please
     (prefer-coding-system 'utf-8) ; with sugar on top
-    ))
+    )
+  (define-coding-system-alias 'UTF-8 'utf-8))
 
 (deh-section PATH
   ;; add more directory to environment variable PATH and exec-path

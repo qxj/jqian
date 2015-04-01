@@ -151,13 +151,13 @@ mouse-3: Remove current window from display")
    ("/"     . one-key-menu-dired-filter))
 
   ;;# hooks
-  (deh-add-hook dired-mode-hook (dired-omit-mode t))
   (deh-add-hook dired-load-hook
     (load "dired-x")
     ;; Make the execuatable file with different color
     (add-to-list 'dired-font-lock-keywords
                  (list dired-re-exe
                        '(".+" (dired-move-to-filename) nil (0 font-lock-type-face))) t))
+  (deh-add-hook dired-mode-hook (dired-omit-mode t))
   (deh-add-hook dired-after-readin-hook
     (set (make-local-variable 'truncate-lines) t)
     (save-excursion                     ; sort directories first
@@ -283,7 +283,7 @@ mouse-3: Remove current window from display")
     (ywb-dired-filter-regexp (concat "\\." extension "\\'") arg)))
 
 (deh-package dired-x
-  :defer
+  :commands dired-omit-mode
   :config
   (dolist (ext '(".bak" ".dSYM" ".dsp" ".plg" ".vcproj" ".d"))
     (add-to-list 'dired-omit-extensions ext))
