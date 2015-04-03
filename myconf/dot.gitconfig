@@ -1,43 +1,103 @@
+# -*- conf -*-
+
 [alias]
+    ###
+    ### Shorthands
+    ###
     # Amend the currently staged files to the latest commit
 	amend = commit --amend --reuse-message=HEAD
 	# Clone a repository including all submodules
 	c = clone --recursive
 	# Commit all changes
 	ca = !git add --all && git commit --all --verbose
+	# Switch to a branch, creating it if necessary
+	cb = checkout -B
     # Switch to a branch
 	co = checkout
+    ci = commit
 	# Diff
 	d = diff --patch-with-stat
     # Show the diff between the latest commit and the current state
 	dl = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
-    # Remove branches that have already been merged with master, a.k.a. ‘delete merged’
-	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
-	# Switch to a branch, creating it if necessary
-	go = checkout -B
+    # Diff status, only list modified file names
+    ds = diff --name-status -r
 	# View the SHA, description, and history graph of the latest 20 commits
 	#l = log --pretty=oneline -n 20 --graph
     l = log --format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --no-merges -n 20
-    # shorthand to pull origin master
+    # List all new commits after you fetched, with stats, but excluding merges
+    lc = log ORIG_HEAD.. --stat --no-merges
+    # Pull & Push
     p = !git pull origin master
-	# Pull in remote changes for the current repository and all its submodules
-	pl = !"git pull; git submodule foreach git pull origin master"
-    # shorthand to sync origin master
     pp = !git pull origin master && git push origin master
     # Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
-    # Remove the old tag with this name and tag the latest commit with it.
-	retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
     # Show verbose output about remotes
 	remotes = remote --verbose
 	# View the current working tree status using the short format
 	s = status --short --branch
+    ss = !git status --short | grep -v '^??'
     # List contributors with number of commits
 	sl = shortlog --summary --numbered
     # Show verbose output about tags
 	tags = tag --list
+    # Undo !DANGEROUS!
+    undo = reset --hard
 	# Undo a `git push`
 	undopush = push -f origin HEAD^:master
+
+    ###
+    ### Useful Commands
+    ###
+
+    # Get a list of your defined aliases
+    aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
+
+    # Remove branches that have already been merged with master, a.k.a. ‘delete merged’
+	clean-branches = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+    # Remove the old tag with this name and tag the latest commit with it.
+	remove-tag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+
+	# Pull in remote changes for the current repository and all its submodules
+	pull-all = !"git pull; git submodule foreach git pull origin master"
+
+    # Prune all your stale remote branches
+    prune-all = !git remote | xargs -n 1 git remote prune
+
+    # Takes the name of a person or their email address
+    whois = "!sh -c 'git log -i -1 --pretty=\"format:%an <%ae>\n\" --author=\"$1\"' -"
+    # Takes a commit name
+    whatis = show -s --pretty='tformat:%h (%s, %ad)' --date=short
+
+    # If upstream applied a slightly modified patch, and you want to see the
+    # modifications, you should use the program interdiff of the patchutils
+    # package. This accept two commits, typically the first coming from upstream
+    # (e.g. origin/master) and the second coming from your own topic branch.
+    intercommit = !sh -c 'interdiff <(git show $1) <(git show $2) | less -FRS' -
+
+    # If you use shortened hashes, sometimes you may encounter a collision. The
+    # following alias prints out all commits whose hash start with given string.
+    abbr = "!sh -c 'git rev-list --all | grep ^$1 | while read commit; do git --no-pager log -n1 --pretty=format:\"%H %ci %an %s%n\" $commit; done' -"
+
+    oneline ="!_() { $(test $# -eq 0 && echo xargs -L1) git log --no-walk --decorate --oneline \"$@\"; }; _"
+    tips = "!_() { t=$(git rev-list --no-merges --max-count=1 \"$@\"); if test -n \"$t\"; then echo $t; _ \"$@\" ^$t; fi; }; _"
+
+    # Digest from https://git.wiki.kernel.org/index.php/Aliases
+    #
+    # You get a lot of merge conflicts and want to quickly solve them using an
+    # editor and then add the conflicted files. Then just use
+    #
+    # $ git edit-unmerged
+    # ... edit ...
+    # $ ... test ...
+    # $ git add-unmerged
+    # $ git commit  # or git rebase --continue or whatever
+    #
+    edit-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; vim `f`"
+    add-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; git add `f`"
+
+    # graph
+    graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
 
 [apply]
 	# Detect whitespace errors when applying a patch
@@ -57,11 +117,13 @@
 	excludesfile = ~/.gitignore
     # Make `git rebase` safer on OS X
 	trustctime = false
-	# Treat spaces before tabs, lines that are indented with 8 or more spaces, and all kinds of trailing whitespace as an error
+	# Treat spaces before tabs, lines that are indented with 8 or more spaces,
+	# and all kinds of trailing whitespace as an error
 	whitespace = space-before-tab,indent-with-non-tab,trailing-space
 
 [color]
-	# Use colors in Git commands that are capable of colored output when outputting to the terminal
+	# Use colors in Git commands that are capable of colored output when
+	# outputting to the terminal
 	ui = auto
 [color "branch"]
 	current = yellow reverse
@@ -81,7 +143,7 @@
 	log = true
 [push]
 	# Git simple branching method only your current branch will be pushed.
-	default = simple
+	default = simple            # git 1.8+ required
 
 # URL shorthands
 [url "git@github.com:"]
