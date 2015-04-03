@@ -1,18 +1,41 @@
 [alias]
-	# View the SHA, description, and history graph of the latest 20 commits
-	l = log --pretty=oneline -n 20 --graph
-	# View the current working tree status using the short format
-	s = status -s
-	# Diff
-	d = diff --patch-with-stat
-	# Pull in remote changes for the current repository and all its submodules
-	p = !"git pull; git submodule foreach git pull origin master"
+    # Amend the currently staged files to the latest commit
+	amend = commit --amend --reuse-message=HEAD
 	# Clone a repository including all submodules
 	c = clone --recursive
 	# Commit all changes
-	ca = commit -a
+	ca = !git add --all && git commit --all --verbose
+    # Switch to a branch
+	co = checkout
+	# Diff
+	d = diff --patch-with-stat
+    # Show the diff between the latest commit and the current state
+	dl = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+    # Remove branches that have already been merged with master, a.k.a. ‘delete merged’
+	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 	# Switch to a branch, creating it if necessary
 	go = checkout -B
+	# View the SHA, description, and history graph of the latest 20 commits
+	#l = log --pretty=oneline -n 20 --graph
+    l = log --format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --no-merges -n 20
+    # shorthand to pull origin master
+    p = !git pull origin master
+	# Pull in remote changes for the current repository and all its submodules
+	pl = !"git pull; git submodule foreach git pull origin master"
+    # shorthand to sync origin master
+    pp = !git pull origin master && git push origin master
+    # Interactive rebase with the given number of latest commits
+	reb = "!r() { git rebase -i HEAD~$1; }; r"
+    # Remove the old tag with this name and tag the latest commit with it.
+	retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+    # Show verbose output about remotes
+	remotes = remote --verbose
+	# View the current working tree status using the short format
+	s = status --short --branch
+    # List contributors with number of commits
+	sl = shortlog --summary --numbered
+    # Show verbose output about tags
+	tags = tag --list
 	# Undo a `git push`
 	undopush = push -f origin HEAD^:master
 
@@ -20,10 +43,20 @@
 	# Detect whitespace errors when applying a patch
 	whitespace = fix
 
+[branch]
+    autosetuprebase = always
+
+# Use `origin` as the default remote on the `master` branch in all cases
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+
 [core]
 	# Use custom `.gitignore` and `.gitattributes`
-	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
+	excludesfile = ~/.gitignore
+    # Make `git rebase` safer on OS X
+	trustctime = false
 	# Treat spaces before tabs, lines that are indented with 8 or more spaces, and all kinds of trailing whitespace as an error
 	whitespace = space-before-tab,indent-with-non-tab,trailing-space
 
@@ -46,11 +79,9 @@
 [merge]
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
-
-# Use `origin` as the default remote on the `master` branch in all cases
-[branch "master"]
-	remote = origin
-	merge = refs/heads/master
+[push]
+	# Git simple branching method only your current branch will be pushed.
+	default = simple
 
 # URL shorthands
 [url "git@github.com:"]
@@ -65,3 +96,9 @@
 	pushInsteadOf = "git://gist.github.com/"
 [url "git://gist.github.com/"]
 	insteadOf = "gist:"
+[url "git://bitbucket.org:"]
+	insteadOf = "bb:"
+
+[user]
+    name = Julian Qian
+    email = junist@gmail.com
