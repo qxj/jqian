@@ -68,7 +68,7 @@
 (depends-on "use-package")
 (depends-on "visual-regexp")
 (depends-on "visual-regexp-steroids")
-(depends-on "web-mode")
+(depends-on "multi-web-mode")
 (depends-on "wgrep")
 (depends-on "whitespace-cleanup-mode")
 (depends-on "window-numbering")

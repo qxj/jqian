@@ -759,14 +759,17 @@ Use CREATE-TEMP-F for creating temp copy."
 
 ;;; web related
 (deh-package multi-web-mode
-  :commands multi-web-mode
+  :mode (("\\.php$" . multi-web-mode)
+         ("\\.html?" . multi-web-mode))
+  :commands (multi-web-mode multi-web-global-mode)
   :config
   (setq mweb-default-major-mode 'html-mode)
   (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
                     (js-mode "<script[^>]*>" "</script>")
                     (css-mode "<style[^>]*>" "</style>")))
-  (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
-  (multi-web-global-mode 1))
+  ;; (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+  ;; (multi-web-global-mode 1)
+  )
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (use-package js2-mode

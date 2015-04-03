@@ -191,7 +191,7 @@
 
 (deh-package recentf
   :commands recentf-mode
-  :bind
+  :bind*
   ("C-c c o" . recentf-open-files-compl)
   :init
   (setq recentf-max-saved-items 1000
