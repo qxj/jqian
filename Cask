@@ -1,6 +1,7 @@
 (source gnu)
 (source melpa)
 (source org)
+(source "marmalade" "http://marmalade-repo.org/packages/")
 
 (depends-on "ac-js2")
 (depends-on "ac-slime")

@@ -657,7 +657,7 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (deh-package doctest-mode)
 
-  (use-package flymake-python-pyflakes
+  (deh-package flymake-python-pyflakes
     :if (executable-find "pyflakes")
     :config (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
 
@@ -772,7 +772,7 @@ Use CREATE-TEMP-F for creating temp copy."
   )
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
-(use-package js2-mode
+(deh-package js2-mode
   :mode (("\\.js$" . js2-mode)
          ("Jakefile$" . js2-mode))
   :interpreter ("node" . js2-mode)

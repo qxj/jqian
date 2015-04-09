@@ -27,6 +27,7 @@
 
 (if (require 'auto-cask) (auto-cask/setup) (error "missing auto-cask.el"))
 (unless (require 'dot-emacs-helper nil t) (error "missing dot-emacs-helpler.el"))
+(deh-package pallet :config (pallet-mode t))
 
 (mapc 'load (directory-files my-config-dir t "^[0-9]+-.*.el$"))
 (server-start)

@@ -473,18 +473,19 @@ run command asynchronously. Originally defined in dired-aux.el"
           "~/")))
 
 ;; ido everywhere
-(use-package ido-ubiquitous
+(deh-package ido-ubiquitous
   :config (ido-ubiquitous-mode 1))
 
-(use-package ido-at-point
+(deh-package ido-at-point
   :init (ido-at-point-mode)
   :bind ("C-," . completion-at-point))
 
 (deh-package flx-ido
   :config
   (flx-ido-mode 1)
-  (setq ido-use-faces nil
-        flx-ido-use-faces nil))
+  ;; (setq ido-use-faces nil
+  ;;       flx-ido-use-faces nil)
+  )
 
 (deh-package smex
   :commands smex-initialize
@@ -557,7 +558,7 @@ run command asynchronously. Originally defined in dired-aux.el"
     (require 'ibuf-ext nil t)
     (ibuffer-switch-to-saved-filter-groups "default")))
 
-(use-package ibuf-ext
+(deh-package ibuf-ext
   :defer
   :config
   (setq ibuffer-saved-filter-groups
@@ -787,7 +788,8 @@ run command asynchronously. Originally defined in dired-aux.el"
     (interactive)
     (grep-current-dir nil "TODO|FIXME")))
 
-(use-package ag
+(deh-package ag
+  :if (executable-find "ag")
   :bind* ("C-c ag" . ag))
 
 (deh-section isearch

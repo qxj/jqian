@@ -173,7 +173,7 @@ indent line."
     (cond
      ;; https://github.com/Golevka/emacs-clang-complete-async
      ((executable-find "clang-complete")
-      (use-package auto-complete-clang-async
+      (deh-package auto-complete-clang-async
         :config
         (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
 
@@ -210,7 +210,7 @@ indent line."
 
      ;; firstly compile clang trunk: http://mike.struct.cn/blogs/entry/15/
      ((executable-find "clang")
-      (use-package auto-complete-clang
+      (deh-package auto-complete-clang
         :config
         (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
         ;;

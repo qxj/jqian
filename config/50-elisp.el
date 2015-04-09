@@ -810,7 +810,7 @@
 ;;
 ;; try to press TAB
 ;;
-(use-package magit
+(deh-package magit
   :bind*
   ("C-c g"  . magit-status)
   ("C-c l"  . magit-log)
@@ -916,7 +916,7 @@
 
   ;; Show blame for current line
 
-  (use-package git-messenger
+  (deh-package git-messenger
     :bind ("C-x v p" . git-messenger:popup-message))
   )
 
