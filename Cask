@@ -49,6 +49,7 @@
 (depends-on "git-rebase-mode")
 (depends-on "gitconfig-mode")
 (depends-on "gitignore-mode")
+(depends-on "google-c-style")
 (depends-on "grizzl")
 (depends-on "hexrgb")
 (depends-on "highlight")
