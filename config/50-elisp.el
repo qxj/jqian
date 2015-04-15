@@ -822,20 +822,7 @@
   (set-face-foreground 'diff-added "#00cc33")
   (set-face-foreground 'diff-removed "#ff0000")
 
-  (set-default 'magit-stage-all-confirm nil)
-  (set-default 'magit-unstage-all-confirm nil)
-
   (add-hook 'magit-mode-hook 'magit-load-config-extensions)
-  (defun magit-save-and-exit-commit-mode ()
-    (interactive)
-    (save-buffer)
-    (server-edit)
-    (delete-window))
-
-  (defun magit-exit-commit-mode ()
-    (interactive)
-    (kill-buffer)
-    (delete-window))
 
   (eval-after-load "git-commit-mode"
     '(define-key git-commit-mode-map (kbd "C-c C-k") 'magit-exit-commit-mode))

@@ -43,16 +43,15 @@
 
 (defmacro deh-use-package (name is-package &rest args)
   (declare (indent 1))
-  (list 'progn
-        ;; won't override previous setting
-        `(let ((name (symbol-name ',name)))
-           (unless (assoc-string name deh--sections)
-             (if ,load-file-name
-                 (add-to-list 'deh--sections
-                              (cons name ,load-file-name)))))
-        (if is-package
+  ;; won't override previous setting
+  `(let ((name-str (symbol-name ',name)))
+     (unless (assoc-string name-str deh--sections)
+       (if ,load-file-name
+           (add-to-list 'deh--sections
+                        (cons name-str ,load-file-name)))
+       ,(if is-package
             `(use-package ,name ,@args)
-          `(progn ,@args))))
+          `(progn ,@args)))))
 
 (defun deh-locate (name)
   "Locate package configuration by name."
