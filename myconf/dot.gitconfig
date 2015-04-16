@@ -100,8 +100,9 @@
     graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
 
 [apply]
-	# Detect whitespace errors when applying a patch
-	whitespace = fix
+	# Detect whitespace errors when applying a patch (Disabled, it causes python
+	# indent error @.@)
+	# whitespace = fix
 
 [branch]
     autosetuprebase = always
@@ -141,6 +142,8 @@
 [merge]
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
+[pull]
+	rebase = true
 [push]
 	# Git simple branching method only your current branch will be pushed.
 	default = simple            # git 1.8+ required
