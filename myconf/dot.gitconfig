@@ -1,4 +1,7 @@
 # -*- conf -*-
+# Global .gitconfig
+# Created by Julian Qian <junist@gmail.com>
+#
 
 [alias]
     ###
@@ -23,7 +26,7 @@
     ds = diff --name-status -r
 	# View the SHA, description, and history graph of the latest 20 commits
 	#l = log --pretty=oneline -n 20 --graph
-    l = log --format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --no-merges 
+    l = log --format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --no-merges
     # List all new commits after you fetched, with stats, but excluding merges
     lc = log ORIG_HEAD.. --stat --no-merges
     # Pull & Push
@@ -146,7 +149,7 @@
 	rebase = true
 [push]
 	# Git simple branching method only your current branch will be pushed.
-	default = simple            # git 1.8+ required
+	# default = simple            # git 1.8+ required
 
 # URL shorthands
 [url "git@github.com:"]
