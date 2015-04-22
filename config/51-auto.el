@@ -418,7 +418,8 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
 ;;; auto insert
 (deh-package autoinsert
   :config
-  (auto-insert-mode 1)
+  ;; Disable auto-insert-mode, it causes trouble with global-auto-revert-mode
+  ;; (auto-insert-mode 1)
   (setq auto-insert-directory my-template-dir
         auto-insert-query 'function
         auto-insert 'other)
