@@ -38,6 +38,7 @@ C-u M-!
 
 ** Send a region to a shell command
 M-| => M-x shell-command-on-region
+C-u M-| run and replace the region
 
 ** org-mode 7.0+ support easy-template
 ex: input <s then press TAB, it will be expand automatically.

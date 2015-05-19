@@ -118,6 +118,7 @@
 
 ;;; one-key settings
 (deh-package one-key
+  :commands (one-key-menu)
   :bind
   ("<f12>"    .  one-key-menu-toggle)
   ("C-c k k"  .  one-key-menu-root)
