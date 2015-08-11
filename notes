@@ -61,8 +61,10 @@ Select anything you want to copy, and then
 ** Dired open directory in the same buffer
 M-x dired-find-alternate-file
 
-** Find a file in a directory recursively
-M-x find-name-dired
+** Recursively find and replace in text files not alread opened
+M-x find-name-dired,
+Press `t` to "Toggle Mark" for all files found,
+Press `Q` to "Query-Replace in Files ..."
 
 ** Edit dired buffer with wdired
 C-x C-q => M-x dired-toggle-read-only

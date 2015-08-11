@@ -21,8 +21,8 @@
   (bind-keys
    ("C-d"  .  delete-char-or-region)
    ("<C-delete>"  .  delete-char-or-region)
-   ("C-1"  .  extend-selection)         ; alternative er/expand-region
-   ("M-2"  .  extend-selection)
+   ;; ("C-1"  .  extend-selection)         ; alternative er/expand-region
+   ;; ("M-2"  .  extend-selection)
    ("C-2"  .  set-mark-command)
    ("M-9"  .  anything)
    ("C-m"  .  newline-and-indent)

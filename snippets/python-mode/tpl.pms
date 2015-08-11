@@ -9,7 +9,7 @@ import os
 import pdb
 import sys
 
-sys.path.append('../../common')
+sys.path.append('../../../pdlib/py')
 import excel
 import htmlUtil
 import mydb

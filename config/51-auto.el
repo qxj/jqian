@@ -531,7 +531,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
 
   (define-auto-insert '(sh-mode . "Shell script")
     '(nil
-      "#!/bin/sh" ?\n
+      "#!/usr/bin/env bash" ?\n
       (my-common-header "# ")
       "#\n\n"
       _

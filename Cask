@@ -32,6 +32,7 @@
 (depends-on "dropdown-list")
 (depends-on "epc")
 (depends-on "epl")
+(depends-on "ess")
 (depends-on "expand-region")
 (depends-on "f")
 (depends-on "fit-frame")

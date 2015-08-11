@@ -720,6 +720,8 @@ run command asynchronously. Originally defined in dired-aux.el"
 (deh-package expand-region
   :bind
   ("M-["  .   er/expand-region)
+  ("C-1"  .   er/expand-region)
+  ("M-2"  .   er/expand-region)
   ("M-]"  .   er/contract-region))
 
 (deh-section occur
