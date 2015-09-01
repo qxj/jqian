@@ -340,7 +340,8 @@
    ("i"  .  gtags-find-tag)
    ("u"  .  gtags-pop-stack)
    ;; sourcepair
-   ("a"  .  sourcepair-load)
+   ;; ("a"  .  sourcepair-load)
+   ("a"  .  ff-find-other-file)
    ;; eassist
    ("L"  .  eassist-list-methods)
    ;; generic

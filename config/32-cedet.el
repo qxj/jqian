@@ -222,6 +222,6 @@ refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
                             my-switch-recent-buffer ibuffer-visit-buffer joc-dired-single-buffer
                             switch-to-buffer ido-switch-buffer previous-buffer next-buffer
                             beginning-of-buffer end-of-buffer viss-bookmark-next-buffer
-                            viss-bookmark-prev-buffer sourcepair-load pager-page-up
+                            viss-bookmark-prev-buffer ff-find-other-file pager-page-up
                             pager-page-down recenter-top-bottom))
     (pulse-defadvice func)))

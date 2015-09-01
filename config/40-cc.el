@@ -121,7 +121,7 @@
     ;; keybinds
     ;; (local-unset-key "\C-c\C-a")        ; trigger for `c-toggle-auto-newline'
     (local-unset-key "\C-d")            ; trigger for `c-electric-delete-forward'
-    (local-set-key "\C-ca" 'sourcepair-load)
+    (local-set-key "\C-cca" 'ff-find-other-file)
     ;;# keybinds remind
     ;; C-M-a 'c-beginning-of-defun
     ;; C-M-e 'c-end-of-defun

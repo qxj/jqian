@@ -285,7 +285,7 @@ mouse-3: Remove current window from display")
 (deh-package dired-x
   :commands dired-omit-mode
   :config
-  (dolist (ext '(".bak" ".dSYM" ".dsp" ".plg" ".vcproj" ".d"))
+  (dolist (ext '(".bak" ".dSYM" ".dsp" ".plg" ".vcproj"))
     (add-to-list 'dired-omit-extensions ext))
 
   (setq dired-omit-files
