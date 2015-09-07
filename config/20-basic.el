@@ -692,7 +692,7 @@ run command asynchronously. Originally defined in dired-aux.el"
              ace-jump-word-mode
              ace-jump-line-mode
              ace-jump-mode-pop-mark)
-  :bind
+  :bind*
   ("C-c C-j" . ace-jump-mode)
   ("C-c C-p" . ace-jump-mode-pop-mark)
   ("M-4" . ace-jump-char-mode)
