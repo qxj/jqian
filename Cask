@@ -83,6 +83,7 @@
 (depends-on "psvn")
 (depends-on "revive")
 (depends-on "s")
+(depends-on "scala-mode2")
 (depends-on "smart-forward")
 (depends-on "smartparens")
 (depends-on "smartrep")

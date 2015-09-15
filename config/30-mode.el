@@ -708,6 +708,8 @@ Use CREATE-TEMP-F for creating temp copy."
     )
   )
 
+(deh-package scala-mode2)
+
 (deh-package sh-script
   :defer
   :config

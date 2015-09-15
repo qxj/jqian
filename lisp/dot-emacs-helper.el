@@ -31,8 +31,9 @@
 (defvar deh--sections nil)
 
 (defmacro deh-package (name &rest args)
-  "Besides `use-package', it records required packages into
-`deh--secionts'."
+  "Wrap `use-package'. It will store installed package
+information, then you can quickly locate each package by
+`deh-locate'."
   (declare (indent 1))
   `(deh-use-package ,name t ,@args))
 
