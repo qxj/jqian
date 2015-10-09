@@ -442,6 +442,11 @@
   ("C-M-m" . mark-more-like-this)
   ("C-*" . mark-all-like-this))
 
+(deh-package iedit
+  :disabled
+  :bind
+  ("C-c ;" . iedit-mode))
+
 (deh-package key-chord
   :disabled
   :config

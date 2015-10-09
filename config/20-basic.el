@@ -339,8 +339,10 @@ run command asynchronously. Originally defined in dired-aux.el"
         ;; ido-use-url-at-point t
         ido-create-new-buffer 'always
         ido-default-file-method 'selected-window
+        ido-default-buffer-method 'selected-window
         ido-ignore-extensions t         ; refer to `completion-ignored-extensions'
         ido-auto-merge-work-directories-length -1
+        ;; ido-use-virtual-buffers t
         ido-max-work-file-list 20)
 
   (setq ido-save-directory-list-file
