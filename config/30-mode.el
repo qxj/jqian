@@ -734,7 +734,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook gnuplot-comint-setup-hook
     (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof)))
 
-(deh-package graphviz-dot
+(deh-package graphviz-dot-mode
   :mode "\\.dot$"
   :config
   (setq graphviz-dot-auto-indent-on-semi nil
@@ -753,7 +753,11 @@ Use CREATE-TEMP-F for creating temp copy."
     (interactive)
     (if (looking-at "\\>")
         (graphviz-dot-complete-word)
-      (indent-for-tab-command))))
+      (indent-for-tab-command)))
+  ;; workaround
+  (unless (boundp 'org-src-lang-modes)
+    (setq org-src-lang-modes nil))
+  )
 
 (deh-package protobuf
   :if (executable-find "protoc")
@@ -897,6 +901,49 @@ If the flag is set, only complete with local files."
       (if (not (string-equal "" file))
           (TeX-run-style-hooks file))
       (TeX-argument-insert file optionel)))
+  )
+
+(deh-package artist-mode
+  :config
+  (defun artist-ido-select-operation (type)
+    "Use ido to select a drawing operation in artist-mode"
+    (interactive
+     (list
+      (ido-completing-read
+       "Drawing operation: "
+       (list "Pen" "Pen Line" "line" "straight line" "rectangle"
+             "square" "poly-line" "straight poly-line" "ellipse"
+             "circle" "text see-thru" "text-overwrite" "spray-can"
+             "erase char" "erase rectangle" "vaporize line" "vaporize lines"
+             "cut rectangle" "cut square" "copy rectangle" "copy square"
+             "paste" "flood-fill"))))
+    (artist-select-operation type))
+  (defun artist-ido-select-settings (type)
+    "Use ido to select a setting to change in artist-mode"
+    (interactive
+     (list
+      (ido-completing-read
+       "Setting: "
+       (list "Set Fill" "Set Line" "Set Erase" "Spray-size" "Spray-chars"
+             "Rubber-banding" "Trimming" "Borders"))))
+    (if (equal type "Spray-size")
+        (artist-select-operation "spray set size")
+      (call-interactively
+       (artist-fc-get-fn-from-symbol
+        (cdr (assoc type '(("Set Fill" . set-fill)
+                           ("Set Line" . set-line)
+                           ("Set Erase" . set-erase)
+                           ("Rubber-banding" . rubber-band)
+                           ("Trimming" . trimming)
+                           ("Borders" . borders)
+                           ("Spray-chars" . spray-chars))))))))
+
+  (add-hook 'artist-mode-init-hook
+            (lambda ()
+              (define-key artist-mode-map
+                (kbd "C-c C-a C-o") 'artist-ido-select-operation)
+              (define-key artist-mode-map
+                (kbd "C-c C-a C-c") 'artist-ido-select-settings)))
   )
 
 (deh-package slime-helper
