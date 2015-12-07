@@ -32,6 +32,9 @@ shopt -s checkwinsize
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell
 
+# Enabel glob-operator ** to be recursive
+shopt -s globstar
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
