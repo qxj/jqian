@@ -307,7 +307,7 @@ run command asynchronously. Originally defined in dired-aux.el"
     nil))
 
 
-(deh-package helm ;; http://tuhdo.github.io/helm-intro.html
+(deh-package helm                       ; http://tuhdo.github.io/helm-intro.html
   :diminish helm-mode
   ;; :bind-keymap* ("C-c h" . helm-command-prefix)
   :bind
