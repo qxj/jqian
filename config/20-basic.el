@@ -395,7 +395,7 @@ run command asynchronously. Originally defined in dired-aux.el"
                     (kbd "C-c C-l")  'helm-eshell-history))))
 
   (deh-package helm-swoop
-    :bind
+    :bind*
     ("M-i" . helm-swoop)
     ("C-c M-i" . helm-multi-swoop)
     ("C-x M-i" . helm-multi-swoop-all)

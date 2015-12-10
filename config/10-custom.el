@@ -183,6 +183,10 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+;; Handy way of getting back to previous places
+(bind-key "C-x p" 'pop-to-mark-command)
+(setq set-mark-command-repeat-pop t)
+
 (deh-section backup                   ;backup & autosave
   (setq make-backup-files t
         version-control t

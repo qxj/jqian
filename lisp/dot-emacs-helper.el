@@ -52,7 +52,8 @@ information, then you can quickly locate each package by
                         (cons name-str ,load-file-name)))
        ,(if is-package
             `(use-package ,name ,@args)
-          `(progn ,@args)))))
+          `(unless (member :disabled ',args) ; treat :disabled seperately
+             ,@args)))))
 
 (defun deh-locate (name)
   "Locate package configuration by name."
