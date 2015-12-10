@@ -26,12 +26,14 @@
     (setq ad-return-value (concat ad-return-value ".gz"))))
 
 (deh-package browse-kill-ring
+  :defer
   :config
   (browse-kill-ring-default-keybindings)
   (setq browse-kill-ring-highlight-current-entry t))
 
 ;;; mode line
 (deh-package smart-mode-line
+  :defer
   :config
   (setq sml/theme 'dark)
   (setq sml/no-confirm-load-theme t)
@@ -388,6 +390,7 @@ run command asynchronously. Originally defined in dired-aux.el"
     :defer)
 
   (deh-package helm-eshell
+    :defer
     :config
     (add-hook 'eshell-mode-hook
               #'(lambda ()
@@ -395,6 +398,7 @@ run command asynchronously. Originally defined in dired-aux.el"
                     (kbd "C-c C-l")  'helm-eshell-history))))
 
   (deh-package helm-swoop
+    :defer
     :bind*
     ("M-i" . helm-swoop)
     ("C-c M-i" . helm-multi-swoop)
@@ -668,7 +672,6 @@ run command asynchronously. Originally defined in dired-aux.el"
              ("dired" (mode . dired-mode))
              ("*others*" (name . "\\*.*\\*"))))))
   )
-
 
 
 (deh-package uniquify
@@ -1105,13 +1108,18 @@ run command asynchronously. Originally defined in dired-aux.el"
 
 (deh-package imenu
   :bind*
-  ("C-c i" . imenu)
+  ("C-c i" . my/imenu)
   :config
   (setq imenu-max-item-length 60
         imenu-max-items 500
         imenu-auto-rescan t
         imenu-sort-function 'imenu--sort-by-name)
   (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0)))
+
+  (defun my/imenu ()
+    (interactive)
+    (call-interactively (if (fboundp 'helm-semantic-or-imenu)
+                            'helm-semantic-or-imenu 'imenu)))
   ;; imenu-everywhere
   (defun ido-imenu-completion (index-alist &optional prompt)
     (let ((name (thing-at-point 'symbol))
@@ -1143,5 +1151,5 @@ run command asynchronously. Originally defined in dired-aux.el"
   :diminish guide-key-mode
   :config
   (setq guide-key/guide-key-sequence
-        '("C-x r" "C-x v" "C-x 4" "C-c" "C-c c"))
+        '("C-x r" "C-x v" "C-x c" "C-x 4" "C-c c" "C-c p"))
   (guide-key-mode 1))

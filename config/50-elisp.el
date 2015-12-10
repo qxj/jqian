@@ -28,6 +28,8 @@
        ("^>.*" . font-lock-warning-face)
        ("^D.*" . font-lock-type-face)))))
 
+(deh-package bookmark+)
+
 (deh-package desktop
   :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
@@ -692,13 +694,15 @@
         (expand-file-name "projectile.cache" my/data-dir)
         projectile-known-projects-file
         (expand-file-name "projectile-bookmarks.eld" my/data-dir))
-  (setq projectile-switch-project-action 'projectile-dired)
+  (setq projectile-enable-caching t)
   (if (boundp 'helm-mode)
       (eval-after-load "helm-projectile"
-	'(progn
-	   (setq projectile-completion-system 'helm)
-	   (helm-projectile-on)))
-    (setq projectile-completion-system 'ido))
+        '(progn
+           (setq projectile-completion-system 'helm
+                 projectile-switch-project-action 'helm-projectile)
+           (helm-projectile-on)))
+    (setq projectile-completion-system 'ido
+          projectile-switch-project-action 'projectile-dired))
   (dolist (dir '(".svn" "CVS" "bin" ".git"))
     (add-to-list 'projectile-globally-ignored-directories dir))
   (dolist (dir '("ede-project.el"))

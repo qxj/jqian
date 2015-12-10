@@ -17,6 +17,7 @@
 (depends-on "auto-complete-clang")
 (depends-on "back-button")
 (depends-on "bm")
+(depends-on "bookmark+")
 (depends-on "browse-kill-ring")
 (depends-on "cask")
 (depends-on "change-inner")
