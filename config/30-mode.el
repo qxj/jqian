@@ -734,6 +734,10 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-add-hook gnuplot-comint-setup-hook
     (define-key comint-mode-map "\C-d" 'comint-delchar-or-maybe-eof)))
 
+;; workaround
+(unless (boundp 'org-src-lang-modes)
+  (setq org-src-lang-modes nil))
+
 (deh-package graphviz-dot-mode
   :mode "\\.dot$"
   :config
@@ -754,9 +758,6 @@ Use CREATE-TEMP-F for creating temp copy."
     (if (looking-at "\\>")
         (graphviz-dot-complete-word)
       (indent-for-tab-command)))
-  ;; workaround
-  (unless (boundp 'org-src-lang-modes)
-    (setq org-src-lang-modes nil))
   )
 
 (deh-package protobuf

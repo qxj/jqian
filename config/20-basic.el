@@ -357,8 +357,10 @@ run command asynchronously. Originally defined in dired-aux.el"
                ;; ignore dired-mode
                (eq (buffer-local-value 'major-mode (current-buffer)) 'dired-mode)
                (and
-                ;; exclude *scratch*, *info*
-                (not (member-ignore-case (buffer-name) '("*scratch*" "*info*")))
+                ;; exclude *scratch*, *info*, etc.
+                (not (member-ignore-case
+                      (buffer-name)
+                      '("*scratch*" "*info*" "*grep*")))
                 ;; exclude *tumblr ...*
                 (not (string-match "^\\*tumblr.+" (buffer-name)))
                 (string-match "^\\*.+" (buffer-name)))))))

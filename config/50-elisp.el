@@ -748,6 +748,8 @@
     (add-to-list 'projectile-project-root-files dir))
   (dolist (file '("GTAGS" "GPATH" "GRTAGS"))
     (add-to-list 'projectile-globally-ignored-files file))
+  (dolist (suffix '(".pyc" ".bak"))
+    (add-to-list 'projectile-globally-ignored-file-suffixes suffix))
   )
 
 ;; Grizzl is a small utility library to be used in other Elisp code
