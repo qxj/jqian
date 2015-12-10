@@ -9,7 +9,7 @@
 
 (eval-when-compile (require 'cl))
 
-(defconst my-c-style
+(defconst my/c-style
   ;; Always indent c/c++ sources, never insert tabs
   '((c-basic-offset             . 4)
     ;; (c-tab-always-indent        . t)
@@ -50,20 +50,20 @@
   ;; (deh-package zjl-c-hl)
 
   ;;# if function name is too long, we will indent the parameters forward.
-  (defconst my-c-lineup-maximum-indent 20)
-  (defun my-c-lineup-arglist (langelem)
+  (defconst my/c-lineup-maximum-indent 20)
+  (defun my/c-lineup-arglist (langelem)
     (let ((ret (c-lineup-arglist langelem)))
-      (if (< (elt ret 0) my-c-lineup-maximum-indent)
+      (if (< (elt ret 0) my/c-lineup-maximum-indent)
           ret
         (save-excursion
           (goto-char (cdr langelem))
           (vector (+ (current-column) 8))))))
-  (defun my-c-indent-lineup-arglist ()
+  (defun my/c-indent-lineup-arglist ()
     (setcdr (assoc 'arglist-cont-nonempty c-offsets-alist)
-            '(c-lineup-gcc-asm-reg my-c-lineup-arglist)))
+            '(c-lineup-gcc-asm-reg my/c-lineup-arglist)))
 
   ;;# convert some .h to c++-mode automatically
-  (defun my-c-correct-hpp-mode ()
+  (defun my/c-correct-hpp-mode ()
     (if (and (not (derived-mode-p 'c++-mode))
              (string-match "\.h$" (buffer-name))
              (save-excursion
@@ -73,7 +73,7 @@
 
   ;;# change face of code in #if 0...#endif
   ;; http://stackoverflow.com/questions/4549015/in-c-c-mode-in-emacs-change-face-of-code-in-if-0-endif-block-to-comment-fa
-  (defun my-c-mode-font-lock-if0 (limit)
+  (defun my/c-mode-font-lock-if0 (limit)
     (save-restriction
       (widen)
       (save-excursion
@@ -95,20 +95,20 @@
           (when (and start (> depth 0))
             (c-put-font-lock-face start (point) 'font-lock-comment-face)))))
     nil)
-  (defun my-c-mode-common-hook-if0 ()
+  (defun my/c-mode-common-hook-if0 ()
     (font-lock-add-keywords
      nil
-     '((my-c-mode-font-lock-if0 (0 font-lock-comment-face prepend))) 'add-to-end))
+     '((my/c-mode-font-lock-if0 (0 font-lock-comment-face prepend))) 'add-to-end))
 
-  (defun my-c-mode-common-hook ()
-    (my-prog-mode-hook)
-    ;; (c-add-style "Personal" my-c-style t)
+  (defun my/c-mode-common-hook ()
+    (my/prog-mode-hook)
+    ;; (c-add-style "Personal" my/c-style t)
     ;; (c-set-style "stroustrup")
     ;; google code style
     (google-set-c-style) (google-make-newline-indent)
-    (my-c-indent-lineup-arglist)
-    (my-c-correct-hpp-mode)
-    (my-c-mode-common-hook-if0)
+    (my/c-indent-lineup-arglist)
+    (my/c-correct-hpp-mode)
+    (my/c-mode-common-hook-if0)
     (c-toggle-auto-hungry-state 1)
     (c-toggle-hungry-state t)
     (c-toggle-auto-newline nil)
@@ -135,11 +135,11 @@
         (set (make-local-variable 'compile-command)
              "/home/jqian/cloudstore/nbbuild/nbbuild.pl --plat linuxR_x86 --buildhost pinky all"))
     )
-  (add-hook 'c-mode-common-hook 'my-c-mode-common-hook))
+  (add-hook 'c-mode-common-hook 'my/c-mode-common-hook))
 
 (deh-section c++-mode
   (deh-add-hook c++-mode-hook
-    (my-c-mode-common-hook)
+    (my/c-mode-common-hook)
     (setq local-abbrev-table c-mode-abbrev-table)
     ;; key binding
     (local-set-key "\C-cm" 'expand-member-functions))
@@ -186,7 +186,7 @@ the directories in the INCLUDE environment variable."
 (deh-package cflow-mode
   :if (executable-find "cflow")
   :config
-  (defun my-cflow-function (function-name)
+  (defun my/cflow-function (function-name)
     "Get call graph of inputed function. "
     ;; (interactive "sFunction name:\n")
     (interactive (list (car (senator-jump-interactive "Function name: "

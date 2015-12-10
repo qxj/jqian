@@ -72,7 +72,7 @@
   (when (eq system-type 'darwin)
     (setq ns-command-modifier 'meta)
     (dolist (dir '("/usr/include/c++/v1"))
-      (add-to-list 'my-include-dirs dir))
+      (add-to-list 'my/include-dirs dir))
     ;; fix launching from spotlight
     ;; $ cat > $HOME/.launchd.conf
     ;; setenv PATH /usr/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin
@@ -87,7 +87,7 @@
            :config
            (add-hook 'after-init-hook 'ibus-mode-on))
 
-         (setq my-dired-guess-command-alist
+         (setq my/dired-guess-command-alist
                '(("acroread" "pdf")
                  ("evince" "pdf")
                  ;; ("xpdf" "pdf")
@@ -112,7 +112,7 @@
                  ("perl" "pl")
                  ("firefox" "xml" "html" "htm" "mht"))))
         (t
-         (setq my-dired-guess-command-alist nil)))
+         (setq my/dired-guess-command-alist nil)))
 
   ;; If terminal and X is sharing the same emacs server, color-theme
   ;; will affect terminal display. Below function will resolve this
@@ -149,10 +149,10 @@
     (deh-section theme
       ;; (set-cursor-color "red")
       (setq custom-theme-directory
-            (expand-file-name "theme" my-startup-dir))
+            (expand-file-name "theme" my/startup-dir))
       (load-theme 'zenburn :no-confirm))
     ;; font setting
-    (load (expand-file-name "my-fontset.el" my-config-dir))))
+    (load (expand-file-name "my-fontset.el" my/config-dir))))
 
 ;; (deh-add-hook 'find-file-hook
 ;;   (if (and (buffer-file-name)
@@ -161,10 +161,10 @@
 
 ;; post setting
 (when (executable-find "gcc")
-  (setq my-include-dirs (append (gcc-include-path) my-include-dirs)))
+  (setq my/include-dirs (append (gcc-include-path) my/include-dirs)))
 
-;; (let ((autoload-file (expand-file-name "100-loaddefs.el" my-config-dir)))
-;;   (unless (file-exists-p autoload-file) (my-generate-loaddefs t autoload-file)))
+;; (let ((autoload-file (expand-file-name "100-loaddefs.el" my/config-dir)))
+;;   (unless (file-exists-p autoload-file) (my/generate-loaddefs t autoload-file)))
 
 ;; WORKAROUND: miss define-fringe-bitmap under terminal
 (when (null window-system)

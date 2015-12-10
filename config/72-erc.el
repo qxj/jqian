@@ -200,7 +200,7 @@ so as to keep an eye on work when necessarily."
 ;; `----
 
 (erc-log-mode 1)
-(setq erc-log-channels-directory (expand-file-name "erc" my-data-dir)
+(setq erc-log-channels-directory (expand-file-name "erc" my/data-dir)
       erc-save-buffer-on-part t
       erc-log-file-coding-system 'utf-8
       erc-log-write-after-send t
@@ -223,7 +223,7 @@ If the buffer is currently not visible, makes it sticky."
                       "identified" "invalid" "your unique" "now you hidden"
                       "identified for" "nickname" "your hidden host"))
                    message)))
-    (my-notify (concat "ERC: " (buffer-name)) message)))
+    (my/notify (concat "ERC: " (buffer-name)) message)))
 
 (add-hook 'erc-text-matched-hook 'xwl-erc-text-matched-hook)
 
@@ -332,15 +332,15 @@ If the buffer is currently not visible, makes it sticky."
                            'face msg-face str)
     str))
 
-(defun erc-format-my-nick ()
+(defun erc-format-my/nick ()
   "Return the beginning of this user's message, correctly propertized."
-  (if erc-show-my-nick
+  (if erc-show-my/nick
       (let ((open "")
             (close (concat " " xwl-vertical-bar " "))
             (nick (erc-current-nick)))
         (concat
          (erc-propertize open 'face 'erc-default-face)
-         (erc-propertize nick 'face 'erc-my-nick-face)
+         (erc-propertize nick 'face 'erc-my/nick-face)
          (erc-propertize close 'face 'erc-default-face)))
     (let ((prefix (concat " " xwl-vertical-bar " ")))
       (erc-propertize prefix 'face 'erc-default-face))))
@@ -368,4 +368,3 @@ If the buffer is currently not visible, makes it sticky."
 
 (define-mode-toggle "erc" erc
   (derived-mode-p 'erc-mode))
-

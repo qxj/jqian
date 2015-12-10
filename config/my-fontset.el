@@ -90,8 +90,8 @@
   ;; use 120 char wide window for largeish displays and smaller 80
   ;; column windows for smaller displays pick whatever numbers make
   ;; sense for you
-  (let ((en-font (if my-iswin "Consolas" "DejaVu Sans Mono"))
-        (zh-font (if my-iswin "Microsoft YaHei" "WenQuanYi Micro Hei Mono"))
+  (let ((en-font (if my/iswin "Consolas" "DejaVu Sans Mono"))
+        (zh-font (if my/iswin "Microsoft YaHei" "WenQuanYi Micro Hei Mono"))
         (pixel-size (if (> (x-display-pixel-width) 1280)
                         ":pixelsize=18" ":pixelsize=12"))
         (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))

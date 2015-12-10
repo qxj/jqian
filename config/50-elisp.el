@@ -11,7 +11,7 @@
   :defer
   :config
   ;; autosave bookmark into the diskete
-  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my-data-dir)
+  (setq bookmark-default-file (expand-file-name "emacs.bookmark" my/data-dir)
         bookmark-save-flag 1)
   (add-to-list 'bookmark-after-jump-hook 'recenter)
   (deh-add-hook bookmark-bmenu-mode-hook
@@ -31,7 +31,7 @@
 (deh-package desktop
   :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
-        desktop-path (list my-data-dir)
+        desktop-path (list my/data-dir)
         desktop-restore-eager 8)        ; firstly restore 8 buffers
 
   ;;# not to save
@@ -67,7 +67,7 @@
   ;;
   (deh-package desktop-menu
     :config
-    (setq desktop-menu-directory my-data-dir
+    (setq desktop-menu-directory my/data-dir
           desktop-menu-base-filename (concat "emacs.desktops-" (system-name))
           desktop-menu-list-file "emacs.desktops"
           desktop-menu-clear 'ask)
@@ -95,7 +95,7 @@
 
 (deh-package revive-mode-config
   :config
-  ;; (setq revive:configuration-file (expand-file-name "revive.layout" my-data-dir))
+  ;; (setq revive:configuration-file (expand-file-name "revive.layout" my/data-dir))
   (deh-add-hook kill-emacs-hook 'emacs-save-layout)
   (bind-keys
    :map ctl-x-map
@@ -105,14 +105,14 @@
 (deh-package session
   :disabled
   :config
-  (setq session-save-file (expand-file-name "emacs.session" my-data-dir))
+  (setq session-save-file (expand-file-name "emacs.session" my/data-dir))
   (setq session-save-file-coding-system 'utf-8-unix)
   (add-to-list 'session-globals-exclude 'org-mark-ring)
   (add-hook 'after-init-hook 'session-initialize))
 
 (deh-package saveplace
   :config
-  (setq save-place-file (expand-file-name "emacs.saveplace" my-data-dir))
+  (setq save-place-file (expand-file-name "emacs.saveplace" my/data-dir))
   (setq-default save-place t))
 
 (deh-package savehist
@@ -121,7 +121,7 @@
         '(kill-ring mark-ring global-mark-ring search-ring regexp-search-ring
                     extended-command-history)
         savehist-autosave-interval 60
-        savehist-file (expand-file-name "emacs.savehist" my-data-dir))
+        savehist-file (expand-file-name "emacs.savehist" my/data-dir))
   (savehist-mode t))
 
 (deh-package bm
@@ -147,7 +147,7 @@
   (setq-default bm-buffer-persistence t)
 
   (setq bm-repository-file
-        (expand-file-name "emacs.bm-repository" my-data-dir))
+        (expand-file-name "emacs.bm-repository" my/data-dir))
 
   ;; buffer setting
   (add-hook 'find-file-hooks 'bm-buffer-restore)
@@ -192,14 +192,20 @@
 (deh-package recentf
   :commands recentf-mode
   :bind*
-  ("C-c c o" . recentf-open-files-compl)
+  ("C-c c o" . my/recentf-history)
   :init
   (setq recentf-max-saved-items 1000
-        recentf-save-file (expand-file-name "emacs.recentf" my-data-dir)
-        recentf-exclude `(,my-data-dir
+        recentf-save-file (expand-file-name "emacs.recentf" my/data-dir)
+        recentf-exclude `(,my/data-dir
                           ,tramp-file-name-regexp))
   (recentf-mode t)
   :config
+  (defun my/recentf-history ()
+    (interactive)
+    (if (fboundp 'helm-recentf)
+        (call-interactively 'helm-recentf)
+      (call-interactively 'recentf-open-files-compl)))
+
   (defun recentf-open-files-compl ()
     "Open files opened recently with `ido-completing-read'."
     (interactive)
@@ -243,10 +249,9 @@
                                                   (mapcar 'car elist))
                              elist)))))
 
-  (deh-after-load "recentf"
-    ;; Also store recent opened directories besides files
-    (deh-add-hook dired-mode-hook
-      (recentf-add-file dired-directory))))
+  ;; Also store recent opened directories besides files
+  (deh-add-hook dired-mode-hook
+    (recentf-add-file dired-directory)))
 
 (deh-package ffap
   :commands (ffap)
@@ -263,7 +268,7 @@
           (machine "-a-zA-Z0-9." "" ".")
           (math-mode ",-:$+<>@-Z_a-z~`" "<" "@>;.,!?`:")))
 
-  (setq ffap-c-path (append ffap-c-path my-include-dirs)))
+  (setq ffap-c-path (append ffap-c-path my/include-dirs)))
 
 (deh-package filecache
   :commands file-cache-minibuffer-complete
@@ -274,7 +279,7 @@
   :config
   (setq file-cache-ignore-case t)
   (message "Loading file cache...")
-  (file-cache-add-directory my-config-dir)
+  (file-cache-add-directory my/config-dir)
   (file-cache-add-directory-list load-path)
   (file-cache-add-directory-using-find (expand-file-name "~/works")))
 
@@ -347,7 +352,7 @@
    ;; generic
    ("f"  .  ido-find-file)
    ("d"  .  dired-jump)
-   ("o"  .  my-switch-recent-buffer)
+   ("o"  .  my/switch-recent-buffer)
    ;; ("q"  'bury-buffer)
    ("q"   . View-quit)
    ("C-k" . kill-this-buffer)))
@@ -518,7 +523,7 @@
     (multi-term-dedicated-select))
 
   :init
-  (defun my-toggle-multi-term ()
+  (defun my/toggle-multi-term ()
     "Toggle dedicated `multi-term' window and select."
     (interactive)
     (if (multi-term-dedicated-exist-p)
@@ -529,7 +534,7 @@
 (deh-package shell
   :defer
   :config
-  (setenv "HISTFILE" (expand-file-name "shell.history" my-data-dir))
+  (setenv "HISTFILE" (expand-file-name "shell.history" my/data-dir))
 
   (deh-add-hook shell-mode-hook
     (rename-buffer (concat "*shell: " default-directory "*") t)
@@ -547,68 +552,15 @@
   (deh-package shell-completion
     :config
     (setq shell-completion-sudo-cmd "\\(?:sudo\\|which\\)")
-    (defvar my-lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
+    (defvar my/lftp-sites (if (file-exists-p "~/.lftp/bookmarks")
                               (shell-completion-get-file-column "~/.lftp/bookmarks" 0 "[ \t]+")))
     (add-to-list 'shell-completion-options-alist
-                 '("lftp" my-lftp-sites))
+                 '("lftp" my/lftp-sites))
     (add-to-list 'shell-completion-prog-cmdopt-alist
                  '("lftp" ("help" "open" "get" "mirror" "bookmark")
-                   ("open" my-lftp-sites)
+                   ("open" my/lftp-sites)
                    ("bookmark" "add")))))
 
-(deh-package anything                   ; deprecated by helm
-  :disabled
-  :commands (anything)
-  :config
-  (bind-keys
-   :map anything-map
-   ("C-n"  . anything-next-line)
-   ("C-p"  . anything-previous-line)
-   ("M-n"  . anything-next-source)
-   ("M-p"  . anything-previous-source))
-
-  ;; redefine anything-command-map-prefix-key
-  (setq anything-command-map-prefix-key "")
-
-  (deh-package anything-config
-    :config
-    (setq anything-c-adaptive-history-file
-          (expand-file-name "anything-c-adaptive-history" my-data-dir)
-          anything-c-yaoddmuse-cache-file
-          (expand-file-name "yaoddmuse-cache.el" my-data-dir))
-    (setq anything-c-find-files-show-icons t
-          ;; anything-c-external-programs-associations nil
-          anything-c-google-suggest-url "http://www.google.com/complete/search?output=toolbar&q="
-          ;; anything-google-suggest-use-curl-p t
-          anything-kill-ring-threshold 50
-          anything-su-or-sudo "sudo")
-
-    (defun anything-info-pages ()
-      "Preconfigured anything for info pages."
-      (interactive)
-      (anything-other-buffer 'anything-c-source-info-pages "*info pages*"))
-    ))
-
-(deh-package helm-config
-  :disabled
-  :init
-  ("<C-return>" . helm-mini)
-  :config
-  (setq enable-recursive-minibuffers t)
-  (helm-mode 1)
-  (setq helm-idle-delay 0.1
-        helm-input-idle-delay 0.1
-        helm-buffer-max-length 50
-        helm-M-x-always-save-history t)
-  (deh-package helm-ls-git)
-  (deh-package helm-gtags
-    :config (helm-gtags-mode 1))
-  (deh-package helm-descbinds
-    :config (helm-descbinds-mode 1))
-  (deh-package helm-M-x
-    :bind ("C-c M-x" . execute-extended-command))
-  (deh-package helm-projectile
-    :bind ("C-h h" . helm-projectile)))
 
 ;;; Speedbar
 (deh-package speedbar
@@ -650,7 +602,7 @@
         sr-speedbar-width-x 22
         sr-speedbar-max-width 30)
 
-  (defun my-toggle-sr-speedbar ()
+  (defun my/toggle-sr-speedbar ()
     "Toggle sr speedbar window."
     (interactive)
     (sr-speedbar-toggle) (sr-speedbar-select-window))
@@ -737,11 +689,16 @@
   :config
   (projectile-global-mode)
   (setq projectile-cache-file
-        (expand-file-name "projectile.cache" my-data-dir)
+        (expand-file-name "projectile.cache" my/data-dir)
         projectile-known-projects-file
-        (expand-file-name "projectile-bookmarks.eld" my-data-dir))
-  (setq projectile-switch-project-action 'projectile-dired
-        projectile-completion-system 'ido)
+        (expand-file-name "projectile-bookmarks.eld" my/data-dir))
+  (setq projectile-switch-project-action 'projectile-dired)
+  (if (boundp 'helm-mode)
+      (eval-after-load "helm-projectile"
+	'(progn
+	   (setq projectile-completion-system 'helm)
+	   (helm-projectile-on)))
+    (setq projectile-completion-system 'ido))
   (dolist (dir '(".svn" "CVS" "bin" ".git"))
     (add-to-list 'projectile-globally-ignored-directories dir))
   (dolist (dir '("ede-project.el"))
@@ -920,7 +877,7 @@
 ;; ;; erc
 ;; (deh-package erc
 ;;   :config
-;;   (setq erc-log-channels-directory (expand-file-name "erc" my-data-dir))
+;;   (setq erc-log-channels-directory (expand-file-name "erc" my/data-dir))
 ;;   (deh-after-load "erc"
 ;;     (deh-require 'emoticons
 ;;        (add-hook 'erc-insert-modify-hook 'emoticons-fill-buffer)

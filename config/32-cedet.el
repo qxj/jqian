@@ -25,7 +25,7 @@
   (global-semantic-idle-local-symbol-highlight-mode 1)
 
   ;; semantic cache directory
-  (setq semanticdb-default-save-directory my-data-dir
+  (setq semanticdb-default-save-directory my/data-dir
         ;; semanticdb-persistent-path '(project)
         ;; semanticdb-project-predicate-functions nil ; TODO: add predicates
         ;; semanticdb-find-default-throttle '(local project unloaded system recursive)
@@ -105,7 +105,7 @@ the mru bookmark stack."
   (mapc (lambda (dir)
           (dolist (mode '(c-mode c++-mode))
             (semantic-add-system-include dir mode)))
-        my-include-dirs))
+        my/include-dirs))
 
 (deh-package senator
   :disabled
@@ -153,7 +153,7 @@ the mru bookmark stack."
   :config
   ;; (setq semantic-c-obey-conditional-section-parsing-flag nil) ; ignore #if
   (setq ede-project-placeholder-cache-file
-        (expand-file-name "ede-project.el" my-data-dir)
+        (expand-file-name "ede-project.el" my/data-dir)
         ede-locate-setup-options
         '(ede-locate-global ede-locate-locate ede-locate-base))
 
@@ -161,7 +161,7 @@ the mru bookmark stack."
 
   ;; Ede project support
   ;; M-x `ede-new' to generate Project.ede to project root directory.
-  (defun my-ede-new (projname
+  (defun my/ede-new (projname
                      filename
                      &optional incdir
                      &optional cmd)
@@ -193,9 +193,9 @@ refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
       (if cmd
           (insert (format "\n
                       :local-variables (list
-                                        (cons 'compile-command '(my-gen-compile-string \"%s\")))" cmd)))
+                                        (cons 'compile-command '(my/gen-compile-string \"%s\")))" cmd)))
       (insert ")")))
-  (defun my-gen-compile-string (&optional cmd)
+  (defun my/gen-compile-string (&optional cmd)
     "Generates compile string for compiling project"
     (let* ((current-dir (file-name-directory
                          (or (buffer-file-name (current-buffer))
@@ -219,7 +219,7 @@ refer: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html#sec10"
          (pulse-momentary-highlight-one-line (point)))))
   (dolist (func '(goto-line exchange-dot-and-mark exchange-point-and-mark-nomark find-tag
                             tags-search tags-loop-continue pop-tag-mark imenu-default-goto-function
-                            my-switch-recent-buffer ibuffer-visit-buffer joc-dired-single-buffer
+                            my/switch-recent-buffer ibuffer-visit-buffer joc-dired-single-buffer
                             switch-to-buffer ido-switch-buffer previous-buffer next-buffer
                             beginning-of-buffer end-of-buffer viss-bookmark-next-buffer
                             viss-bookmark-prev-buffer ff-find-other-file pager-page-up

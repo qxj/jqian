@@ -193,21 +193,21 @@
         backup-by-copying t)
   ;; Write backup files to own directory
   (add-to-list 'backup-directory-alist
-               (cons ".*" (expand-file-name "backup" my-data-dir)))
+               (cons ".*" (expand-file-name "backup" my/data-dir)))
 
   ;; (setq make-backup-file-name-function
   ;;       (lambda (fpath)
   ;;         "Return a new file path of a given file path.
   ;; If the new path's directories does not exist, create them."
-  ;;         (let* ((backup-root (expand-file-name "backup" my-data-dir))
+  ;;         (let* ((backup-root (expand-file-name "backup" my/data-dir))
   ;;                (bpath (concat backup-root fpath "~")))
   ;;           (make-directory (file-name-directory bpath) bpath)
   ;;           bpath)))
 
   ;; Put autosave files (ie #foo#) and backup files (ie foo~) in a
   ;; separated place. http://snarfed.org/gnu_emacs_backup_files
-  (setq auto-save-file-name-transforms `((".*" ,(concat my-data-dir "/\\1") t))
-        auto-save-list-file-prefix (expand-file-name "emacs.autosave-" my-data-dir))
+  (setq auto-save-file-name-transforms `((".*" ,(concat my/data-dir "/\\1") t))
+        auto-save-list-file-prefix (expand-file-name "emacs.autosave-" my/data-dir))
   ;; Make backups of files, even when they're in version control
   (setq vc-make-backup-files t))
 
@@ -234,7 +234,7 @@
 (deh-package abbrev
   :defer
   :config
-  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my-data-dir))
+  (setq abbrev-file-name (expand-file-name "emacs.abbrev_defs" my/data-dir))
   (if (file-exists-p abbrev-file-name)
       (read-abbrev-file abbrev-file-name))
   (setq save-abbrevs t)
@@ -242,10 +242,10 @@
 
 ;; diary, todo, calendar
 (deh-section calendar
-  (setq diary-file (expand-file-name "diary" my-org-dir)
-        todo-file-do (expand-file-name "todo-do" my-org-dir)
-        todo-file-done (expand-file-name "todo-done" my-org-dir)
-        todo-file-top (expand-file-name "todo-top" my-org-dir))
+  (setq diary-file (expand-file-name "diary" my/org-dir)
+        todo-file-do (expand-file-name "todo-do" my/org-dir)
+        todo-file-done (expand-file-name "todo-done" my/org-dir)
+        todo-file-top (expand-file-name "todo-top" my/org-dir))
   (deh-add-hook initial-calendar-window-hook (toggle-truncate-lines 1))
   ;; calendar
   ;; for calendar-sunrise-sunset
@@ -270,7 +270,7 @@
 
 ;; set my file register
 (deh-section register
-  (set-register ?. `(file . ,my-config-dir))
+  (set-register ?. `(file . ,my/config-dir))
   (set-register ?b '(file . "~/Dropbox/"))
   (set-register ?t '(file . "~/temp/"))
   (set-register ?s '(file . "~/src/"))
@@ -401,5 +401,5 @@ performance!")
   )
 
 ;;; customization
-(setq custom-file (expand-file-name "emacs.custom.el" my-data-dir))
+(setq custom-file (expand-file-name "emacs.custom.el" my/data-dir))
 (load custom-file t)

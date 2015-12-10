@@ -47,7 +47,7 @@
 
 (deh-package yasnippet
   :config
-  (setq yas-snippet-dirs my-snippet-dir)
+  (setq yas-snippet-dirs my/snippet-dir)
   (yas-load-directory yas-snippet-dirs)
   ;; (yas-global-mode 1)
   (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
@@ -91,11 +91,11 @@
   :config
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
-  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my-data-dir))
+  (setq ac-comphist-file (expand-file-name "ac-comphist.dat" my/data-dir))
   (add-to-list 'ac-dictionary-directories
-               (expand-file-name "ac-dict" my-startup-dir))
+               (expand-file-name "ac-dict" my/startup-dir))
   (add-to-list 'ac-user-dictionary-files
-               (expand-file-name "ac.dict" my-startup-dir))
+               (expand-file-name "ac.dict" my/startup-dir))
   (setq ac-auto-start 3
         ac-auto-show-menu 1.5
         ;; ac-candidate-limit ac-menu-height ; improve drop menu performance
@@ -175,7 +175,7 @@ indent line."
      ((executable-find "clang-complete")
       (deh-package auto-complete-clang-async
         :config
-        (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
+        (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my/include-dirs))
 
         ;;- work with Project.ede (M-x ede-new)
         (deh-after-load "ede"
@@ -212,7 +212,7 @@ indent line."
      ((executable-find "clang")
       (deh-package auto-complete-clang
         :config
-        (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my-include-dirs))
+        (setq ac-clang-cflags (mapcar (lambda (dir) (format "-I%s" dir)) my/include-dirs))
         ;;
         ;; Customize ac-clang-cflags in .dir-locals.el, put it in the
         ;; root directory of projects.
@@ -234,7 +234,7 @@ indent line."
     (deh-package auto-complete-c-headers
       :config
       (add-to-list 'ac-sources 'ac-source-c-headers)
-      (setq achead:include-directories (append achead:include-directories my-include-dirs))))
+      (setq achead:include-directories (append achead:include-directories my/include-dirs))))
   (deh-add-hook c-mode-common-hook
     (when (derived-mode-p 'c-mode 'c++-mode)
       (ac-cc-mode-setup)))
@@ -310,13 +310,13 @@ indent line."
 (deh-section abbrev-table
   ;; Digested from (Emacswiki)[http://www.emacswiki.org/emacs/AbbrevMode#toc7]
   (require 'cl)
-  (defvar my-abbrev-tables nil)
-  (defun my-abbrev-hook ()
-    (let ((def (assoc (symbol-name last-abbrev) my-abbrev-tables)))
+  (defvar my/abbrev-tables nil)
+  (defun my/abbrev-hook ()
+    (let ((def (assoc (symbol-name last-abbrev) my/abbrev-tables)))
       (when def
         (execute-kbd-macro (cdr def)))
       t))
-  (put 'my-abbrev-hook 'no-self-insert t)
+  (put 'my/abbrev-hook 'no-self-insert t)
   (defmacro declare-abbrevs (table abbrevs)
     (if (consp table)
         `(progn ,@(loop for tab in table
@@ -325,10 +325,10 @@ indent line."
          ,@(loop for abbr in abbrevs
                  do (when (third abbr)
                       (push (cons (first abbr) (read-kbd-macro (third abbr)))
-                            my-abbrev-tables))
+                            my/abbrev-tables))
                  collect `(define-abbrev ,table
                             ,(first abbr) ,(second abbr) ,(and (third abbr)
-                                                               ''my-abbrev-hook))))))
+                                                               ''my/abbrev-hook))))))
   (put 'declare-abbrevs 'lisp-indent-function 2)
 
   (deh-after-load "sh-script"
@@ -420,7 +420,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   :config
   ;; Disable auto-insert-mode, it causes trouble with global-auto-revert-mode
   ;; (auto-insert-mode 1)
-  (setq auto-insert-directory my-template-dir
+  (setq auto-insert-directory my/template-dir
         auto-insert-query 'function
         auto-insert 'other)
 
@@ -429,10 +429,10 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
              (selected (ido-completing-read "C or C++ header? : " modes nil nil nil nil (car modes))))
         selected)
       "/* -*- mode: " str | -13 " -*-" ?\n
-      (my-common-header " * ")
+      (my/common-header " * ")
       " */" ?\n ?\n
       "#ifndef "
-      (setq v1 (my-ifndef-header-guard-string))
+      (setq v1 (my/ifndef-header-guard-string))
       ?\n
       "#define " v1 "\n\n"
       _
@@ -442,10 +442,10 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-auto-insert '("\\.\\(hh\\|hpp\\)$" . "C++ header")
     '(nil
       "// -*- mode: c++ -*-" ?\n
-      (my-common-header "// ")
+      (my/common-header "// ")
       "//" ?\n ?\n
       "#ifndef "
-      (setq v1 (my-ifndef-header-guard-string))
+      (setq v1 (my/ifndef-header-guard-string))
       ?\n
       "#define " v1 "\n\n"
       _
@@ -454,7 +454,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-auto-insert '("\\.c$" . "C program")
     '(nil
       "/* -*- mode: c -*-" ?\n
-      (my-common-header " * ")
+      (my/common-header " * ")
       " */" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
@@ -466,7 +466,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-auto-insert '("\\.\\(cc\\|cpp\\)$" . "C++ program")
     '(nil
       "// -*- mode: c++ -*-" ?\n
-      (my-common-header "// ")
+      (my/common-header "// ")
       "//" ?\n ?\n
       "#include \""
       (let ((stem (file-name-sans-extension buffer-file-name)))
@@ -500,7 +500,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
 
   (define-auto-insert '(makefile-mode . "Makefile")
     '(nil
-      (my-common-header "# ")
+      (my/common-header "# ")
       "\n" _))
   (define-auto-insert '("make\\.inc$" . "make.inc")
     ["make.inc"])
@@ -511,7 +511,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
     '(nil
       "#!/usr/bin/env python" ?\n
       "# -*- coding: utf-8; tab-width: 4; -*-" ?\n
-      (my-common-header "# ")
+      (my/common-header "# ")
       "#\n\n"
       "import sys" ?\n ?\n
       "def main():" ?\n
@@ -523,7 +523,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-auto-insert '(php-mode . "PHP script")
     '(nil
       "<?php" ?\n
-      (my-common-header "// ")
+      (my/common-header "// ")
       "//\n\n"
       _ ?\n ?\n
       "?>"
@@ -532,7 +532,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-auto-insert '(sh-mode . "Shell script")
     '(nil
       "#!/usr/bin/env bash" ?\n
-      (my-common-header "# ")
+      (my/common-header "# ")
       "#\n\n"
       _
       ))
@@ -540,7 +540,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-auto-insert '(sql-mode . "SQL script")
     '(nil
       "-- -*- coding: utf-8; tab-width: 2; -*-" ?\n
-      (my-common-header "-- ")
+      (my/common-header "-- ")
       "--\n\n"
       _
       ))
@@ -608,7 +608,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
       "#+COMMENT: End:")
     )
   ;; helper functions
-  (defun my-common-header (comment-string &optional encoding)
+  (defun my/common-header (comment-string &optional encoding)
     (concat
      (mapconcat (lambda (line) (concat comment-string line))
                 `(
@@ -628,7 +628,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
                   )
                 "\n")
      "\n"))
-  (defun my-ifndef-header-guard-string ()
+  (defun my/ifndef-header-guard-string ()
     "ifndef header guard for BLADE"
     (let ((blade-root (locate-dominating-file buffer-file-name "BLADE_ROOT")))
       (concat (upcase (replace-regexp-in-string

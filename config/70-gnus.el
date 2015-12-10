@@ -198,8 +198,8 @@
                                      "Cron Daemon"))
                        ".*")
               "local")
-        ;; (: my-split-mailing-lists)
-        ;; (to ,user-mail-address (: my-notify-important))
+        ;; (: my/split-mailing-lists)
+        ;; (to ,user-mail-address (: my/notify-important))
         (from ".*@\\(mails.pku.edu.cn\\|pku.org.cn\\)" "pku")
         ;; (any ".*@gmail.com" "gmail")
         (to ".*@newsmth.*" "newsmth")
@@ -303,7 +303,7 @@
 ;; 存档文件并不方便。把 Frank Haun <pille3003@fhaun.de> 的这个代码
 ;; 片断放入 ~/.gnus：
 ;;
-(defun my-archive-article (&optional n)
+(defun my/archive-article (&optional n)
   "Copies one or more article(s) to a corresponding `nnml:' group, e.g.
      `gnus.ding' goes to `nnml:1.gnus.ding'. And `nnml:List-gnus.ding' goes
      to `nnml:1.List-gnus-ding'.
@@ -318,7 +318,7 @@
                    (replace-regexp-in-string "^.*:" "" gnus-newsgroup-name)))))
     (gnus-summary-copy-article n archive-name)))
 ;;
-;; 此时，可以在 summary buffer 中用 `M-x my-archive-article' 把光标处的文
+;; 此时，可以在 summary buffer 中用 `M-x my/archive-article' 把光标处的文
 ;; 章存档到一个 nnml 组（当然，可以改为你想要的其他后端）。
 ;;
 

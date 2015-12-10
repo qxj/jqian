@@ -15,8 +15,8 @@
   :config
   (setq org-CUA-compatible t)
 
-  (setq org-directory my-org-dir
-        org-default-notes-file (concat my-org-dir "Notes.org"))
+  (setq org-directory my/org-dir
+        org-default-notes-file (concat my/org-dir "Notes.org"))
 
   ;; Single keys to execute commands at the beginning of a headline
   (setq org-use-speed-commands nil
@@ -27,15 +27,15 @@
 
   (deh-add-hook org-load-hook
     (add-to-list 'org-link-frame-setup
-                 '(file . my-find-file-function)))
-  (defun my-find-file-function (file)
+                 '(file . my/find-file-function)))
+  (defun my/find-file-function (file)
     "find file according to the file extension."
-    (funcall (or (assoc-default file my-dired-guess-command-alist
+    (funcall (or (assoc-default file my/dired-guess-command-alist
                                 'string-match)
                  'find-file) file))
 
   (deh-add-hook org-mode-hook
-    (my-text-mode-hook)
+    (my/text-mode-hook)
     (org-set-local 'comment-start "#+COMMENT:"))
 
   ;; org keybinds
@@ -181,7 +181,7 @@
   (setq org-hide-leading-stars t
         org-startup-folded nil)           ; don't fold org items after load
 
-  ;; (setq org-agenda-files my-org-dir) ; cause Shift-Right issue
+  ;; (setq org-agenda-files my/org-dir) ; cause Shift-Right issue
 
   (setq org-todo-keywords
         '((sequence  "TODO(t)"  "WAIT(w@/!)" "START(s!)" "|" "CANCEL(c@/!)" "DONE(d!)")))
@@ -332,4 +332,4 @@
   :config
   (deh-add-hook rst-adjust-hook rst-toc-update)
   ;; Auto fill and outline mode
-  (deh-add-hook rst-mode-hook my-text-mode-hook))
+  (deh-add-hook rst-mode-hook my/text-mode-hook))

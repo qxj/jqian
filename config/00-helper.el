@@ -12,10 +12,10 @@
 (global-set-key (kbd "H-l") (Λ (insert "\u03bb")))
 (global-set-key (kbd "H-L") (Λ (insert "\u039B")))
 
-(defconst my-ismac (equal system-type 'darwin))
-(defconst my-iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
+(defconst my/ismac (equal system-type 'darwin))
+(defconst my/iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
 
-(defvar my-include-dirs
+(defvar my/include-dirs
   (let (dirs
         (incs '("include" "inc" "common"))
         (updirs '("./" "../" "../../" "../../../" "../../../../")))
@@ -100,7 +100,7 @@ For example:
    (call-interactively 'gdb-restore-windows))
 "
   (declare (debug t) (indent 2))
-  `(defun ,(intern (format "my-toggle-%s" name)) ()
+  `(defun ,(intern (format "my/toggle-%s" name)) ()
      ,(format "Toggle %s mode visible" name)
      (interactive)
      (if ,cond

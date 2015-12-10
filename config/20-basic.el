@@ -297,7 +297,7 @@ mouse-3: Remove current window from display")
   ;; point on a file named foo.tar and you press !, Dired will guess
   ;; you want to ‘tar xvf’ it and suggest that as the default shell
   ;; command.
-  (dolist (file my-dired-guess-command-alist)
+  (dolist (file my/dired-guess-command-alist)
     (add-to-list 'dired-guess-shell-alist-default
                  (list (concat "\\." (regexp-opt (cdr file) t) "$")
                        (car file))))
@@ -322,8 +322,119 @@ run command asynchronously. Originally defined in dired-aux.el"
     ;; Return nil for sake of nconc in dired-bunch-files.
     nil))
 
-(deh-package ido
+
+(deh-package helm ;; http://tuhdo.github.io/helm-intro.html
+  :diminish helm-mode
+  :bind
+  ("M-x" . helm-M-x)
+  ("M-y" . helm-show-kill-ring)
+  ("C-x b" . helm-mini)
+  ("C-x C-f" . helm-find-files)
+  :bind*
+  ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+  ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+  ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+  ("C-c h" . helm-command-prefix)
+  ("C-c h i" . helm-semantic-or-imenu)
+  ("C-c h m" . helm-man-woman)
+  ("C-c h /" . helm-find)
+  ("C-c h l" . heml-locate)
+  ("C-c h a" . helm-apropos)
+  ("C-c h o" . helm-occur)
+  ("C-c h <tab>" . helm-lisp-completion-at-point)
+  ("C-c h b" . helm-resume)
+  ("C-c h x" . helm-register)
+  ("C-h SPC" . helm-all-mark-rings)
+  :init
+  (require 'helm-config)
+  (global-unset-key (kbd "C-x c"))
+
+  (deh-package helm-projectile
+    :bind
+    ("C-c h p" . helm-projectile))
+  (deh-package helm-eshell
+    :config
+    (add-hook 'eshell-mode-hook
+	      #'(lambda ()
+		  (define-key eshell-mode-map
+		    (kbd "C-c C-l")  'helm-eshell-history))))
+  (deh-package helm-swoop
+    :bind
+    ("C-c h s" . helm-swoop))
+
+  (deh-package helm-descbinds
+    :defer t
+    :bind
+    ("C-h b" . helm-descbinds)
+    ("C-h w" . helm-descbinds)
+    :init
+    (helm-descbinds-mode))
+
+
+  (when (executable-find "curl")
+    (setq helm-google-suggest-use-curl-p t))
+
+  ;; enable ack-grep for helm-ff-do-grep
+  (when (executable-find "ack-grep")
+    (setq helm-grep-default-command
+	  "ack-grep -Hn --no-group --no-color %e %p %f"
+	  helm-grep-default-recurse-command
+	  "ack-grep -H --no-group --no-color %e %p %f"))
+
+  ;; enable man page at point
+  (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
+
+  ;; enable fuzzy matching
+  (setq helm-M-x-fuzzy-match t  	; helm-M-x
+	helm-buffers-fuzzy-matching t	; helm-mini
+	helm-recentf-fuzzy-match    t	; helm-mini
+	helm-semantic-fuzzy-match t 	; helm-semantic-or-imenu
+	helm-imenu-fuzzy-match    t	; helm-semantic-or-imenu
+	helm-locate-fuzzy-match t	; helm-locate
+	helm-apropos-fuzzy-match t      ; helm-apropos
+	helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
+	)
+
+  (setq helm-candidate-number-limit 100)
+  ;; From https://gist.github.com/antifuchs/9238468
+  (setq helm-idle-delay 0.0         ; update fast sources immediately (doesn't).
+        helm-input-idle-delay 0.01  ; this actually updates things reeeelatively quickly.
+        helm-autoresize-mode t
+        helm-quick-update t
+        helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+        helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+        helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+        helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+        helm-ff-skip-boring-files t
+        helm-ff-file-name-history-use-recentf t)
+  (helm-mode)
+  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
+
   :config
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+  (define-key minibuffer-local-map (kbd "C-c C-l") 'helm-minibuffer-history)
+  )
+
+(deh-package ido
+  :disabled
+  :config
+  ;; ido everywhere
+  (deh-package ido-ubiquitous
+    :config (ido-ubiquitous-mode 1))
+
+  (deh-package ido-at-point
+    :init (ido-at-point-mode)
+    :bind ("C-," . completion-at-point))
+
+  (deh-package flx-ido
+    :config
+    (flx-ido-mode 1)
+    ;; (setq ido-use-faces nil
+    ;;       flx-ido-use-faces nil)
+    )
   ;; (ido-mode 1) ;; avoid recursive tramp load error, it's a reported bug
   (ido-everywhere t)
   (add-hook 'term-setup-hook 'ido-mode)
@@ -346,9 +457,9 @@ run command asynchronously. Originally defined in dired-aux.el"
         ido-max-work-file-list 20)
 
   (setq ido-save-directory-list-file
-        (expand-file-name "emacs.ido-last" my-data-dir)
+        (expand-file-name "emacs.ido-last" my/data-dir)
         org-id-locations-file
-        (expand-file-name "emacs.ido-locations" my-data-dir))
+        (expand-file-name "emacs.ido-locations" my/data-dir))
   (setq ido-ignore-buffers
         '("^ " "_region_" "TAGS$"
           (lambda (buf)
@@ -476,33 +587,21 @@ run command asynchronously. Originally defined in dired-aux.el"
           "~/bin/"
           "~/")))
 
-;; ido everywhere
-(deh-package ido-ubiquitous
-  :config (ido-ubiquitous-mode 1))
-
-(deh-package ido-at-point
-  :init (ido-at-point-mode)
-  :bind ("C-," . completion-at-point))
-
-(deh-package flx-ido
-  :config
-  (flx-ido-mode 1)
-  ;; (setq ido-use-faces nil
-  ;;       flx-ido-use-faces nil)
-  )
 
 (deh-package smex
+  :disabled
   :commands smex-initialize
   :bind
   ("M-x"     . smex)
   ("C-c M-x" . smex-major-mode-commands)
   ("C-c C-c M-x"  . execute-extended-command)
   :config
-  (setq smex-save-file (expand-file-name "emacs.smex-items" my-data-dir)
+  (setq smex-save-file (expand-file-name "emacs.smex-items" my/data-dir)
         smex-history-length 50)
   )
 
 (deh-package ibuffer
+  :disabled
   :bind
   ("C-x C-b" . ibuffer)
   :config
@@ -622,8 +721,8 @@ run command asynchronously. Originally defined in dired-aux.el"
 
   :config
   ;; (setq tramp-mode nil)                  ; disable tramp
-  (setq tramp-auto-save-directory my-data-dir
-        tramp-persistency-file-name (expand-file-name "tramp" my-data-dir)
+  (setq tramp-auto-save-directory my/data-dir
+        tramp-persistency-file-name (expand-file-name "tramp" my/data-dir)
         tramp-default-method "ssh"
         remote-file-name-inhibit-cache 60
         ;; tramp-syntax 'url
@@ -916,7 +1015,7 @@ run command asynchronously. Originally defined in dired-aux.el"
     (define-key map [mouse-1] 'hs-show-block)
     (setq hs--overlay-keymap map))
   (setq hs-set-up-overlay
-        (defun my-display-code-line-counts (ov)
+        (defun my/display-code-line-counts (ov)
           (when (eq 'code (overlay-get ov 'hs))
             (overlay-put ov 'display
                          (propertize

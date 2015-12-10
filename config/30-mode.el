@@ -12,11 +12,11 @@
                 indent-tabs-mode nil
                 c-hungry-delete-key t)
 
-  (defun my-mode-common-hook ()
+  (defun my/mode-common-hook ()
 
     )
 
-  (defun my-prog-mode-hook ()           ; programming hook
+  (defun my/prog-mode-hook ()           ; programming hook
     (set (make-local-variable 'comment-style) 'indent)
     (set (make-local-variable 'tab-stop-list)
          (number-sequence tab-width 80 tab-width))
@@ -31,7 +31,7 @@
 
     ;; (local-set-key (kbd "RET")
     ;;                (lambda () (interactive)
-    ;;                  (if (my-cursor-on-comment-p) (comment-indent-new-line)
+    ;;                  (if (my/cursor-on-comment-p) (comment-indent-new-line)
     ;;                    (if (boundp 'autopair-newline) (autopair-newline)
     ;;                      (newline-and-indent)))))
 
@@ -40,17 +40,17 @@
         (delete-trailing-whitespace)        ; no trailing whitespace
         (if (reduce (lambda (a b) (or a b))
                     (mapcar (lambda (x) (eq major-mode x)) '(c-mode c++-mode python-mode php-mode)))
-            (my-untabify)                       ; untabify source code
+            (my/untabify)                       ; untabify source code
           )
-        (my-update-header)                  ; update header
+        (my/update-header)                  ; update header
         (copyright-update)                  ; update copyright
         (time-stamp)                        ; update timestamp
         ))
     )
 
-  ;; (add-hook 'prog-mode-hook 'my-prog-mode-hook)
+  ;; (add-hook 'prog-mode-hook 'my/prog-mode-hook)
 
-  (defun my-text-mode-hook ()           ; literal hook
+  (defun my/text-mode-hook ()           ; literal hook
     (abbrev-mode 1)
     (outline-minor-mode 1)
     (toggle-truncate-lines 1)
@@ -59,11 +59,11 @@
     )
 
   ;; comment new line and indent `M-j', as VIM acts.
-  (defun my-cursor-on-comment-p (&optional point)
+  (defun my/cursor-on-comment-p (&optional point)
     (memq (get-text-property (or point (point)) 'face)
           '(font-lock-comment-face)))
 
-  (defun my-untabify ()
+  (defun my/untabify ()
     "My untabify function as discussed and described at
  http://www.jwz.org/doc/tabs-vs-spaces.html
  and improved by Claus Brunzema:
@@ -75,7 +75,7 @@
 
  \(add-hook 'some-mode-hook
            '(lambda ()
-                (add-hook 'write-contents-hooks 'my-untabify nil t)))"
+                (add-hook 'write-contents-hooks 'my/untabify nil t)))"
     (save-excursion
       (goto-char (point-min))
       (when (search-forward "\t" nil t)
@@ -83,10 +83,10 @@
       nil))
 
   ;;# copy from template-simple.el
-  (defun my-update-header ()
+  (defun my/update-header ()
     (interactive)
     (when (and buffer-file-name
-               (not (string-match (regexp-opt (list my-data-dir my-template-dir)) buffer-file-name)))
+               (not (string-match (regexp-opt (list my/data-dir my/template-dir)) buffer-file-name)))
       (save-excursion
         (goto-char (point-min))
         (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
@@ -110,7 +110,7 @@
 (deh-package etags
   :disabled
   :config
-  (defun my-find-top-directory (file &optional dir)
+  (defun my/find-top-directory (file &optional dir)
     (or dir (setq dir (expand-file-name default-directory)))
     (let ((thefile (expand-file-name file dir)))
       (if (file-exists-p thefile)
@@ -118,11 +118,11 @@
         (setq pdir (directory-file-name (file-name-directory dir)))
         (if (string= pdir dir)
             nil
-          (my-find-top-directory file pdir)))))
+          (my/find-top-directory file pdir)))))
   (setq tags-add-tables nil
         default-tags-table-function
         (lambda nil
-          (my-find-top-directory "TAGS"))))
+          (my/find-top-directory "TAGS"))))
 
 (deh-package gtags
   :disabled
@@ -295,7 +295,7 @@ etc).  The following options will be available:
   :config
   ;; (add-hook 'woman-mode-hook 'view-mode)
 
-  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my-data-dir)
+  (setq woman-cache-filename (expand-file-name "emacs.wmncach.el" my/data-dir)
         woman-manpath '("/usr/man"
                         "/usr/share/man"
                         "/usr/X11R6/man"
@@ -591,12 +591,12 @@ Use CREATE-TEMP-F for creating temp copy."
     (flycheck-add-next-checker 'c/c++-cppcheck
                                '(warning . c/c++-googlelint))
     (setq flycheck-c/c++-googlelint-executable
-          (expand-file-name "misc/cpplint.py" my-startup-dir)
+          (expand-file-name "misc/cpplint.py" my/startup-dir)
           flycheck-googlelint-linelength "100")))
 
 (deh-section makefile
   (deh-add-hook makefile-mode-hook
-    ;; (my-code-common-hook)
+    ;; (my/code-common-hook)
     ))
 
 (deh-package change-log
@@ -619,22 +619,22 @@ Use CREATE-TEMP-F for creating temp copy."
       (add-to-list 'ffap-alist '(lisp-interaction-mode . ffap-el-mode)))
 
   (deh-add-hook emacs-lisp-mode-hook
-    (my-prog-mode-hook))
+    (my/prog-mode-hook))
 
   (bind-keys
    :map emacs-lisp-mode-map ; lisp-mode-shared-map
    ("\M-."  . browse-el-find-funtion)
    ("\M-*"  . browse-el-go-back)
-   ("C-)"   . my-auto-insert-paren))
+   ("C-)"   . my/auto-insert-paren))
 
-  (defun my-auto-insert-paren ()
+  (defun my/auto-insert-paren ()
     "Auto close matched parentheses."
     (interactive)
     (condition-case nil
         (progn
           (scan-sexps (point) -1)
           (insert ")")
-          (my-auto-insert-paren))
+          (my/auto-insert-paren))
       (error (delete-char -1))))
   )
 
@@ -647,7 +647,7 @@ Use CREATE-TEMP-F for creating temp copy."
     (if python-cmd (run-python python-cmd t nil)))
 
   (deh-add-hook python-mode-hook
-    (my-prog-mode-hook)
+    (my/prog-mode-hook)
     ;; Avoid mysterious "Arithmetric error", bug:
     ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=15975
     (setq python-indent-offset 4)
@@ -715,14 +715,14 @@ Use CREATE-TEMP-F for creating temp copy."
   :config
   (deh-add-hook sh-mode-hook
     ;; (local-unset-key "\C-c\C-o")        ; trigger for `sh-while-getopts'
-    (my-prog-mode-hook)
+    (my/prog-mode-hook)
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
     ))
 
 (deh-package text-mode
   :defer
   :config
-  (deh-add-hook text-mode-hook my-text-mode-hook))
+  (deh-add-hook text-mode-hook my/text-mode-hook))
 
 ;;; tools
 (deh-package gnuplot
@@ -745,7 +745,7 @@ Use CREATE-TEMP-F for creating temp copy."
         graphviz-dot-auto-indent-on-newline nil
         graphviz-dot-toggle-completions t)
 
-  (deh-add-hook graphviz-dot-mode-hook my-prog-mode-hook)
+  (deh-add-hook graphviz-dot-mode-hook my/prog-mode-hook)
 
   (bind-keys
    :map graphviz-dot-mode-map
@@ -792,7 +792,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (deh-package php-doc
     :config
     (setq php-doc-directory "~/src/php_manual/html"
-          php-doc-cachefile (expand-file-name "php-doc" my-data-dir))
+          php-doc-cachefile (expand-file-name "php-doc" my/data-dir))
     (bind-keys
      :map php-mode-map
      ("C-c \t" . php-doc-complete-function)
@@ -808,7 +808,7 @@ Use CREATE-TEMP-F for creating temp copy."
     )
 
   (deh-add-hook php-mode-hook
-    (my-prog-mode-hook)
+    (my/prog-mode-hook)
     ;; (tempo-use-tag-list 'tempo-php-tags)
     (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
     (setq php-beginning-of-defun-regexp "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(")
@@ -832,13 +832,13 @@ Use CREATE-TEMP-F for creating temp copy."
            (shell-command-to-string "php -r 'echo get_include_path();'")))
       (split-string include-path ":"))
     "php include path")
-  (defun my-php-ffap-locate (name)
+  (defun my/php-ffap-locate (name)
     "Find php require or include files"
     (if (string-match "^[a-zA-Z0-9_]+$" name)
         (ffap-locate-file (replace-regexp-in-string "_" "/" name) '(".class.php" ".php") ffap-php-path)
       (ffap-locate-file name t ffap-php-path)))
   (if (featurep 'ffap)
-      (add-to-list 'ffap-alist '(php-mode . my-php-ffap-locate))))
+      (add-to-list 'ffap-alist '(php-mode . my/php-ffap-locate))))
 
 ;;; edit
 (deh-package markdown-mode
@@ -864,7 +864,7 @@ Use CREATE-TEMP-F for creating temp copy."
         TeX-clean-confirm nil
         TeX-show-compilation nil)
   (deh-add-hook 'LaTeX-mode-hook
-    (my-text-mode-hook)
+    (my/text-mode-hook)
     ;; (LaTeX-math-mode 1)
 
     (TeX-PDF-mode t)

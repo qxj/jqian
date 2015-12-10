@@ -103,7 +103,7 @@ Like eclipse's Ctrl+Alt+F."
                 (format-cxx-file x)))))))
 ;;}}}
 
-(defun my-comment-or-uncomment-region (&optional line)
+(defun my/comment-or-uncomment-region (&optional line)
   "Comment or uncomment a line or a region."
   (interactive "P")
   (unless (or line (and mark-active (not (equal (mark) (point)))))
@@ -116,7 +116,7 @@ Like eclipse's Ctrl+Alt+F."
     (call-interactively 'comment-or-uncomment-region)))
 
 ;;{{{ manipulate item
-(defun my-insert-item ()
+(defun my/insert-item ()
   (interactive)
   (let (curr next)
     (beginning-of-line)
@@ -128,7 +128,7 @@ Like eclipse's Ctrl+Alt+F."
            (insert "\n" (buffer-substring (match-beginning 1)
                                           (match-end 1))
                    next ". ")
-           (my-sync-item))
+           (my/sync-item))
           ((looking-at "\\s-*[-+]\\s-*")
            (progn
              (end-of-line)
@@ -139,7 +139,7 @@ Like eclipse's Ctrl+Alt+F."
              (end-of-line)
              (newline-and-indent))))))
 
-(defun my-sync-item ()
+(defun my/sync-item ()
   (interactive)
   (save-excursion
     (beginning-of-line)
@@ -159,14 +159,14 @@ Like eclipse's Ctrl+Alt+F."
 ;;}}}
 
 ;;{{{ polish beginning-of-line & end-of-line (C-a/C-e)
-(defun my-end-of-line ()
+(defun my/end-of-line ()
   "Hack `end-of-line'."
   (interactive)
   (if (eq (point) (line-end-position))
       (skip-chars-backward " \t")
     (move-end-of-line 1)))
 
-(defun my-beginning-of-line ()
+(defun my/beginning-of-line ()
   "Hack `beginning-of-line'."
   (interactive)
   (if (eq (point) (line-beginning-position))
@@ -222,7 +222,7 @@ leaving. bind to \\[vi-merge-lines]."
 (def-redo-command redo 'redo 'undo)
 
 ;;{{{ move and duplicate lines
-(defun my-move-line-up (p)
+(defun my/move-line-up (p)
   "Move current line up."
   (interactive "p")
   (let ((c (current-column)))
@@ -234,7 +234,7 @@ leaving. bind to \\[vi-merge-lines]."
     (forward-line -1)
     (move-to-column c)))
 
-(defun my-move-line-down (p)
+(defun my/move-line-down (p)
   "Move current line down."
   (interactive "p")
   (let ((c (current-column)))
@@ -246,7 +246,7 @@ leaving. bind to \\[vi-merge-lines]."
     (forward-line -1)
     (move-to-column c)))
 
-(defun my-dup-line-down ()
+(defun my/dup-line-down ()
   "Duplicate this line at next line."
   (interactive)
   (let ((c (current-column)))
@@ -258,7 +258,7 @@ leaving. bind to \\[vi-merge-lines]."
     (yank)
     (move-to-column c)))
 
-(defun my-dup-line-down-continued ()
+(defun my/dup-line-down-continued ()
   "Put continued multiple lines into `kill-ring'."
   (interactive)
   (let ((kill-func (if (eq last-command 'ue-select-line-down-continued)
@@ -271,9 +271,9 @@ leaving. bind to \\[vi-merge-lines]."
 ;;}}}
 
 ;;{{{ clone-buffer, bind to "C-x c"
-(defun my-clone-buffer (non-indirect)
+(defun my/clone-buffer (non-indirect)
   "If with prefix argument, clone buffer, other wise, clone
-indirect buffer. bind to \\[my-clone-buffer]."
+indirect buffer. bind to \\[my/clone-buffer]."
   (interactive "P")
   (if non-indirect
       (call-interactively 'clone-buffer)
@@ -317,8 +317,8 @@ Subsequent calls expands the selection to larger semantic unit."
           (forward-sexp)))
       (mark-sexp -1))))
 
-(defun my-switch-scratch ()
-  "switch to *scratch* buffer, bind to \\[my-switch-scratch]."
+(defun my/switch-scratch ()
+  "switch to *scratch* buffer, bind to \\[my/switch-scratch]."
   (interactive)
   (switch-to-buffer "*scratch*"))
 
@@ -331,7 +331,7 @@ Subsequent calls expands the selection to larger semantic unit."
     (call-interactively 'delete-char)))
 
 ;; Source: http://xahlee.org/emacs/emacs_kill-ring.html
-(defun my-delete-word (arg)
+(defun my/delete-word (arg)
   "Delete characters forward until encountering the end of a word.
 With argument, do this that many times.
 
@@ -341,15 +341,15 @@ This command does not push erased text to `kill-ring'."
                              (subword-forward arg)
                            (progn (forward-word arg) (point)))))
 
-(defun my-backward-delete-word (arg)
+(defun my/backward-delete-word (arg)
   "Delete characters backward until encountering the beginning of a word.
 With argument, do this that many times.
 
 This command does not push erased text to `kill-ring'."
   (interactive "p")
-  (my-delete-word (- arg)))
+  (my/delete-word (- arg)))
 
-(defun my-delete-line ()
+(defun my/delete-line ()
   "Delete text from current position to end of line char.
 
 If cursor at beginning or end of a line, delete the last RET."
@@ -360,7 +360,7 @@ If cursor at beginning or end of a line, delete the last RET."
      (save-excursion (move-end-of-line 1) (point)))
     (if be (delete-char 1))))
 
-(defun my-delete-line-backward ()
+(defun my/delete-line-backward ()
   "Delete text between the beginning of the line to the cursor
 position.
 
@@ -438,15 +438,15 @@ newline after “}” or “;” for c-like syntaxes."
            (if currentStateIsCompact
                nil t)) ) ) )
 
-(defun my-display-buffer-path (&optional copy)
+(defun my/display-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
 you call this function by prefix 'C-u', the path will be store
 into `kill-ring'.
 
-\\[my-display-buffer-path]        display buffer's absolute path
-C-u \\[my-display-buffer-path]    copy buffer's absolute path
-C-u 1 \\[my-display-buffer-path]  copy buffer's directory name
-C-u 2 \\[my-display-buffer-path]  copy buffer's basename
+\\[my/display-buffer-path]        display buffer's absolute path
+C-u \\[my/display-buffer-path]    copy buffer's absolute path
+C-u 1 \\[my/display-buffer-path]  copy buffer's directory name
+C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 "
   (interactive
    (list current-prefix-arg))
@@ -468,12 +468,12 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
            (kill-new f)
            (message "Copy path: %s" f))))))
 
-(defun my-revert-buffer ()
+(defun my/revert-buffer ()
   "Revert buffer without prompt."
   (interactive)
   (revert-buffer nil t nil))
 
-(defun my-switch-recent-buffer ()
+(defun my/switch-recent-buffer ()
   "Swith to the recent visited buffer, ingore buffers by
 `ido-ignore-buffers'. Inspired from \\[ido-ignore-item-p]."
   (interactive)
@@ -499,27 +499,27 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
         (switch-to-buffer (car temp-list))
       (message "No proper buffer can be switched to."))))
 
-(defun my-copy-full-file-name ()
+(defun my/copy-full-file-name ()
   "Copy full file name of current-buffer."
   (interactive)
   (let ((file (expand-file-name buffer-file-name)))
     (kill-new file)
     (message "File `%s' copied." file)))
 
-(defun my-set-paste ()
+(defun my/set-paste ()
   "Avoid content indent when paste from clipboard."
   (interactive)
   (fundamental-mode)
   (toggle-truncate-lines 1)
   (setq indent-line-function 'ignore))
 
-(defun my-generate-loaddefs (&optional force-generate autoload-file)
+(defun my/generate-loaddefs (&optional force-generate autoload-file)
   "Auto generate autoloads into '100-loaddefs.el'."
   (interactive "P")
   (require 'autoload)
   (let* ((autoload-file (or autoload-file
-                            (expand-file-name "100-loaddefs.el" my-config-dir)))
-         (files (find-files-in-directory my-startup-dir "\\.el$")))
+                            (expand-file-name "100-loaddefs.el" my/config-dir)))
+         (files (find-files-in-directory my/startup-dir "\\.el$")))
     (when (or force-generate
               (not (file-exists-p autoload-file))
               (some (lambda (f) (file-newer-than-file-p f autoload-file)) files))
@@ -530,15 +530,15 @@ C-u 2 \\[my-display-buffer-path]  copy buffer's basename
       (kill-buffer)
       (load autoload-file))))
 
-(defun my-byte-recompile-directory-recursively (&optional specified)
+(defun my/byte-recompile-directory-recursively (&optional specified)
   "Recompile all the .el files under DIR, if they're not up to
 date. It can also be run from the command line:
 
-$ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
+$ emacs -l ~/.emacs -batch -f my/byte-recompile-directory-recursively"
   (interactive
    (list current-prefix-arg))
   (let ((spec-dir (if specified (read-directory-name "Byte compile the directory recursively: ")
-                    my-startup-dir)))
+                    my/startup-dir)))
     (dolist (dir (find-subdirs-containing spec-dir "\\.el$"))
       (byte-recompile-directory dir 0))))
 
@@ -558,7 +558,7 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
     (view-mode)
     (rename-buffer (concat "*" doc-name "*"))))
 
-(defun my-count-ce-word (beg end)
+(defun my/count-ce-word (beg end)
   "Count Chinese and English words in marked region."
   (interactive
    (if (and mark-active transient-mark-mode)
@@ -575,7 +575,7 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
     (message (format "Total: %d (cn: %d, en: %d) words, %d bytes."
                      total-word cn-word en-word total-byte))))
 
-(defun my-print-to-pdf (file)
+(defun my/print-to-pdf (file)
   "Print current buffer to a pdf file."
   (interactive
    (list (read-file-name "Choose a filename: ")))
@@ -591,11 +591,11 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
     (delete-file psfile)
     (message "Saved to: %s" pdffile)))
 
-(defun my-insert-date ()
+(defun my/insert-date ()
   (interactive)
   (insert (format-time-string "%c" (current-time))))
 
-(defun my-swap-windows ()
+(defun my/swap-windows ()
   "If you have 2 windows, it swaps them."
   (interactive)
   (if (/= (count-windows) 2)
@@ -612,16 +612,16 @@ $ emacs -l ~/.emacs -batch -f my-byte-recompile-directory-recursively"
       (set-window-start w2 s1)))
   (other-window 1))
 
-(setq my-default-mode-line-modes mode-line-modes)
-(defun my-toggle-mode-line ()
+(setq my/default-mode-line-modes mode-line-modes)
+(defun my/toggle-mode-line ()
   "toggle minor modes display on mode-line"
   (interactive)
   (if (not (equal mode-line-modes (concat "(" mode-name ")")))
       (setq mode-line-modes (concat "(" mode-name ")"))
-    (setq mode-line-modes my-default-mode-line-modes))
+    (setq mode-line-modes my/default-mode-line-modes))
   (force-mode-line-update))
 
-(defun my-custom-file ()
+(defun my/custom-file ()
   "Find and open `custom-file' quickly.
 
 All deh-sections defined in `custom-file' will overide the later deh-sections with the same name (they are loaded after 10-custom.el)."
