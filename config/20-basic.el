@@ -31,7 +31,14 @@
   (setq browse-kill-ring-highlight-current-entry t))
 
 ;;; mode line
+(deh-package smart-mode-line
+  :config
+  (setq sml/theme 'dark)
+  (setq sml/no-confirm-load-theme t)
+  (sml/setup))
+
 (deh-section mode-line
+  :disabled
   (size-indication-mode 1)
   ;; (setq-default mode-line-buffer-identification (propertized-buffer-identification "%b"))
 
@@ -146,9 +153,7 @@ mouse-3: Remove current window from display")
    (" "     . dired-count-directory-size)
    ("E"     . dired-w3m-visit)
    ;; ("!"     . dired-do-shell-command)
-   ("z"     . dired-compress-directory)
-   ("s"     . one-key-menu-dired-sort)
-   ("/"     . one-key-menu-dired-filter))
+   ("z"     . dired-compress-directory))
 
   ;;# hooks
   (deh-add-hook dired-load-hook
@@ -242,27 +247,6 @@ mouse-3: Remove current window from display")
     (interactive)
     (dired-sort-other (concat dired-listing-switches "")))
 
-  ;; one-key functions
-  (defun one-key-menu-dired-sort ()
-    "The `one-key' menu for DIRED-SORT."
-    (interactive)
-    (one-key-menu
-     "DIRED-SORT"
-     '((("s" . "Size")          . dired-sort-size)
-       (("x" . "Extension")     . dired-sort-extension)
-       (("n" . "Name")          . dired-sort-name)
-       (("t" . "Modified Time") . dired-sort-time)
-       (("u" . "Access Time")   . dired-sort-utime)
-       (("c" . "Create Time")   . dired-sort-ctime))
-     t))
-  (defun one-key-menu-dired-filter ()
-    "The `one-key' menu for DIRED-FILTER."
-    (interactive)
-    (one-key-menu
-     "DIRED-SORT"
-     '((("r" . "Filter by regexp")    . ywb-dired-filter-regexp)
-       (("." . "Filter by extension") . ywb-dired-filter-extension))
-     t))
 
   (defun ywb-dired-filter-regexp (regexp &optional arg)
     (interactive
@@ -325,51 +309,43 @@ run command asynchronously. Originally defined in dired-aux.el"
 
 (deh-package helm ;; http://tuhdo.github.io/helm-intro.html
   :diminish helm-mode
+  ;; :bind-keymap* ("C-c h" . helm-command-prefix)
   :bind
   ("M-x" . helm-M-x)
   ("M-y" . helm-show-kill-ring)
   ("C-x b" . helm-mini)
   ("C-x C-f" . helm-find-files)
-  :bind*
-  ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-  ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-  ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-  ("C-c h" . helm-command-prefix)
-  ("C-c h i" . helm-semantic-or-imenu)
-  ("C-c h m" . helm-man-woman)
-  ("C-c h /" . helm-find)
-  ("C-c h l" . heml-locate)
-  ("C-c h a" . helm-apropos)
-  ("C-c h o" . helm-occur)
-  ("C-c h <tab>" . helm-lisp-completion-at-point)
-  ("C-c h b" . helm-resume)
-  ("C-c h x" . helm-register)
   ("C-h SPC" . helm-all-mark-rings)
   :init
   (require 'helm-config)
-  (global-unset-key (kbd "C-x c"))
+  ;; (global-unset-key (kbd "C-x c"))
+  (helm-mode)
+  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
+  :config
+  (bind-keys
+   :map minibuffer-local-map
+   ("C-c C-l" . helm-minibuffer-history))
 
-  (deh-package helm-projectile
-    :bind
-    ("C-c h p" . helm-projectile))
-  (deh-package helm-eshell
-    :config
-    (add-hook 'eshell-mode-hook
-	      #'(lambda ()
-		  (define-key eshell-mode-map
-		    (kbd "C-c C-l")  'helm-eshell-history))))
-  (deh-package helm-swoop
-    :bind
-    ("C-c h s" . helm-swoop))
+  (bind-keys
+   :map helm-map
+   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+   ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
+   ("C-z"   . helm-select-action))            ; list actions using C-z
 
-  (deh-package helm-descbinds
-    :defer t
-    :bind
-    ("C-h b" . helm-descbinds)
-    ("C-h w" . helm-descbinds)
-    :init
-    (helm-descbinds-mode))
-
+  (bind-keys
+   :map helm-command-map
+   ("i" . helm-semantic-or-imenu)
+   ("m" . helm-man-woman)
+   ("/" . helm-find)
+   ("l" . helm-locate)
+   ("a" . helm-apropos)
+   ("o" . helm-occur)
+   ("<tab>" . helm-lisp-completion-at-point)
+   ("b" . helm-resume)
+   ("x" . helm-register)
+   ("p" . helm-projectile)
+   ("s" . helm-swoop)
+   )
 
   (when (executable-find "curl")
     (setq helm-google-suggest-use-curl-p t))
@@ -386,14 +362,14 @@ run command asynchronously. Originally defined in dired-aux.el"
 
   ;; enable fuzzy matching
   (setq helm-M-x-fuzzy-match t  	; helm-M-x
-	helm-buffers-fuzzy-matching t	; helm-mini
-	helm-recentf-fuzzy-match    t	; helm-mini
-	helm-semantic-fuzzy-match t 	; helm-semantic-or-imenu
-	helm-imenu-fuzzy-match    t	; helm-semantic-or-imenu
-	helm-locate-fuzzy-match t	; helm-locate
-	helm-apropos-fuzzy-match t      ; helm-apropos
-	helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
-	)
+        helm-buffers-fuzzy-matching t	; helm-mini
+        helm-recentf-fuzzy-match    t	; helm-mini
+        helm-semantic-fuzzy-match t 	; helm-semantic-or-imenu
+        helm-imenu-fuzzy-match    t	; helm-semantic-or-imenu
+        helm-locate-fuzzy-match nil ; helm-locate
+        helm-apropos-fuzzy-match t      ; helm-apropos
+        helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
+        )
 
   (setq helm-candidate-number-limit 100)
   ;; From https://gist.github.com/antifuchs/9238468
@@ -407,15 +383,33 @@ run command asynchronously. Originally defined in dired-aux.el"
         helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
         helm-ff-skip-boring-files t
         helm-ff-file-name-history-use-recentf t)
-  (helm-mode)
-  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
 
-  :config
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+  (deh-package helm-projectile
+    :defer)
 
-  (define-key minibuffer-local-map (kbd "C-c C-l") 'helm-minibuffer-history)
+  (deh-package helm-eshell
+    :config
+    (add-hook 'eshell-mode-hook
+              #'(lambda ()
+                  (define-key eshell-mode-map
+                    (kbd "C-c C-l")  'helm-eshell-history))))
+
+  (deh-package helm-swoop
+    :bind
+    ("M-i" . helm-swoop)
+    ("C-c M-i" . helm-multi-swoop)
+    ("C-x M-i" . helm-multi-swoop-all)
+    :config
+    (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
+    (bind-key "M-i" 'helm-multi-swoop-all-from-helm-swoop helm-swoop-map)
+    )
+
+  (deh-package helm-descbinds
+    :defer t
+    :bind
+    ("C-h w" . helm-descbinds)
+    :init
+    (helm-descbinds-mode))
   )
 
 (deh-package ido
@@ -587,7 +581,6 @@ run command asynchronously. Originally defined in dired-aux.el"
           "~/bin/"
           "~/")))
 
-
 (deh-package smex
   :disabled
   :commands smex-initialize
@@ -611,24 +604,9 @@ run command asynchronously. Originally defined in dired-aux.el"
   ;; (global-set-key (kbd "C-x C-b") 'ibuffer)
   (bind-keys
    :map ibuffer-mode-map
-   ("s"  . one-key-menu-ibuffer-sort)
    ("r"  . ibuffer-rename-buffer)
    ("C-x C-f"  . ibuffer-find-file)
    (" "  . scroll-up))
-
-  (defun one-key-menu-ibuffer-sort ()
-    "The `one-key' menu for IBUFFER-SORT."
-    (interactive)
-    (one-key-menu
-     "IBUFFER-SORT"
-     '((("a" . "Alphabetic") . ibuffer-do-sort-by-alphabetic)
-       (("f" . "File Name")  . ibuffer-do-sort-by-file-name)
-       (("r" . "Recenctly")  . ibuffer-do-sort-by-recency)
-       (("m" . "Major Mode") . ibuffer-do-sort-by-major-mode)
-       (("n" . "Mode Name")  . ibuffer-do-sort-by-mode-name)
-       (("s" . "File Size")  . ibuffer-do-sort-by-size)
-       (("p" . "File Name/Process") . ibuffer-do-sort-by-filename/process))
-     t))
 
   (define-ibuffer-sorter file-name
     "Sort buffers by associated file name"
@@ -659,36 +637,39 @@ run command asynchronously. Originally defined in dired-aux.el"
 
   (deh-add-hook ibuffer-mode-hook
     (require 'ibuf-ext nil t)
-    (ibuffer-switch-to-saved-filter-groups "default")))
+    (ibuffer-switch-to-saved-filter-groups "default"))
 
-(deh-package ibuf-ext
-  :defer
-  :config
-  (setq ibuffer-saved-filter-groups
-        '(("default"
-           ("*buffers*" (or (mode . term-mode)
-                            (name . "^\\*gud")
-                            (name . "^\\*scratch")
-                            ;; slime
-                            (name . "^\\*slime-repl")
-                            (mode . message-mode)))
-           ("programming" (or (mode . c++-mode)
-                              (mode . c-mode)
-                              (mode . makefile-mode)))
-           ("script" (or (mode . python-mode)
-                         (mode . sh-mode)
-                         (mode . perl-mode)
-                         (mode . org-mode)
-                         (mode . LaTeX-mode)))
-           ("web" (or  (mode . html-mode)
-                       (mode . css-mode)
-                       (mode . php-mode)
-                       (mode . javascript-mode)
-                       (mode . js2-mode)))
-           ("elisp" (or (mode . emacs-lisp-mode)
-                        (mode . lisp-interaction-mode)))
-           ("dired" (mode . dired-mode))
-           ("*others*" (name . "\\*.*\\*"))))))
+  (deh-package ibuf-ext
+    :defer
+    :config
+    (setq ibuffer-saved-filter-groups
+          '(("default"
+             ("*buffers*" (or (mode . term-mode)
+                              (name . "^\\*gud")
+                              (name . "^\\*scratch")
+                              ;; slime
+                              (name . "^\\*slime-repl")
+                              (mode . message-mode)))
+             ("programming" (or (mode . c++-mode)
+                                (mode . c-mode)
+                                (mode . makefile-mode)))
+             ("script" (or (mode . python-mode)
+                           (mode . sh-mode)
+                           (mode . perl-mode)
+                           (mode . org-mode)
+                           (mode . LaTeX-mode)))
+             ("web" (or  (mode . html-mode)
+                         (mode . css-mode)
+                         (mode . php-mode)
+                         (mode . javascript-mode)
+                         (mode . js2-mode)))
+             ("elisp" (or (mode . emacs-lisp-mode)
+                          (mode . lisp-interaction-mode)))
+             ("dired" (mode . dired-mode))
+             ("*others*" (name . "\\*.*\\*"))))))
+  )
+
+
 
 (deh-package uniquify
   :config
@@ -1157,3 +1138,10 @@ run command asynchronously. Originally defined in dired-aux.el"
           choice))))
   (defalias 'imenu--completion-buffer 'ido-imenu-completion)
   )
+
+(deh-package guide-key
+  :diminish guide-key-mode
+  :config
+  (setq guide-key/guide-key-sequence
+        '("C-x r" "C-x v" "C-x 4" "C-c" "C-c c"))
+  (guide-key-mode 1))
