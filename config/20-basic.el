@@ -33,7 +33,6 @@
 
 ;;; mode line
 (deh-package smart-mode-line
-  :defer
   :config
   (setq sml/theme 'dark)
   (setq sml/no-confirm-load-theme t)
