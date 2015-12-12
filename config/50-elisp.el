@@ -28,10 +28,14 @@
        ("^>.*" . font-lock-warning-face)
        ("^D.*" . font-lock-type-face)))))
 
-(deh-package bookmark+
-  :bind*
-  ("C-c m" . bookmark-map)
-  ("C-c u" . bmkp-jump-map)
+(deh-package bookmark+-bmu
+  ;; :bind*
+  ;; ("C-c m" . bookmark-map)
+  ;; ("C-c u" . bmkp-jump-map)
+  :init
+  (use-package bookmark+-mac)
+  (use-package bookmark+-lit)
+  (use-package bookmark+-1)
   )
 
 (deh-package desktop
