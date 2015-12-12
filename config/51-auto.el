@@ -46,6 +46,8 @@
   (custom-set-faces '(sp-pair-overlay-face ((t ())))))
 
 (deh-package yasnippet
+  ;; You may compile all directories in the list `yas-snippet-dirs' with the
+  ;; `yas-recompile-all' function.
   :config
   (setq yas-snippet-dirs my/snippet-dir)
   (yas-load-directory yas-snippet-dirs)
