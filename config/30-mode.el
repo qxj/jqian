@@ -848,9 +848,7 @@ Use CREATE-TEMP-F for creating temp copy."
   (bind-keys*
    :map markdown-mode-map
    ("C-M-f"  . forward-sexp)
-   ("C-M-b"  . backward-sexp)
-   ("M-p"    . pager-row-up)
-   ("M-n"    . pager-row-down)))
+   ("C-M-b"  . backward-sexp)))
 
 (deh-package auctex
   :disabled

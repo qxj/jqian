@@ -28,7 +28,11 @@
        ("^>.*" . font-lock-warning-face)
        ("^D.*" . font-lock-type-face)))))
 
-(deh-package bookmark+)
+(deh-package bookmark+
+  :bind*
+  ("C-c m" . bookmark-map)
+  ("C-c u" . bmkp-jump-map)
+  )
 
 (deh-package desktop
   :config
@@ -130,16 +134,21 @@
   :commands (bm-toggle bm-next bm-previous bm-show bm-show-all
                        bm-toggle-cycle-all-buffers)
   :bind*
-  ("C-c b b" . bm-toggle)
-  ("C-c b n" . bm-next)
-  ("C-c b p" . bm-previous)
-  ("C-c b s" . bm-show)
-  ("C-c b l" . bm-show)
-  ("C-c b a" . bm-show-all)
-  ("C-c b t" . bm-toggle-cycle-all-buffers)
+  ("C-c b" . bm-prefix-map)
   ;; mouse setting
   ("<left-margin> <mouse-2>" . bm-toggle-mouse)
   ("<left-margin> <mouse-3>" . bm-next-mouse)
+  :init
+  (bind-keys
+   :prefix-map bm-prefix-map
+   :prefix "C-c b"
+   ("b" . bm-toggle)
+   ("n" . bm-next)
+   ("p" . bm-previous)
+   ("s" . bm-show)
+   ("l" . bm-show)
+   ("a" . bm-show-all)
+   ("t" . bm-toggle-cycle-all-buffers))
   :config
   (setq bm-cycle-all-buffers nil
         bm-highlight-style (if window-system

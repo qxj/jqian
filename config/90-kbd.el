@@ -101,6 +101,7 @@
    ("d" . deh-locate)
    ("f" . flycheck-mode)
    ("i" . ispell-word)
+   ("l" . global-linum-mode)
    ("m" . desktop-menu)
    ("n" . my/clone-buffer)
    ("t" . auto-insert)
@@ -115,3 +116,11 @@
 (bind-keys
  :map minibuffer-local-map
  ("\t" . comint-dynamic-complete))
+
+(deh-package guide-key
+  :diminish guide-key-mode
+  :config
+  (setq guide-key/guide-key-sequence
+        '("C-x c" "C-x r" "C-x v" "C-x 4"
+          "C-c b" "C-c c" "C-c p"))
+  (guide-key-mode 1))

@@ -750,7 +750,7 @@ See also `helm-do-grep-1'."
 ;;; Better scrolling
 
 (deh-package pager
-  :bind
+  :bind*
   ("C-v"  .  pager-page-down)
   ("M-v"  .  pager-page-up)
   ("<up>" .  pager-row-up)
@@ -759,38 +759,6 @@ See also `helm-do-grep-1'."
   ("M-n"  .  pager-row-down)
   :config
   (setq scroll-margin 1) ; scroll-margin conflict with pager-mode, it should be 0
-
-  ;; Some individual keybind overrides
-  (deh-after-load "info"
-    (bind-keys
-     :map Info-mode-map
-     ("M-p" . pager-row-up)
-     ("M-n" . pager-row-down)))
-  (deh-after-load "help-mode"
-    (bind-keys
-     :map help-mode-map
-     ("M-p" . pager-row-up)
-     ("M-n" . pager-row-down)))
-  (deh-after-load "man"
-    (bind-keys
-     :map Man-mode-map
-     ("M-p" . pager-row-up)
-     ("M-n" . pager-row-down)))
-  (deh-after-load "woman"
-    (bind-keys
-     :map woman-mode-map
-     ("M-p" . pager-row-up)
-     ("M-n" . pager-row-down)))
-  (deh-after-load "w3m"
-    (bind-keys
-     :map w3m-mode-map
-     ("M-p" . pager-row-up)
-     ("M-n" . pager-row-down)))
-  (deh-after-load "markdown"
-    (bind-keys
-     :map markdown-mode-map
-     ("M-p" . pager-row-up)
-     ("M-n" . pager-row-down)))
   )
 
 (deh-package on-screen
@@ -1174,10 +1142,3 @@ See also `helm-do-grep-1'."
           choice))))
   (defalias 'imenu--completion-buffer 'ido-imenu-completion)
   )
-
-(deh-package guide-key
-  :diminish guide-key-mode
-  :config
-  (setq guide-key/guide-key-sequence
-        '("C-x r" "C-x v" "C-x c" "C-x 4" "C-c c" "C-c p"))
-  (guide-key-mode 1))
