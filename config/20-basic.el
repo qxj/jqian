@@ -315,6 +315,7 @@ run command asynchronously. Originally defined in dired-aux.el"
   ("M-x" . helm-M-x)
   ("M-y" . helm-show-kill-ring)
   ("C-x b" . helm-mini)
+  ("C-x C-b" . helm-buffer-list)
   ("C-x C-f" . helm-find-files)
   ("C-h SPC" . helm-all-mark-rings)
   :init
