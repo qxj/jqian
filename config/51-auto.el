@@ -89,7 +89,41 @@
       (when (string-match (concat "^" root) bfn)
         (yas-load-snippet-buffer)))) )
 
+(deh-package completion
+  :disabled
+  :config
+  (deh-after-load "semantic"
+    (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function))
+  (setq completion-cycle-threshold 5)
+  (add-to-list 'completion-styles 'substring)
+  (add-to-list 'completion-styles 'initials t)
+  (add-to-list 'completion-at-point-functions
+               (lambda ()
+                 (unless (minibufferp) (auto-complete))))
+  )
+
+(deh-package company
+  :diminish (company-mode . "Cy")
+  :init
+  (add-hook 'after-init-hook 'global-company-mode)
+  :config
+  (bind-keys
+   :map company-active-map
+   ("C-n" . company-select-next)
+   ("C-p" . company-select-previous))
+
+  (push (apply-partially
+         #'cl-remove-if
+         (lambda (c)
+           (or (string-match-p "[^\x00-\x7F]+" c) ;remove those non-ANSII candidates.
+               (string-match-p "[0-9]+" c)        ;remove any completion containing numbers.
+               (if (equal major-mode "org")       ;remove any candidate which is longer than 15 in org-mode
+                   (>= (length c) 15)))))
+        company-transformers)
+  )
+
 (deh-package auto-complete
+  :disabled
   :config
   (require 'auto-complete-config)
   ;; specify a file stores data of candidate suggestion
@@ -293,19 +327,6 @@ indent line."
                (and ac-completing
                     (memq beyond-autopair ac-trigger-commands-on-completing)))))))))
   ;; (deh-after-load "autopair" (ac-settings-4-autopair))
-  )
-
-(deh-package completion
-  :disabled
-  :config
-  (deh-after-load "semantic"
-    (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function))
-  (setq completion-cycle-threshold 5)
-  (add-to-list 'completion-styles 'substring)
-  (add-to-list 'completion-styles 'initials t)
-  (add-to-list 'completion-at-point-functions
-               (lambda ()
-                 (unless (minibufferp) (auto-complete))))
   )
 
 ;;; abbrev

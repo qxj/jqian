@@ -328,6 +328,8 @@
    ("<left>"  . help-go-back)
    ("<right>" . help-go-forward) ))
 
+(deh-package help-fns+)
+
 (deh-package view
   :bind
   ("C-c c v" . view-mode)
@@ -685,7 +687,7 @@
 ;; projects. If you want to mark a folder manually as a project just
 ;; create an empty .projectile file in it.
 (deh-package projectile
-  :diminish projectile-mode
+  :diminish (projectile-mode . "proj")
   :bind*
   ("C-c p f" . projectile-find-file)
   ("C-c p s" . projectile-switch-project)

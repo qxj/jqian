@@ -641,10 +641,10 @@ Use CREATE-TEMP-F for creating temp copy."
 ;;; scripts setting
 (deh-package python
   :config
-  ;; Start an inferior python process, wordaround for eldoc error
-  (let ((python-cmd (if (executable-find python-shell-interpreter)
-                        (python-shell-parse-command))))
-    (if python-cmd (run-python python-cmd t nil)))
+  ;;; Start an inferior python process, wordaround for eldoc error
+  ;; (let ((python-cmd (if (executable-find python-shell-interpreter)
+  ;;                       (python-shell-parse-command))))
+  ;;   (if python-cmd (run-python python-cmd t nil)))
 
   (deh-add-hook python-mode-hook
     (my/prog-mode-hook)
@@ -657,10 +657,6 @@ Use CREATE-TEMP-F for creating temp copy."
 
   (deh-package doctest-mode)
 
-  (deh-package flymake-python-pyflakes
-    :if (executable-find "pyflakes")
-    :config (add-hook 'python-mode-hook 'flymake-python-pyflakes-load))
-
   ;; # Preparation:
   ;; 1. $ sudo pip install jedi epc sexpdata
   ;; 2. emacs-epc, emacs-deferred, emacs-ctable (copy .el into `load-path`)
@@ -669,6 +665,7 @@ Use CREATE-TEMP-F for creating temp copy."
   ;; http://tkf.github.io/emacs-jedi/released/#install
   ;;
   (deh-package jedi
+    :disabled
     :commands (jedi:setup jedi-direx:pop-to-buffer)
     :init
     (setq jedi:setup-keys t             ;set it before jedi loaded
@@ -706,9 +703,37 @@ Use CREATE-TEMP-F for creating temp copy."
     (ropemacs-mode t)
     ;; (deh-package pycomplete)
     )
+
+  ;;# Preparation:
+  ;; 1. $ sudo pip install virtualenv ipython autopep8 flake8 jedi
+  ;;
+  ;; http://segmentfault.com/a/1190000004165173
+  ;;
+  (deh-package elpy
+    :config
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    ;; (add-hook 'elpy-mode-hook 'flycheck-mode)
+
+    (elpy-enable)
+    (elpy-use-ipython)
+    )
+
+  (deh-package py-autopep8
+    :if (executable-find "autopep8")
+    :config
+    (add-hook 'python-mode-hook 'py-autopep8-enable-on-save))
+
+  (deh-package ein
+    :commands (ein:notebooklist-open
+               ein:notebooklist-new-notebook
+               ein:junk-new)
+    )
   )
 
-(deh-package scala-mode2)
+(deh-package scala-mode2
+  ;; http://www.47deg.com/blog/scala-development-with-emacs
+  ;; http://www.troikatech.com/blog/2014/11/26/ensime-and-emacs-as-a-scala-ide
+  )
 
 (deh-package sh-script
   :defer
