@@ -104,13 +104,13 @@
 
 (deh-package company
   :diminish (company-mode . "Cy")
-  :init
-  (add-hook 'after-init-hook 'global-company-mode)
   :config
   (bind-keys
    :map company-active-map
    ("C-n" . company-select-next)
    ("C-p" . company-select-previous))
+
+  (add-hook 'after-init-hook 'global-company-mode)
 
   (push (apply-partially
          #'cl-remove-if

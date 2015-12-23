@@ -60,7 +60,7 @@ information, then you can quickly locate each package by
   (interactive
    (list (funcall (if (fboundp 'ido-completing-read)
                       'ido-completing-read 'completing-read)
-                  "Locate package: " deh--sections)))
+                  "Locate package: " (mapcar (lambda (s) (car s)) deh--sections))))
   (let ((section (assoc-string name deh--sections))
         done)
     (if (and section
