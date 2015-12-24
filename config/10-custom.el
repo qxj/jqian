@@ -9,8 +9,9 @@
                                     ("." . browse-url-generic))
       browse-url-generic-program "google-chrome")
 
-(setq find-function-C-source-directory "~/src/emacs-23.2/src/"
-      find-function-source-path '("~/src/emacs-23.2/lisp/"))
+;;# NOTE affect `require' function
+;; (setq find-function-C-source-directory "~/src/emacs-23.2/src/"
+;;       find-function-source-path '("~/src/emacs-23.2/lisp/"))
 
 (setq-default default-directory (expand-file-name "~/"))
 
@@ -337,7 +338,7 @@ current single line instead."
 
   (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
     "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-    (flet ((process-list ())) ad-do-it))
+    (cl-flet ((process-list ())) ad-do-it))
 
   (defadvice kill-new (before kill-new-push-xselection-on-kill-ring activate)
     "Before putting new kill onto the kill-ring, add the
