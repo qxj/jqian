@@ -90,14 +90,13 @@
   :commands protobuf-mode)
 
 ;;; web related
-(deh-package multi-web-mode
+(deh-package web-mode
+  :mode (("\\.html?\\'" . web-mode)
+         ("\\.tpl\\.php\\'" . web-mode))
   :config
-  (setq mweb-default-major-mode 'html-mode)
-  (setq mweb-tags '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-                    (js-mode "<script[^>]*>" "</script>")
-                    (css-mode "<style[^>]*>" "</style>")))
-  (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
-  (multi-web-global-mode 1)
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2)
   )
 
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
