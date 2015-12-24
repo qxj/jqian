@@ -920,3 +920,19 @@
 
 (deh-package sdcv-mode
   :bind ("M-1" . sdcv-search))
+
+(deh-package evernote-mode
+  :load-path "~/local/emacs-evernote-mode"
+  :bind
+  ("C-c e c" . evernote-create-note)
+  ("C-c e o" . evernote-open-note)
+  ("C-c e s" . evernote-search-notes)
+  ("C-c e S" . evernote-do-saved-search)
+  ("C-c e w" . evernote-write-note)
+  ("C-c e p" . evernote-post-region)
+  ("C-c e b" . evernote-browser)
+  :config
+  ;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8")) ; option
+  (setq evernote-mode-hook
+        '(lambda () (outline-minor-mode t)))
+  )
