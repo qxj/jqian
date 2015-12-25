@@ -332,8 +332,9 @@ the directories in the INCLUDE environment variable."
 
 (deh-package irony
   :config
-  (dolist (hook '(c++-mode-hook c-mode-hook objc-mode-hook))
-    (add-hook hook 'irony-mode))
+  ;; (dolist (hook '(c++-mode-hook c-mode-hook objc-mode-hook))
+  ;;   (add-to-list hook 'irony-mode))
+  (add-to-list 'c++-mode-hook 'irony-mode)
 
   ;; replace the `completion-at-point' and `complete-symbol' bindings in
   ;; irony-mode's buffers by irony-mode's asynchronous function
@@ -347,13 +348,11 @@ the directories in the INCLUDE environment variable."
   (deh-package company-irony
     :config
     (eval-after-load 'company
-      '(add-to-list 'company-backends 'company-irony))
-    )
+      '(add-to-list 'company-backends 'company-irony)))
 
   (deh-package company-irony-c-headers
     :config
     (eval-after-load 'company
-      '(add-to-list
-        'company-backends 'company-irony-c-headers))
+      '(add-to-list 'company-backends 'company-irony-c-headers))
     )
   )

@@ -89,16 +89,6 @@
   :if (executable-find "protoc")
   :commands protobuf-mode)
 
-;;; web related
-(deh-package web-mode
-  :mode (("\\.html?\\'" . web-mode)
-         ("\\.tpl\\.php\\'" . web-mode))
-  :config
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2)
-  )
-
 ;;# emacs -q --batch --eval '(byte-compile-file "js2.el")'
 (deh-package js2-mode
   :mode (("\\.js$" . js2-mode)
@@ -109,47 +99,40 @@
     (setq forward-sexp-function nil
           js2-basic-offset 2)))
 
+;;; web related
+(deh-package web-mode
+  :mode (("\\.html?$" . web-mode)
+         ("\\.php$" . php-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2)
+
+  (deh-add-hook web-mode-hook
+    (my/prog-mode-hook)
+    (flycheck-select-checker my/web)
+    (flycheck-mode t))
+
+  (deh-after-load "flychecker"
+    ;; Redefine PHP flychecker for web-mode, refer flycheck.el
+    (flycheck-define-checker my/web
+      "A PHP syntax checker using the PHP command line interpreter.
+
+See URL `http://php.net/manual/en/features.commandline.php'."
+      :command ("php" "-l" "-d" "error_reporting=E_ALL" "-d" "display_errors=1"
+                "-d" "log_errors=0" source)
+      :error-patterns
+      ((error line-start (or "Parse" "Fatal" "syntax") " error" (any ":" ",") " "
+              (message) " in " (file-name) " on line " line line-end))
+      :modes (php-mode php+-mode web-mode)))
+  )
+
 (deh-package php-mode
-  :mode ("\\.php$" . php-mode)
+  ;; :mode ("\\.php$" . php-mode)
   :commands (php-mode)
   :config
-  (deh-package php-doc
-    :config
-    (setq php-doc-directory "~/src/php_manual/html"
-          php-doc-cachefile (expand-file-name "php-doc" my/data-dir))
-    (bind-keys
-     :map php-mode-map
-     ("C-c \t" . php-doc-complete-function)
-     ("C-c d"  . php-doc))
-    (set (make-local-variable 'eldoc-documentation-function)
-         'php-doc-eldoc-function)
-    (eldoc-mode 1)
-    ;; hack php-doc.el, in order to select php doc buffer automatically.
-    (defun php-doc-w3m (url &rest ignore)
-      (let ((buf (get-buffer-create "*php doc*")))
-        (pop-to-buffer buf nil t)
-        (w3m-goto-url url)))
-    )
+  (add-hook 'php-mode-hook 'my/prog-mode-hook)
 
-  (deh-add-hook php-mode-hook
-    (my/prog-mode-hook)
-    ;; (tempo-use-tag-list 'tempo-php-tags)
-    ;; (font-lock-add-keywords nil gtkdoc-font-lock-keywords)
-    ;; (setq php-beginning-of-defun-regexp "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(")
-    ;; (setq php-imenu-generic-expression
-    ;;       '(
-    ;;         ("Private Methods"
-    ;;          "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?private\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-    ;;         ("Protected Methods"
-    ;;          "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?protected\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-    ;;         ("Public Methods"
-    ;;          "^\\s-*\\(?:\\(?:abstract\\|final\\)\\s-+\\)?public\\s-+\\(?:static\\s-+\\)?function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-    ;;         ("Classes"
-    ;;          "^\\s-*class\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*" 1)
-    ;;         (nil
-    ;;          "^\\s-*\\(?:\\(?:abstract\\|final\\|private\\|protected\\|public\\|static\\)\\s-+\\)*function\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)\\s-*(" 1)
-    ;;         ))
-    )
   ;; ffap settings
   (defvar ffap-php-path
     (let ((include-path
@@ -163,6 +146,24 @@
       (ffap-locate-file name t ffap-php-path)))
   (if (featurep 'ffap)
       (add-to-list 'ffap-alist '(php-mode . my/php-ffap-locate))))
+
+(deh-package php-doc
+  :config
+  (setq php-doc-directory "~/src/php_manual/html"
+        php-doc-cachefile (expand-file-name "php-doc" my/data-dir))
+  (bind-keys
+   :map php-mode-map
+   ("C-c \t" . php-doc-complete-function)
+   ("C-c d"  . php-doc))
+  (set (make-local-variable 'eldoc-documentation-function)
+       'php-doc-eldoc-function)
+  (eldoc-mode 1)
+  ;; hack php-doc.el, in order to select php doc buffer automatically.
+  (defun php-doc-w3m (url &rest ignore)
+    (let ((buf (get-buffer-create "*php doc*")))
+      (pop-to-buffer buf nil t)
+      (w3m-goto-url url)))
+  )
 
 
 (deh-package slime-helper
