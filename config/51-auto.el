@@ -104,13 +104,18 @@
 
 (deh-package company
   :diminish (company-mode . "Cy")
+  :bind*
+  (("<tab>" . my/complete-or-indent)
+   ("C-." . company-files))
   :config
   (bind-keys
    :map company-active-map
    ("C-n" . company-select-next)
    ("C-p" . company-select-previous))
 
-  (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-echo-delay 0
+        ;; company-idle-delay 0
+        company-global-modes '(not git-commit-mode))
 
   (push (apply-partially
          #'cl-remove-if
@@ -120,6 +125,16 @@
                (if (equal major-mode "org")       ;remove any candidate which is longer than 15 in org-mode
                    (>= (length c) 15)))))
         company-transformers)
+
+  (global-company-mode)
+  :preface
+  (defun my/complete-or-indent ()
+    "Combine completion and indent actions together."
+    (interactive)
+    (if (looking-at "\\_>")
+        ;; (company-manual-begin)
+        (company-complete-common)
+      (indent-according-to-mode)))
   )
 
 (deh-package auto-complete

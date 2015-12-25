@@ -19,21 +19,19 @@
 ;;; global key binding
 (deh-section kbd-global
   (bind-keys
-   ("C-d"  .  delete-char-or-region)
-   ("<C-delete>"  .  delete-char-or-region)
+   ([remap delete-char]  .  delete-char-or-region)           ;C-d
+   ([remap move-beginning-of-line]  .  my/beginning-of-line) ;C-a
+   ([remap move-end-of-line]  .  my/end-of-line)             ;C-e
+   ([remap kill-line]  .  my/delete-line)                    ;C-k
+   ([remap subword-kill]  .  my/delete-word)                 ;M-d
+   ([remap backward-kill-word] .  my/backward-delete-word) ;M-DEL, <C-backspace>
+
+   ("C-S-k" .  my/delete-line-backward)
    ;; ("C-1"  .  extend-selection)         ; alternative er/expand-region
    ;; ("M-2"  .  extend-selection)
-   ("C-2"  .  set-mark-command)
-   ("M-9"  .  anything)
-   ("C-m"  .  newline-and-indent)
-   ("C-j"  .  newline)
-   ("C-a"  .  my/beginning-of-line)
-   ("C-e"  .  my/end-of-line)
-   ("C-S-k"  .  my/delete-line-backward)
-   ("C-k"  .  my/delete-line)
-   ("M-d"  .  my/delete-word)
-   ("<M-backspace>" .  my/backward-delete-word)
-   ("M-DEL" .  my/backward-delete-word) ; mac os x
+   ("C-2"   .  set-mark-command)
+   ;; ("C-m"  .  newline-and-indent)
+   ;; ("C-j"  .  newline)
    ("C-o"   .  vi-open-next-line)
    ("C-M-o" .  split-line)
    ("C-'"   .  redo)
