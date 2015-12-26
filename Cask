@@ -81,6 +81,7 @@
 (depends-on "multiple-cursors")
 (depends-on "on-screen")
 (depends-on "pallet")
+(depends-on "persistent-scratch")
 (depends-on "php-mode")
 (depends-on "pkg-info")
 (depends-on "popup")

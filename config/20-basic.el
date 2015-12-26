@@ -342,11 +342,11 @@ run command asynchronously. Originally defined in dired-aux.el"
    ("l" . helm-locate)
    ("a" . helm-apropos)
    ("o" . helm-occur)
+   ("s" . helm-swoop)                   ;like occur
    ("<tab>" . helm-lisp-completion-at-point)
    ("b" . helm-resume)
    ("x" . helm-register)
    ("p" . helm-projectile)
-   ("s" . helm-swoop)
    ("g" . helm-do-grep)
    )
 
@@ -385,11 +385,12 @@ run command asynchronously. Originally defined in dired-aux.el"
         helm-autoresize-mode t
         helm-quick-update t
         helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-        helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+        ;; helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
         helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
         helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
         helm-ff-skip-boring-files t
-        helm-ff-file-name-history-use-recentf t)
+        helm-ff-file-name-history-use-recentf t
+        helm-yas-display-key-on-candidate t)
 
   (deh-package helm-projectile
     :defer)
@@ -751,9 +752,9 @@ See also `helm-do-grep-1'."
 ;;; Better scrolling
 
 (deh-package pager
-  :bind*
-  ("C-v"  .  pager-page-down)
-  ("M-v"  .  pager-page-up)
+  :bind
+  ([remap scroll-up-command]  .  pager-page-down) ;C-v
+  ([remap scroll-down-command]  .  pager-page-up) ;M-v
   ("<up>" .  pager-row-up)
   ("M-p"  .  pager-row-up)
   ("<down>" .  pager-row-down)

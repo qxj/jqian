@@ -48,16 +48,17 @@
 (deh-package yasnippet
   ;; You may compile all directories in the list `yas-snippet-dirs' with the
   ;; `yas-recompile-all' function.
+  :diminish yas-minor-mode
   :config
-  (setq yas-snippet-dirs my/snippet-dir)
-  (yas-load-directory yas-snippet-dirs)
   ;; (yas-global-mode 1)
   (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
 
-  (setq yas-wrap-around-region t)
-  (setq yas/indent-line nil)            ; stop auto-indent behavior when expanding snippets
+  (setq yas-installed-snippets-dir my/snippet-dir
+        yas-expand-only-for-last-commands nil
+        yas-key-syntaxes '("w_" "w_." "^ ")
+        yas-wrap-around-region t
+        yas-indent-line nil)            ; stop auto-indent behavior when expanding snippets
 
-  (require 'dropdown-list nil t)
   (setq yas-prompt-functions '(yas-dropdown-prompt
                                yas-ido-prompt
                                yas-completing-prompt))
@@ -73,10 +74,10 @@
 
   (bind-keys
    :map yas-minor-mode-map
-   ("<tab>" . nil)                      ; Remove yas-expand keybind
-   ("<C-tab>" . yas-expand)
-   ("C-c TAB" . yas-expand)
-   ("C-c y" . yas-insert-snippet))      ; List all snippets for current mode
+   ;; ("<C-tab>" . yas-expand)
+   ("C-c <tab>" . yas-expand)
+   ("C-c y" . yas-insert-snippet))        ; List all snippets for current mode
+  (unbind-key "<tab>" yas-minor-mode-map) ; Remove yas-expand keybind
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
@@ -103,19 +104,29 @@
   )
 
 (deh-package company
-  :diminish (company-mode . "Cy")
-  :bind*
-  (("<tab>" . my/complete-or-indent)
-   ("C-." . company-files))
+  ;; :diminish (company-mode . "Cy")
+  :diminish company-mode
+  ;; :bind
+  ;; (("<tab>" . my/complete-or-indent)
+  ;;  ("C-." . company-files))
   :config
   (bind-keys
    :map company-active-map
    ("C-n" . company-select-next)
    ("C-p" . company-select-previous))
+  (bind-keys
+   :map company-mode-map
+   ("<tab>" . my/complete-or-indent)
+   ("<C-tab>" . company-complete-common)
+   ("C-." . company-files))
 
   (setq company-echo-delay 0
         ;; company-idle-delay 0
-        company-global-modes '(not git-commit-mode))
+        ;; company-auto-complete nil
+        company-minimum-prefix-length 2
+        company-tooltip-flip-when-above t
+        company-global-modes '(not git-commit-mode help-mode Info-mode
+                                   view-mode))
 
   (push (apply-partially
          #'cl-remove-if

@@ -687,7 +687,7 @@
 ;; projects. If you want to mark a folder manually as a project just
 ;; create an empty .projectile file in it.
 (deh-package projectile
-  :diminish (projectile-mode . "proj")
+  :diminish (projectile-mode . "Pj")
   :bind*
   ("C-c p f" . projectile-find-file)
   ("C-c p s" . projectile-switch-project)
@@ -936,3 +936,8 @@
   (setq evernote-mode-hook
         '(lambda () (outline-minor-mode t)))
   )
+
+(deh-package persistent-scratch
+  :config
+  (persistent-scratch-setup-default)
+  (persistent-scratch-autosave-mode))
