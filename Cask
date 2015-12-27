@@ -107,6 +107,7 @@
 (depends-on "visual-regexp-steroids")
 (depends-on "web-mode")
 (depends-on "wgrep")
+(depends-on "wgrep-helm")
 (depends-on "whitespace-cleanup-mode")
 (depends-on "window-numbering")
 (depends-on "window-purpose")

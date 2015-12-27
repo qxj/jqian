@@ -420,6 +420,8 @@ run command asynchronously. Originally defined in dired-aux.el"
     ("C-h w" . helm-descbinds)
     :init
     (helm-descbinds-mode))
+
+  (deh-package wgrep-helm)
   )
 
 (deh-package ido
