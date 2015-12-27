@@ -49,12 +49,16 @@
   ;; You may compile all directories in the list `yas-snippet-dirs' with the
   ;; `yas-recompile-all' function.
   :diminish yas-minor-mode
+  :init
+  (with-eval-after-load 'yasnippet
+    (setq yas-snippet-dirs (remq 'yas-installed-snippets-dir yas-snippet-dirs))
+    (add-to-list 'yas-snippet-dirs 'my/snippet-dir)
+    )
   :config
   ;; (yas-global-mode 1)
   (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
 
-  (setq yas-snippet-dirs my/snippet-dir
-        yas-expand-only-for-last-commands nil
+  (setq yas-expand-only-for-last-commands nil
         yas-key-syntaxes '("w_" "w_." "^ ")
         yas-wrap-around-region t
         yas-indent-line nil)            ; stop auto-indent behavior when expanding snippets
@@ -82,13 +86,7 @@
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
     (let ((yas-prompt-functions '(yas-completing-prompt))) ad-do-it))
-
-;;;###autoload
-  (defun yasnippet-reload-after-save ()
-    (let* ((bfn (expand-file-name (buffer-file-name)))
-           (root (expand-file-name yas-snippet-dirs)))
-      (when (string-match (concat "^" root) bfn)
-        (yas-load-snippet-buffer)))) )
+  )
 
 (deh-package completion
   :disabled

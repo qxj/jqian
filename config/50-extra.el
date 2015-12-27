@@ -88,7 +88,7 @@
     (customize-set-variable 'desktop-menu-autosave 500)
 
     ;;# save individual bm repository with different desktops
-    (deh-after-load "bm"
+    (deh-after-load 'bm
       (defun bm-repository-file-of-desktop-menu ()
         (let ((current-desktop (cdr desktop-menu--current-desktop)))
           (if current-desktop
@@ -296,7 +296,8 @@
   (message "Loading file cache...")
   (file-cache-add-directory my/config-dir)
   (file-cache-add-directory-list load-path)
-  (file-cache-add-directory-using-find (expand-file-name "~/works")))
+  ;; (file-cache-add-directory-using-find (expand-file-name "~/works"))
+  )
 
 ;;; Buffer
 (deh-package purpose
@@ -478,10 +479,10 @@
   ;; global key chords
   (key-chord-define-global ",." "<>\C-b")
   ;; key chord in c++-mode
-  (deh-after-load "cc-mode"
+  (deh-after-load 'cc-mode
     (key-chord-define c++-mode-map ",," "<<")
     (key-chord-define c++-mode-map ".." ">>"))
-  (deh-after-load "python"
+  (deh-after-load 'python
     (key-chord-define python-mode-map "''" "\"\"\"\"\"\"\C-b\C-b\C-b"))
   )
 
@@ -856,14 +857,13 @@
     (kill-buffer)
     (jump-to-register :vc-annotate-fullscreen))
 
-  (eval-after-load "vc-annotate"
-    '(progn
-       (defadvice vc-annotate (around fullscreen activate)
-         (window-configuration-to-register :vc-annotate-fullscreen)
-         ad-do-it
-         (delete-other-windows))
+  (deh-after-load "vc-annotate"
+    (defadvice vc-annotate (around fullscreen activate)
+      (window-configuration-to-register :vc-annotate-fullscreen)
+      ad-do-it
+      (delete-other-windows))
 
-       (define-key vc-annotate-mode-map (kbd "q") 'vc-annotate-quit)))
+    (define-key vc-annotate-mode-map (kbd "q") 'vc-annotate-quit))
 
   ;; ignore whitespace
 

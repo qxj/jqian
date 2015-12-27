@@ -113,7 +113,7 @@
     (flycheck-select-checker my/web)
     (flycheck-mode t))
 
-  (deh-after-load "flychecker"
+  (deh-after-load 'flychecker
     ;; Redefine PHP flychecker for web-mode, refer flycheck.el
     (flycheck-define-checker my/web
       "A PHP syntax checker using the PHP command line interpreter.

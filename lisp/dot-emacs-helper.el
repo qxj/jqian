@@ -118,10 +118,10 @@ Example:
 (defsubst deh--stringfy (name)
   (if (symbolp name) (symbol-name name) name))
 
-(defmacro deh-after-load (filename &rest forms)
+(defmacro deh-after-load (file &rest forms)
   "A syntax suger for `eval-after-load' expression."
   (declare (indent 1))
-  `(eval-after-load ,(deh--stringfy filename)
+  `(eval-after-load ,file
      '(progn ,@forms)))
 
 ;; (defalias 'bind-keys 'deh-define-key)

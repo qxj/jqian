@@ -347,7 +347,7 @@ run command asynchronously. Originally defined in dired-aux.el"
    ("b" . helm-resume)
    ("x" . helm-register)
    ("p" . helm-projectile)
-   ("g" . helm-do-grep)
+   ("g" . helm-do-grep-ag)
    )
 
   (bind-keys
@@ -420,31 +420,7 @@ run command asynchronously. Originally defined in dired-aux.el"
     ("C-h w" . helm-descbinds)
     :init
     (helm-descbinds-mode))
-
-  ;; Workaround
-  (defun helm-do-grep ()
-    "Preconfigured helm for grep.
-Contrarily to Emacs `grep', no default directory is given, but
-the full path of candidates in ONLY.
-That allow to grep different files not only in `default-directory' but anywhere
-by marking them (C-<SPACE>). If one or more directory is selected
-grep will search in all files of these directories.
-You can also use wildcard in the base name of candidate.
-If a prefix arg is given use the -r option of grep (recurse).
-The prefix arg can be passed before or after start file selection.
-See also `helm-do-grep-1'."
-    (interactive)
-    (let* ((preselection (or (dired-get-filename nil t)
-                             (buffer-file-name (current-buffer))))
-           (only    (helm-read-file-name
-                     "Search in file(s): "
-                     :marked-candidates t
-                     :preselect (and helm-do-grep-preselect-candidate
-                                     (if helm-ff-transformer-show-only-basename
-                                         (helm-basename preselection)
-                                       preselection))))
-           (prefarg (or current-prefix-arg helm-current-prefix-arg)))
-      (helm-do-grep-1 only prefarg))))
+  )
 
 (deh-package ido
   :disabled
@@ -1053,7 +1029,7 @@ See also `helm-do-grep-1'."
                 '(outline-font-lock-face)
                 nil t)))
 
-  (deh-after-load "outline" (require 'foldout))
+  (deh-after-load 'outline (require 'foldout))
 
   :init
   (defun xwl-hide-body ()

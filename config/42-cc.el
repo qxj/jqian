@@ -346,13 +346,13 @@ the directories in the INCLUDE environment variable."
   (add-hook 'irony-mode-hook 'my/irony-mode-hook)
 
   (deh-package company-irony
+    :after company
     :config
-    (eval-after-load 'company
-      '(add-to-list 'company-backends 'company-irony)))
+    (add-to-list 'company-backends 'company-irony))
 
   (deh-package company-irony-c-headers
+    :after company
     :config
-    (eval-after-load 'company
-      '(add-to-list 'company-backends 'company-irony-c-headers))
+    (add-to-list 'company-backends 'company-irony-c-headers)
     )
   )
