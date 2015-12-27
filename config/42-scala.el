@@ -2,9 +2,11 @@
 
 ;; scala programming environment
 
-(deh-package scala-mode2)
+(deh-package scala-mode2
+  :mode ("\\.\\(scala\\|sbt\\)\\'" . scala-mode))
 
 (deh-package ensime
+  :commands (ensime)
   :config
   (add-hook 'scala-mode-hook 'ensime-scala-mode-hook))
 

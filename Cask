@@ -29,6 +29,7 @@
 (depends-on "dropdown-list")
 (depends-on "ein")
 (depends-on "elpy")
+(depends-on "ensime")
 (depends-on "epc")
 (depends-on "epl")
 (depends-on "ess")
