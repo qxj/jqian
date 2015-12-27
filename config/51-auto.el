@@ -53,7 +53,7 @@
   ;; (yas-global-mode 1)
   (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
 
-  (setq yas-installed-snippets-dir my/snippet-dir
+  (setq yas-snippet-dirs my/snippet-dir
         yas-expand-only-for-last-commands nil
         yas-key-syntaxes '("w_" "w_." "^ ")
         yas-wrap-around-region t
@@ -74,10 +74,10 @@
 
   (bind-keys
    :map yas-minor-mode-map
-   ;; ("<C-tab>" . yas-expand)
    ("C-c <tab>" . yas-expand)
    ("C-c y" . yas-insert-snippet))        ; List all snippets for current mode
-  (unbind-key "<tab>" yas-minor-mode-map) ; Remove yas-expand keybind
+  (unbind-key "<tab>" yas-minor-mode-map) ; Remove yas-expand from <tab> keybind
+  (unbind-key "TAB" yas-minor-mode-map)
 
   (defadvice yas-insert-snippet (around use-completing-prompt activate)
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
@@ -117,16 +117,19 @@
   (bind-keys
    :map company-mode-map
    ("<tab>" . my/complete-or-indent)
-   ("<C-tab>" . company-complete-common)
+   ("<C-return>" . company-complete-common)
    ("C-." . company-files))
 
   (setq company-echo-delay 0
         ;; company-idle-delay 0
         ;; company-auto-complete nil
         company-minimum-prefix-length 2
-        company-tooltip-flip-when-above t
-        company-global-modes '(not git-commit-mode help-mode Info-mode
-                                   view-mode))
+        company-tooltip-flip-when-above t)
+
+  (setq company-global-modes
+        '(not git-commit-mode help-mode Info-mode view-mode))
+  (global-company-mode)
+  ;; (add-hook 'prog-mode-hook 'company-mode-on)
 
   (push (apply-partially
          #'cl-remove-if
@@ -137,7 +140,6 @@
                    (>= (length c) 15)))))
         company-transformers)
 
-  (global-company-mode)
   :preface
   (defun my/complete-or-indent ()
     "Combine completion and indent actions together."
