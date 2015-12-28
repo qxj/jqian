@@ -119,7 +119,10 @@ Example:
   (if (symbolp name) (symbol-name name) name))
 
 (defmacro deh-after-load (file &rest forms)
-  "A syntax suger for `eval-after-load' expression."
+  "A syntax suger for `eval-after-load' expression.
+
+In Emacs24.4+, you can use `with-eval-after-load' to replace this
+function."
   (declare (indent 1))
   `(eval-after-load ,file
      '(progn ,@forms)))

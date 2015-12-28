@@ -50,7 +50,7 @@
   ;; `yas-recompile-all' function.
   :diminish yas-minor-mode
   :init
-  (with-eval-after-load 'yasnippet
+  (deh-after-load 'yasnippet
     (setq yas-snippet-dirs (remq 'yas-installed-snippets-dir yas-snippet-dirs))
     (add-to-list 'yas-snippet-dirs 'my/snippet-dir)
     )
