@@ -18,12 +18,12 @@
 
 ;;; global key binding
 (deh-section kbd-global
-  (bind-keys
+  (bind-keys*
    ([remap delete-char]  .  delete-char-or-region)           ;C-d
    ([remap move-beginning-of-line]  .  my/beginning-of-line) ;C-a
    ([remap move-end-of-line]  .  my/end-of-line)             ;C-e
    ([remap kill-line]  .  my/delete-line)                    ;C-k
-   ([remap subword-kill]  .  my/delete-word)                 ;M-d
+   ([remap kill-word]  .  my/delete-word)                    ;M-d
    ([remap backward-kill-word] .  my/backward-delete-word) ;M-DEL, <C-backspace>
 
    ("C-S-k" .  my/delete-line-backward)
