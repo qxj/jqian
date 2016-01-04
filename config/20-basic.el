@@ -142,11 +142,13 @@ mouse-3: Remove current window from display")
         '(byte-compile chgrp chmod chown compress copy delete hardlink
                        load move print shell symlink uncompress))
 
+  ;; Open directory in the same buffer
+  (put 'dired-find-alternate-file 'disabled nil)
+
   ;;# Keybind for dired
   (bind-keys
    :map dired-mode-map
-   ("RET"  . dired-find-file-single-buffer)
-   ("M-u"  . dired-up-directory)   ; remember previous upper directory
+   ("M-u"  . (lambda () (interactive) (find-alternate-file "..")))   ; remember previous upper directory
    ;; ("M-="  . dired-backup-diff)
    ("b"     . browse-url-of-dired-file)
    ("W"     . woman-dired-find-file)
@@ -173,15 +175,6 @@ mouse-3: Remove current window from display")
                             (point-max)))))
 
   ;;# helper functions
-  (defun dired-find-file-single-buffer ()
-    "kill current buffer when moving to subdirectory"
-    (interactive)
-    (let ((previous-dired-buffer (current-buffer))
-          (file (dired-get-file-for-visit)))
-      (if (file-directory-p file)
-          (progn (dired-find-file)
-                 (kill-buffer previous-dired-buffer))
-        (dired-find-file))))
   (defun dired-compress-directory ()
     "Compress directory in `dired-mode'."
     (interactive)
@@ -1086,10 +1079,10 @@ run command asynchronously. Originally defined in dired-aux.el"
   :bind*
   ("C-c i" . my/imenu)
   :config
-  (setq imenu-max-item-length 60
-        imenu-max-items 500
-        imenu-auto-rescan t
-        imenu-sort-function 'imenu--sort-by-name)
+  ;; (setq imenu-max-item-length 60
+  ;;       imenu-max-items 500
+  ;;       imenu-auto-rescan nil ;disable imenu-auto-rescan, cause performance issue
+  ;;       imenu-sort-function 'imenu--sort-by-name)
   (add-to-list 'imenu-after-jump-hook #'(lambda () (recenter 0)))
 
   (defun my/imenu ()

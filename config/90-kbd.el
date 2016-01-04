@@ -30,8 +30,8 @@
    ;; ("C-1"  .  extend-selection)         ; alternative er/expand-region
    ;; ("M-2"  .  extend-selection)
    ("C-2"   .  set-mark-command)
-   ;; ("C-m"  .  newline-and-indent)
-   ;; ("C-j"  .  newline)
+   ("C-m"  .  newline-and-indent)
+   ("C-j"  .  newline)
    ("C-o"   .  vi-open-next-line)
    ("C-M-o" .  split-line)
    ("C-'"   .  redo)
