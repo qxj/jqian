@@ -125,7 +125,8 @@
         company-tooltip-flip-when-above t)
 
   (setq company-global-modes
-        '(not git-commit-mode help-mode Info-mode view-mode
+        '(not magit-status-mode git-commit-mode
+              help-mode Info-mode view-mode
               Custom-mode term-mode))
   (global-company-mode)
   ;; (add-hook 'prog-mode-hook 'company-mode-on)
