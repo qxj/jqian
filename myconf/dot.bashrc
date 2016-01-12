@@ -108,9 +108,10 @@ function my_prompt()
         p_host=$On_Green"\h"$Color_Off
     fi
     local p_git=
-    if [ $(which git 2>/dev/null) ]; then
-        p_git=$Purple'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$Color_Off
-    fi
+    # if [ $(which git 2>/dev/null) ]; then
+    #     p_git=$Purple'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$Color_Off
+    # fi
+    p_git=$(__git_ps1 $Purple"(%s) "$Color_Off)
     PS1=$p_last$p_user"@"$p_host"["$p_time"]:"$p_git$p_path"\n"$p_flag" "
 }
 PROMPT_COMMAND=my_prompt

@@ -49,6 +49,8 @@
     undo = reset --hard
     # Undo a `git push`
     undopush = push -f origin HEAD^:master
+    # discard uncommited content
+    revert = checkout HEAD
 
     ###
     ### Useful Commands
