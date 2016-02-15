@@ -240,7 +240,6 @@ If cursor at beginning or end of a line, delete the previous RET."
 (global-set-key (kbd "C-j")     'newline)
 (global-set-key (kbd "C-o")     'vi-open-next-line)
 (global-set-key (kbd "C-M-o")   'split-line)
-(global-set-key (kbd "C-'")     'redo)
 (global-set-key (kbd "M-0")     'other-window)
 (global-set-key (kbd "M-'")     'just-one-space)
 (global-set-key (kbd "M--")     'delete-blank-lines)
