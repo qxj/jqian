@@ -38,10 +38,8 @@
     (deh-add-hook before-save-hook
       (when (> 3000 (count-lines (point-min) (point-max)))
         (delete-trailing-whitespace)        ; no trailing whitespace
-        (if (reduce (lambda (a b) (or a b))
-                    (mapcar (lambda (x) (eq major-mode x)) '(c-mode c++-mode python-mode php-mode)))
-            (my/untabify)                       ; untabify source code
-          )
+        (if (member major-mode '(c-mode c++-mode python-mode php-mode))
+            (my/untabify))
         (my/update-header)                  ; update header
         (copyright-update)                  ; update copyright
         (time-stamp)                        ; update timestamp
@@ -86,17 +84,20 @@
   (defun my/update-header ()
     (interactive)
     (when (and buffer-file-name
-               (not (string-match (regexp-opt (list my/data-dir my/template-dir)) buffer-file-name)))
+               (not (string-match (regexp-opt (list my/data-dir my/template-dir))
+                                  buffer-file-name)))
       (save-excursion
         (goto-char (point-min))
-        (let ((end (progn (forward-line 3) (point))) ; check only first 3 lines
-              (regexp "@(#)\\([^ \t\n]+\\)")
+        (let ((end (progn (forward-line 10) (point))) ; check only some lines in header
+              (regexp "@file[ ]+\\([^ \n]+\\)") ; refer: `my/common-header'
               (fn (file-name-sans-versions (file-name-nondirectory buffer-file-name))))
           (goto-char (point-min))
           (while (search-forward-regexp regexp end t)
             (and (not (string= (match-string 1) fn))
-                 (y-or-n-p (format "Update file header %s to %s? "
-                                   (match-string 1) fn))
+                 ;; (y-or-n-p (format "Update file header %s to %s? "
+                 ;;                   (match-string 1) fn))
+                 (message "Replace filename %s to %s in header"
+                          (match-string 1) fn)
                  (replace-match fn nil t nil 1)))))))
   )
 

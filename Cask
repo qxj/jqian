@@ -101,6 +101,7 @@
 (depends-on "smex")
 (depends-on "smooth-scrolling")
 (depends-on "sql-indent")
+(depends-on "thrift")
 (depends-on "undo-tree")
 (depends-on "use-package")
 (depends-on "visible-mark")

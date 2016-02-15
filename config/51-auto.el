@@ -663,19 +663,25 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
     (concat
      (mapconcat (lambda (line) (concat comment-string line))
                 `(
-                  ,(format "@(#) %s %s Time-stamp: <>"
-                           (file-name-nondirectory (buffer-file-name))
-                           (if encoding (concat " -*- coding: " encoding " -*-") ""))
-                  ,(format "Copyright %s %s"
+                  ;; ,(format "@(#) %s %s Time-stamp: <>"
+                  ;;          (file-name-nondirectory (buffer-file-name))
+                  ;;          (if encoding (concat " -*- coding: " encoding " -*-") ""))
+                  ,(if encoding (concat " -*- coding: " encoding " -*-") "")
+                  ,(format "Copyright (C) %s %s"
                            (substring (current-time-string) -4)
                            (or (getenv "ORGANIZATION") user-full-name))
-                  ,(format "Author: %s <%s>"
+                  ""
+                  ,(format "@file      %s"
+                           (file-name-nondirectory (buffer-file-name)))
+                  ,(format "@author    %s <%s>"
                            user-full-name
                            user-mail-address)
-                  ,(format "Version: $Id: %s,v 0.1 %s %s Exp $"
-                           (file-name-nondirectory (buffer-file-name))
-                           (format-time-string "%Y-%m-%d %H:%M:%S")
-                           (user-login-name))
+                  ,(format "@created   %s"
+                           (format-time-string "%Y-%m-%d %H:%M:%S"))
+                  ;; ,(format "$Id: %s, v0.1 %s %s $"
+                  ;;          (file-name-nondirectory (buffer-file-name))
+                  ;;          (format-time-string "%Y-%m-%d %H:%M:%S")
+                  ;;          (user-login-name))
                   )
                 "\n")
      "\n"))
