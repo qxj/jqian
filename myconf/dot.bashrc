@@ -33,7 +33,7 @@ shopt -s checkwinsize
 shopt -s cdspell
 
 # Enabel glob-operator ** to be recursive
-shopt -s globstar
+[ ${BASH_VERSION%%.*} -gt 3 ] && shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -108,10 +108,12 @@ function my_prompt()
         p_host=$On_Green"\h"$Color_Off
     fi
     local p_git=
-    # if [ $(which git 2>/dev/null) ]; then
-    #     p_git=$Purple'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$Color_Off
-    # fi
-    p_git=$(__git_ps1 $Purple"(%s) "$Color_Off)
+    if [ $(which git 2>/dev/null) ]; then
+        p_git=$(__git_ps1 $Purple"(%s) "$Color_Off 2>/dev/null)
+        if [ $? -ne 0 ]; then
+            p_git=$Purple'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$Color_Off
+        fi
+    fi
     PS1=$p_last$p_user"@"$p_host"["$p_time"]:"$p_git$p_path"\n"$p_flag" "
 }
 PROMPT_COMMAND=my_prompt
