@@ -91,6 +91,7 @@
 (depends-on "protobuf-mode")
 (depends-on "psvn")
 (depends-on "py-autopep8")
+(depends-on "quack")
 (depends-on "revive")
 (depends-on "s")
 (depends-on "scala-mode2")

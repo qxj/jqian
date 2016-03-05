@@ -40,7 +40,8 @@
            (if (eq system-type 'windows-nt)
                '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin"
                  "d:/cygwin/usr/local/bin")
-             '("~/bin" "/usr/local/bin" "/usr/local/sbin" "/usr/texbin" "/usr/X11/bin"))
+             '("~/bin" "~/local/bin"
+               "/usr/local/bin" "/usr/local/sbin" "/usr/texbin" "/usr/X11/bin"))
            (split-string (getenv "PATH") path-separator)))
     (setenv "PATH" (mapconcat 'identity path path-separator))))
 
