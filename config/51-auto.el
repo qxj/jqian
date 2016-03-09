@@ -126,7 +126,8 @@
 
   (setq company-global-modes
         '(not magit-status-mode git-commit-mode help-mode Info-mode
-              view-mode Custom-mode term-mode compilation-mode))
+              view-mode makefile-mode makefile-gmake-mode Custom-mode
+              term-mode compilation-mode))
   (global-company-mode)
   ;; (add-hook 'prog-mode-hook 'company-mode-on)
 

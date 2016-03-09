@@ -585,6 +585,9 @@ Use CREATE-TEMP-F for creating temp copy."
   ;;     http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
   (setq flycheck-python-flake8-executable (executable-find "flake8"))
 
+  (deh-add-hook c++-mode-hook
+    (setq flycheck-gcc-language-standard "c++11"))
+
   (deh-package flycheck-google-cpplint
     :config
     ;; Add Google C++ Style checker.
@@ -603,7 +606,32 @@ Use CREATE-TEMP-F for creating temp copy."
   (bind-keys*
    :map markdown-mode-map
    ("C-M-f"  . forward-sexp)
-   ("C-M-b"  . backward-sexp)))
+   ("C-M-b"  . backward-sexp))
+  (setq markdown-xhtml-header-content
+        "<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\">
+MathJax.Hub.Config({
+        tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            ignoreClass: 'tex2jax_ignore|ignore_php',
+            // The default math delimiters are $$...$$ and \[...\] for displayed mathematics, and \(...\) for in-line mathematics.
+            inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+            displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+            processEscapes: true
+        },
+        'HTML-CSS': { availableFonts: ['TeX'], linebreaks: {automatic: true}},
+        TeX: {
+            // equationNumbers: { autoNumber: ['AMS'], useLabelIds: true },
+            extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'],
+            Macros: {
+                argmax: ['\\operatorname*{arg\\,max}'],
+                braket: ['{\\langle #1 \\rangle}', 1],
+                Abs: ['\\left\\lvert #2 \\right\\rvert_{\\text{#1}}', 2, ''],
+            }
+        },
+        extensions: ['jsMath2jax.js', 'tex2jax.js'],
+        messageStyle: 'none'
+    });
+</script>"))
 
 (deh-package auctex
   :disabled

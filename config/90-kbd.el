@@ -26,7 +26,8 @@
    ([remap kill-word]  .  my/delete-word)                    ;M-d
    ([remap backward-kill-word] .  my/backward-delete-word) ;M-DEL, <C-backspace>
 
-   ("M-d"  .  my/delete-word)                    ;M-d
+   ("M-d"  .  my/delete-word)           ;M-d
+   ("M-DEL" .  my/delete-word)          ;M-d
    ("C-S-k" .  my/delete-line-backward)
    ;; ("C-1"  .  extend-selection)         ; alternative er/expand-region
    ;; ("M-2"  .  extend-selection)
