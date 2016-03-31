@@ -60,6 +60,9 @@
               (copyright-update)
               (time-stamp))))
 
+;;; autoload
+(autoload 'dired-jump "dired-x" nil t)
+
 ;;; defadvice settings
 (defadvice kill-line (before check-position activate)
   "killing the newline between indented lines and remove extra
@@ -223,7 +226,7 @@ If cursor at beginning or end of a line, delete the previous RET."
      (save-excursion (move-beginning-of-line 1) (point)))
     (if be (delete-char -1))))
 
-
+;;; keybinds
 (global-set-key [remap delete-char]  'my/delete-char-or-region)        ;C-d
 (global-set-key [remap move-beginning-of-line]  'my/beginning-of-line) ;C-a
 (global-set-key [remap move-end-of-line]  'my/end-of-line)             ;C-e
@@ -246,3 +249,7 @@ If cursor at beginning or end of a line, delete the previous RET."
 (global-set-key (kbd "M-J")     'vi-join-lines)
 (global-set-key (kbd "C-M-j")   'vi-merge-lines)
 (global-set-key (kbd "C-x C-k") 'kill-this-buffer)
+(global-set-key (kbd "C-x C-j") 'dired-jump)
+
+(setq custom-file "~/.emacs-custom.el")
+(load custom-file t)
