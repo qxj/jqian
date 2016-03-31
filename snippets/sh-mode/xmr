@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: a run_job.sh for m/r
+# name: a run_job.sh for MRv1
 # --
 . $MY_SHLIB_PATH/common.sh
 
