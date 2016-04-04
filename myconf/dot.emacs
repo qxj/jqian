@@ -250,6 +250,7 @@ If cursor at beginning or end of a line, delete the previous RET."
 (global-set-key (kbd "C-M-j")   'vi-merge-lines)
 (global-set-key (kbd "C-x C-k") 'kill-this-buffer)
 (global-set-key (kbd "C-x C-j") 'dired-jump)
+(global-set-key (kbd "C-x C-o") 'mode-line-other-buffer)
 
 (setq custom-file "~/.emacs-custom.el")
 (load custom-file t)
