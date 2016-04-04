@@ -60,8 +60,15 @@
               (copyright-update)
               (time-stamp))))
 
-;;; autoload
+;;; dired
 (autoload 'dired-jump "dired-x" nil t)
+
+(with-eval-after-load "dired"
+  (define-key dired-mode-map (kbd "M-u")
+    (lambda () (interactive) (find-alternate-file ".."))))
+
+;; Open directory in the same buffer
+(put 'dired-find-alternate-file 'disabled nil)
 
 ;;; defadvice settings
 (defadvice kill-line (before check-position activate)
