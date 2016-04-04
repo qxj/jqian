@@ -65,6 +65,15 @@ Select anything you want to copy, and then
 - M-| xclip, in linux
 - M-| pbcopy, in Mac OSX
 
+** Quickly deal with symbols at point
+*** isearch
+M-s . => M-x isearch-forward-symbol-at-point
+*** occur
+M-s o => M-x occur
+*** highlight
+M-s h . => M-x highlight-symbol-at-point
+M-s h u => M-x unhighlight-regexp
+
 * Dired
 ** Dired open directory in the same buffer
 M-x dired-find-alternate-file
