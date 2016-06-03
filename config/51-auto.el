@@ -79,6 +79,7 @@
   (bind-keys
    :map yas-minor-mode-map
    ("C-c <tab>" . yas-expand)
+   ("C-c TAB" . yas-expand)
    ("C-c y" . yas-insert-snippet))        ; List all snippets for current mode
   (unbind-key "<tab>" yas-minor-mode-map) ; Remove yas-expand from <tab> keybind
   (unbind-key "TAB" yas-minor-mode-map)

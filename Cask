@@ -13,6 +13,7 @@
 (depends-on "bookmark+")
 (depends-on "browse-kill-ring")
 (depends-on "cask")
+(depends-on "cmake-mode")
 (depends-on "color-moccur")
 (depends-on "color-theme")
 (depends-on "color-theme-solarized")

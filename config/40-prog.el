@@ -7,6 +7,8 @@
     ;; (my/code-common-hook)
     ))
 
+(deh-package cmake-mode)
+
 (deh-package lisp-mode
   :interpreter ("emacs" . emacs-lisp-mode)
   :mode ("Cask" . emacs-lisp-mode)
@@ -110,7 +112,6 @@
 
   (deh-add-hook web-mode-hook
     (my/prog-mode-hook)
-    (flycheck-select-checker my/web)
     (flycheck-mode t))
 
   (deh-after-load 'flychecker
@@ -124,7 +125,10 @@ See URL `http://php.net/manual/en/features.commandline.php'."
       :error-patterns
       ((error line-start (or "Parse" "Fatal" "syntax") " error" (any ":" ",") " "
               (message) " in " (file-name) " on line " line line-end))
-      :modes (php-mode php+-mode web-mode)))
+      :modes (php-mode php+-mode web-mode))
+
+    (deh-add-hook web-mode-hook
+      (flycheck-select-checker my/web)))
   )
 
 (deh-package php-mode
@@ -190,3 +194,6 @@ See URL `http://php.net/manual/en/features.commandline.php'."
   (setq sql-product 'mysql)
   (eval-after-load "sql"
     '(load-library "sql-indent")))
+
+(deh-package bazel-mode
+  :mode ("BUILD$" . bazel-mode))
