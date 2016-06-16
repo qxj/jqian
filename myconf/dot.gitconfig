@@ -106,6 +106,9 @@
     # graph
     graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
 
+    # squash the least N commits
+    squash = "!f(){ git reset --soft HEAD~${1} && git commit --edit -m\"$(git log --format=%B --reverse HEAD..HEAD@{1})\"; };f"
+
 [apply]
     # Detect whitespace errors when applying a patch (Disabled, it causes python
     # indent error @.@)
