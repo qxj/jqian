@@ -1,4 +1,7 @@
 # -*- mode: sh -*-
+#
+# http://www.gnu.org/software/bash/manual/bashref.html
+#
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
@@ -19,8 +22,17 @@ MANPAGER="less -X"
 # Don't grep svn base
 GREP_OPTIONS="--color --exclude=\*.svn-base"
 
+# Disable flow control (C-s/C-q)
+stty -ixon
+
+# Similar to zsh
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+
 # append to the history file, don't overwrite it
 shopt -s histappend
+# won't blindly execute history commands, verify it firstly.
+shopt -s histverify
 
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
