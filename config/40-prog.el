@@ -104,7 +104,7 @@
 ;;; web related
 (deh-package web-mode
   :mode (("\\.html?$" . web-mode)
-         ("\\.php$" . php-mode))
+         ("\\.php$" . web-mode))
   :config
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2

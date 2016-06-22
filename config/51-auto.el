@@ -95,11 +95,21 @@
   (deh-after-load "semantic"
     (add-to-list 'completion-at-point-functions 'semantic-completion-at-point-function))
   (setq completion-cycle-threshold 5)
+
+  (setq completion-ignore-case t
+        read-file-name-completion-ignore-case t)
+
   (add-to-list 'completion-styles 'substring)
   (add-to-list 'completion-styles 'initials t)
   (add-to-list 'completion-at-point-functions
                (lambda ()
                  (unless (minibufferp) (auto-complete))))
+
+  (dolist (ext '(".zip" ".tgz" ".gz" ".tar" ".bz2"
+                 ".rpm" ".deb"
+                 ".out" ".exe" ".so"))
+    (add-to-list 'completion-ignored-extensions ext))
+
   )
 
 (deh-package company

@@ -35,6 +35,17 @@
     ;;                    (if (boundp 'autopair-newline) (autopair-newline)
     ;;                      (newline-and-indent)))))
 
+    (font-lock-add-keywords
+     nil
+     '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\|WORKAROUND\\|DEPRECATED\\)" 1 font-lock-warning-face prepend)
+       ("\\<\\(DONE\\|NOTE\\)" 1 font-lock-doc-face t)
+       ;; highlight too long lines
+       ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
+       ;; highlight parentheses
+       ;; ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
+       ;; hightlight numbers
+       ("\\<\-?[0-9]*\\.?[0-9]+\\>" . font-lock-constant-face)))
+
     (deh-add-hook before-save-hook
       (when (> 3000 (count-lines (point-min) (point-max)))
         (delete-trailing-whitespace)        ; no trailing whitespace
@@ -46,7 +57,7 @@
         ))
     )
 
-  ;; (add-hook 'prog-mode-hook 'my/prog-mode-hook)
+  (add-hook 'prog-mode-hook 'my/prog-mode-hook)
 
   (defun my/text-mode-hook ()           ; literal hook
     (abbrev-mode 1)
@@ -568,7 +579,7 @@ Use CREATE-TEMP-F for creating temp copy."
 (deh-package flycheck
   :commands (flycheck-mode global-flycheck-mode)
   :init
-  (dolist (mode '(sh-mode-hook python-mode-hook c-mode-common-hook))
+  (dolist (mode '(python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
   :config
   ;;# rebind flycheck prefix key

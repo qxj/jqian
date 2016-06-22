@@ -2,6 +2,8 @@
 # name: a run_job.sh for YARN(MRv2)
 # --
 
+set -e -o pipefail
+
 day=$(date +%Y%m%d -d "yesterday")
 if [[ -n $1 ]]; then
     day=$1

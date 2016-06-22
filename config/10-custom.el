@@ -15,19 +15,12 @@
 
 (setq-default default-directory (expand-file-name "~/"))
 
-
-(dolist (mode '(c-mode c++-mode java-mode lisp-mode emacs-lisp-mode python-mode
-                       php-mode lisp-interaction-mode sh-mode sgml-mode))
-  (font-lock-add-keywords
-   mode
-   '(("\\<\\(FIXME\\|TODO\\|BUG\\|HACK\\|WORKAROUND\\|DEPRECATED\\)" 1 font-lock-warning-face prepend)
-     ("\\<\\(DONE\\|NOTE\\)" 1 font-lock-doc-face t)
-     ;; highlight too long lines
-     ;; ("^[^\n]\\{120\\}\\(.*\\)$" 1 font-lock-warning-face t)
-     ;; highlight parentheses
-     ;; ("(\\|)\\|\\[\\|]\\|<\\|>\\|{\\|}" . font-lock-builtin-face)
-     ;; hightlight numbers
-     ("\\<\-?[0-9]*\\.?[0-9]+\\>" . font-lock-constant-face))))
+(setq package-archives
+      '(("gnu"          . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+        ("melpa"        . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+        ("melpa-stable" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")
+        ("org"          . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+        ("marmalade"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/marmalade/")))
 
 ;; for morden machine, initiate GC every 20MB allocated
 (setq gc-cons-threshold 20000000)
@@ -48,7 +41,7 @@
 (setq adaptive-fill-mode nil)
 
 ;; Lines should be 80 characters wide, not 72
-(setq default-fill-column 80)
+(setq default-fill-column 78)
 
 ;; no splash screen
 (setq inhibit-startup-message t)
@@ -149,14 +142,6 @@
 
 (setq kill-buffer-query-functions
       (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
-
-(setq completion-ignore-case t
-      read-file-name-completion-ignore-case t)
-
-(dolist (ext '(".zip" ".tgz" ".gz" ".tar" ".bz2"
-               ".rpm" ".deb"
-               ".out" ".exe" ".so"))
-  (add-to-list 'completion-ignored-extensions ext))
 
 ;; use clipboard
 (setq x-select-enable-clipboard t)
