@@ -1,3 +1,4 @@
+
 (if (not load-file-name)
     (error "Load me by M-x load-file RET"))
 
@@ -24,6 +25,12 @@
 (add-to-list 'load-path my/config-dir)
 (add-to-list 'load-path my/site-lisp-dir)
 (let ((default-directory my/site-lisp-dir)) (load "subdirs.el"))
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
 
 (if (require 'auto-cask) (auto-cask/setup) (error "missing auto-cask.el"))
 (unless (require 'dot-emacs-helper nil t) (error "missing dot-emacs-helpler.el"))
