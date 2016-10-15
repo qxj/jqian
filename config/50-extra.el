@@ -941,3 +941,13 @@
   :config
   (persistent-scratch-setup-default)
   (persistent-scratch-autosave-mode))
+
+(deh-package howdoi)
+
+(deh-package manage-minor-mode)
+
+(deh-package xkcd
+  :init
+  (setq xkcd-cache-dir (expand-file-name "xkcd/" my/data-dir))
+  (if (not (file-directory-p xkcd-cache-dir))
+      (make-directory xkcd-cache-dir :parents)))

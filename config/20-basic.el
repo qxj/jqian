@@ -742,19 +742,31 @@ run command asynchronously. Originally defined in dired-aux.el"
 
 ;;; Search
 
-(deh-package ace-jump-mode
-  :commands (ace-jump-mode
-             ace-jump-char-mode
-             ace-jump-word-mode
-             ace-jump-line-mode
-             ace-jump-mode-pop-mark)
-  :bind*
-  ("C-c C-j" . ace-jump-mode)
-  ("C-c C-p" . ace-jump-mode-pop-mark)
-  ("M-4" . ace-jump-char-mode)
-  ("C-4" . ace-jump-mode)
+;; (deh-package ace-jump-mode
+;;   :commands (ace-jump-mode
+;;              ace-jump-char-mode
+;;              ace-jump-word-mode
+;;              ace-jump-line-mode
+;;              ace-jump-mode-pop-mark)
+;;   :bind*
+;;   ("C-c C-j" . ace-jump-mode)
+;;   ("C-c C-p" . ace-jump-mode-pop-mark)
+;;   ("M-4" . ace-jump-char-mode)
+;;   ("C-4" . ace-jump-mode)
+;;   :config
+;;   (ace-jump-mode-enable-mark-sync))
+
+(deh-package avy
+  :bind
+  ("M-g w"   . avy-goto-word-or-subword-1)
+  ("C-c C-j" . avy-goto-word-or-subword-1)
+  ("M-4"     . avy-goto-word-or-subword-1)
+  ("M-g f"   . avy-goto-char)
+  ("M-g l"   . avy-goto-line)
   :config
-  (ace-jump-mode-enable-mark-sync))
+  (avy-setup-default)
+  (setq avy-background t)
+  (setq avy-keys (number-sequence ?a ?z)))
 
 ;; simulate `f' in VIM
 (deh-package jump-char

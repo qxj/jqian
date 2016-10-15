@@ -116,10 +116,91 @@
  :map minibuffer-local-map
  ("\t" . comint-dynamic-complete))
 
-(deh-package guide-key
-  :diminish guide-key-mode
+
+(deh-package hydra
   :config
-  (setq guide-key/guide-key-sequence
-        '("C-x c" "C-x r" "C-x v" "C-x 4"
-          "C-c b" "C-c c" "C-c p"))
-  (guide-key-mode 1))
+  (defhydra hydra-font-setup ()
+    "
+  Font Size^^
+  ----------------------------------------------------------------
+  _=_ ↑
+  _\-_ ↓
+  "
+    ("=" text-scale-increase)
+    ("-" text-scale-decrease))
+
+  (defhydra hydra-highlight-symbol ()
+    "
+  ^Highlight^   ^Next^    ^Previous^
+  ----------------------------------------------------------------
+  _h_ighlight   _n_ext    _p_revious
+  "
+    ("h" highlight-symbol-at-point)
+    ("n" highlight-symbol-next)
+    ("p" highlight-symbol-prev))
+
+  (defhydra hydra-window-buffer (:color red :hint nil)
+    "
+   ^Window^             ^Buffer^           ^Frame^
+  ^^^^^^^^---------------------------------------------------
+   ^hjkl^: move         _p_: previous      _u_: winner undo      ....../ \-.   .
+   _s_: split below     _n_: next          _r_: winner redo   .-/     (    o\.//
+   _v_: split right     _b_: switch        _w_: revert all     |  ...  \./\---'
+   _c_: delete this     _;_: last          ^ ^                 |.||  |.||
+   _o_: delete other    _K_: kill current  ^ ^
+  ^^^^^^^^
+  "
+    ("w" revert-all-buffers :color blue)
+
+    ("u" winner-undo)
+    ("r" winner-redo)
+
+    ("h" windmove-left)
+    ("j" windmove-down)
+    ("k" windmove-up)
+    ("l" windmove-right)
+
+    ("p" previous-buffer)
+    ("n" next-buffer)
+    ("b" ido-switch-buffer)
+    (";" mode-line-other-buffer :color blue)
+
+    ("s" split-window-below)
+    ("v" split-window-right)
+
+    ("K" kill-this-buffer)
+
+    ("c" delete-window)
+    ("o" delete-other-windows :color blue)
+
+    ;; ("H" hydra-move-splitter-left)
+    ;; ("J" hydra-move-splitter-down)
+    ;; ("K" hydra-move-splitter-up)
+    ;; ("L" hydra-move-splitter-right)
+
+    ("q" nil))
+  (global-set-key (kbd "C-x w") 'hydra-window-buffer/body)
+  )
+
+;; (deh-package guide-key
+;;   :diminish guide-key-mode
+;;   :config
+;;   (setq guide-key/guide-key-sequence
+;;         '("C-x c" "C-x r" "C-x v" "C-x 4"
+;;           "C-c b" "C-c c" "C-c p"))
+;;   (guide-key-mode 1))
+
+
+(deh-package which-key
+  :diminish which-key-mode
+  :config
+  (which-key-mode)
+  ;; Hide/Modify some function prefix in which-key show menu
+  (dolist (item '(("\\`calc-" . "") ; Hide "calc-" prefixes when listing M-x calc keys
+                  ("/body\\'" . "") ; Remove display the "/body" portion of hydra fn names
+                  ("modi/" . "m/") ; The car is intentionally not "\\`modi/" to cover
+                                        ; cases like `hydra-toggle/modi/..'.
+                  ("\\`hydra-" . "+h/")
+                  ("\\`org-babel-" . "ob/")
+                  ("\\`my/" . "")))
+    (add-to-list 'which-key-description-replacement-alist item)))
