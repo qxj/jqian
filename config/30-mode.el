@@ -205,6 +205,7 @@
   )
 
 (deh-package ggtags
+  :disabled
   :commands (ggtags-mode)
   :if (executable-find "global")
   :config

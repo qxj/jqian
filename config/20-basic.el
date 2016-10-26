@@ -325,7 +325,8 @@ run command asynchronously. Originally defined in dired-aux.el"
    :map helm-map
    ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
    ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
-   ("C-z"   . helm-select-action))            ; list actions using C-z
+   ("C-z"   . helm-select-action)             ; list actions using C-z
+   ("C-w"   . backward-kill-word))
 
   (bind-keys
    :map helm-command-map
@@ -386,7 +387,10 @@ run command asynchronously. Originally defined in dired-aux.el"
         helm-yas-display-key-on-candidate t)
 
   (deh-package helm-projectile
-    :defer)
+    :defer
+    :config
+    (setq projectile-completion-system 'helm)
+    (helm-projectile-on))
 
   (deh-package helm-eshell
     :defer
@@ -406,6 +410,39 @@ run command asynchronously. Originally defined in dired-aux.el"
     (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
     (bind-key "M-i" 'helm-multi-swoop-all-from-helm-swoop helm-swoop-map)
     )
+
+  (deh-package helm-gtags
+    :defer 3
+    :if (executable-find "gtags")
+    :diminish (helm-gtags-mode . "hG")
+    :config
+    (setq helm-gtags-ignore-case t
+          helm-gtags-auto-update t
+          helm-gtags-use-input-at-cursor t
+          helm-gtags-pulse-at-cursor t)
+    (bind-keys
+     :map helm-gtags-mode-map
+     ("M-." . helm-gtags-find-tag)
+     ("M-," . helm-gtags-pop-stack)
+     ("M-*" . helm-gtags-pop-stack)
+     ("M-s r" . helm-gtags-find-rtag)
+     ("M-s s" . helm-gtags-find-symbol)
+     ("C-c i" . helm-gtags-parse-file)  ;replace imenu
+     ("C-c <" . helm-gtags-previous-history)
+     ("C-c >" . helm-gtags-next-history)
+     )
+    (add-hook 'c-mode-hook #'helm-gtags-mode)
+    (add-hook 'c++-mode-hook #'helm-gtags-mode))
+
+  (deh-package helm-bm
+    :after bm)
+
+  (deh-package helm-c-yasnippet
+    :after yasnippet
+    :bind
+    ("C-c y" . helm-yas-complete)
+    :config
+    (setq helm-yas-space-match-any-greedy t))
 
   (deh-package helm-descbinds
     :defer t

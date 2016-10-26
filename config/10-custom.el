@@ -5,6 +5,9 @@
 (setq user-full-name "Julian Qian"
       user-mail-address "junist@gmail.com")
 
+(unless (getenv "ORGANIZATION")
+  (setenv "ORGANIZATION" user-full-name))
+
 (setq browse-url-browser-function '(("/HyperSpec/" . w3m-browse-url)
                                     ("." . browse-url-generic))
       browse-url-generic-program "google-chrome")

@@ -677,3 +677,9 @@ All deh-sections defined in `custom-file' will overide the later deh-sections wi
           (replace-string new-quotes (concat "\\" new-quotes) nil start end)
           (replace-string (concat "\\" old-quotes) old-quotes nil start end)))
     (error "Point isn't in a string")))
+
+(defun nuke-all-buffers ()
+  "Kill all buffers, leaving *scratch* only."
+  (interactive)
+  (mapcar (lambda (x) (kill-buffer x)) (buffer-list))
+  (delete-other-windows))
