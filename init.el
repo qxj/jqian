@@ -17,7 +17,7 @@
   "All templates for autoinsert")
 (defconst my/org-dir (expand-file-name "~/Dropbox/Notes/")
    "Put my notes here, eg: in dropbox directory")
-(defconst my/data-dir (expand-file-name "~/.elocal")
+(defconst my/data-dir (expand-file-name "tmp" my/startup-dir)
    "The directory to store autosave, desktop, session, backup files, etc.")
 
 ;;; Load-path

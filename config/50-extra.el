@@ -36,6 +36,8 @@
   (use-package bookmark+-mac)
   (use-package bookmark+-lit)
   (use-package bookmark+-1)
+  :config
+  (setq bmkp-bmenu-state-file (expand-file-name "emacs-bmk-bmenu-state.el" my/data-dir))
   )
 
 (deh-package desktop
@@ -501,7 +503,58 @@
 
 ;;; Enhanced terminal
 
+(deh-package multi-term
+  :bind*
+  ("C-c t c" . multi-term)
+  ("C-c t t" . multi-term-dedicated-open-select)
+  ("C-c t q" . multi-term-dedicated-close)
+  ("C-c t s" . multi-term-dedicated-select)
+  ("C-c t g" . multi-term-dedicated-toggle)
+  :config
+  (setq multi-term-dedicated-window-height 10
+        multi-term-dedicated-max-window-height 10)
+
+  ;; compatible with normal terminal keybinds
+  (add-to-list 'term-bind-key-alist '("<M-backspace>" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<C-backspace>" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("M-DEL" . term-send-backward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<backspace>" . term-send-backspace))
+  (add-to-list 'term-bind-key-alist '("C-d" . term-send-del))
+  (add-to-list 'term-bind-key-alist '("<delete>" . term-send-del))
+  (add-to-list 'term-bind-key-alist '("M-d" . term-send-forward-kill-word))
+  (add-to-list 'term-bind-key-alist '("<tab>" . (lambda nil (interactive) (term-send-raw-string "\C-i"))))
+  ;; some helpful key bindings
+  (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
+  (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
+  (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
+  ;; Only close dedicated window
+  (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
+  ;; unbind keys
+  (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
+
+  ;; hack to backward kill word as it does in terminal
+  (defun term-send-backward-kill-word ()
+    "Backward kill word in term mode."
+    (interactive)
+    (term-send-raw-string "\e\C-?"))
+
+  (defun multi-term-dedicated-open-select ()
+    (interactive)
+    (unless (multi-term-dedicated-exist-p)
+      (multi-term-dedicated-open))
+    (multi-term-dedicated-select))
+
+  :init
+  (defun my/toggle-multi-term ()
+    "Toggle dedicated `multi-term' window and select."
+    (interactive)
+    (if (multi-term-dedicated-exist-p)
+        (multi-term-dedicated-close)
+      (multi-term-dedicated-open-select)))
+  )
+
 (deh-package sane-term
+  :disabled
   :bind
   ("C-c t" . sane-term))
 

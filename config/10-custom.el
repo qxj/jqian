@@ -391,6 +391,12 @@ performance!")
   ;;   (ad-set-arg 0 (replace-regexp-in-string "/usr/share/emacs/23.1/"
   ;;                                           "~/src/emacs-23.2/"
   ;;                                           (ad-get-arg 0))))
+
+  (require 'cl-lib)
+  (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+    "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+    (cl-letf (((symbol-function #'process-list) (lambda ())))
+      ad-do-it))
   )
 
 ;;; customization
