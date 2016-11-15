@@ -795,7 +795,7 @@ run command asynchronously. Originally defined in dired-aux.el"
 
 (deh-package avy
   :bind
-  ("M-g w"   . avy-goto-word-or-subword-1)
+  ("M-g w"   . avy-goto-word-1)
   ("C-c C-j" . avy-goto-word-or-subword-1)
   ("M-4"     . avy-goto-word-or-subword-1)
   ("M-g f"   . avy-goto-char)

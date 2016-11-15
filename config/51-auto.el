@@ -596,6 +596,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
       "#!/usr/bin/env bash" ?\n
       (my/common-header "# ")
       "#\n\n"
+      "set -e -o pipefail\n\n"
       _
       ))
 

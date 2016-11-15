@@ -457,9 +457,9 @@
   )
 
 ;;; Edit
-(deh-package inline-string-rectangle
-  :bind
-  ("C-x r t" . inline-string-rectangle))
+;; (deh-package inline-string-rectangle
+;;   :bind
+;;   ("C-x r t" . inline-string-rectangle))
 
 (deh-package mark-more-like-this
   :bind
@@ -810,7 +810,6 @@
   ("C-c l"  . magit-log)
   :config
   ;; Subtler highlight
-  (set-face-background 'magit-item-highlight "#121212")
   (set-face-background 'diff-file-header "#121212")
   (set-face-foreground 'diff-context "#666666")
   (set-face-foreground 'diff-added "#00cc33")
