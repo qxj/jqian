@@ -1,5 +1,7 @@
 ;; -*- emacs-lisp -*-
 
+;;; Created by Julian Qian
+
 ;;; better-defaults.el
 (progn
   (ido-mode t)
@@ -23,14 +25,8 @@
   (require 'saveplace)
   (setq-default save-place t)
 
-  (global-set-key (kbd "M-/") 'hippie-expand)
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (global-set-key (kbd "M-z") 'zap-up-to-char)
-
-  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
-  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
-  (global-set-key (kbd "C-M-s") 'isearch-forward)
-  (global-set-key (kbd "C-M-r") 'isearch-backward)
+  (require 'desktop)
+  (desktop-save-mode 1)
 
   (show-paren-mode 1)
   (when (> emacs-major-version 24)
@@ -234,6 +230,30 @@ If cursor at beginning or end of a line, delete the previous RET."
      (save-excursion (move-beginning-of-line 1) (point)))
     (if be (delete-char -1))))
 
+(defun my/display-buffer-path (&optional copy)
+  "Display the absolute path of current buffer in mini-buffer. If
+you call this function by prefix 'C-u', the path will be store
+into `kill-ring'.
+
+\\[my/display-buffer-path]        display buffer's absolute path
+C-u \\[my/display-buffer-path]    copy buffer's absolute path
+C-u 1 \\[my/display-buffer-path]  copy buffer's directory name
+C-u 2 \\[my/display-buffer-path]  copy buffer's basename
+"
+  (interactive (list current-prefix-arg))
+  (let ((f (buffer-file-name (current-buffer))))
+    (if f (case copy
+            ((nil) (message "Buffer path: %s" f))
+            ;; TODO: prompt what to be copied
+            (1 (let ((d (file-name-directory f)))
+                 (kill-new d)
+                 (message "Copy directory: %s" d)))
+            (2 (let ((d (file-name-nondirectory f)))
+                 (kill-new d)
+                 (message "Copy filename: %s" d)))
+            (t (kill-new f)
+               (message "Copy path: %s" f))))))
+
 ;;; keybinds
 (global-set-key [remap delete-char]  'my/delete-char-or-region)        ;C-d
 (global-set-key [remap move-beginning-of-line]  'my/beginning-of-line) ;C-a
@@ -252,10 +272,22 @@ If cursor at beginning or end of a line, delete the previous RET."
 (global-set-key (kbd "C-o")     'vi-open-next-line)
 (global-set-key (kbd "C-M-o")   'split-line)
 (global-set-key (kbd "M-0")     'other-window)
+(global-set-key (kbd "M-5")     'my/display-buffer-path)
 (global-set-key (kbd "M-'")     'just-one-space)
 (global-set-key (kbd "M--")     'delete-blank-lines)
 (global-set-key (kbd "M-J")     'vi-join-lines)
 (global-set-key (kbd "C-M-j")   'vi-merge-lines)
+
+(global-set-key (kbd "M-/")     'hippie-expand)
+(global-set-key (kbd "M-z")     'zap-up-to-char)
+
+(global-set-key (kbd "C-s")     'isearch-forward-regexp)
+(global-set-key (kbd "C-r")     'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s")   'isearch-forward)
+(global-set-key (kbd "C-M-r")   'isearch-backward)
+
+(global-set-key (kbd "C-c i")   'imenu)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-k") 'kill-this-buffer)
 (global-set-key (kbd "C-x C-j") 'dired-jump)
 (global-set-key (kbd "C-x C-o") 'mode-line-other-buffer)
