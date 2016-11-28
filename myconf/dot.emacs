@@ -33,8 +33,9 @@
   (global-set-key (kbd "C-M-r") 'isearch-backward)
 
   (show-paren-mode 1)
-  (electric-pair-mode 1)
-  (subword-mode 1)
+  (when (> emacs-major-version 24)
+    (electric-pair-mode 1)
+    (subword-mode 1))
 
   (setq-default indent-tabs-mode nil)
   (setq x-select-enable-clipboard t
@@ -63,9 +64,9 @@
 ;;; dired
 (autoload 'dired-jump "dired-x" nil t)
 
-(with-eval-after-load "dired"
-  (define-key dired-mode-map (kbd "M-u")
-    (lambda () (interactive) (find-alternate-file ".."))))
+(eval-after-load "dired"
+  '(define-key dired-mode-map (kbd "M-u")
+     (lambda () (interactive) (find-alternate-file ".."))))
 
 ;; Open directory in the same buffer
 (put 'dired-find-alternate-file 'disabled nil)
