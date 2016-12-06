@@ -125,7 +125,7 @@
    ("C-p" . company-select-previous))
   (bind-keys
    :map company-mode-map
-   ("<tab>" . my/complete-or-indent)
+   ;; ("<tab>" . my/complete-or-indent)
    ("<C-return>" . company-complete-common)
    ("C-." . company-files))
 
@@ -153,7 +153,10 @@
 
   :preface
   (defun my/complete-or-indent ()
-    "Combine completion and indent actions together."
+    "Combine completion and indent actions together.
+
+NOT recommend, it will affect TAB behavior in hs/outline/markdown mode :(
+"
     (interactive)
     (if (looking-at "\\_>")
         ;; (company-manual-begin)

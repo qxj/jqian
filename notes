@@ -21,6 +21,7 @@ M-^ => M-x delete-indentation
 ** navigate back to the positions you visited in buffers
 C-u C-@ => M-x set-mark-command, jump back in current buffer
 C-x C-@ => M-x pop-global-mark, jump back in all buffers
+C-x p   => M-x pop-to-mark-command, jump to mark (does not affect global mark ring)
 
 ** Input 100 times 1
 C-u 100 C-u 1

@@ -619,6 +619,8 @@ Use CREATE-TEMP-F for creating temp copy."
    :map markdown-mode-map
    ("C-M-f"  . forward-sexp)
    ("C-M-b"  . backward-sexp))
+  (unbind-key "M-n" markdown-mode-map)
+  (unbind-key "M-p" markdown-mode-map)
   (setq markdown-xhtml-header-content
         "<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\">
 MathJax.Hub.Config({
@@ -643,7 +645,13 @@ MathJax.Hub.Config({
         extensions: ['jsMath2jax.js', 'tex2jax.js'],
         messageStyle: 'none'
     });
-</script>"))
+</script>")
+
+  (deh-package pandoc-mode
+    :config
+    (add-hook 'markdown-mode-hook 'pandoc-mode)
+    (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
+  )
 
 (deh-package auctex
   :disabled

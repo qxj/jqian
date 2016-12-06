@@ -760,6 +760,7 @@ run command asynchronously. Originally defined in dired-aux.el"
 ;;; Better scrolling
 
 (deh-package pager
+  :disabled
   :bind
   ([remap scroll-up-command]  .  pager-page-down) ;C-v
   ([remap scroll-down-command]  .  pager-page-up) ;M-v
@@ -794,9 +795,9 @@ run command asynchronously. Originally defined in dired-aux.el"
 ;;   (ace-jump-mode-enable-mark-sync))
 
 (deh-package avy
-  :bind
+  :bind*
   ("M-g w"   . avy-goto-word-1)
-  ("C-c C-j" . avy-goto-word-or-subword-1)
+  ("C-c C-j" . avy-goto-word-1)
   ("M-4"     . avy-goto-word-or-subword-1)
   ("M-g f"   . avy-goto-char)
   ("M-g l"   . avy-goto-line)
@@ -1057,6 +1058,10 @@ run command asynchronously. Originally defined in dired-aux.el"
    ("q"  . xwl-outline-toggle-show-hide)
    ("t"  . xwl-outline-toggle-show-hide)
    ("C-a"  . xwl-outline-toggle-show-hide))
+  (bind-keys
+   :map outline-minor-mode-map
+   ("M-n" . outline-next-heading)
+   ("M-p" . outline-previous-heading))
 
   (defadvice outline-mode (after hide-sublevels)
     "Enter overview after start up `outline-mode'."
