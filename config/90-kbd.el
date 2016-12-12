@@ -49,7 +49,7 @@
    ("M-n"  . (lambda() (interactive) (scroll-up-command 1)))
    ("<down>" . (lambda() (interactive) (scroll-up-command 1)))
    ("M-p"  . (lambda() (interactive) (scroll-down-command 1)))
-   ("<up"  . (lambda() (interactive) (scroll-down-command 1)))
+   ("<up>" . (lambda() (interactive) (scroll-down-command 1)))
    ("<C-M-down>" .  my/move-line-down)
    ("<C-M-up>"   .  my/move-line-up)
    ("<M-S-down>" .  my/dup-line-down)
