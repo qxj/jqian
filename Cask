@@ -6,7 +6,6 @@
 
 (depends-on "ag")
 (depends-on "ample-theme")
-(depends-on "anaphora")
 (depends-on "async")
 (depends-on "avy")
 (depends-on "back-button")
@@ -95,7 +94,6 @@
 (depends-on "php-mode")
 (depends-on "pkg-info")
 (depends-on "popup")
-(depends-on "popwin")
 (depends-on "projectile")
 (depends-on "protobuf-mode")
 (depends-on "psvn")

@@ -14,19 +14,20 @@
   (setq bookmark-default-file (expand-file-name "emacs.bookmark" my/data-dir)
         bookmark-save-flag 1)
   (add-to-list 'bookmark-after-jump-hook 'recenter)
-  (deh-add-hook bookmark-bmenu-mode-hook
-    (font-lock-add-keywords
-     nil
-     '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
-        (1 (let ((file (split-string (buffer-substring-no-properties
-                                      (line-beginning-position)
-                                      (line-end-position)) " \\{2,\\}")))
-             (if (and (not (file-remote-p (nth 2 file)))
-                      (file-directory-p (nth 2 file)))
-                 font-lock-function-name-face
-               nil))))
-       ("^>.*" . font-lock-warning-face)
-       ("^D.*" . font-lock-type-face)))))
+  ;; (deh-add-hook bookmark-bmenu-mode-hook
+  ;;   (font-lock-add-keywords
+  ;;    nil
+  ;;    '(("^\\s-+\\(.*+\\)[ ]\\{2,\\}"
+  ;;       (1 (let ((file (split-string (buffer-substring-no-properties
+  ;;                                     (line-beginning-position)
+  ;;                                     (line-end-position)) " \\{2,\\}")))
+  ;;            (if (and (not (file-remote-p (nth 2 file)))
+  ;;                     (file-directory-p (nth 2 file)))
+  ;;                font-lock-function-name-face
+  ;;              nil))))
+  ;;      ("^>.*" . font-lock-warning-face)
+  ;;      ("^D.*" . font-lock-type-face))))
+  )
 
 (deh-package bookmark+-bmu
   ;; :bind*
@@ -37,10 +38,12 @@
   (use-package bookmark+-lit)
   (use-package bookmark+-1)
   :config
-  (setq bmkp-bmenu-state-file (expand-file-name "emacs-bmk-bmenu-state.el" my/data-dir))
+  (setq bmkp-bmenu-state-file
+        (expand-file-name "emacs-bmk-bmenu-state.el" my/data-dir))
   )
 
 (deh-package desktop
+  :disabled
   :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-path (list my/data-dir)
@@ -51,13 +54,12 @@
         (delq nil (mapcar (lambda (x) (if (memq x '(tags-table-list
                                                     file-name-history)) nil x))
                           desktop-globals-to-save)))
-  (setq desktop-buffers-not-to-save
-        (concat "\\(" "\\.log\\|\\.diary\\|\\.elc" "\\)$"))
+  ;; (setq desktop-buffers-not-to-save "\\(\\.log\\|\\.diary\\|\\.elc\\)$")
   (dolist (mode '(dired-mode info-lookup-mode fundamental-mode))
     (add-to-list 'desktop-modes-not-to-save mode))
 
   ;;# to save
-  (add-to-list 'desktop-globals-to-save 'kill-ring)
+  ;; (add-to-list 'desktop-globals-to-save 'kill-ring)
   (if (boundp 'windata-name-winconf)
       (add-to-list 'desktop-globals-to-save 'windata-named-winconf))
   (if (boundp 'smex-history)
@@ -102,8 +104,8 @@
         (when (bm-repository-file-of-desktop-menu)
           (bm-buffer-save-all)
           (bm-repository-save))))
-    ))
-
+    )
+  )
 
 (deh-package revive-mode-config
   :config
@@ -720,14 +722,7 @@
         projectile-known-projects-file
         (expand-file-name "projectile-bookmarks.eld" my/data-dir))
   (setq projectile-enable-caching t)
-  (if (boundp 'helm-mode)
-      (eval-after-load "helm-projectile"
-        '(progn
-           (setq projectile-completion-system 'helm
-                 projectile-switch-project-action 'helm-projectile)
-           (helm-projectile-on)))
-    (setq projectile-completion-system 'ido
-          projectile-switch-project-action 'projectile-dired))
+
   (dolist (dir '(".svn" "CVS" "bin" ".git"))
     (add-to-list 'projectile-globally-ignored-directories dir))
   (dolist (dir '("ede-project.el"))
@@ -736,6 +731,12 @@
     (add-to-list 'projectile-globally-ignored-files file))
   (dolist (suffix '(".pyc" ".bak"))
     (add-to-list 'projectile-globally-ignored-file-suffixes suffix))
+
+  (deh-package helm-projectile
+    :config
+    (setq projectile-completion-system 'helm
+          projectile-switch-project-action 'helm-projectile)
+    (helm-projectile-on))
   )
 
 ;; Grizzl is a small utility library to be used in other Elisp code

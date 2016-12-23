@@ -242,7 +242,7 @@ mouse-3: Remove current window from display")
     (dired-sort-other (concat dired-listing-switches "")))
 
 
-  (defun ywb-dired-filter-regexp (regexp &optional arg)
+  (defun my/dired-filter-regexp (regexp &optional arg)
     (interactive
      (list (dired-read-regexp
             (concat (if current-prefix-arg "Exclude" "Exclude not")
@@ -252,13 +252,13 @@ mouse-3: Remove current window from display")
     (or arg (dired-toggle-marks))
     (dired-do-kill-lines))
 
-  (defun ywb-dired-filter-extension (extension &optional arg)
+  (defun my/dired-filter-extension (extension &optional arg)
     (interactive
      (list (read-from-minibuffer
             (concat "Exclude extension is "
                     (if current-prefix-arg "" "not") ": "))
            current-prefix-arg))
-    (ywb-dired-filter-regexp (concat "\\." extension "\\'") arg)))
+    (my/dired-filter-regexp (concat "\\." extension "\\'") arg)))
 
 (deh-package dired-x
   :commands dired-omit-mode
@@ -385,12 +385,6 @@ run command asynchronously. Originally defined in dired-aux.el"
         helm-ff-skip-boring-files t
         helm-ff-file-name-history-use-recentf t
         helm-yas-display-key-on-candidate t)
-
-  (deh-package helm-projectile
-    :defer
-    :config
-    (setq projectile-completion-system 'helm)
-    (helm-projectile-on))
 
   (deh-package helm-eshell
     :defer

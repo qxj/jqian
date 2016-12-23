@@ -71,7 +71,7 @@
 
 (deh-section macosx
   (when (eq system-type 'darwin)
-    (setq ns-command-modifier 'meta)
+    ;; (setq ns-command-modifier 'meta)
     (dolist (dir '("/usr/include/c++/v1"))
       (add-to-list 'my/include-dirs dir))
     ;; fix launching from spotlight
@@ -152,8 +152,23 @@
       (setq custom-theme-directory
             (expand-file-name "theme" my/startup-dir))
       (load-theme 'zenburn :no-confirm))
-    ;; font setting
-    (load (expand-file-name "my-fontset.el" my/config-dir))))
+
+    ;;# font setting
+    (deh-section font
+      (let ((en-font (cond (my/iswin "Consolas")
+                           (my/ismac "Menlo")
+                           (t "DejaVu Sans Mono")))
+            (zh-font (cond (my/iswin "Microsoft YaHei")
+                           (my/ismac "PingFang SC")
+                           (t "WenQuanYi Micro Hei Mono")))
+            (pixel-size (if (> (x-display-pixel-width) 1280)
+                            ":pixelsize=16" ":pixelsize=12"))
+            (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
+        (setq default-frame-alist
+              `((width . ,frame-width)
+                (font . ,(concat en-font pixel-size))))))
+    )
+  )
 
 ;; (deh-add-hook 'find-file-hook
 ;;   (if (and (buffer-file-name)

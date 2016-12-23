@@ -97,15 +97,18 @@
                        (my/ismac "PingFang SC")
                        (t "WenQuanYi Micro Hei Mono")))
         (pixel-size (if (> (x-display-pixel-width) 1280)
-                        ":pixelsize=18" ":pixelsize=12"))
+                        ":pixelsize=16" ":pixelsize=12"))
         (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
     ;;## For `emacsclient -c xxx`
-    (deh-add-hook after-make-frame-functions
-      ;; (set-face-attribute 'default nil :height 100 :width 'normal
-      ;;                     :family en-font)
-      (set-frame-font (concat en-font pixel-size)))
-    (add-to-list 'default-frame-alist (cons 'width frame-width))
-    (set-frame-font (concat en-font pixel-size))
-    (dolist (charset '(kana han symbol cjk-misc bopomofo))
-      (set-fontset-font "fontset-default" charset
-                        (font-spec :family zh-font)))))
+    ;; (deh-add-hook after-make-frame-functions
+    ;;   (set-face-attribute 'default nil :height 100 :width 'normal
+    ;;                       :family en-font)
+    ;;   (set-frame-font (concat en-font pixel-size)))
+    ;; (add-to-list 'default-frame-alist (cons 'width frame-width))
+    (setq default-frame-alist
+          `((width . ,frame-width)
+            (font . ,(concat en-font pixel-size))))
+    ;; (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    ;;   (set-fontset-font "fontset-default" charset
+    ;;                     (font-spec :family zh-font)))
+    ))
