@@ -269,7 +269,7 @@ Example:
     :ensure t
     :defer
     :bind*
-    ("M-i" . helm-swoop)
+    ("C-s" . helm-swoop)                ; replace isearch, candidate: ivy swiper
     ("C-c M-i" . helm-multi-swoop)
     ("C-x M-i" . helm-multi-swoop-all)
     :config
@@ -388,19 +388,6 @@ Example:
     "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
     (let ((yas-prompt-functions '(yas-completing-prompt))) ad-do-it))
   )
-
-(use-package ivy
-  :ensure t
-  :bind*
-  ("C-c C-r" . ivy-resume)
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t))
-
-(use-package swiper
-  :ensure t
-  :bind*
-  ("C-s" . swiper))
 
 (use-package avy
   :ensure t
@@ -626,6 +613,8 @@ Example:
   (set-face-foreground 'diff-context "#666666")
   (set-face-foreground 'diff-added "#00cc33")
   (set-face-foreground 'diff-removed "#ff0000")
+
+  (setq magit-completing-read-function 'ivy-completing-read)
 
   (add-hook 'magit-mode-hook 'magit-load-config-extensions)
 
