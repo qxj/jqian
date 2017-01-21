@@ -69,7 +69,7 @@ Like eclipse's Ctrl+Alt+F."
     (and file-extension
          (string= file (file-name-sans-versions file))
          (find file-extension
-               '("h" "hpp" "hxx" "c" "cpp" "cxx")
+               '("h" "hpp" "hh" "c" "cpp" "cc")
                :test 'string=))))
 
 (defun format-cxx-file (file)

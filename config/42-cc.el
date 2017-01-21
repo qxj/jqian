@@ -68,7 +68,7 @@
              (string-match "\.h$" (buffer-name))
              (save-excursion
                (goto-char (point-min))
-               (search-forward-regexp "^class" nil t)))
+               (search-forward-regexp "^\\(class\\|template\\|namespace\\)" nil t)))
         (c++-mode)))
 
   ;;# change face of code in #if 0...#endif
@@ -104,7 +104,7 @@
     (my/prog-mode-hook)
     ;; (c-add-style "Personal" my/c-style t)
     ;; (c-set-style "stroustrup")
-    ;; google code style
+    ;;# google code style
     (google-set-c-style) (google-make-newline-indent)
     (my/c-indent-lineup-arglist)
     (my/c-correct-hpp-mode)

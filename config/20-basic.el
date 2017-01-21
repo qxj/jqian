@@ -310,6 +310,7 @@ run command asynchronously. Originally defined in dired-aux.el"
   ("C-x b" . helm-mini)
   ("C-x C-b" . helm-buffers-list)
   ("C-x C-f" . helm-find-files)
+  ("C-x M-f" . helm-for-files)
   ("C-h SPC" . helm-all-mark-rings)
   :init
   (require 'helm-config)
@@ -351,13 +352,6 @@ run command asynchronously. Originally defined in dired-aux.el"
   (when (executable-find "curl")
     (setq helm-google-suggest-use-curl-p t))
 
-  ;; enable ack-grep for helm-ff-do-grep
-  (when (executable-find "ack-grep")
-    (setq helm-grep-default-command
-          "ack-grep -Hn --no-group --no-color %e %p %f"
-          helm-grep-default-recurse-command
-          "ack-grep -H --no-group --no-color %e %p %f"))
-
   ;; enable man page at point
   (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 
@@ -370,6 +364,7 @@ run command asynchronously. Originally defined in dired-aux.el"
         helm-locate-fuzzy-match nil ; helm-locate
         helm-apropos-fuzzy-match t      ; helm-apropos
         helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
+        helm-ff-guess-ffap-filenames t  ; helm-find-files
         )
 
   (setq helm-candidate-number-limit 100)
@@ -419,6 +414,7 @@ run command asynchronously. Originally defined in dired-aux.el"
      ("M-." . helm-gtags-find-tag)
      ("M-," . helm-gtags-pop-stack)
      ("M-*" . helm-gtags-pop-stack)
+     ("M-s d" . helm-gtags-dwim)
      ("M-s r" . helm-gtags-find-rtag)
      ("M-s s" . helm-gtags-find-symbol)
      ("C-c i" . helm-gtags-parse-file)  ;replace imenu
@@ -427,6 +423,8 @@ run command asynchronously. Originally defined in dired-aux.el"
      )
     (add-hook 'c-mode-hook #'helm-gtags-mode)
     (add-hook 'c++-mode-hook #'helm-gtags-mode))
+
+  (deh-package helm-ag)
 
   (deh-package helm-bm
     :after bm)

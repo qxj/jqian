@@ -129,7 +129,7 @@
 ;; (electric-layout-mode t)
 
 ;; (partial-completion-mode 1)             ; deprecated in emacs24
-(icomplete-mode 1)
+;; (icomplete-mode 1)                      ; ivy instead
 (winner-mode 1)
 ;; (auto-insert-mode 1)
 (electric-pair-mode 1)

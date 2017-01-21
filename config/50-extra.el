@@ -706,6 +706,7 @@
   ("C-c p g" . projectile-grep)
   ("C-c p t" . projectile-toggle-between-implementation-and-test)
   ;; C-c p f projectile-find-file
+  ;; C-c p a projectile-find-other-file
   ;; C-c p z projectile-cache-current-file
   ;; C-c p s projectile-switch-project
   ;; C-c p g projectile-grep
