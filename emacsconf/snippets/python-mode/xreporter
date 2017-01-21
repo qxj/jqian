@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name: mr reporter:counter
+# --
+sys.stderr.write("reporter:counter:${1:My Counters},${2:message},1\n")

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+#name : for line in sys.stdin : ...
+# --
+for ${1:line} in sys.stdin:
+    ${2:cols} = $1.strip().split(${3:'\t'})

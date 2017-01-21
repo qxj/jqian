@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+#name: const boost::system::error_code& error
+# --
+const boost::system::error_code& error

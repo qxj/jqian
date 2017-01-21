@@ -1,8 +1,8 @@
-#name: try {...} catch(exception& e){...}
-#key: try
+# -*- mode: snippet -*-
+# name: try {...} catch(exception& e){...}
 # --
 try {
-$1
+    $1
 } catch (${2:std::exception& e}) {
-$3
+    $3
 }

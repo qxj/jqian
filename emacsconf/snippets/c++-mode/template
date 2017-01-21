@@ -1,4 +1,5 @@
-#name : template <typename ...>
-#key: temp
+# -*- mode: snippet -*-
+# name : template <typename ...>
+# key: template
 # --
 template <typename ${T}>

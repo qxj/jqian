@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-#name : #ifdef ... #endif
+#name : #ifdef XXX; AAA #else BBB #endif
 # --
 #ifdef ${1:MACRO}
 $0${2:

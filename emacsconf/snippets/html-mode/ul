@@ -1,7 +1,7 @@
-#contributor : Jimmy Wu <frozenthrone88@gmail.com>
+# -*- mode: snippet -*-
 #name : <ul>...</ul>
 #group : list
 # --
-<ul>
+<ul$1>
   $0
 </ul>

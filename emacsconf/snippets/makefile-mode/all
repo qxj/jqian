@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: all
-# key: all
+# name: all: ...
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
 # --
 all:
     $0

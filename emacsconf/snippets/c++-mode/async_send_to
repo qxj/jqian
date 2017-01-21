@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name: udp.async_send_to(...)
+# --
+async_send_to(boost::asio::buffer(${1:data}, ${2:length}),${3:endpoint},
+    boost::bind(&${4:callback}, boost::asio::placeholders::error,
+    boost::asio::placeholders::bytes_transferred));

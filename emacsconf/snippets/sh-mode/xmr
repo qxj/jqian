@@ -1,0 +1,33 @@
+# -*- mode: snippet -*-
+# name: a run_job.sh for MRv1
+# --
+. $MY_SHLIB_PATH/common.sh
+
+pre_job
+
+input0=$(latest_input "${1:/path/to/input}")
+day=$(get_tailing_date $input0)
+
+input=$input0
+output=$(latest_output "${2:/path/to/output}" $input0)
+
+if [[ $? -eq 0 ]]; then
+    debug
+
+    hadoop jar /home/hadoop/hadoop/contrib/streaming/hadoop-0.20.2-streaming.jar \
+        -D mapred.reduce.tasks=100 \
+        -D mapred.output.compress=true \
+        -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec \
+        -input $input \
+        -output $output \
+        -mapper ${3:mapper.py} \
+        -reducer ${4:reducer.py} \
+        -file ./$3 \
+        -file ./$4 \
+        -partitioner org.apache.hadoop.mapred.lib.KeyFieldBasedPartitioner \
+        -jobconf mapred.job.name="`user-login-name`:$2:$day" \
+        -jobconf map.output.key.field.separator=':' \
+        -jobconf num.key.fields.for.partition=1
+
+    check_output $output
+fi

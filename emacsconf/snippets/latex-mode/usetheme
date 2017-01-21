@@ -2,4 +2,4 @@
 # name: \usetheme{"Rochester"}
 # key: ut
 # --
-\usetheme{${1:default(yas/choose-value '("default" "AnnArbor" "Antibes" "Bergen" "Berkeley" "Berlin" "Boadilla" "CambridgeUS" "Copenhagen" "Darmstadt" "Dresden" "Frankfurt" "Goettingen" "Hannover" "Ilmenau" "JuanLesPins" "Luebeck" "Madrid" "Malmoe" "Marburg" "Montpellier" "PaloAlto" "Pittsburgh" "Rochester" "Singapore" "Szeged" "Warsaw" "boxes"))}}
+\usetheme{${1:default(yas-choose-value '("default" "AnnArbor" "Antibes" "Bergen" "Berkeley" "Berlin" "Boadilla" "CambridgeUS" "Copenhagen" "Darmstadt" "Dresden" "Frankfurt" "Goettingen" "Hannover" "Ilmenau" "JuanLesPins" "Luebeck" "Madrid" "Malmoe" "Marburg" "Montpellier" "PaloAlto" "Pittsburgh" "Rochester" "Singapore" "Szeged" "Warsaw" "boxes"))}}

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name: boost::asio::async_read(...)
+# --
+boost::asio::async_read(${1:socket},
+    boost::asio::buffer(&${2:data}, ${3:length}),
+    boost::bind(${4:callback}, boost::asio::placeholders::error));
