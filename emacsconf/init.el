@@ -274,6 +274,7 @@ Example:
         helm-locate-fuzzy-match nil ; helm-locate
         helm-apropos-fuzzy-match t      ; helm-apropos
         helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
+        helm-ff-guess-ffap-filenames t  ; helm-find-files
         )
 
   (setq helm-candidate-number-limit 100)
@@ -320,6 +321,7 @@ Example:
      ("M-." . helm-gtags-find-tag)
      ("M-," . helm-gtags-pop-stack)
      ("M-*" . helm-gtags-pop-stack)
+     ("M-s d" . helm-gtags-dwim)
      ("M-s r" . helm-gtags-find-rtag)
      ("M-s s" . helm-gtags-find-symbol)
      ("C-c i" . helm-gtags-parse-file)  ;replace imenu
@@ -335,6 +337,8 @@ Example:
     ("C-c y" . helm-yas-complete)
     :config
     (setq helm-yas-space-match-any-greedy t))
+
+  (use-package helm-ag)
   )
 
 (use-package company
@@ -574,6 +578,7 @@ Example:
   ("C-c p g" . projectile-grep)
   ("C-c p t" . projectile-toggle-between-implementation-and-test)
   ;; C-c p f projectile-find-file
+  ;; C-c p a projectile-find-other-file
   ;; C-c p z projectile-cache-current-file
   ;; C-c p s projectile-switch-project
   ;; C-c p g projectile-grep

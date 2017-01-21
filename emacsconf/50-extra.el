@@ -160,6 +160,9 @@
    ("C-M-b"  . backward-sexp))
   (unbind-key "M-n" markdown-mode-map)
   (unbind-key "M-p" markdown-mode-map)
+
+  (add-hook 'markdown-mode-hook 'outline-minor-mode)
+
   (setq markdown-xhtml-header-content
         "<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\">
 MathJax.Hub.Config({
