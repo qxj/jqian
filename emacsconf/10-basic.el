@@ -60,7 +60,26 @@
     (load-theme 'zenburn :no-confirm)))
 
 
-;;;{{{ Auto indent pasted content
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Add more directory to environment variable PATH and exec-path
+(let (path)
+  (mapc (lambda (p)
+          (setq p (convert-standard-filename
+                   (expand-file-name p)))
+          (add-to-list 'exec-path p)
+          (add-to-list 'path p t))
+        (append
+         ;; let your dirs prepend original PATH
+         (if (eq system-type 'windows-nt)
+             '("d:/programs/emacs/bin" "d:/cygwin/bin" "d:/cygwin/usr/bin"
+               "d:/cygwin/usr/local/bin")
+           '("~/bin" "~/local/bin" "~/.local/bin"
+             "/usr/local/bin" "/usr/local/sbin" "/usr/texbin"))
+         (split-string (getenv "PATH") path-separator)))
+  (setenv "PATH" (mapconcat 'identity path path-separator)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Auto indent pasted content
 (defvar yank-advised-indent-threshold 1000
   "Threshold (# chars) over which indentation does not
 automatically occur. Indent too many content will impact yank
@@ -89,4 +108,3 @@ performance!")
 
 (defun yank-unindented ()
   (interactive) (yank 1))
-  ;;;}}}
