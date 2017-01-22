@@ -1,10 +1,19 @@
 ;; -*- emacs-lisp -*-
 
-(if (not load-file-name)
-    (error "Load me by M-x load-file RET"))
+(if (not load-file-name) (error "Load me by M-x load-file RET"))
 
 (setq debug-on-error t debug-on-quit nil)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; personal info
+(setq user-full-name "Julian Qian"
+      user-mail-address "junist@gmail.com")
+
+(unless (getenv "ORGANIZATION")
+  (setenv "ORGANIZATION" user-full-name))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; use-package
 (require 'package)
 (setq package-enable-at-startup nil)
 (setq package-archives
@@ -18,23 +27,33 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; Helper function `deh-package'
-;; (add-to-list 'load-path "~/.emacs.d/lisp")
-;; (unless (require 'dot-emacs-helper nil t) (error "missing dot-emacs-helper.el"))
-(use-package dot-emacs-helper :load-path "~/.emacs.d/lisp")
+;; A wrapper for `use-package'
+;; (use-package dot-emacs-helper :load-path "~/.emacs.d/lisp")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; personal info
-(setq user-full-name "Julian Qian"
-      user-mail-address "junist@gmail.com")
+(defvar my/packages nil)
+(defun my/record-package-name (orig-func &rest args)
+  (let ((name (symbol-name (car args))))
+    (when (and (not (assoc-string name my/packages)) load-file-name)
+      (add-to-list 'my/packages (cons name load-file-name))
+      (apply orig-func args))))
+(advice-add #'use-package :around #'my/record-package-name)
 
-(unless (getenv "ORGANIZATION")
-  (setenv "ORGANIZATION" user-full-name))
-
+(defun my/locate-package (name)
+  "Locate package configuration by name."
+  (interactive
+   (list (funcall (if (fboundp 'helm-comp-read) 'helm-comp-read 'completing-read)
+                  "Locate package: " (mapcar (lambda (s) (car s)) my/packages))))
+  (let ((pkg (assoc-string name my/packages)) done)
+    (if (and pkg (cdr pkg) (file-exists-p (cdr pkg)))
+        (progn
+          (find-file (cdr pkg)) (goto-char (point-min)) (setq done t)
+          (re-search-forward
+           (concat "(\\s-*\\use-package\\s-+" (regexp-quote  (car pkg))))
+          (recenter-top-bottom 0)))
+    (unless done (message "Failed to locate package %s." name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; helper
-
 (defmacro add-hooks (hook &rest forms)
   "Apply some functions for a hook.
 
@@ -58,7 +77,7 @@ Example:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; better defaults
 (show-paren-mode 1)
-;; (icomplete-mode 1)
+(icomplete-mode 1)
 (when (> emacs-major-version 24)
   (electric-pair-mode 1)
   (subword-mode 1))
@@ -255,7 +274,6 @@ Example:
   ;; From https://gist.github.com/antifuchs/9238468
   (setq helm-idle-delay 0.0         ; update fast sources immediately (doesn't).
         helm-input-idle-delay 0.01  ; this actually updates things reeeelatively quickly.
-        helm-autoresize-mode t
         helm-quick-update t
         helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
         ;; helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
@@ -264,12 +282,14 @@ Example:
         helm-ff-skip-boring-files t
         helm-ff-file-name-history-use-recentf t
         helm-yas-display-key-on-candidate t)
+  (helm-autoresize-mode 1)
+  (setq helm-autoresize-min-height 3
+        helm-autoresize-min-height 10)
 
   (use-package helm-swoop
-    :ensure t
     :defer
     :bind*
-    ("C-s" . helm-swoop)                ; replace isearch, candidate: ivy swiper
+    ("C-s" . helm-swoop)
     ("C-c M-i" . helm-multi-swoop)
     ("C-x M-i" . helm-multi-swoop-all)
     :config
@@ -278,7 +298,6 @@ Example:
     )
 
   (use-package helm-gtags
-    :ensure t
     :defer 3
     :if (executable-find "gtags")
     :diminish (helm-gtags-mode . "hG")
@@ -307,14 +326,13 @@ Example:
     ("C-c y" . helm-yas-complete)
     :config
     (setq helm-yas-space-match-any-greedy t))
-
   )
 
 (use-package company
   :ensure t
-  ;; :diminish (company-mode . "Cy")
   :diminish company-mode
   ;; :bind
+  ;; (("<tab>" . my/complete-or-indent)
   ;;  ("C-." . company-files))
   :config
   (bind-keys
@@ -323,6 +341,7 @@ Example:
    ("C-p" . company-select-previous))
   (bind-keys
    :map company-mode-map
+   ;; ("<tab>" . my/complete-or-indent)
    ("<C-return>" . company-complete-common)
    ("C-." . company-files))
 
@@ -350,15 +369,13 @@ Example:
   )
 
 (use-package yasnippet
-  ;; You may compile all directories in the list `yas-snippet-dirs' with the
+  ;; Compile all directories in the list `yas-snippet-dirs' with the
   ;; `yas-recompile-all' function.
   :ensure t
   :diminish yas-minor-mode
-  :init
-  (eval-after-load 'yasnippet
-    '(progn
-       (setq yas-snippet-dirs (remq 'yas-installed-snippets-dir yas-snippet-dirs))
-       ))
+  ;; :init
+  ;; (with-eval-after-load 'yasnippet
+  ;;   (setq yas-snippet-dirs (remq 'yas-installed-snippets-dir yas-snippet-dirs)))
   :config
   ;; (yas-global-mode 1)
   (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
@@ -374,7 +391,6 @@ Example:
 
   ;; FOR `hippie-try-expand' setting
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
-
 
   (bind-keys
    :map yas-minor-mode-map
@@ -614,12 +630,10 @@ Example:
   (set-face-foreground 'diff-added "#00cc33")
   (set-face-foreground 'diff-removed "#ff0000")
 
-  (setq magit-completing-read-function 'ivy-completing-read)
-
   (add-hook 'magit-mode-hook 'magit-load-config-extensions)
 
-  (eval-after-load "git-commit-mode"
-    '(define-key git-commit-mode-map (kbd "C-c C-k") 'magit-exit-commit-mode))
+  (with-eval-after-load 'git-commit
+    (define-key git-commit-mode-map (kbd "C-c C-k") 'magit-exit-commit-mode))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -689,18 +703,6 @@ Example:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; defadvice settings
-(defadvice kill-line (before check-position activate)
-  "killing the newline between indented lines and remove extra
-spaces."
-  (if (member major-mode
-              '(emacs-lisp-mode scheme-mode lisp-mode
-                                c-mode c++-mode objc-mode python-mode
-                                latex-mode plain-tex-mode))
-      (if (and (eolp) (not (bolp)))
-          (progn (forward-char 1)
-                 (just-one-space 0)
-                 (backward-char 1)))))
-
 (defadvice kill-ring-save (before slickcopy activate compile)
   "When called interactively with no active region, copy the
 current single line to `kill-ring' instead."
@@ -784,34 +786,6 @@ spaces leaving. bind to \\[vi-merge-lines]."
       (delete-char 1)
       (delete-horizontal-space))
     (setq arg (- arg 1))))
-
-(defun extend-selection (arg &optional incremental)
-  "Select the current word.
-Subsequent calls expands the selection to larger semantic unit."
-  (interactive (list (prefix-numeric-value current-prefix-arg)
-                     (or (and transient-mark-mode mark-active)
-                         (eq last-command this-command))))
-  (if incremental
-      (progn
-        (when (nth 3 (syntax-ppss))
-          (if (< arg 0)
-              (progn
-                (skip-syntax-forward "^\"")
-                (goto-char (1+ (point)))
-                (incf arg))
-            (skip-syntax-backward "^\"")
-            (goto-char (1- (point)))
-            (decf arg)))
-        (up-list (- arg))
-        (forward-sexp)
-        (mark-sexp -1))
-    (if (> arg 1)
-        (extend-selection (1- arg) t)
-      (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
-          (goto-char (match-end 0))
-        (unless (memq (char-before) '(?\) ?\"))
-          (forward-sexp)))
-      (mark-sexp -1))))
 
 (defun my/delete-char-or-region ()
   "hack `delete-char', delete char or region, skip kill ring."
@@ -913,8 +887,6 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  ("C-M-o" .  split-line)
  ("C-'"   .  redo)
  ("C-\\"  .  my/comment-or-uncomment-region)
- ;; ("C-s"  . isearch-forward-regexp)
- ;; ("C-r"  . isearch-backward-regexp)
  ("M-5"   .  my/display-buffer-path)
  ("M-0"   .  other-window)
  ("M-'"   .  just-one-space)
@@ -971,6 +943,7 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  :map ctl-cc-map
  ("b" . my/revert-buffer)
  ("c" . my/switch-scratch)
+ ("d" . my/locate-package)
  ("f" . flycheck-mode)
  ("i" . ispell-word)
  ("l" . global-linum-mode)
@@ -984,4 +957,7 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq custom-file "~/.emacs-custom.el")
 (load custom-file t)
+(let ((d (if (boundp 'my/config-directory) my/config-directory
+           (file-name-directory load-file-name))))
+  (mapc 'load (directory-files d t "^[0-9]+-.*.el$")))
 (server-start)
