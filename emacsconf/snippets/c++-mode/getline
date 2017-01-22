@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name: std::getline(fp, line)
+# --
+while(std::getline(${1:std::cin}, ${2:line})){
+    $0
+}

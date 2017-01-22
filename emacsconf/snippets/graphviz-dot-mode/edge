@@ -1,5 +1,4 @@
 # -*- mode: snippet -*-
 # name: edge[style=..,color=..]
-# key: edge
 # --
-edge[style=${1:solid$$(yas/choose-value '("invis" "bold" "dashed" "dotted" "solid"))} color=${2:navyblue$$(yas/choose-value '("lightgrey" "pink" "maroon" "lightblue" "navyblue"))} dir=${3:forward$$(yas/choose-value '("back" "both" "none" "forward"))} fontsize=${4:10}];
+edge[style=${1:solid$$(yas-choose-value '("invis" "bold" "dashed" "dotted" "solid"))} color=${2:navyblue$$(yas/choose-value '("lightgrey" "pink" "maroon" "lightblue" "navyblue"))} dir=${3:forward$$(yas/choose-value '("back" "both" "none" "forward"))} fontsize=${4:10}];

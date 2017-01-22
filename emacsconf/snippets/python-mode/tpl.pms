@@ -1,0 +1,36 @@
+# -*- mode: snippet -*-
+#name: pms
+# --
+from __future__ import division
+import argparse
+import collections
+import datetime
+import os
+import pdb
+import sys
+
+sys.path.append('../../../pdlib/py')
+import excel
+import htmlUtil
+import mydb
+import mymail
+from xcrypt import Xcrypt
+
+class MyTable(object):
+    def __init__(self, dry=False):
+        self.dry = dry
+        self.db = mydb.get_db(conv=True)
+
+def main():
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
+    parser = argparse.ArgumentParser(description='excel task')
+    parser.add_argument('action', type=str, choices=('import','run',), help='action')
+    parser.add_argument('--dry', action='store_true', help='whether dry run')
+    parser.add_argument('-o', '--output', type=str, default='data.xlsx', help='ouput excel file path')
+    parser.add_argument('-r', '--receiver', type=str, help='receivers, split by comma')
+    args = parser.parse_args()
+
+if __name__ == "__main__":
+    main()

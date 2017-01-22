@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+#name: case ... esac
+# --
+case ${1:cond} in
+    ${2:var})
+        $0
+        ;;
+esac

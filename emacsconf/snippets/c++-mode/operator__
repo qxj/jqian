@@ -1,8 +1,9 @@
 # -*- mode: snippet -*-
 # name: operator<<
-# key: <<
+# key: o<<
 # --
-std::ostream& operator<<(std::ostream& s, const ${1:type}& ${2:c}) {
+std::ostream& operator<<(std::ostream& s, const ${1:type}& ${2:c})
+{
     $0
     return s;
 }

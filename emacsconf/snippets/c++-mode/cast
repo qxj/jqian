@@ -1,4 +1,4 @@
+# -*- mode: snippet -*-
 #name: static_cast/dynamic_cast/...
-#key: cast
 # --
-${1:$$(yas/choose-value '("reinterpret_cast" "const_cast" "dynamic_cast" "static_cast"))}<$2>($3)
+${1:$$(yas-choose-value '("reinterpret_cast" "const_cast" "dynamic_cast" "static_cast" "lexical_cast"))}<$2>($3)$0

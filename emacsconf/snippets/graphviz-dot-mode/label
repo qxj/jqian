@@ -1,5 +1,4 @@
 # -*- mode: snippet -*-
 # name: label=".."
-# key: lab
 # --
 label="$1"

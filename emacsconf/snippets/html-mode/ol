@@ -1,7 +1,7 @@
-#contributor : Jimmy Wu <frozenthrone88@gmail.com>
+# -*- mode: snippet -*-
 #name : <ol>...</ol>
 #group : list
 # --
-<ol>
+<ol$1>
   $0
 </ol>

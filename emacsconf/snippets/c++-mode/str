@@ -1,5 +1,4 @@
 # -*- mode: snippet -*-
-# name: str
-# key: str
+#name: std::string
 # --
-#include <string>
+std::string ${1:str};
