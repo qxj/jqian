@@ -9,18 +9,7 @@
 (defconst my/ismac (equal system-type 'darwin))
 (defconst my/iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
 
-(let ((en-font (cond (my/iswin "Consolas")
-                     (my/ismac "Menlo")
-                     (t "DejaVu Sans Mono")))
-      (zh-font (cond (my/iswin "Microsoft YaHei")
-                     (my/ismac "PingFang SC")
-                     (t "WenQuanYi Micro Hei Mono")))
-      (pixel-size (if (> (x-display-pixel-width) 1280)
-                      ":pixelsize=16" ":pixelsize=12"))
-      (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
-  (setq default-frame-alist
-        `((width . ,frame-width)
-          (font . ,(concat en-font pixel-size)))))
+
 
 ;; If terminal and X is sharing the same emacs server, color-theme
 ;; will affect terminal display. Below function will resolve this
@@ -57,7 +46,22 @@
   ;; (load-theme 'tango-dark :no-confirm)
   (use-package zenburn-theme
     :config
-    (load-theme 'zenburn :no-confirm)))
+    (load-theme 'zenburn :no-confirm))
+
+  ;;; Font setting
+  (let ((en-font (cond (my/iswin "Consolas")
+                       (my/ismac "Menlo")
+                       (t "DejaVu Sans Mono")))
+        (zh-font (cond (my/iswin "Microsoft YaHei")
+                       (my/ismac "PingFang SC")
+                       (t "WenQuanYi Micro Hei Mono")))
+        (pixel-size (if (> (x-display-pixel-width) 1280)
+                        ":pixelsize=16" ":pixelsize=12"))
+        (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
+    (setq default-frame-alist
+          `((width . ,frame-width)
+            (font . ,(concat en-font pixel-size)))))
+  )
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
