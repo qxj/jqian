@@ -458,10 +458,10 @@ Example:
 (use-package expand-region
   :ensure t
   :bind
-  ("M-["  .   er/expand-region)
   ("C-1"  .   er/expand-region)
   ("M-2"  .   er/expand-region)
-  ("M-]"  .   er/contract-region))
+  ("C-M-2"  .   er/contract-region)
+  )
 
 (use-package smart-mode-line
   :ensure t
