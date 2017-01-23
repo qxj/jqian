@@ -5,7 +5,7 @@
 (setq debug-on-error t debug-on-quit nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; personal info
+;;; Personal info
 (setq user-full-name "Julian Qian"
       user-mail-address "junist@gmail.com")
 
@@ -53,7 +53,7 @@
     (unless done (message "Failed to locate package %s." name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; helper
+;;; Helper
 (defmacro my/add-hook (hook &rest forms)
   "Apply some functions for a hook.
 
@@ -151,6 +151,7 @@ Example:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; internal
+
 (autoload 'zap-up-to-char "misc" nil t)
 (autoload 'dired-jump "dired-x" nil t)
 
@@ -165,8 +166,7 @@ Example:
   (put 'dired-find-alternate-file 'disabled nil)
   (bind-keys
    :map dired-mode-map
-   ("M-u"  . (lambda () (interactive) (find-alternate-file "..")))
-   )
+   ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
   )
 
 (use-package uniquify
@@ -178,7 +178,7 @@ Example:
 
 (use-package saveplace
   :config
-  (setq-default save-place t))
+  (save-place-mode 1))
 
 (use-package savehist
   :config
@@ -869,31 +869,24 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; keybinds
-(define-prefix-command 'ctl-c-map nil "Command prefix: C-c")
-(define-prefix-command 'ctl-cc-map nil "Command prefix: C-c c")
 
 (bind-keys
- ("C-c" . ctl-c-map)
- ("C-c c" . ctl-cc-map))
-
-(bind-keys
- ([remap delete-char]  .  my/delete-char-or-region)           ;C-d
+ ([remap delete-char]  .  my/delete-char-or-region)        ;C-d
  ([remap move-beginning-of-line]  .  my/beginning-of-line) ;C-a
  ([remap move-end-of-line]  .  my/end-of-line)             ;C-e
  ([remap kill-line]  .  my/delete-line)                    ;C-k
  ([remap kill-word]  .  my/delete-word)                    ;M-d
- ([remap backward-kill-word] .  my/backward-delete-word) ;M-DEL, <C-backspace>
+ ([remap backward-kill-word] .  my/backward-delete-word)   ;M-DEL, <C-backspace>
 
- ("M-d"   .  my/delete-word)           ;M-d
+ ("M-d"   .  my/delete-word)             ;M-d
  ("C-S-k" .  my/delete-line-backward)
- ;; ("C-1"  .  extend-selection)         ; alternative er/expand-region
- ;; ("M-2"  .  extend-selection)
+ ;; ("M-2"  .  extend-selection)         ; alternative er/expand-region
  ("C-2"   .  set-mark-command)
  ("C-m"   .  newline-and-indent)
  ("C-j"   .  newline)
  ("C-o"   .  my/vi-open-next-line)
  ("C-M-o" .  split-line)
- ("C-'"   .  redo)
+ ;; ("C-'"   .  redo)
  ("C-\\"  .  my/comment-or-uncomment-region)
  ("M-5"   .  my/display-buffer-path)
  ("M-0"   .  other-window)
@@ -918,22 +911,21 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 
 (bind-keys
  :map ctl-x-map
+ ("C-2" .  pop-global-mark)
  ("C-b" . ibuffer)
- ("C-t" . transpose-sexps)
- ("C-r" . sudo-edit)
  ("C-k" . kill-this-buffer)
  ;; ("C-o" . my/switch-recent-buffer)
  ("C-o" . mode-line-other-buffer)
-
+ ("C-r" . sudo-edit)
+ ("C-t" . transpose-sexps)
  ("C-_" . fit-frame)
  ;; ("t"  .  template-expand-template)
  ;; ("m"  .  message-mail)
  ("\\"  .  align-regexp)
- ("C-2" .  pop-global-mark)
  )
 
 (bind-keys
- :map ctl-c-map
+ :map mode-specific-map
  ("C-k" . kmacro-keymap)
  ("$" . toggle-truncate-lines)
  ;; ("f" . comint-dynamic-complete)
@@ -943,9 +935,15 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  ;; ("v" . imenu-tree)
  ;; ("w" . my/favorite-window-config)
  ;; ("C-b" . browse-url-of-buffer)
- ("C-t" . tv-view-history)
+ ;; ("C-t" . tv-view-history)
  ("'"   . toggle-quotes)
  )
+
+;;; Define ctl-cc-map for 'C-c c' commands
+(defvar ctl-cc-map (make-sparse-keymap)
+  "Keymap for subcommands of C-c c.")
+(defalias 'ctl-cc-prefix ctl-cc-map)
+(define-key mode-specific-map "c" 'ctl-cc-prefix)
 
 (bind-keys
  :map ctl-cc-map

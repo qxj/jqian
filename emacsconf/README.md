@@ -96,6 +96,9 @@ Then (1) press `m' to select files, or `t' to select them all, (2) press
 `Q' to query regexp string, e.g.: \<DEBUG\>, (3) press RET.
 
 ## Setting
+### Default keymap and key bindings
+refer `mode-specific-command-prefix` in `bindings.el`
+
 ### Treat underline _ as a part of words
 (modify-syntax-entry ?_ "w")
 
