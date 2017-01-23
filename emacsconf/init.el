@@ -297,13 +297,23 @@ Example:
   (use-package helm-swoop
     :ensure t
     :defer
-    :bind*
+    :bind
     ("C-s"     . helm-swoop)
     ("C-c M-i" . helm-multi-swoop)
     ("C-x M-i" . helm-multi-swoop-all)
     :config
     (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
     (bind-key "M-i" 'helm-multi-swoop-all-from-helm-swoop helm-swoop-map)
+    (defun my/helm-swoop-clean ()
+      (interactive)
+      (delete-region
+       (save-excursion (move-beginning-of-line 1) (point))
+       (save-excursion (move-end-of-line 1) (point))))
+    (bind-keys
+     :map helm-swoop-map
+     ("C-s" . undefined)
+     ("C-u" . my/helm-swoop-clean)
+     )
     )
 
   (use-package helm-gtags
@@ -614,7 +624,6 @@ Example:
   :ensure t
   :bind*
   ("C-c g"  . magit-status)
-  ("C-c l"  . magit-log)
   :config
   ;; Subtler highlight
   (set-face-background 'diff-file-header "#121212")
@@ -931,7 +940,6 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  ("r" . org-capture)
  ;; ("k" . auto-fill-mode)
  ;; ("q" . refill-mode)
- ;; ("u" . revert-buffer)
  ;; ("v" . imenu-tree)
  ;; ("w" . my/favorite-window-config)
  ;; ("C-b" . browse-url-of-buffer)
