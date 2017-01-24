@@ -119,6 +119,32 @@ indirect buffer. bind to \\[my/clone-buffer]."
           (setq current-prefix-arg nil)
           (call-interactively 'clone-indirect-buffer-other-window))))))
 
+(defun kill-buffer-when-shell-command-exit ()
+  "Close current buffer when `shell-command' exit."
+  (let ((process (ignore-errors (get-buffer-process (current-buffer)))))
+    (when process
+      (set-process-sentinel
+       process
+       (lambda (proc change)
+         (when (string-match "\\(finished\\|exited\\)" change)
+           (kill-buffer (process-buffer proc))))))))
+
+(defun emacs-process-duplicated-p ()
+  "Check whether another emacs process is running concorrently by
+pgrep, so.. make sure pgrep is already installed in your system."
+  (if (executable-find "pgrep")
+      (save-excursion
+        (let ((buffer (generate-new-buffer (generate-new-buffer-name "*check emacs process*")))
+              (process-number 0))
+          (set-buffer buffer)
+          (when (= 0 (call-process "pgrep" nil t nil "emacs"))
+            ;; (setq pid (buffer-substring (point-min) (1- (point-max))))
+            (goto-char (point-min))
+            (while (search-forward-regexp "^[0-9]+$" nil t)
+              (incf process-number)))
+          (kill-buffer buffer)
+          (> process-number 1)))))
+
 (defun compact-uncompact-block ()
   "Remove or add line endings on the current block of text.
 This command similar to a toggle for `fill-paragraph' and `unfill-paragraph'

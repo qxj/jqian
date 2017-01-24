@@ -6,7 +6,6 @@
 ;; Hi-lock: end
 
 (use-package desktop
-  :disabled
   :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-restore-eager 8)        ; firstly restore 8 buffers
@@ -147,7 +146,7 @@
             (lambda ()
               (with-current-buffer (current-buffer) (diff-hl-update)))))
 
-(use-package sdcv-mode
+(use-package sdcv
   :bind ("M-1" . sdcv-search))
 
 (use-package markdown-mode
