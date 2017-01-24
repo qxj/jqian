@@ -80,7 +80,7 @@ Example:
 (icomplete-mode 1)
 (when (> emacs-major-version 24)
   (electric-pair-mode 1)
-  (subword-mode 1))
+  (global-subword-mode 1))
 
 ;; Echo key strokes quickly
 (setq echo-keystrokes 0.1)
