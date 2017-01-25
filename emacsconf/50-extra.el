@@ -112,6 +112,84 @@
    ("n"  . bm-show-next)
    ("p"  . bm-show-prev)))
 
+(use-package ivy
+  :disabled
+  :ensure
+  :diminish
+  :bind
+  ("C-x b" . ivy-switch-buffer)
+  ("C-c C-r" . ivy-resume)
+  :config
+  (ivy-mode 1)
+
+  (bind-keys
+   :map ivy-minibuffer-map
+   ("C-w" . ivy-backward-kill-word))
+
+  (use-package swiper
+    :ensure
+    :bind
+    ("C-s" . swiper))
+
+  (use-package counsel
+    :ensure
+    :bind
+    ("M-x" . counsel-M-x)
+    ("M-y" . counsel-yank-pop)
+    ("C-c i" . counsel-imenu)
+    ("C-x C-f" . counsel-find-file)
+    ("C-c c o" . counsel-recentf)
+
+    ("C-h f" . counsel-describe-function)
+    ("C-h v" . counsel-describe-variable)
+    ("C-h l" . counsel-find-library)
+    ("C-h i" . counsel-info-lookup-symbol)
+    ("C-h u" . counsel-unicode-char)
+
+    ("C-x c g"  . counsel-git)
+    ("C-x c j"  . counsel-git-grep)
+    ("C-x c a"  . counsel-ag)
+    ("C-x c l"  . counsel-locate)
+    :config
+    (bind-keys
+     :read-expression-map
+     ("C-r" . counsel-expression-history))
+
+    (when (eq 'system-type 'darwin)
+      (setq counsel-locate-cmd 'counsel-locate-cmd-mdfind))
+    )
+
+  (use-package counsel-gtags
+    :ensure t
+    :defer 3
+    :if (executable-find "gtags")
+    :diminish (counsel-gtags-mode . "cG")
+    :config
+    (add-hook 'c-mode-hook 'counsel-gtags-mode)
+    (add-hook 'c++-mode-hook 'counsel-gtags-mode)
+
+    (bind-keys
+     :map counsel-gtags-mode-map
+     ("M-." . counsel-gtags-find-definition)
+     ("M-," . counsel-gtags-pop-stack)
+     ("M-s d" . counsel-gtags-dwim)
+     ("M-s r" . counsel-gtags-find-reference)
+     ("M-s s" . counsel-gtags-find-symbol))
+    )
+
+  (use-package counsel-projectile
+    :ensure t
+    :defer 3
+    :config
+    (counsel-projectile-on))
+
+  (use-package counsel-dash
+    :config
+    :bind
+    ("C-x c d" . counsel-dash)
+    )
+  )
+
 (use-package mark-more-like-this
   :bind
   ("C-<" . mark-previous-like-this)

@@ -41,7 +41,9 @@
 (defun my/locate-package (name)
   "Locate package configuration by name."
   (interactive
-   (list (funcall (if (fboundp 'helm-comp-read) 'helm-comp-read 'completing-read)
+   (list (funcall (cond ((fboundp 'ivy-read) 'ivy-read)
+                        ((fboundp 'helm-comp-read) 'helm-comp-read)
+                        (t 'completing-read))
                   "Locate package: " (mapcar (lambda (s) (car s)) my/packages))))
   (let ((pkg (assoc-string name my/packages)) done)
     (if (and pkg (cdr pkg) (file-exists-p (cdr pkg)))
@@ -77,7 +79,6 @@ Example:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Better defaults
 (show-paren-mode 1)
-(icomplete-mode 1)
 (when (> emacs-major-version 24)
   (electric-pair-mode 1)
   (global-subword-mode 1))
@@ -190,8 +191,6 @@ Example:
 
 (use-package recentf
   :commands recentf-mode
-  :bind*
-  ("C-c c o" . helm-recentf)
   :init
   (setq recentf-max-saved-items 1000
         recentf-exclude `(,tramp-file-name-regexp))
@@ -218,6 +217,7 @@ Example:
   ("M-y" . helm-show-kill-ring)
   ("C-c i" . helm-semantic-or-imenu)
   ("C-x b" . helm-mini)
+  ("C-c c o" . helm-recentf)
   ("C-c C-r" . helm-resume)
   ("C-x C-f" . helm-find-files)
   ("C-x M-f" . helm-for-files)
@@ -242,17 +242,12 @@ Example:
   (bind-keys
    :map helm-command-map
    ("i" . helm-semantic-or-imenu)
-   ("m" . helm-man-woman)
-   ("/" . helm-find)
-   ("l" . helm-locate)
-   ("a" . helm-apropos)
-   ("o" . helm-occur)
    ("s" . helm-swoop)                   ;like occur
    ("<tab>" . helm-lisp-completion-at-point)
-   ("b" . helm-resume)
    ("x" . helm-register)
    ("p" . helm-projectile)
-   ("g" . helm-do-grep-ag)
+   ("a" . helm-do-grep-ag)
+   ("j" . helm-grep-do-git-grep)
    )
 
   (bind-keys
@@ -262,33 +257,31 @@ Example:
   (when (executable-find "curl")
     (setq helm-google-suggest-use-curl-p t))
 
+  (when (eq system-type 'darwin)
+    (setq helm-locate-command "mdfind -name %s %s"))
+
   ;; enable man page at point
   (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 
   ;; enable fuzzy matching
-  (setq helm-M-x-fuzzy-match t          ; helm-M-x
-        helm-buffers-fuzzy-matching t   ; helm-mini
+  (setq helm-buffers-fuzzy-matching t   ; helm-mini
         helm-recentf-fuzzy-match    t   ; helm-mini
         helm-semantic-fuzzy-match t     ; helm-semantic-or-imenu
         helm-imenu-fuzzy-match    t     ; helm-semantic-or-imenu
         helm-locate-fuzzy-match nil ; helm-locate
-        helm-apropos-fuzzy-match t      ; helm-apropos
         helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
         helm-ff-guess-ffap-filenames t  ; helm-find-files
         )
 
   (setq helm-candidate-number-limit 100)
   ;; From https://gist.github.com/antifuchs/9238468
-  (setq helm-idle-delay 0.0         ; update fast sources immediately (doesn't).
-        helm-input-idle-delay 0.01  ; this actually updates things reeeelatively quickly.
-        helm-quick-update t
+  (setq helm-input-idle-delay 0.01  ; this actually updates things reeeelatively quickly.
         helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
         ;; helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
         helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
         helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
         helm-ff-skip-boring-files t
-        helm-ff-file-name-history-use-recentf t
-        helm-yas-display-key-on-candidate t)
+        helm-ff-file-name-history-use-recentf t)
 
   (helm-autoresize-mode 1)
   (setq helm-autoresize-min-height 3
@@ -346,9 +339,26 @@ Example:
     :bind
     ("C-c y" . helm-yas-complete)
     :config
-    (setq helm-yas-space-match-any-greedy t))
+    (setq helm-yas-space-match-any-greedy t
+          helm-yas-display-key-on-candidate t))
 
-  (use-package helm-ag)
+  (use-package helm-ls-git
+    :ensure
+    :config
+    (bind-keys
+     :map helm-command-map
+     ("g" . helm-ls-git-ls)))
+
+  (use-package helm-projectile
+    :ensure t
+    :config
+    (setq projectile-completion-system 'helm
+          projectile-switch-project-action 'helm-projectile)
+    (helm-projectile-on))
+
+  (use-package helm-dash
+    :bind
+    ("C-x c d" . helm-dash))
   )
 
 (use-package company
@@ -611,13 +621,6 @@ Example:
     (add-to-list 'projectile-globally-ignored-files file))
   (dolist (suffix '(".pyc" ".bak"))
     (add-to-list 'projectile-globally-ignored-file-suffixes suffix))
-
-  (use-package helm-projectile
-    :ensure t
-    :config
-    (setq projectile-completion-system 'helm
-          projectile-switch-project-action 'helm-projectile)
-    (helm-projectile-on))
   )
 
 (use-package magit

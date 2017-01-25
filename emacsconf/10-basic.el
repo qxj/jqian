@@ -10,7 +10,6 @@
 (defconst my/iswin (or (eq system-type 'windows-nt) (eq system-type 'cygwin)))
 
 
-
 ;; If terminal and X is sharing the same emacs server, color-theme
 ;; will affect terminal display. Below function will resolve this
 ;; issue.
