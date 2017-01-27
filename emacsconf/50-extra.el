@@ -119,25 +119,52 @@
   :bind
   ("C-x b" . ivy-switch-buffer)
   ("C-c C-r" . ivy-resume)
+
+  (:map ivy-minibuffer-map
+        ("C-w" . ivy-backward-kill-word)
+        ("<return>" . ivy-alt-done)
+        ("C-:" . ivy-dired)
+        ("C-c o" . ivy-occur))
   :config
   (ivy-mode 1)
 
-  (bind-keys
-   :map ivy-minibuffer-map
-   ("C-w" . ivy-backward-kill-word))
+  (setq ivy-re-builders-alist
+        '((ivy-switch-buffer . ivy--regex-plus)
+          (swiper . ivy--regex-plus)
+          (t . ivy--regex-fuzzy)))
+
+  (ivy-set-actions
+   t '(("I" insert "insert")))
+
+  (defun ivy-dired ()
+    (interactive)
+    (if ivy--directory
+        (ivy-quit-and-run
+         (dired ivy--directory)
+         (when (re-search-forward
+                (regexp-quote
+                 (substring ivy--current 0 -1)) nil t)
+           (goto-char (match-beginning 0))))
+      (user-error
+       "Not completing files currently")))
 
   (use-package swiper
     :ensure
     :bind
-    ("C-s" . swiper))
+    ("C-s" . swiper)
+    ("C-r" . swiper)
+    ("C-M-s" . swiper-all))
 
   (use-package counsel
     :ensure
     :bind
     ("M-x" . counsel-M-x)
     ("M-y" . counsel-yank-pop)
-    ("C-c i" . counsel-imenu)
+
+    ("C-x d" . counsel-dired-jump)
     ("C-x C-f" . counsel-find-file)
+
+    ("C-c i" . counsel-imenu)
     ("C-c c o" . counsel-recentf)
 
     ("C-h f" . counsel-describe-function)
@@ -150,13 +177,23 @@
     ("C-x c j"  . counsel-git-grep)
     ("C-x c a"  . counsel-ag)
     ("C-x c l"  . counsel-locate)
-    :config
-    (bind-keys
-     :read-expression-map
-     ("C-r" . counsel-expression-history))
 
+    (:map help-map
+          ("f" . counsel-describe-function)
+          ("v" . counsel-describe-variable)
+          ("l" . counsel-info-lookup-symbol))
+
+    (:map read-expression-map
+          ("C-r" . counsel-expression-history))
+
+    :config
     (when (eq 'system-type 'darwin)
       (setq counsel-locate-cmd 'counsel-locate-cmd-mdfind))
+
+    (setq counsel-find-file-at-point t
+          ivy-use-virtual-buffers t
+          ivy-display-style 'fancy
+          ivy-initial-inputs-alist nil)
     )
 
   (use-package counsel-gtags
@@ -164,17 +201,15 @@
     :defer 3
     :if (executable-find "gtags")
     :diminish (counsel-gtags-mode . "cG")
+    :bind (:map counsel-gtags-mode-map
+                ("M-." . counsel-gtags-find-definition)
+                ("M-," . counsel-gtags-pop-stack)
+                ("M-s d" . counsel-gtags-dwim)
+                ("M-s r" . counsel-gtags-find-reference)
+                ("M-s s" . counsel-gtags-find-symbol))
     :config
     (add-hook 'c-mode-hook 'counsel-gtags-mode)
     (add-hook 'c++-mode-hook 'counsel-gtags-mode)
-
-    (bind-keys
-     :map counsel-gtags-mode-map
-     ("M-." . counsel-gtags-find-definition)
-     ("M-," . counsel-gtags-pop-stack)
-     ("M-s d" . counsel-gtags-dwim)
-     ("M-s r" . counsel-gtags-find-reference)
-     ("M-s s" . counsel-gtags-find-symbol))
     )
 
   (use-package counsel-projectile
@@ -225,7 +260,7 @@
               (with-current-buffer (current-buffer) (diff-hl-update)))))
 
 (use-package sdcv
-  :bind ("M-1" . sdcv-search))
+  :bind ("M-1" . sdcv-search-input))
 
 (use-package markdown-mode
   :commands (markdown-mode)
@@ -281,3 +316,19 @@ MathJax.Hub.Config({
 (use-package manage-minor-mode)
 
 (use-package xkcd)
+
+(use-package golden-ratio
+  :config
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t)
+
+  (defun pl/helm-alive-p ()
+    (if (boundp 'helm-alive-p)
+        (symbol-value 'helm-alive-p)))
+  (add-to-list 'golden-ratio-inhibit-functions 'pl/helm-alive-p))
+
+(use-package dumb-jump
+  :diminish dumb-jump-mode
+  :bind (("C-M-g" . dumb-jump-go)
+         ("C-M-p" . dumb-jump-back)
+         ("C-M-q" . dumb-jump-quick-look)))

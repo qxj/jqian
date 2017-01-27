@@ -22,12 +22,12 @@
         ("org"          . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")))
 (package-initialize)
 
-;; Bootstrap `use-package'
+;;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; A wrapper for `use-package'
+;;; A wrapper for `use-package'
 ;; (use-package dot-emacs-helper :load-path "~/.emacs.d/lisp")
 
 (defvar my/packages nil)
@@ -126,8 +126,7 @@ Example:
       column-number-mode t
       visible-bell t)
 ;; Centrallize backup files
-(setq save-place-file (concat user-emacs-directory "places")
-      backup-directory-alist `(("." . ,(concat user-emacs-directory
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 ;; Auto select help window
 (setq help-window-select t)
@@ -161,7 +160,8 @@ Example:
   :config
   (setq dired-recursive-copies 'top
         dired-recursive-deletes 'top
-        dired-isearch-filenames t       ; only search filename
+        dired-isearch-filenames 'dwim
+        dired-listing-switches "-aBhl"
         dired-dwim-target t)
   ;; Open directory in the same buffer
   (put 'dired-find-alternate-file 'disabled nil)
@@ -205,6 +205,12 @@ Example:
   :bind*
   ("C-c j" . ffap))
 
+(use-package flyspell
+  :diminish flyspell-mode
+  :config
+  (my/add-hook (markdown-mode-hook text-mode-hook org-mode-hook)
+    flyspell-mode))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; packages
 
@@ -213,33 +219,15 @@ Example:
   :diminish helm-mode
   ;; :bind-keymap* ("C-c h" . helm-command-prefix)
   :bind
-  ("M-x" . helm-M-x)
-  ("M-y" . helm-show-kill-ring)
-  ("C-c i" . helm-semantic-or-imenu)
-  ("C-x b" . helm-mini)
-  ("C-c c o" . helm-recentf)
-  ("C-c C-r" . helm-resume)
-  ("C-x C-f" . helm-find-files)
-  ("C-x M-f" . helm-for-files)
-  ("C-h SPC" . helm-all-mark-rings)
-  :init
-  (require 'helm-config)
-  ;; (global-unset-key (kbd "C-x c"))
-  (helm-mode)
-  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
-  :config
-  (bind-keys
-   :map minibuffer-local-map
-   ("C-c C-l" . helm-minibuffer-history))
-
-  (bind-keys
-   :map helm-map
-   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
-   ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
-   ("C-z"   . helm-select-action)             ; list actions using C-z
-   ("C-w"   . backward-kill-word))
-
-  (bind-keys
+  (("M-x" . helm-M-x)
+   ("M-y" . helm-show-kill-ring)
+   ("C-c i" . helm-semantic-or-imenu)
+   ("C-x b" . helm-mini)
+   ("C-c c o" . helm-recentf)
+   ("C-c C-r" . helm-resume)
+   ("C-x C-f" . helm-find-files)
+   ("C-x M-f" . helm-for-files)
+   ("C-h SPC" . helm-all-mark-rings)
    :map helm-command-map
    ("i" . helm-semantic-or-imenu)
    ("s" . helm-swoop)                   ;like occur
@@ -248,14 +236,27 @@ Example:
    ("p" . helm-projectile)
    ("a" . helm-do-grep-ag)
    ("j" . helm-grep-do-git-grep)
-   )
-
-  (bind-keys
+   :map minibuffer-local-map
+   ("C-c C-l" . helm-minibuffer-history)
+   :map helm-map
+   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+   ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
+   ("C-z"   . helm-select-action)             ; list actions using C-z
+   ("C-w"   . backward-kill-word)
    :map helm-find-files-map
    ("M-u" . helm-find-files-up-one-level))
+  :init
+  (require 'helm-config)
+  ;; (global-unset-key (kbd "C-x c"))
+  (helm-mode)
+  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
+  :config
+  ;; (bind-keys
+  ;;  :map minibuffer-local-map
+  ;;  ("C-c C-l" . helm-minibuffer-history))
 
   (when (executable-find "curl")
-    (setq helm-google-suggest-use-curl-p t))
+    (setq helm-net-prefer-curl t))
 
   (when (eq system-type 'darwin)
     (setq helm-locate-command "mdfind -name %s %s"))
@@ -284,16 +285,17 @@ Example:
         helm-ff-file-name-history-use-recentf t)
 
   (helm-autoresize-mode 1)
-  (setq helm-autoresize-min-height 3
-        helm-autoresize-min-height 10)
 
   (use-package helm-swoop
     :ensure t
     :defer
     :bind
-    ("C-s"     . helm-swoop)
-    ("C-c M-i" . helm-multi-swoop)
-    ("C-x M-i" . helm-multi-swoop-all)
+    (("C-s"     . helm-swoop)
+     ("C-c M-i" . helm-multi-swoop)
+     ("C-x M-i" . helm-multi-swoop-all)
+     :map helm-swoop-map
+     ("C-s" . undefined)
+     ("C-u" . my/helm-swoop-clean))
     :config
     (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
     (bind-key "M-i" 'helm-multi-swoop-all-from-helm-swoop helm-swoop-map)
@@ -302,11 +304,6 @@ Example:
       (delete-region
        (save-excursion (move-beginning-of-line 1) (point))
        (save-excursion (move-end-of-line 1) (point))))
-    (bind-keys
-     :map helm-swoop-map
-     ("C-s" . undefined)
-     ("C-u" . my/helm-swoop-clean)
-     )
     )
 
   (use-package helm-gtags
@@ -314,23 +311,21 @@ Example:
     :defer 3
     :if (executable-find "gtags")
     :diminish (helm-gtags-mode . "hG")
+    :bind (:map helm-gtags-mode-map
+                ("M-." . helm-gtags-find-tag)
+                ("M-," . helm-gtags-pop-stack)
+                ("M-*" . helm-gtags-pop-stack)
+                ("M-s d" . helm-gtags-dwim)
+                ("M-s r" . helm-gtags-find-rtag)
+                ("M-s s" . helm-gtags-find-symbol)
+                ("C-c i" . helm-gtags-parse-file)  ;replace imenu
+                ("C-c <" . helm-gtags-previous-history)
+                ("C-c >" . helm-gtags-next-history))
     :config
     (setq helm-gtags-ignore-case t
           helm-gtags-auto-update t
           helm-gtags-use-input-at-cursor t
           helm-gtags-pulse-at-cursor t)
-    (bind-keys
-     :map helm-gtags-mode-map
-     ("M-." . helm-gtags-find-tag)
-     ("M-," . helm-gtags-pop-stack)
-     ("M-*" . helm-gtags-pop-stack)
-     ("M-s d" . helm-gtags-dwim)
-     ("M-s r" . helm-gtags-find-rtag)
-     ("M-s s" . helm-gtags-find-symbol)
-     ("C-c i" . helm-gtags-parse-file)  ;replace imenu
-     ("C-c <" . helm-gtags-previous-history)
-     ("C-c >" . helm-gtags-next-history)
-     )
     (add-hook 'c-mode-hook #'helm-gtags-mode)
     (add-hook 'c++-mode-hook #'helm-gtags-mode))
 
@@ -345,9 +340,8 @@ Example:
   (use-package helm-ls-git
     :ensure
     :config
-    (bind-keys
-     :map helm-command-map
-     ("g" . helm-ls-git-ls)))
+    :bind (:map helm-command-map
+                ("g" . helm-ls-git-ls)))
 
   (use-package helm-projectile
     :ensure t
@@ -357,8 +351,7 @@ Example:
     (helm-projectile-on))
 
   (use-package helm-dash
-    :bind
-    ("C-x c d" . helm-dash))
+    :bind ("C-x c d" . helm-dash))
   )
 
 (use-package company
@@ -367,17 +360,14 @@ Example:
   ;; :bind
   ;; (("<tab>" . my/complete-or-indent)
   ;;  ("C-." . company-files))
+  :bind (:map company-active-map
+              ("C-n" . company-select-next)
+              ("C-p" . company-select-previous))
+  :bind (:map company-mode-map
+              ;; ("<tab>" . my/complete-or-indent)
+              ("<C-return>" . company-complete-common)
+              ("C-." . company-files))
   :config
-  (bind-keys
-   :map company-active-map
-   ("C-n" . company-select-next)
-   ("C-p" . company-select-previous))
-  (bind-keys
-   :map company-mode-map
-   ;; ("<tab>" . my/complete-or-indent)
-   ("<C-return>" . company-complete-common)
-   ("C-." . company-files))
-
   (setq company-echo-delay 0
         ;; company-idle-delay 0
         ;; company-auto-complete nil
@@ -569,7 +559,7 @@ Example:
   :ensure t
   :commands (flycheck-mode global-flycheck-mode)
   :init
-  (dolist (mode '(python-mode-hook c-mode-common-hook))
+  (dolist (mode '(emacs-lisp-mode-hook python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
   :config
   ;;# rebind flycheck prefix key
@@ -609,7 +599,7 @@ Example:
   ;; C-c p R projectile-regenerate-tags
   ;; C-c p c projectile-compile-project
   :config
-  (projectile-global-mode)
+  (projectile-mode)
 
   (setq projectile-enable-caching t)
 
@@ -743,22 +733,17 @@ current single line instead."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; convenient functions
 
-(defun my/switch-scratch ()
-  "switch to *scratch* buffer, bind to \\[my/switch-scratch]."
+(defun my/beginning-of-line ()
+  "Hack `beginning-of-line'."
   (interactive)
-  (switch-to-buffer "*scratch*"))
+  (if (eq (point) (line-beginning-position))
+      (skip-chars-forward " \t") (beginning-of-line)))
 
 (defun my/end-of-line ()
   "Hack `end-of-line'."
   (interactive)
   (if (eq (point) (line-end-position))
       (skip-chars-backward " \t") (move-end-of-line 1)))
-
-(defun my/beginning-of-line ()
-  "Hack `beginning-of-line'."
-  (interactive)
-  (if (eq (point) (line-beginning-position))
-      (skip-chars-forward " \t") (beginning-of-line)))
 
 (defun my/comment-or-uncomment-region (&optional line)
   "Comment or uncomment a line or a region."
@@ -864,6 +849,11 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
             (2 (let ((d (file-name-nondirectory f)))
                  (kill-new d) (message "Copy filename: %s" d)))
             (t (kill-new f) (message "Copy path: %s" f))))))
+
+(defun my/switch-scratch ()
+  "switch to *scratch* buffer, bind to \\[my/switch-scratch]."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
 
 (defun my/revert-buffer ()
   "Revert buffer without prompt."
