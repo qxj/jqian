@@ -85,8 +85,8 @@
    ("s" . bm-show)
    ("l" . bm-show)
    ("a" . bm-show-all)
-   ("h" . helm-bm)
-   ("t" . bm-toggle-cycle-all-buffers))
+   ("t" . bm-toggle-cycle-all-buffers)
+   ("h" . helm-bm))
   :config
   (setq bm-cycle-all-buffers nil
         bm-highlight-style (if window-system
@@ -110,7 +110,12 @@
   (bind-keys
    :map bm-show-mode-map
    ("n"  . bm-show-next)
-   ("p"  . bm-show-prev)))
+   ("p"  . bm-show-prev))
+
+  (use-package helm-bm
+    :after bm)
+  )
+
 
 (use-package ivy
   :disabled
@@ -318,6 +323,7 @@ MathJax.Hub.Config({
 (use-package xkcd)
 
 (use-package golden-ratio
+  :diminish
   :config
   (golden-ratio-mode 1)
   (setq golden-ratio-auto-scale t)
@@ -332,3 +338,9 @@ MathJax.Hub.Config({
   :bind (("C-M-g" . dumb-jump-go)
          ("C-M-p" . dumb-jump-back)
          ("C-M-q" . dumb-jump-quick-look)))
+
+(use-package fasd
+  :bind
+  ("C-h C-/" . fasd-find-file)
+  :config
+  (global-fasd-mode 1))

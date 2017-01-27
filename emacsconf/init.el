@@ -37,9 +37,10 @@
       (add-to-list 'my/packages (cons name load-file-name))
       (apply orig-func args))))
 (advice-add #'use-package :around #'my/record-package-name)
+;; (advice-remove #'use-package #'my/record-package-name)
 
 (defun my/locate-package (name)
-  "Locate package configuration by name."
+  "Locate package configuration by NAME."
   (interactive
    (list (funcall (cond ((fboundp 'ivy-read) 'ivy-read)
                         ((fboundp 'helm-comp-read) 'helm-comp-read)
@@ -57,7 +58,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Helper
 (defmacro my/add-hook (hook &rest forms)
-  "Apply some functions for a hook.
+  "Bind all functions in FORMS to the HOOK.
 
 Example:
   (my/add-hook (c-mode-common-hook text-mode-hook)
@@ -248,7 +249,8 @@ Example:
   :init
   (require 'helm-config)
   ;; (global-unset-key (kbd "C-x c"))
-  (helm-mode)
+  (helm-mode t)
+  (helm-adaptive-mode t)
   (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
   :config
   ;; (bind-keys
@@ -308,7 +310,7 @@ Example:
 
   (use-package helm-gtags
     :ensure t
-    :defer 3
+    :after cc-mode
     :if (executable-find "gtags")
     :diminish (helm-gtags-mode . "hG")
     :bind (:map helm-gtags-mode-map
@@ -324,8 +326,7 @@ Example:
     :config
     (setq helm-gtags-ignore-case t
           helm-gtags-auto-update t
-          helm-gtags-use-input-at-cursor t
-          helm-gtags-pulse-at-cursor t)
+          helm-gtags-use-input-at-cursor t)
     (add-hook 'c-mode-hook #'helm-gtags-mode)
     (add-hook 'c++-mode-hook #'helm-gtags-mode))
 
@@ -345,6 +346,7 @@ Example:
 
   (use-package helm-projectile
     :ensure t
+    :after projectile
     :config
     (setq projectile-completion-system 'helm
           projectile-switch-project-action 'helm-projectile)
@@ -533,10 +535,6 @@ Example:
   (setq highlight-symbol-idle-delay 0.5
         highlight-symbol-on-navigation-p t))
 
-(use-package grizzl
-  :config
-  (setq *grizzl-read-max-results* 30))
-
 (use-package which-key
   :ensure t
   :diminish which-key-mode
@@ -582,22 +580,24 @@ Example:
 (use-package projectile
   :ensure t
   :diminish (projectile-mode . "Pj")
-  :bind*
-  ("C-c p f" . projectile-find-file)
-  ("C-c p s" . projectile-switch-project)
-  ("C-c p g" . projectile-grep)
-  ("C-c p t" . projectile-toggle-between-implementation-and-test)
-  ;; C-c p f projectile-find-file
-  ;; C-c p a projectile-find-other-file
-  ;; C-c p z projectile-cache-current-file
-  ;; C-c p s projectile-switch-project
-  ;; C-c p g projectile-grep
-  ;; C-c p b projectile-switch-to-buffer
-  ;; C-c p o projectile-multi-occur
-  ;; C-c p r projectile-replace
-  ;; C-c p e projectile-recentf
-  ;; C-c p R projectile-regenerate-tags
-  ;; C-c p c projectile-compile-project
+  :bind-keymap* ("C-c p" . projectile-command-map)
+  :bind (:map projectile-command-map
+              ("f" . projectile-find-file)
+              ("s" . projectile-switch-project)
+              ("g" . projectile-grep)
+              ("t" . projectile-toggle-between-implementation-and-test)
+              ;; f projectile-find-file
+              ;; a projectile-find-other-file
+              ;; z projectile-cache-current-file
+              ;; s projectile-switch-project
+              ;; g projectile-grep
+              ;; b projectile-switch-to-buffer
+              ;; o projectile-multi-occur
+              ;; r projectile-replace
+              ;; e projectile-recentf
+              ;; R projectile-regenerate-tags
+              ;; c projectile-compile-project
+              )
   :config
   (projectile-mode)
 
@@ -670,23 +670,25 @@ Example:
 (add-hook 'c-mode-common-hook 'my/c-mode-common-hook)
 
 (use-package irony
+  :ensure t
+  :after cc-mode
+  :bind
+  ;; ;; replace the `completion-at-point' and `complete-symbol' bindings in
+  ;; ;; irony-mode's buffers by irony-mode's asynchronous function
+  (:map irony-mode-map
+   ([remap completion-at-point] . irony-completion-at-point-async)
+   ([remap complete-symbol]     . irony-completion-at-point-async))
   :config
   (add-to-list 'c++-mode-hook 'irony-mode)
 
-  ;; replace the `completion-at-point' and `complete-symbol' bindings in
-  ;; irony-mode's buffers by irony-mode's asynchronous function
-  (my/add-hook irony-mode-hook
-    (bind-keys
-     :map irony-mode-map
-     ([remap completion-at-point] . irony-completion-at-point-async)
-     ([remap complete-symbol]     . irony-completion-at-point-async)))
-
   (use-package company-irony
+    :ensure t
     :after company
     :config
     (add-to-list 'company-backends 'company-irony))
 
   (use-package company-irony-c-headers
+    :ensure t
     :after company
     :config
     (add-to-list 'company-backends 'company-irony-c-headers)
@@ -701,7 +703,8 @@ Example:
 (use-package elpy
   :ensure t
   :config
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
+        elpy-rpc-backend "jedi")
   ;; (add-hook 'elpy-mode-hook 'flycheck-mode)
 
   (elpy-enable)
@@ -711,6 +714,7 @@ Example:
 (use-package py-autopep8
   :ensure t
   :if (executable-find "autopep8")
+  :after python
   :config
   (add-hook 'python-mode-hook 'py-autopep8-enable-on-save))
 
