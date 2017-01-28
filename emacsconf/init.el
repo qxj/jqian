@@ -679,7 +679,7 @@ Example:
    ([remap completion-at-point] . irony-completion-at-point-async)
    ([remap complete-symbol]     . irony-completion-at-point-async))
   :config
-  (add-to-list 'c++-mode-hook 'irony-mode)
+  (add-to-list 'c++-mode-hook #'irony-mode)
 
   (use-package company-irony
     :ensure t
