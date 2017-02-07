@@ -220,12 +220,13 @@ Example:
   :ensure t
   :diminish helm-mode
   ;; :bind-keymap* ("C-c h" . helm-command-prefix)
+  :bind*
+  ("C-c r" . helm-recentf)
   :bind
   (("M-x" . helm-M-x)
    ("M-y" . helm-show-kill-ring)
    ("C-c i" . helm-semantic-or-imenu)
    ("C-x b" . helm-mini)
-   ("C-c c o" . helm-recentf)
    ("C-c C-r" . helm-resume)
    ("C-x C-f" . helm-find-files)
    ("C-x M-f" . helm-for-files)
@@ -292,17 +293,17 @@ Example:
     :ensure t
     :commands (helm-swoop helm-multi-swoop)
     :bind
-    ("C-s"     . helm-swoop)
-    ("C-x c s" . helm-multi-swoop)
-    :bind (:map helm-swoop-map
-                ("C-s" . helm-next-line)
-                ("C-r" . helm-previous-line)
-                ("C-u" . my/helm-swoop-clean)
-                ("M-i" . helm-multi-swoop-all-from-helm-swoop)
-                ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop))
-    :bind (:map helm-multi-swoop-map
-                ("C-s" . helm-next-line)
-                ("C-r" . helm-previous-line))
+    (("C-s"     . helm-swoop)
+     ("C-x c s" . helm-multi-swoop)
+     :map helm-swoop-map
+     ("C-s" . helm-next-line)
+     ("C-r" . helm-previous-line)
+     ("C-u" . my/helm-swoop-clean)
+     ("M-i" . helm-multi-swoop-all-from-helm-swoop)
+     ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop)
+     :map helm-multi-swoop-map
+     ("C-s" . helm-next-line)
+     ("C-r" . helm-previous-line))
     :config
     (setq helm-swoop-move-to-line-cycle nil
           helm-swoop-use-line-number-face t)
@@ -366,7 +367,8 @@ Example:
 
   (use-package helm-dash
     :ensure t
-    :bind ("C-x c d" . helm-dash-at-point)
+    :bind (:map helm-command-map
+                ("d" . helm-dash-at-point))
     :config
     (setq helm-dash-browser-func 'eww
           helm-dash-common-docsets '("C++" "Python 2"))
@@ -385,7 +387,6 @@ Example:
               ("C-n" . company-select-next)
               ("C-p" . company-select-previous))
   :bind (:map company-mode-map
-              ;; ("<tab>" . my/complete-or-indent)
               ("<C-return>" . company-complete-common)
               ("C-." . company-files))
   :config
