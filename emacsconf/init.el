@@ -289,7 +289,7 @@ Example:
 
   (use-package helm-swoop
     :ensure t
-    :defer
+    :commands (helm-swoop helm-multi-swoop)
     :bind
     ("C-s"     . helm-swoop)
     ("C-x c s" . helm-multi-swoop)
@@ -304,15 +304,14 @@ Example:
                 ("C-r" . helm-previous-line))
     :config
     (setq helm-swoop-move-to-line-cycle nil
-          helm-swoop-use-line-number-face t
-          helm-swoop-use-fuzzy-match t)
+          helm-swoop-use-line-number-face t)
 
     ;; If there is no symbol at the cursor, use the last used words instead.
     (setq helm-swoop-pre-input-function
           (lambda ()
             (let (($pre-input (thing-at-point 'symbol)))
               (if (eq (length $pre-input) 0)
-                  helm-swoop-pattern ;; this variable keeps the last used words
+                  (if (boundp 'helm-swoop-pattern) helm-swoop-pattern "")
                 (format "\\_<%s\\_>" $pre-input)))))
 
     (defun my/helm-swoop-clean ()
