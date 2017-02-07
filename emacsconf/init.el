@@ -42,8 +42,8 @@
 (defun my/locate-package (name)
   "Locate package configuration by NAME."
   (interactive
-   (list (funcall (cond ((fboundp 'ivy-read) 'ivy-read)
-                        ((fboundp 'helm-comp-read) 'helm-comp-read)
+   (list (funcall (cond ((fboundp 'helm-comp-read) 'helm-comp-read)
+                        ((fboundp 'ivy-read) 'ivy-read)
                         (t 'completing-read))
                   "Locate package: " (mapcar (lambda (s) (car s)) my/packages))))
   (let ((pkg (assoc-string name my/packages)) done)
@@ -307,12 +307,6 @@ Example:
     :config
     (setq helm-swoop-move-to-line-cycle nil
           helm-swoop-use-line-number-face t)
-
-    (setq helm-swoop-pre-input-function
-          (lambda ()
-            (let (($pre-input (thing-at-point 'symbol)))
-              (if (eq (length $pre-input) 0)
-                  "" (format "\\_<%s\\_>" $pre-input)))))
 
     (defun my/helm-swoop-clean ()
       (interactive)

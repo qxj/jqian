@@ -116,104 +116,125 @@
     :after bm)
   )
 
-;; (use-package ivy
-;;   :ensure t
-;;   :diminish ivy-mode
-;;   :bind
-;;   (("C-x b" . ivy-switch-buffer)
-;;    ("C-c C-r" . ivy-resume)
-;;    :map ivy-minibuffer-map
-;;    ("C-w" . ivy-backward-kill-word)
-;;    ("C-l" . ivy-backward-kill-word)
-;;    ("<return>" . ivy-alt-done)
-;;    ("C-c o" . ivy-occur))
-;;   :config
-;;   (ivy-mode 1)
+(use-package hideshow           ; for semantic code
+  :commands hs-minor-mode
+  :diminish hs-minor-mode
+  :config
+  (bind-keys
+   :map hs-minor-mode-map
+   :prefix-map hs-minor-mode-prefix
+   :prefix "C-c C-a"
+   ("h"  . hs-hide-block)
+   ("s"  . hs-show-block)
+   ("H"  . hs-hide-all)
+   ("S"  . hs-show-all)
+   ("t"  . hs-toggle-hiding)
+   ("C-a"  . hs-toggle-hiding))
+  (bind-key "<left-fringe> <mouse-2>" 'hs-mouse-toggle-hiding
+            hs-minor-mode-map)
 
-;;   (setq ivy-re-builders-alist
-;;         '((ivy-switch-buffer . ivy--regex-plus)
-;;           (swiper . ivy--regex-plus)
-;;           (t . ivy--regex-fuzzy)))
+  (defvar hs--overlay-keymap nil "keymap for folding overlay")
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1] 'hs-show-block)
+    (setq hs--overlay-keymap map))
+  (setq hs-set-up-overlay
+        (defun my/display-code-line-counts (ov)
+          (when (eq 'code (overlay-get ov 'hs))
+            (overlay-put ov 'display
+                         (propertize
+                          (format "...<%d lines>"
+                                  (count-lines (overlay-start ov)
+                                               (overlay-end ov)))
+                          'face 'mode-line))
+            (overlay-put ov 'priority (overlay-end ov))
+            (overlay-put ov 'keymap hs--overlay-keymap)
+            (overlay-put ov 'pointer 'hand)))))
 
-;;   (ivy-set-actions
-;;    t '(("I" insert "insert")))
+(use-package outline            ; for literal text
+  :commands (outline-mode outline-minor-mode)
+  :diminish outline-minor-mode
+  :bind-keymap* ("C-c C-a" . outline-mode-prefix-map)
+  :bind (:map outline-mode-prefix-map
+              ("s"  . outline-show-subtree)
+              ("S"  . outline-show-all)
+              ("h"  . outline-hide-subtree)
+              ("H"  . outline-hide-body)
+              ;; shortcuts
+              ("<right>"   . outline-show-subtree)
+              ("<M-right>" . outline-show-all)
+              ("<left>"    . outline-hide-subtree)
+              ("<M-left>"  . outline-hide-body)
+              ("<up>"      . outline-previous-heading)
+              ("<down>"    . outline-next-heading)
+              ("<M-up>"    . outline-previous-visible-heading)
+              ("<M-down>"  . outline-next-visible-heading)
+              ;; extra keybinds
+              ("n"  . my/narrow-to-outline-level)
+              ("u"  . my/outline-toggle-enter-exit)
+              ("q"  . my/outline-toggle-show-hide)
+              ("t"  . my/outline-toggle-show-hide)
+              ("C-a"  . my/outline-toggle-show-hide))
+  :config
+  (setq outline-font-lock-keywords
+        '((eval list
+                (concat "^\\(?:" outline-regexp "\\).+")
+                0
+                '(outline-font-lock-face)
+                nil t)))
 
-;;   (use-package swiper
-;;     :ensure
-;;     :bind
-;;     ("C-s" . swiper)
-;;     ("C-r" . swiper)
-;;     ("C-M-s" . swiper-all))
+  (with-eval-after-load 'outline (require 'foldout))
 
-;;   (use-package counsel
-;;     :ensure
-;;     :bind
-;;     ("M-x" . counsel-M-x)
-;;     ("M-y" . counsel-yank-pop)
+  (defadvice outline-mode (after hide-sublevels)
+    "Enter overview after start up `outline-mode'."
+    (hide-sublevels 1))
 
-;;     ("C-x d" . counsel-dired-jump)
-;;     ("C-x C-f" . counsel-find-file)
+  (defadvice outline-minor-mode (after hide-sublevels)
+    "Enter overview after start up `outline-minor-mode'."
+    (hide-sublevels 2))
 
-;;     ("C-c i" . counsel-imenu)
-;;     ("C-c c o" . counsel-recentf)
+  :init
+  (defun my/hide-body ()
+    "Make `hide-body' take effects at any moment."
+    (interactive)
+    (show-all)
+    (hide-body))
 
-;;     ("C-h f" . counsel-describe-function)
-;;     ("C-h v" . counsel-describe-variable)
-;;     ("C-h l" . counsel-find-library)
-;;     ("C-h i" . counsel-info-lookup-symbol)
-;;     ("C-h u" . counsel-unicode-char)
+  (defun my/outline-invisible-p ()
+    "Are we inside a outline fold?"
+    (interactive)
+    (let ((overlays (overlays-at (line-end-position))))
+      (and overlays
+           (eq (overlay-get (car overlays) 'invisible)
+               'outline))))
 
-;;     ("C-x c g"  . counsel-git)
-;;     ("C-x c j"  . counsel-git-grep)
-;;     ("C-x c a"  . counsel-ag)
-;;     ("C-x c l"  . counsel-locate)
+  (defun my/foldout-exit-fold ()
+    "Goto current folded line."
+    (interactive)
+    (call-interactively 'foldout-exit-fold) ; FIX ME
+    (previous-line 1) (next-line 1))
 
-;;     :bind
-;;     (:map help-map
-;;           ("f" . counsel-describe-function)
-;;           ("v" . counsel-describe-variable)
-;;           ("l" . counsel-info-lookup-symbol))
-;;     :bind
-;;     (:map read-expression-map
-;;           ("C-r" . counsel-expression-history))
+  (defun my/outline-toggle-enter-exit ()
+    "Toggle entering and exiting fold."
+    (interactive)
+    (if (my/outline-invisible-p)
+        (foldout-zoom-subtree)
+      (my/foldout-exit-fold)))
 
-;;     :config
-;;     (when (eq 'system-type 'darwin)
-;;       (setq counsel-locate-cmd 'counsel-locate-cmd-mdfind))
+  (defun my/outline-toggle-show-hide ()
+    "Toggle showing or hiding contents."
+    (interactive)
+    (if (my/outline-invisible-p)
+        (show-subtree)
+      (hide-subtree)))
 
-;;     (setq counsel-find-file-at-point t
-;;           ivy-use-virtual-buffers t
-;;           ivy-display-style 'fancy
-;;           ivy-initial-inputs-alist nil)
-;;     )
-
-;;   (use-package counsel-gtags
-;;     :ensure t
-;;     :defer 3
-;;     :if (executable-find "gtags")
-;;     :diminish (counsel-gtags-mode . "cG")
-;;     :bind (:map counsel-gtags-mode-map
-;;                 ("M-." . counsel-gtags-find-definition)
-;;                 ("M-," . counsel-gtags-pop-stack)
-;;                 ("M-s d" . counsel-gtags-dwim)
-;;                 ("M-s r" . counsel-gtags-find-reference)
-;;                 ("M-s s" . counsel-gtags-find-symbol))
-;;     :config
-;;     (add-hook 'c-mode-hook 'counsel-gtags-mode)
-;;     (add-hook 'c++-mode-hook 'counsel-gtags-mode)
-;;     )
-
-;;   (use-package counsel-projectile
-;;     :ensure t
-;;     :defer 3
-;;     :config
-;;     (counsel-projectile-on))
-
-;;   (use-package counsel-dash
-;;     :commands counsel-dash
-;;     :bind
-;;     ("C-x c d" . counsel-dash))
-;;   )
+  (defun my/narrow-to-outline-level ()
+    "Narrow to current outline level."
+    (interactive)
+    (save-excursion
+      (call-interactively 'outline-next-visible-heading)
+      (let ((end (point)))
+        (call-interactively 'outline-previous-visible-heading)
+        (narrow-to-region (point) end)))))
 
 (use-package multiple-cursors
   :ensure t
@@ -330,3 +351,6 @@ MathJax.Hub.Config({
   ("C-h C-/" . fasd-find-file)
   :config
   (global-fasd-mode 1))
+
+(use-package ein
+  :defer 5)
