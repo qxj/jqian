@@ -208,6 +208,7 @@ Example:
 
 (use-package flyspell
   :diminish flyspell-mode
+  :defer 3
   :config
   (my/add-hook (markdown-mode-hook text-mode-hook org-mode-hook)
     flyspell-mode))
@@ -306,13 +307,11 @@ Example:
     (setq helm-swoop-move-to-line-cycle nil
           helm-swoop-use-line-number-face t)
 
-    ;; If there is no symbol at the cursor, use the last used words instead.
     (setq helm-swoop-pre-input-function
           (lambda ()
             (let (($pre-input (thing-at-point 'symbol)))
               (if (eq (length $pre-input) 0)
-                  (if (boundp 'helm-swoop-pattern) helm-swoop-pattern "")
-                (format "\\_<%s\\_>" $pre-input)))))
+                  "" (format "\\_<%s\\_>" $pre-input)))))
 
     (defun my/helm-swoop-clean ()
       (interactive)
@@ -377,6 +376,7 @@ Example:
 
 (use-package company
   :ensure t
+  :defer 3
   :diminish company-mode
   ;; :bind
   ;; (("<tab>" . my/complete-or-indent)
@@ -416,6 +416,7 @@ Example:
   ;; Compile all directories in the list `yas-snippet-dirs' with the
   ;; `yas-recompile-all' function.
   :ensure t
+  :defer 3
   :diminish yas-minor-mode
   ;; :init
   ;; (with-eval-after-load 'yasnippet
@@ -466,12 +467,8 @@ Example:
   :ensure t
   :commands (jump-char-forward jump-char-backward)
   :bind*
-  ("M-m"   . jump-char-forward)         ;override back-to-indentation
-  ("S-M-m" . jump-char-backward)
   ("C-c C-f"   . jump-char-forward)
   ("C-c C-M-f" . jump-char-backward)
-  ("M-3"   . jump-char-forward)
-  ("C-M-3" . jump-char-backward)
   :config
   ;; Don't highlight matches with jump-char - it's distracting
   (setq jump-char-lazy-highlight-face nil))
@@ -598,6 +595,7 @@ Example:
 
 (use-package projectile
   :ensure t
+  :defer 3
   :diminish (projectile-mode . "Pj")
   :bind-keymap* ("C-c p" . projectile-command-map)
   :bind (:map projectile-command-map
@@ -634,6 +632,7 @@ Example:
 
 (use-package magit
   :ensure t
+  :commands (magit-status magit-init)
   :bind*
   ("C-c g"  . magit-status)
   :config
