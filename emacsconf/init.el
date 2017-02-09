@@ -246,7 +246,10 @@ Example:
    ("C-z"   . helm-select-action)             ; list actions using C-z
    ("C-w"   . backward-kill-word)
    :map helm-find-files-map
-   ("M-u" . helm-find-files-up-one-level))
+   ("M-u" . helm-find-files-up-one-level)
+   ("C-w" . helm-find-files-up-one-level)
+   :map helm-read-file-map
+   ("C-w" . helm-find-files-up-one-level))
   :init
   (require 'helm-config)
   ;; (global-unset-key (kbd "C-x c"))
@@ -257,6 +260,8 @@ Example:
   ;; (bind-keys
   ;;  :map minibuffer-local-map
   ;;  ("C-c C-l" . helm-minibuffer-history))
+  (unbind-key "C-l" helm-read-file-map)
+  (unbind-key "C-l" helm-find-files-map)
 
   (when (executable-find "curl")
     (setq helm-net-prefer-curl t))
