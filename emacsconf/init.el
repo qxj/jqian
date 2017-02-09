@@ -364,7 +364,8 @@ Example:
     :bind (:map helm-command-map
                 ("d" . helm-dash-at-point))
     :config
-    (setq helm-dash-browser-func 'eww
+    ;; Dash docsets feeds: https://github.com/Kapeli/feeds
+    (setq helm-dash-browser-func 'browse-url
           helm-dash-common-docsets '("C++" "Python 2"))
     (my/add-hook python-mode-hook
       (setq-local helm-dash-docsets '("Python 2"))))

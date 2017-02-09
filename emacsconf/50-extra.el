@@ -159,6 +159,13 @@
               ("S"  . outline-show-all)
               ("h"  . outline-hide-subtree)
               ("H"  . outline-hide-body)
+              ;; extra keybinds
+              ("n"  . my/narrow-to-outline-level)
+              ("u"  . my/outline-toggle-enter-exit)
+              ("q"  . my/outline-toggle-show-hide)
+              ("t"  . my/outline-toggle-show-hide)
+              ("C-a"  . my/outline-toggle-show-hide))
+  :bind (:map outline-minor-mode-map
               ;; shortcuts
               ("<right>"   . outline-show-subtree)
               ("<M-right>" . outline-show-all)
@@ -167,13 +174,7 @@
               ("<up>"      . outline-previous-heading)
               ("<down>"    . outline-next-heading)
               ("<M-up>"    . outline-previous-visible-heading)
-              ("<M-down>"  . outline-next-visible-heading)
-              ;; extra keybinds
-              ("n"  . my/narrow-to-outline-level)
-              ("u"  . my/outline-toggle-enter-exit)
-              ("q"  . my/outline-toggle-show-hide)
-              ("t"  . my/outline-toggle-show-hide)
-              ("C-a"  . my/outline-toggle-show-hide))
+              ("<M-down>"  . outline-next-visible-heading))
   :config
   (setq outline-font-lock-keywords
         '((eval list
