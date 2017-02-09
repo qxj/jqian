@@ -215,11 +215,11 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
       "# -*- coding: utf-8; tab-width: 4; -*-" ?\n
       (my/common-header "# ")
       "#\n\n"
-      "import sys" ?\n ?\n
-      "def main():" ?\n
+      ;; "import sys" ?\n ?\n
+      ;; "def main():" ?\n
       > _ ?\n ?\n
-      "if __name__ == \"__main__\":" ?\n
-      > "main()"
+      ;; "if __name__ == \"__main__\":" ?\n
+      ;; > "main()"
       ))
 
   (define-auto-insert '(php-mode . "PHP script")
