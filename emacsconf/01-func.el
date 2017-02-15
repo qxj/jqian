@@ -140,6 +140,7 @@ pgrep, so.. make sure pgrep is already installed in your system."
           (when (= 0 (call-process "pgrep" nil t nil "emacs"))
             ;; (setq pid (buffer-substring (point-min) (1- (point-max))))
             (goto-char (point-min))
+            (require 'cl)
             (while (search-forward-regexp "^[0-9]+$" nil t)
               (incf process-number)))
           (kill-buffer buffer)

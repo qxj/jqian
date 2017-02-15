@@ -691,7 +691,7 @@ Example:
 
 (use-package irony
   :ensure t
-  :after cc-mode
+  :after "cc-mode"
   :bind
   ;; ;; replace the `completion-at-point' and `complete-symbol' bindings in
   ;; ;; irony-mode's buffers by irony-mode's asynchronous function
