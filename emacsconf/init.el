@@ -42,8 +42,8 @@
 (defun my/locate-package (name)
   "Locate package configuration by NAME."
   (interactive
-   (list (funcall (cond ((fboundp 'ivy-read) 'ivy-read)
-                        ((fboundp 'helm-comp-read) 'helm-comp-read)
+   (list (funcall (cond ((fboundp 'helm-comp-read) 'helm-comp-read)
+                        ((fboundp 'ivy-read) 'ivy-read)
                         (t 'completing-read))
                   "Locate package: " (mapcar (lambda (s) (car s)) my/packages))))
   (let ((pkg (assoc-string name my/packages)) done)
@@ -208,6 +208,7 @@ Example:
 
 (use-package flyspell
   :diminish flyspell-mode
+  :defer 3
   :config
   (my/add-hook (markdown-mode-hook text-mode-hook org-mode-hook)
     flyspell-mode))
@@ -219,12 +220,13 @@ Example:
   :ensure t
   :diminish helm-mode
   ;; :bind-keymap* ("C-c h" . helm-command-prefix)
+  :bind*
+  ("C-c r" . helm-recentf)
   :bind
   (("M-x" . helm-M-x)
    ("M-y" . helm-show-kill-ring)
    ("C-c i" . helm-semantic-or-imenu)
    ("C-x b" . helm-mini)
-   ("C-c c o" . helm-recentf)
    ("C-c C-r" . helm-resume)
    ("C-x C-f" . helm-find-files)
    ("C-x M-f" . helm-for-files)
@@ -244,7 +246,10 @@ Example:
    ("C-z"   . helm-select-action)             ; list actions using C-z
    ("C-w"   . backward-kill-word)
    :map helm-find-files-map
-   ("M-u" . helm-find-files-up-one-level))
+   ("M-u" . helm-find-files-up-one-level)
+   ("C-w" . helm-find-files-up-one-level)
+   :map helm-read-file-map
+   ("C-w" . helm-find-files-up-one-level))
   :init
   (require 'helm-config)
   ;; (global-unset-key (kbd "C-x c"))
@@ -255,6 +260,8 @@ Example:
   ;; (bind-keys
   ;;  :map minibuffer-local-map
   ;;  ("C-c C-l" . helm-minibuffer-history))
+  (unbind-key "C-l" helm-read-file-map)
+  (unbind-key "C-l" helm-find-files-map)
 
   (when (executable-find "curl")
     (setq helm-net-prefer-curl t))
@@ -289,31 +296,22 @@ Example:
 
   (use-package helm-swoop
     :ensure t
-    :defer
+    :commands (helm-swoop helm-multi-swoop)
     :bind
-    ("C-s"     . helm-swoop)
-    ("C-x c s" . helm-multi-swoop)
-    :bind (:map helm-swoop-map
-                ("C-s" . helm-next-line)
-                ("C-r" . helm-previous-line)
-                ("C-u" . my/helm-swoop-clean)
-                ("M-i" . helm-multi-swoop-all-from-helm-swoop)
-                ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop))
-    :bind (:map helm-multi-swoop-map
-                ("C-s" . helm-next-line)
-                ("C-r" . helm-previous-line))
+    (("C-s"     . helm-swoop)
+     ("C-x c s" . helm-multi-swoop)
+     :map helm-swoop-map
+     ("C-s" . helm-next-line)
+     ("C-r" . helm-previous-line)
+     ("C-u" . my/helm-swoop-clean)
+     ("M-i" . helm-multi-swoop-all-from-helm-swoop)
+     ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop)
+     :map helm-multi-swoop-map
+     ("C-s" . helm-next-line)
+     ("C-r" . helm-previous-line))
     :config
     (setq helm-swoop-move-to-line-cycle nil
-          helm-swoop-use-line-number-face t
-          helm-swoop-use-fuzzy-match t)
-
-    ;; If there is no symbol at the cursor, use the last used words instead.
-    (setq helm-swoop-pre-input-function
-          (lambda ()
-            (let (($pre-input (thing-at-point 'symbol)))
-              (if (eq (length $pre-input) 0)
-                  helm-swoop-pattern ;; this variable keeps the last used words
-                (format "\\_<%s\\_>" $pre-input)))))
+          helm-swoop-use-line-number-face t)
 
     (defun my/helm-swoop-clean ()
       (interactive)
@@ -368,9 +366,11 @@ Example:
 
   (use-package helm-dash
     :ensure t
-    :bind ("C-x c d" . helm-dash-at-point)
+    :bind (:map helm-command-map
+                ("d" . helm-dash-at-point))
     :config
-    (setq helm-dash-browser-func 'eww
+    ;; Dash docsets feeds: https://github.com/Kapeli/feeds
+    (setq helm-dash-browser-func 'browse-url
           helm-dash-common-docsets '("C++" "Python 2"))
     (my/add-hook python-mode-hook
       (setq-local helm-dash-docsets '("Python 2"))))
@@ -378,6 +378,7 @@ Example:
 
 (use-package company
   :ensure t
+  :defer 3
   :diminish company-mode
   ;; :bind
   ;; (("<tab>" . my/complete-or-indent)
@@ -386,7 +387,6 @@ Example:
               ("C-n" . company-select-next)
               ("C-p" . company-select-previous))
   :bind (:map company-mode-map
-              ;; ("<tab>" . my/complete-or-indent)
               ("<C-return>" . company-complete-common)
               ("C-." . company-files))
   :config
@@ -417,6 +417,7 @@ Example:
   ;; Compile all directories in the list `yas-snippet-dirs' with the
   ;; `yas-recompile-all' function.
   :ensure t
+  :defer 3
   :diminish yas-minor-mode
   ;; :init
   ;; (with-eval-after-load 'yasnippet
@@ -467,12 +468,8 @@ Example:
   :ensure t
   :commands (jump-char-forward jump-char-backward)
   :bind*
-  ("M-m"   . jump-char-forward)         ;override back-to-indentation
-  ("S-M-m" . jump-char-backward)
   ("C-c C-f"   . jump-char-forward)
   ("C-c C-M-f" . jump-char-backward)
-  ("M-3"   . jump-char-forward)
-  ("C-M-3" . jump-char-backward)
   :config
   ;; Don't highlight matches with jump-char - it's distracting
   (setq jump-char-lazy-highlight-face nil))
@@ -599,6 +596,7 @@ Example:
 
 (use-package projectile
   :ensure t
+  :defer 3
   :diminish (projectile-mode . "Pj")
   :bind-keymap* ("C-c p" . projectile-command-map)
   :bind (:map projectile-command-map
@@ -635,6 +633,7 @@ Example:
 
 (use-package magit
   :ensure t
+  :commands (magit-status magit-init)
   :bind*
   ("C-c g"  . magit-status)
   :config
