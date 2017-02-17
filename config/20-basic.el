@@ -356,11 +356,11 @@ run command asynchronously. Originally defined in dired-aux.el"
   (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 
   ;; enable fuzzy matching
-  (setq helm-M-x-fuzzy-match t  	; helm-M-x
-        helm-buffers-fuzzy-matching t	; helm-mini
-        helm-recentf-fuzzy-match    t	; helm-mini
-        helm-semantic-fuzzy-match t 	; helm-semantic-or-imenu
-        helm-imenu-fuzzy-match    t	; helm-semantic-or-imenu
+  (setq helm-M-x-fuzzy-match t      ; helm-M-x
+        helm-buffers-fuzzy-matching t   ; helm-mini
+        helm-recentf-fuzzy-match    t   ; helm-mini
+        helm-semantic-fuzzy-match t     ; helm-semantic-or-imenu
+        helm-imenu-fuzzy-match    t ; helm-semantic-or-imenu
         helm-locate-fuzzy-match nil ; helm-locate
         helm-apropos-fuzzy-match t      ; helm-apropos
         helm-lisp-fuzzy-completion t    ; helm-lisp-completion-at-point
@@ -973,6 +973,19 @@ run command asynchronously. Originally defined in dired-aux.el"
       (isearch-yank-internal
        (lambda ()
          (re-search-forward "[[:alnum:]-_@]*[[:alnum:]_]" nil t)))))
+
+  (defadvice isearch-mode (around isearch-mode-default-string (forward &optional regexp op-fun recursive-edit word-p) activate)
+    "Isearch with selected region."
+    (if (and transient-mark-mode mark-active (not (eq (mark) (point))))
+        (progn
+          (isearch-update-ring (buffer-substring-no-properties (mark) (point)))
+          (deactivate-mark)
+          ad-do-it
+          (if (not forward)
+              (isearch-repeat-backward)
+            (goto-char (mark))
+            (isearch-repeat-forward)))
+      ad-do-it))
 
   ;;   (defadvice isearch-repeat (after isearch-no-fail activate)
   ;;     "When Isearch fails, it immediately tries again with
