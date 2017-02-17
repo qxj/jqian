@@ -171,6 +171,33 @@ Example:
    ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
   )
 
+(use-package isearch
+  :bind (:map isearch-mode-map
+              ("<tab>"  . isearch-complete)
+              ("C-u"    . my/delete-line)
+              ("C-y"    . my/isearch-symbol-at-point) ; instead of `isearch-yank-line'
+              ("C-o"    . isearch-occur))
+  :config
+  ;; (setq isearch-case-fold-search t)     ; case insensitive
+  (add-hook 'isearch-mode-hook #'my/isearch-with-region)
+  :init
+  (defun my/isearch-with-region ()
+    (when mark-active
+      (let ((region (funcall region-extract-function nil)))
+        (deactivate-mark) (isearch-push-state) (isearch-yank-string region))))
+
+  (defun my/isearch-symbol-at-point ()
+    (interactive)
+    (thing-at-point--beginning-of-sexp)
+    (let ((s (thing-at-point 'symbol)))
+      (if s (isearch-yank-string s) (isearch-yank-word-or-char))))
+
+  (defun my/delete-line ()
+    (interactive)
+    (delete-region (save-excursion (move-beginning-of-line 1) (point))
+                   (save-excursion (move-end-of-line 1) (point))))
+  )
+
 (use-package uniquify
   :config
   (setq uniquify-buffer-name-style 'forward
@@ -220,12 +247,11 @@ Example:
   :ensure t
   :diminish helm-mode
   ;; :bind-keymap* ("C-c h" . helm-command-prefix)
-  :bind*
-  ("C-c r" . helm-recentf)
   :bind
   (("M-x" . helm-M-x)
    ("M-y" . helm-show-kill-ring)
    ("C-c i" . helm-semantic-or-imenu)
+   ("C-c r" . helm-recentf)
    ("C-x b" . helm-mini)
    ("C-c C-r" . helm-resume)
    ("C-x C-f" . helm-find-files)
@@ -298,26 +324,23 @@ Example:
     :ensure t
     :commands (helm-swoop helm-multi-swoop)
     :bind
-    (("C-s"     . helm-swoop)
-     ("C-x c s" . helm-multi-swoop)
+    (("M-i"     . helm-swoop)
+     ("C-x c s" . helm-swoop)
+     :map isearch-mode-map
+     ("M-i" . helm-swoop-from-isearch)
      :map helm-swoop-map
      ("C-s" . helm-next-line)
      ("C-r" . helm-previous-line)
-     ("C-u" . my/helm-swoop-clean)
+     ("C-u" . my/delete-line)
      ("M-i" . helm-multi-swoop-all-from-helm-swoop)
      ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop)
      :map helm-multi-swoop-map
      ("C-s" . helm-next-line)
-     ("C-r" . helm-previous-line))
+     ("C-r" . helm-previous-line)
+     ("C-u" . my/delete-line))
     :config
     (setq helm-swoop-move-to-line-cycle nil
           helm-swoop-use-line-number-face t)
-
-    (defun my/helm-swoop-clean ()
-      (interactive)
-      (delete-region
-       (save-excursion (move-beginning-of-line 1) (point))
-       (save-excursion (move-end-of-line 1) (point))))
     )
 
   (use-package helm-gtags
@@ -911,12 +934,11 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  ("M-J"   .  my/vi-join-lines)
  ("C-M-j" .  my/vi-merge-lines)
  ("M-z"   . zap-up-to-char)
- ;; ("M-m" .  smart-mark)
- ("M-q"  .   compact-uncompact-block)
- ("M-n"  . (lambda() (interactive) (scroll-up-command 1)))
+ ("M-q"   .   compact-uncompact-block)
+ ("M-n"    . (lambda() (interactive) (scroll-up-command 1)))
  ("<down>" . (lambda() (interactive) (scroll-up-command 1)))
- ("M-p"  . (lambda() (interactive) (scroll-down-command 1)))
- ("<up>" . (lambda() (interactive) (scroll-down-command 1)))
+ ("M-p"    . (lambda() (interactive) (scroll-down-command 1)))
+ ("<up>"   . (lambda() (interactive) (scroll-down-command 1)))
  ("C-h j"  .  (lambda () (interactive) (info "elisp")))
  ("C-h C-w" .  woman)
  ("<C-mouse-4>" .  text-scale-increase)
@@ -941,18 +963,12 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  )
 
 (bind-keys
- :map mode-specific-map
+ :map mode-specific-map                 ;C-c
  ("C-k" . kmacro-keymap)
  ("$" . toggle-truncate-lines)
- ;; ("f" . comint-dynamic-complete)
- ("r" . org-capture)
+ ;; ("f" . completion-at-point)
  ;; ("k" . auto-fill-mode)
  ;; ("q" . refill-mode)
- ;; ("v" . imenu-tree)
- ;; ("w" . my/favorite-window-config)
- ;; ("C-b" . browse-url-of-buffer)
- ;; ("C-t" . tv-view-history)
- ("'"   . toggle-quotes)
  )
 
 ;;; Define ctl-cc-map for 'C-c c' commands

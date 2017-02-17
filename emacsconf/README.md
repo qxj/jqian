@@ -1,11 +1,13 @@
 
 ## Cask
 ### Install cask
-$ curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
-$ export PATH="$HOME/.cask/bin:$PATH"
+
+    $ curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
+    $ export PATH="$HOME/.cask/bin:$PATH"
 
 ### Deployment & update
-$ cd ~/.emacs.d && cask
+
+    $ cd ~/.emacs.d && cask
 
 ## Quick Edit
 ### Input special charactors
@@ -17,7 +19,10 @@ M-x flush-lines RET ^$ RET
 ### Join two lines
 M-^ => M-x delete-indentation
 
-### navigate back to the positions you visited in buffers
+### Mark word
+M-@ => M-x mark-word, set mark then M-f (`forward-word`)
+
+### Navigate back to the positions you visited in buffers
 C-u C-@ => M-x set-mark-command, jump back in current buffer
 C-x C-@ => M-x pop-global-mark, jump back in all buffers
 C-x p   => M-x pop-to-mark-command, jump to mark (does not affect global mark ring)
@@ -67,9 +72,18 @@ Select anything you want to copy, and then
 
 ### Quickly deal with symbols at point
 #### isearch
-M-s . => M-x isearch-forward-symbol-at-point
+M-e     => isearch-edit-string
+M-y     => isearch-yank-kill
+M-e     => isearch-edit-string
+M-c     => isearch-toggle-case-fold
+M-r     => isearch-toggle-regexp
+M-s .   => isearch-forward-symbol-at-point
+M-s r   => isearch-toggle-regexp
+M-s w   => isearch-toggle-word
+M-s o   => isearch-occur
+M-s h r => isearch-highlight-regexp
 #### occur
-M-s o => M-x occur
+M-s o   => M-x occur
 #### highlight
 M-s h . => M-x highlight-symbol-at-point
 M-s h u => M-x unhighlight-regexp
