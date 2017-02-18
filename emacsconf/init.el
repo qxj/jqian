@@ -177,10 +177,9 @@ Example:
               ("C-u"    . my/delete-line)
               ("C-y"    . my/isearch-symbol-at-point) ; instead of `isearch-yank-line'
               ("C-o"    . isearch-occur))
-  :config
+  :init
   ;; (setq isearch-case-fold-search t)     ; case insensitive
   (add-hook 'isearch-mode-hook #'my/isearch-with-region)
-  :init
   (defun my/isearch-with-region ()
     (when mark-active
       (let ((region (funcall region-extract-function nil)))
@@ -910,16 +909,16 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 ;;; keybinds
 
 (bind-keys
- ([remap delete-char]  .  my/delete-char-or-region)        ;C-d
- ([remap move-beginning-of-line]  .  my/beginning-of-line) ;C-a
- ([remap move-end-of-line]  .  my/end-of-line)             ;C-e
- ([remap kill-line]  .  my/delete-line)                    ;C-k
- ([remap kill-word]  .  my/delete-word)                    ;M-d
- ([remap backward-kill-word] .  my/backward-delete-word)   ;M-DEL, <C-backspace>
+ ([remap delete-char]             . my/delete-char-or-region) ;C-d
+ ([remap move-beginning-of-line]  . my/beginning-of-line)     ;C-a
+ ([remap move-end-of-line]        . my/end-of-line)           ;C-e
+ ([remap kill-line]               . my/delete-line)           ;C-k
+ ([remap kill-word]               . my/delete-word)           ;M-d
+ ([remap backward-kill-word]      . my/backward-delete-word) ;M-DEL, <C-backspace>
 
- ("M-d"   .  my/delete-word)             ;M-d
+ ("M-d"   .  my/delete-word)            ;M-d
  ("C-S-k" .  my/delete-line-backward)
- ;; ("M-2"  .  extend-selection)         ; alternative er/expand-region
+ ;; ("M-2"  .  extend-selection)           ;alternative er/expand-region
  ("C-2"   .  set-mark-command)
  ("C-m"   .  newline-and-indent)
  ("C-j"   .  newline)
@@ -933,13 +932,13 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  ("M--"   .  delete-blank-lines)
  ("M-J"   .  my/vi-join-lines)
  ("C-M-j" .  my/vi-merge-lines)
- ("M-z"   . zap-up-to-char)
- ("M-q"   .   compact-uncompact-block)
+ ("M-z"   .  zap-up-to-char)
+ ("M-q"   .  compact-uncompact-block)
  ("M-n"    . (lambda() (interactive) (scroll-up-command 1)))
  ("<down>" . (lambda() (interactive) (scroll-up-command 1)))
  ("M-p"    . (lambda() (interactive) (scroll-down-command 1)))
  ("<up>"   . (lambda() (interactive) (scroll-down-command 1)))
- ("C-h j"  .  (lambda () (interactive) (info "elisp")))
+ ("C-h j"   . (lambda () (interactive) (info "elisp")))
  ("C-h C-w" .  woman)
  ("<C-mouse-4>" .  text-scale-increase)
  ("<C-mouse-5>" .  text-scale-decrease)
@@ -949,17 +948,17 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 
 (bind-keys
  :map ctl-x-map
- ("C-2" .  pop-global-mark)
+ ("C-2" . pop-global-mark)
  ("C-b" . ibuffer)
  ("C-k" . kill-this-buffer)
  ;; ("C-o" . my/switch-recent-buffer)
  ("C-o" . mode-line-other-buffer)
- ("C-r" . sudo-edit)
+ ;; ("C-r" . sudo-edit)
  ("C-t" . transpose-sexps)
- ("C-_" . fit-frame)
- ;; ("t"  .  template-expand-template)
- ;; ("m"  .  message-mail)
- ("\\"  .  align-regexp)
+ ;; ("C-_" . fit-frame)
+ ;; ("t"  . template-expand-template)
+ ;; ("m"  . message-mail)
+ ("\\"  . align-regexp)
  )
 
 (bind-keys
