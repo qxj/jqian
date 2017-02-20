@@ -268,9 +268,7 @@
 (use-package diff-hl
   :config
   (global-diff-hl-mode 1)
-  (add-hook 'magit-refresh-file-buffer-hook
-            (lambda ()
-              (with-current-buffer (current-buffer) (diff-hl-update)))))
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 (use-package sdcv
   :bind ("M-1" . sdcv-search-input))
@@ -343,15 +341,14 @@ MathJax.Hub.Config({
 
 (use-package dumb-jump
   :diminish dumb-jump-mode
-  :bind (("C-M-g" . dumb-jump-go)
-         ("C-M-p" . dumb-jump-back)
-         ("C-M-q" . dumb-jump-quick-look)))
+  :bind (("M-g j" . dumb-jump-go)
+         ("M-g J" . dumb-jump-back)
+         ("M-g q" . dumb-jump-quick-look))
+  :config (setq dumb-jump-selector 'ivy))
 
 (use-package fasd
-  :bind
-  ("C-h C-/" . fasd-find-file)
-  :config
-  (global-fasd-mode 1))
+  :bind ("C-h C-f" . fasd-find-file)
+  :config (global-fasd-mode 1))
 
 (use-package ein
   :defer 5)

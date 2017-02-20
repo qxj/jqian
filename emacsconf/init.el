@@ -79,7 +79,8 @@ Example:
 (show-paren-mode 1)
 (when (> emacs-major-version 24)
   (electric-pair-mode 1)
-  (global-subword-mode 1))
+  (global-subword-mode 1)
+  (save-place-mode 1))
 
 ;; Echo key strokes quickly
 (setq echo-keystrokes 0.1)
@@ -175,10 +176,6 @@ Example:
         uniquify-separator "/"
         uniquify-ignore-buffers-re "^\\*"))
 
-(use-package saveplace
-  :config
-  (save-place-mode 1))
-
 (use-package savehist
   :config
   (setq savehist-additional-variables
@@ -262,6 +259,7 @@ Example:
     )
 
   (use-package counsel
+    :ensure
     :bind
     ("M-x" . counsel-M-x)
     ("M-y" . counsel-yank-pop)
