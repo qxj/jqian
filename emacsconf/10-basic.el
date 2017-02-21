@@ -45,7 +45,8 @@
   ;; (load-theme 'tango-dark :no-confirm)
   (use-package zenburn-theme
     :config
-    (load-theme 'zenburn :no-confirm))
+    (load-theme 'zenburn :no-confirm)
+    (set-face-attribute 'region nil :background "#eee"))
 
   ;;; Font setting
   (let ((en-font (cond (my/iswin "Consolas")
