@@ -182,27 +182,26 @@
 (use-package ivy
   :ensure t
   :diminish ivy-mode
-  :bind
-  (("C-x b" . ivy-switch-buffer)
-   ("C-c C-r" . ivy-resume)
-   :map ivy-minibuffer-map
-   ("C-w" . ivy-backward-kill-word)
-   ("C-c o" . ivy-occur))
-  :config
+  :bind*
+  ("C-x b" . ivy-switch-buffer)
+  ("C-c C-r" . ivy-resume)
+  :bind (:map ivy-minibuffer-map
+              ("TAB" . ivy-partial)
+              ("C-w" . ivy-backward-kill-word)
+              ("C-c o" . ivy-occur))
+  :init
   (ivy-mode 1)
-
+  :config
   (setq ivy-use-virtual-buffers t
         ivy-display-style 'fancy
         ivy-initial-inputs-alist nil
-        ivy-count-format "")
+        ivy-count-format "(%d/%d) ")
 
-  (setq ivy-re-builders-alist
-        '((ivy-switch-buffer . ivy--regex-plus)
-          (swiper . ivy--regex-plus)
-          (t . ivy--regex-fuzzy)))
-
-  (ivy-set-actions
+  (ivy-set-actions                      ;M-o
    t '(("I" insert "insert")))
+
+  (custom-set-faces
+   '(ivy-current-match ((t (:background "#12b7c0")))))
 
   (use-package ivy-rich
     :config

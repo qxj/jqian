@@ -136,6 +136,8 @@ Example:
 (bind-key "C-x p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
+
 (my/add-hook (before-save-hook)
   (when (> 3000 (count-lines (point-min) (point-max)))
     (delete-trailing-whitespace)
@@ -217,12 +219,14 @@ Example:
 (use-package ivy
   :ensure t
   :diminish ivy-mode
-  :bind
-  (("C-x b" . ivy-switch-buffer)
-   ("C-c C-r" . ivy-resume)
-   :map ivy-minibuffer-map
-   ("C-w" . ivy-backward-kill-word)
-   ("C-c o" . ivy-occur))
+  :bind*
+  ("C-x b" . ivy-switch-buffer)
+  ("C-c C-r" . ivy-resume)
+  :bind (:map ivy-minibuffer-map
+              ("TAB" . ivy-partial)
+              ("C-w" . ivy-backward-kill-word)
+              ("C-z" . ivy-dispatching-done) ;compatible to helm
+              ("C-c o" . ivy-occur))
   :init
   (ivy-mode 1)
   :config
@@ -231,7 +235,7 @@ Example:
         ivy-initial-inputs-alist nil
         ivy-count-format "(%d/%d) ")
 
-  (ivy-set-actions                      ;M-o
+  (ivy-set-actions                      ;M-o, ivy-dispatching-done
    t '(("I" insert "insert")))
 
   (custom-set-faces
@@ -877,7 +881,7 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 
 (bind-keys
  :map mode-specific-map                 ;C-c
- ("C-k" . kmacro-keymap)
+ ("k" . kmacro-keymap)
  ("$" . toggle-truncate-lines)
  ;; ("f" . completion-at-point)
  ;; ("k" . auto-fill-mode)
