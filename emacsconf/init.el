@@ -76,11 +76,6 @@ Example:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Better defaults
-(show-paren-mode 1)
-(when (> emacs-major-version 24)
-  (electric-pair-mode 1)
-  (global-subword-mode 1)
-  (save-place-mode 1))
 
 ;; Echo key strokes quickly
 (setq echo-keystrokes 0.1)
@@ -89,8 +84,6 @@ Example:
 (setq default-tab-width 4 tab-stop-list nil)
 ;; For morden machine, initiate GC every 20MB allocated
 (setq gc-cons-threshold 20000000)
-;; Echo key strokes quickly
-(setq echo-keystrokes 0.1)
 ;; Auto fill : M-q
 (setq default-justification 'full
       adaptive-fill-mode nil
@@ -151,13 +144,21 @@ Example:
 (load custom-file t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; internal
+;;; build-in
 
 (autoload 'zap-up-to-char "misc" nil t)
 (autoload 'dired-jump "dired-x" nil t)
 
+(show-paren-mode 1)
+(when (> emacs-major-version 24)
+  (electric-pair-mode 1)
+  (global-subword-mode 1)
+  (save-place-mode 1))
+
 (use-package dired
-  :bind (("C-x C-j" . dired-jump))
+  :bind (("C-x C-j" . dired-jump)
+         :map dired-mode-map
+         ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
   :config
   (setq dired-recursive-copies 'top
         dired-recursive-deletes 'top
@@ -165,11 +166,7 @@ Example:
         dired-listing-switches "-aBhl"
         dired-dwim-target t)
   ;; Open directory in the same buffer
-  (put 'dired-find-alternate-file 'disabled nil)
-  (bind-keys
-   :map dired-mode-map
-   ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
-  )
+  (put 'dired-find-alternate-file 'disabled nil))
 
 (use-package uniquify
   :config
