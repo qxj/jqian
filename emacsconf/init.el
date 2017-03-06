@@ -90,10 +90,8 @@ Example:
       default-fill-column 78)
 ;; Highlight trailing whitespace
 (setq show-trailing-whitespace t)
-;; Wrap too long lines
-(toggle-truncate-lines 1)
-;; Revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
+;; Avoid add duplicated string to `kill-ring'
+(setq kill-do-not-save-duplicates t)
 ;; Also auto refresh dired, but be quiet about it
 (setq global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
@@ -149,16 +147,18 @@ Example:
 (autoload 'zap-up-to-char "misc" nil t)
 (autoload 'dired-jump "dired-x" nil t)
 
-(show-paren-mode 1)
+(toggle-truncate-lines 1)
+(show-paren-mode t)
+(delete-selection-mode t)               ;Make typing overwrite text selection
+(global-auto-revert-mode t)
 (when (> emacs-major-version 24)
-  (electric-pair-mode 1)
-  (global-subword-mode 1)
-  (save-place-mode 1))
+  (electric-pair-mode t)
+  (global-subword-mode t)
+  (save-place-mode t))
 
 (use-package dired
-  :bind (("C-x C-j" . dired-jump)
-         :map dired-mode-map
-         ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
+  :bind (:map dired-mode-map
+              ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
   :config
   (setq dired-recursive-copies 'top
         dired-recursive-deletes 'top
@@ -220,7 +220,7 @@ Example:
   ("C-x b" . ivy-switch-buffer)
   ("C-c C-r" . ivy-resume)
   :bind (:map ivy-minibuffer-map
-              ("TAB" . ivy-partial)
+              ;; ("TAB" . ivy-partial)
               ("C-w" . ivy-backward-kill-word)
               ("C-z" . ivy-dispatching-done) ;compatible to helm
               ("C-c o" . ivy-occur))
@@ -234,6 +234,10 @@ Example:
 
   (ivy-set-actions                      ;M-o, ivy-dispatching-done
    t '(("I" insert "insert")))
+
+  (ivy-add-actions
+   'ivy-switch-buffer
+   '(("l" counsel-locate "locate")))
 
   (custom-set-faces
    '(ivy-current-match ((t (:background "#12b7c0")))))
@@ -304,7 +308,7 @@ Example:
     :diminish (counsel-gtags-mode . "cG")
     :bind (:map counsel-gtags-mode-map
                 ("M-." . counsel-gtags-find-definition)
-                ("M-," . counsel-gtags-pop-stack)
+                ("M-," . counsel-gtags-pop)
                 ("M-s d" . counsel-gtags-dwim)
                 ("M-s r" . counsel-gtags-find-reference)
                 ("M-s s" . counsel-gtags-find-symbol))
@@ -626,7 +630,6 @@ Example:
 (add-hook 'c-mode-common-hook 'my/c-mode-common-hook)
 
 (use-package irony
-  :ensure t
   :after "cc-mode"
   :bind
   ;; ;; replace the `completion-at-point' and `complete-symbol' bindings in
@@ -668,7 +671,6 @@ Example:
   )
 
 (use-package py-autopep8
-  :ensure t
   :if (executable-find "autopep8")
   :after python
   :config
@@ -789,15 +791,15 @@ If cursor at beginning or end of a line, delete the previous RET."
      (point) (save-excursion (move-beginning-of-line 1) (point)))
     (if be (delete-char -1))))
 
-(defun my/display-buffer-path (&optional copy)
+(defun my/show-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
 you call this function by prefix 'C-u', the path will be store
 into `kill-ring'.
 
-\\[my/display-buffer-path]        display buffer's absolute path
-C-u \\[my/display-buffer-path]    copy buffer's absolute path
-C-u 1 \\[my/display-buffer-path]  copy buffer's directory name
-C-u 2 \\[my/display-buffer-path]  copy buffer's basename
+\\[my/show-buffer-path]        display buffer's absolute path
+C-u \\[my/show-buffer-path]    copy buffer's absolute path
+C-u 1 \\[my/show-buffer-path]  copy buffer's directory name
+C-u 2 \\[my/show-buffer-path]  copy buffer's basename
 "
   (interactive (list current-prefix-arg))
   (let ((f (buffer-file-name (current-buffer))))
@@ -841,7 +843,7 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
  ("C-M-o" .  split-line)
  ;; ("C-'"   .  redo)
  ("C-\\"  .  my/comment-or-uncomment-region)
- ("M-5"   .  my/display-buffer-path)
+ ("M-5"   .  my/show-buffer-path)
  ("M-0"   .  other-window)
  ("M-'"   .  just-one-space)
  ("M--"   .  delete-blank-lines)
@@ -907,6 +909,6 @@ C-u 2 \\[my/display-buffer-path]  copy buffer's basename
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (let ((d (if (boundp 'my/config-directory) my/config-directory
-           (file-name-directory load-file-name))))
-  (mapc 'load (directory-files d t "^[0-9]+-.*.el$")))
+          (file-name-directory load-file-name))))
+ (mapc 'load (directory-files d t "^[0-9]+-.*.el$")))
 (server-start)
