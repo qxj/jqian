@@ -220,7 +220,6 @@ Example:
   ("C-x b" . ivy-switch-buffer)
   ("C-c C-r" . ivy-resume)
   :bind (:map ivy-minibuffer-map
-              ;; ("TAB" . ivy-partial)
               ("C-w" . ivy-backward-kill-word)
               ("C-z" . ivy-dispatching-done) ;compatible to helm
               ("C-c o" . ivy-occur))
@@ -231,6 +230,11 @@ Example:
         ivy-display-style 'fancy
         ivy-initial-inputs-alist nil
         ivy-count-format "(%d/%d) ")
+
+  (setq ivy-re-builders-alist           ;M-r, toggle regex
+        '((counsel-ag . ivy--regex-plus)
+          (swiper . ivy--regex-plus)
+          (t . ivy--regex-fuzzy)))
 
   (ivy-set-actions                      ;M-o, ivy-dispatching-done
    t '(("I" insert "insert")))
@@ -421,8 +425,7 @@ Example:
   :bind
   ("C-1"  .   er/expand-region)
   ("M-2"  .   er/expand-region)
-  ("C-M-2"  .   er/contract-region)
-  )
+  ("C-M-2"  .   er/contract-region))
 
 (use-package smart-mode-line
   :config
@@ -544,19 +547,7 @@ Example:
               ("f" . projectile-find-file)
               ("s" . projectile-switch-project)
               ("g" . projectile-grep)
-              ("t" . projectile-toggle-between-implementation-and-test)
-              ;; f projectile-find-file
-              ;; a projectile-find-other-file
-              ;; z projectile-cache-current-file
-              ;; s projectile-switch-project
-              ;; g projectile-grep
-              ;; b projectile-switch-to-buffer
-              ;; o projectile-multi-occur
-              ;; r projectile-replace
-              ;; e projectile-recentf
-              ;; R projectile-regenerate-tags
-              ;; c projectile-compile-project
-              )
+              ("t" . projectile-toggle-between-implementation-and-test))
   :config
   (projectile-mode)
 
@@ -587,8 +578,7 @@ Example:
   (add-hook 'magit-mode-hook 'magit-load-config-extensions)
 
   (with-eval-after-load 'git-commit
-    (define-key git-commit-mode-map (kbd "C-c C-k") 'magit-exit-commit-mode))
-  )
+    (define-key git-commit-mode-map (kbd "C-c C-k") 'magit-exit-commit-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; c++
@@ -630,7 +620,7 @@ Example:
 (add-hook 'c-mode-common-hook 'my/c-mode-common-hook)
 
 (use-package irony
-  :after "cc-mode"
+  :after c-mode
   :bind
   ;; ;; replace the `completion-at-point' and `complete-symbol' bindings in
   ;; ;; irony-mode's buffers by irony-mode's asynchronous function
@@ -648,8 +638,7 @@ Example:
   (use-package company-irony-c-headers
     :after company
     :config
-    (add-to-list 'company-backends 'company-irony-c-headers)
-    )
+    (add-to-list 'company-backends 'company-irony-c-headers))
   )
 
 ;;# Preparation:
