@@ -223,7 +223,7 @@ Example:
   ("C-x b" . ivy-switch-buffer)
   ("C-c C-r" . ivy-resume)
   :bind (:map ivy-minibuffer-map
-              ("TAB" . ivy-partial)
+              ;; ("TAB" . ivy-partial)
               ("C-w" . ivy-backward-kill-word)
               ("C-z" . ivy-dispatching-done) ;compatible to helm
               ("C-c o" . ivy-occur))
@@ -514,7 +514,7 @@ Example:
   :ensure t
   :commands (flycheck-mode global-flycheck-mode)
   :init
-  (dolist (mode '(emacs-lisp-mode-hook python-mode-hook c-mode-common-hook))
+  (dolist (mode '(python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
   :config
   ;;# rebind flycheck prefix key
@@ -629,7 +629,6 @@ Example:
 (add-hook 'c-mode-common-hook 'my/c-mode-common-hook)
 
 (use-package irony
-  :ensure t
   :after "cc-mode"
   :bind
   ;; ;; replace the `completion-at-point' and `complete-symbol' bindings in
@@ -641,13 +640,11 @@ Example:
   (add-to-list 'c++-mode-hook #'irony-mode)
 
   (use-package company-irony
-    :ensure t
     :after company
     :config
     (add-to-list 'company-backends 'company-irony))
 
   (use-package company-irony-c-headers
-    :ensure t
     :after company
     :config
     (add-to-list 'company-backends 'company-irony-c-headers)
@@ -671,7 +668,6 @@ Example:
   )
 
 (use-package py-autopep8
-  :ensure t
   :if (executable-find "autopep8")
   :after python
   :config
