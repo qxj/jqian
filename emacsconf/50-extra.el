@@ -237,6 +237,18 @@
         (call-interactively 'outline-previous-visible-heading)
         (narrow-to-region (point) end)))))
 
+(use-package midnight
+  :config
+  (setq midnight-mode t
+        clean-buffer-list-delay-general 2 ; delete after two days
+        ;; clean-buffer-list-kill-never-buffer-names '("*scratch*"
+        ;;                                             "*Messages*"
+        ;;                                             "*server*")
+        clean-buffer-list-kill-never-regexps '("^ \\*Minibuf-.*\\*$"
+                                               "^ \\*MULTI-TERM-.*")
+        clean-buffer-list-kill-regexps '("^ \\*Customize.*")
+        ))
+
 (use-package multiple-cursors
   :ensure t
   :defer 3
@@ -352,3 +364,7 @@ MathJax.Hub.Config({
 
 (use-package ein
   :defer 5)
+
+(use-package wakatime-mode
+  :diminish wakatime-mode
+  :config)

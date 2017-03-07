@@ -5,6 +5,8 @@
 ;; Hi-lock: (("make-variable-buffer-\\(local\\)" (0 font-lock-keyword-face)(1 'italic append)))
 ;; Hi-lock: end
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; abbrev
 (use-package abbrev
   :defer
@@ -79,6 +81,7 @@
       ("lt" "«" nil 0)))
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; skeleton
 (use-package skeleton
   :defer
@@ -118,6 +121,7 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
   (define-skel-comment "c++" "//" "//" ?/)
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; auto insert
 (use-package autoinsert
   :config
@@ -337,6 +341,25 @@ For example: (define-skel-comment \"elisp\" \";;\" \";;\" ?\\;)
                   )
                 "\n")
      "\n"))
+  ;;# copy from template-simple.el
+  (defun my/update-header ()
+    "Auto update filename in header, refer to `my/common-header'."
+    (interactive)
+    (when buffer-file-name
+      (save-excursion
+        (goto-char (point-min))
+        (let ((end (progn (forward-line 10) (point))) ; check only first 10 lines in header
+              (regexp "@file[ ]+\\([^ \n]+\\)") ; refer: `my/common-header'
+              (fn (file-name-sans-versions (file-name-nondirectory buffer-file-name))))
+          (goto-char (point-min))
+          (while (search-forward-regexp regexp end t)
+            (and (not (string= (match-string 1) fn))
+                 ;; (y-or-n-p (format "Update file header %s to %s? "
+                 ;;                   (match-string 1) fn))
+                 (message "Replace filename %s to %s in header"
+                          (match-string 1) fn)
+                 (replace-match fn nil t nil 1)))))))
+  (add-hook 'before-save-hook 'my/update-header)
   (defun my/ifndef-header-guard-string ()
     "ifndef header guard for BLADE"
     (let ((blade-root (locate-dominating-file buffer-file-name "BLADE_ROOT")))
