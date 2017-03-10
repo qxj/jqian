@@ -115,7 +115,10 @@ Example:
       mouse-yank-at-point t
       column-number-mode t
       visible-bell t)
+;; Line-by-Line Scrolling
+(setq scroll-step 1)
 ;; Centrallize backup files
+(setq version-control t)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 ;; Auto select help window

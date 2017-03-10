@@ -43,24 +43,29 @@
   (add-hook 'after-init-hook 'init-window-frame)
 
   ;; (load-theme 'tango-dark :no-confirm)
-  (use-package zenburn-theme
-    :config
-    (load-theme 'zenburn :no-confirm)
-    (set-face-attribute 'region nil :background "#eee"))
+  (load-theme 'manoj-dark :no-confirm)
+  ;; (use-package zenburn-theme
+  ;;   :config (load-theme 'zenburn :no-confirm))
+
+  ;;; Customize colors
+  (set-face-attribute 'region nil :background "#CBA")
+  (set-background-color "#2A2A2A")
 
   ;;; Font setting
   (let ((en-font (cond (my/iswin "Consolas")
-                       (my/ismac "Menlo")
+                       ;; (my/ismac "Menlo")
+                       (my/ismac "PT Mono")
                        (t "DejaVu Sans Mono")))
         (zh-font (cond (my/iswin "Microsoft YaHei")
                        (my/ismac "PingFang SC")
                        (t "WenQuanYi Micro Hei Mono")))
         (pixel-size (if (> (x-display-pixel-width) 1280)
-                        ":pixelsize=14" ":pixelsize=12"))
+                        ":pixelsize=16" ":pixelsize=12"))
         (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
     (setq default-frame-alist
           `((width . ,frame-width)
-            (font . ,(concat en-font pixel-size)))))
+            (font . ,(concat en-font pixel-size))
+            )))
   )
 
 
