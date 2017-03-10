@@ -116,9 +116,11 @@ Example:
       column-number-mode t
       visible-bell t)
 ;; Line-by-Line Scrolling
-(setq scroll-step 1)
+(setq scroll-step 1
+      scroll-conservatively 10000)
 ;; Centrallize backup files
-(setq version-control t)
+(setq version-control t
+      delete-old-versions t)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 ;; Auto select help window
@@ -148,9 +150,9 @@ Example:
 ;;; build-in
 
 (autoload 'zap-up-to-char "misc" nil t)
-(autoload 'dired-jump "dired-x" nil t)
 
 (toggle-truncate-lines 1)
+(which-function-mode 1)
 (show-paren-mode t)
 (delete-selection-mode t)               ;Make typing overwrite text selection
 (global-auto-revert-mode t)
@@ -159,9 +161,13 @@ Example:
   (global-subword-mode t)
   (save-place-mode t))
 
+
 (use-package dired
   :bind (:map dired-mode-map
-              ("M-u"  . (lambda () (interactive) (find-alternate-file ".."))))
+              ("M-u"  . my/dired-up-directory))
+  :init
+  (defun my/dired-up-directory()
+    (interactive) (find-alternate-file ".."))
   :config
   (setq dired-recursive-copies 'top
         dired-recursive-deletes 'top
@@ -187,8 +193,7 @@ Example:
   (savehist-mode t))
 
 (use-package recentf
-  :commands recentf-mode
-  :init
+  :config
   (setq recentf-max-saved-items 1000
         recentf-exclude `(,tramp-file-name-regexp))
   (recentf-mode t)
@@ -199,12 +204,7 @@ Example:
 
 (use-package ffap
   :commands (ffap)
-  :bind*
-  ("C-c j" . ffap))
-
-(use-package which-func
-  :config
-  (which-function-mode 1))
+  :bind* ("C-c j" . ffap))
 
 (use-package flyspell
   :diminish flyspell-mode
