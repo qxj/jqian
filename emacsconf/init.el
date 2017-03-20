@@ -230,6 +230,7 @@ Example:
   (ivy-mode 1)
   :config
   (setq ivy-use-virtual-buffers t
+        ivy-virtual-abbreviate 'full    ;show full path of virtual buffers
         ivy-display-style 'fancy
         ivy-initial-inputs-alist nil
         ivy-count-format "(%d/%d) ")
