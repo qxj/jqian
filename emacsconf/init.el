@@ -219,18 +219,15 @@ Example:
 (use-package ivy
   :ensure t
   :diminish ivy-mode
-  :bind*
-  ("C-x b" . ivy-switch-buffer)
-  ("C-c C-r" . ivy-resume)
   :bind (:map ivy-minibuffer-map
               ("C-w" . ivy-backward-kill-word)
-              ("C-z" . ivy-dispatching-done) ;compatible to helm
+              ("C-z" . ivy-dispatching-done) ;Compatible to `helm-select-action'
               ("C-c o" . ivy-occur))
   :init
   (ivy-mode 1)
   :config
   (setq ivy-use-virtual-buffers t
-        ivy-virtual-abbreviate 'full    ;show full path of virtual buffers
+        ivy-virtual-abbreviate 'full    ;Show full path of virtual buffers
         ivy-display-style 'fancy
         ivy-initial-inputs-alist nil
         ivy-count-format "(%d/%d) ")
@@ -250,99 +247,163 @@ Example:
   (custom-set-faces
    '(ivy-current-match ((t (:background "#12b7c0")))))
 
-  (use-package ivy-rich
-    :config
-    (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer))
-
   (use-package swiper
     :ensure
-    :bind
-    (("C-s" . swiper)
-     ("C-r" . swiper)
-     ("C-M-s" . swiper-all)
-     :map isearch-mode-map
-     ("M-i" . my/swiper-from-isearch))
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)))
+  )
 
-    :init
-    (defun my/swiper-from-isearch ()
-      (interactive)
-      (let (($query (if isearch-regexp isearch-string
-                      (regexp-quote isearch-string))))
-        (isearch-exit) (swiper $query)))
-    )
+(use-package helm                       ; http://tuhdo.github.io/helm-intro.html
+  :ensure t
+  :diminish helm-mode
+  ;; :bind-keymap* ("C-c h" . helm-command-prefix)
+  :bind (("M-x" . helm-M-x)
+         ("M-y" . helm-show-kill-ring)
+         ("C-c i" . helm-semantic-or-imenu)
+         ("C-c r" . helm-recentf)
+         ("C-x b" . helm-mini)
+         ("C-c C-r" . helm-resume)
+         ("C-x C-f" . helm-find-files)
+         ("C-x M-f" . helm-for-files)
+         ("C-h SPC" . helm-all-mark-rings)
+         :map helm-command-map
+         ("i" . helm-semantic-or-imenu)
+         ("<tab>" . helm-lisp-completion-at-point)
+         ("x" . helm-register)
+         ("p" . helm-projectile)
+         ("a" . helm-do-grep-ag)
+         ("j" . helm-grep-do-git-grep)
+         :map minibuffer-local-map
+         ("C-c C-l" . helm-minibuffer-history)
+         :map helm-map
+         ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+         ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
+         ("C-z"   . helm-select-action)             ; list actions using C-z
+         ("C-w"   . backward-kill-word)
+         :map helm-find-files-map
+         ("M-u" . helm-find-files-up-one-level)
+         ("C-w" . helm-find-files-up-one-level)
+         :map helm-read-file-map
+         ("C-w" . helm-find-files-up-one-level))
+  :init
+  (require 'helm-config)
+  (helm-mode t)
+  (helm-adaptive-mode t)
+  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
+  :config
+  (unbind-key "C-l" helm-read-file-map)
+  (unbind-key "C-l" helm-find-files-map)
 
-  (use-package counsel
-    :ensure
-    :bind
-    ("M-x" . counsel-M-x)
-    ("M-y" . counsel-yank-pop)
+  (when (executable-find "curl")
+    (setq helm-net-prefer-curl t))
 
-    ("C-x d" . counsel-dired-jump)
-    ("C-x C-f" . counsel-find-file)
+  (when (eq system-type 'darwin)
+    (setq helm-locate-command "mdfind -name %s %s"))
 
-    ("C-c i" . counsel-imenu)
-    ("C-c r" . counsel-recentf)
+  ;; enable man page at point
+  (add-to-list 'helm-sources-using-default-as-input 'helm-source-man-pages)
 
-    ("C-h f" . counsel-describe-function)
-    ("C-h v" . counsel-describe-variable)
-    ("C-h l" . counsel-find-library)
-    ("C-h i" . counsel-info-lookup-symbol)
-    ("C-h u" . counsel-unicode-char)
+  ;; enable fuzzy matching
+  (setq helm-buffers-fuzzy-matching  t   ; helm-mini
+        helm-recentf-fuzzy-match     t   ; helm-mini
+        helm-semantic-fuzzy-match    t   ; helm-semantic-or-imenu
+        helm-imenu-fuzzy-match       t   ; helm-semantic-or-imenu
+        helm-locate-fuzzy-match      nil ; helm-locate
+        helm-lisp-fuzzy-completion   t   ; helm-lisp-completion-at-point
+        helm-ff-guess-ffap-filenames t   ; helm-find-files
+        )
 
-    ("C-x c g"  . counsel-git)
-    ("C-x c j"  . counsel-git-grep)
-    ("C-x c a"  . counsel-ag)
-    ("C-x c l"  . counsel-locate)
+  (setq helm-candidate-number-limit 100
+        helm-display-header-line nil)
+  ;; From https://gist.github.com/antifuchs/9238468
+  (setq helm-input-idle-delay 0.01
+        helm-split-window-in-side-p t
+        helm-scroll-amount 8
+        helm-ff-search-library-in-sexp t
+        helm-ff-skip-boring-files t
+        helm-ff-file-name-history-use-recentf t)
 
-    :bind
-    (:map help-map
-          ("f" . counsel-describe-function)
-          ("v" . counsel-describe-variable)
-          ("l" . counsel-info-lookup-symbol))
-    :bind
-    (:map read-expression-map
-          ("C-r" . counsel-expression-history))
+  (helm-autoresize-mode 1)
 
+  (use-package helm-flx
+    :config (helm-flx-mode 1))
+
+  (use-package helm-swoop
+    :ensure t
+    :commands (helm-swoop helm-multi-swoop)
+    :bind (("M-i"     . helm-swoop)
+           ("C-x c s" . helm-swoop)
+           :map isearch-mode-map
+           ("M-i" . helm-swoop-from-isearch)
+           :map helm-swoop-map
+           ("C-s" . helm-next-line)
+           ("C-r" . helm-previous-line)
+           ("M-i" . helm-multi-swoop-all-from-helm-swoop)
+           ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop)
+           :map helm-multi-swoop-map
+           ("C-s" . helm-next-line)
+           ("C-r" . helm-previous-line))
     :config
-    (when (eq 'system-type 'darwin)
-      (setq counsel-locate-cmd 'counsel-locate-cmd-mdfind))
-
-    (setq counsel-find-file-at-point t)
+    (setq helm-swoop-move-to-line-cycle nil
+          helm-swoop-use-line-number-face t)
     )
 
-  (use-package counsel-gtags
-    :defer 3
+  (use-package helm-gtags
+    :after c-mode
     :if (executable-find "gtags")
-    :diminish (counsel-gtags-mode . "cG")
-    :bind (:map counsel-gtags-mode-map
-                ("M-." . counsel-gtags-find-definition)
-                ("M-," . counsel-gtags-pop)
-                ("M-s d" . counsel-gtags-dwim)
-                ("M-s r" . counsel-gtags-find-reference)
-                ("M-s s" . counsel-gtags-find-symbol))
+    :diminish (helm-gtags-mode . "hG")
+    :bind (:map helm-gtags-mode-map
+                ("M-." . helm-gtags-find-tag)
+                ("M-," . helm-gtags-pop-stack)
+                ("M-*" . helm-gtags-pop-stack)
+                ("M-s d" . helm-gtags-dwim)
+                ("M-s r" . helm-gtags-find-rtag)
+                ("M-s s" . helm-gtags-find-symbol)
+                ("C-c i" . helm-gtags-parse-file)  ;replace imenu
+                ("C-c <" . helm-gtags-previous-history)
+                ("C-c >" . helm-gtags-next-history))
     :config
-    (add-hook 'c-mode-hook 'counsel-gtags-mode)
-    (add-hook 'c++-mode-hook 'counsel-gtags-mode)
-    )
+    (setq helm-gtags-ignore-case t
+          helm-gtags-auto-update t
+          helm-gtags-use-input-at-cursor t)
+    (add-hook 'c-mode-hook #'helm-gtags-mode)
+    (add-hook 'c++-mode-hook #'helm-gtags-mode))
 
-  (use-package counsel-projectile
-    :defer 3
+  (use-package helm-c-yasnippet
+    :after yasnippet
+    :bind ("C-c y" . helm-yas-complete)
     :config
-    (counsel-projectile-on))
+    (setq helm-yas-space-match-any-greedy t
+          helm-yas-display-key-on-candidate t))
 
-  (use-package counsel-dash
-    :commands counsel-dash
-    :bind
-    ("C-x c d" . counsel-dash))
+  (use-package helm-ls-git
+    :config
+    :bind (:map helm-command-map
+                ("g" . helm-ls-git-ls)))
+
+  (use-package helm-projectile
+    :after projectile
+    :config
+    (setq projectile-completion-system 'helm
+          projectile-switch-project-action 'helm-projectile)
+    (helm-projectile-on))
+
+  (use-package helm-dash
+    :bind (:map helm-command-map
+                ("d" . helm-dash-at-point))
+    :config
+    ;; Dash docsets feeds: https://github.com/Kapeli/feeds
+    (setq helm-dash-browser-func 'browse-url
+          helm-dash-common-docsets '("C++" "Python 2"))
+    (my/add-hook python-mode-hook
+      (setq-local helm-dash-docsets '("Python 2"))))
   )
 
 (use-package company
   :ensure t
   :defer 3
   :diminish company-mode
-  ;; :bind
-  ;; (("<tab>" . my/complete-or-indent)
-  ;;  ("C-." . company-files))
+  ;; :bind ("C-." . company-files)
   :bind (:map company-active-map
               ("C-n" . company-select-next)
               ("C-p" . company-select-previous))
@@ -383,8 +444,7 @@ Example:
   ;; (with-eval-after-load 'yasnippet
   ;;   (setq yas-snippet-dirs (remq 'yas-installed-snippets-dir yas-snippet-dirs)))
   :config
-  ;; (yas-global-mode 1)
-  (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; for emacs24+
+  (add-hook 'prog-mode-hook 'yas-minor-mode-on) ; For emacs24+, replace `yas-global-mode'
 
   (setq yas-expand-only-for-last-commands nil
         yas-key-syntaxes '("w_" "w_." "^ ")
@@ -414,9 +474,10 @@ Example:
 (use-package avy
   :ensure t
   :bind*
-  ("M-g w"   . avy-goto-word-1)
   ("C-c C-j" . avy-goto-word-1)
+  ("M-3"     . avy-goto-word-1)
   ("M-4"     . avy-goto-word-or-subword-1)
+  ("M-g w"   . avy-goto-word-1)
   ("M-g f"   . avy-goto-char)
   ("M-g l"   . avy-goto-line)
   :config
@@ -480,18 +541,14 @@ Example:
     (multi-term-dedicated-select))
   )
 
-(use-package highlight-symbol
+(use-package highlight-symbol           ; Refer hi-lock.el
   :ensure t
-  :commands (highlight-symbol-mode
-             highlight-symbol-at-point
-             highlight-symbol-remove-all
-             highlight-symbol-list-all)
+  :commands (highlight-symbol-mode highlight-symbol-at-point)
   :diminish highlight-symbol-mode
   :bind*
-  ("C-c c h" . highlight-symbol-at-point)
-  ("<C-f3>" .  highlight-symbol-at-point)
-  ("<f3>"   .  highlight-symbol-next)
-  ("<S-f3>" .  highlight-symbol-prev)
+  ("M-s h h" . highlight-symbol-at-point) ; "M-s h ."
+  ("M-s h n" . highlight-symbol-next)
+  ("M-s h p" . highlight-symbol-prev)
   :init
   (when window-system
     (my/add-hook (emacs-lisp-mode-hook python-mode-hook c-mode-common-hook)
@@ -525,12 +582,12 @@ Example:
   (dolist (mode '(python-mode-hook c-mode-common-hook))
     (add-hook mode 'flycheck-mode))
   :config
-  ;;# rebind flycheck prefix key
+  ;;# Rebind flycheck prefix key
   (define-key flycheck-mode-map flycheck-keymap-prefix nil)
   (setq flycheck-keymap-prefix (kbd "C-c f"))
   (define-key flycheck-mode-map flycheck-keymap-prefix flycheck-command-map)
 
-  ;;# workaround to avoid eldoc override flycheck error message
+  ;;# Workaround to avoid eldoc override flycheck error message
   (setq flycheck-display-errors-delay 1.1)
   ;; (setq flycheck-indication-mode 'right-fringe)
 
@@ -590,7 +647,7 @@ Example:
 
 (use-package google-c-style :ensure t)
 
-;;# if function name is too long, we will indent the parameters forward.
+;;# If function name is too long, we will indent the parameters forward.
 (defun my/c-lineup-arglist (langelem)
   (let ((c-lineup-maximum-indent 20)
         (ret (c-lineup-arglist langelem)))
@@ -602,7 +659,7 @@ Example:
   (setcdr (assoc 'arglist-cont-nonempty c-offsets-alist)
           '(c-lineup-gcc-asm-reg my/c-lineup-arglist)))
 
-;;# convert some .h to c++-mode automatically
+;;# Convert some .h to c++-mode automatically
 (defun my/c-correct-hpp-mode ()
   (if (and (not (derived-mode-p 'c++-mode)) (string-match "\.h$" (buffer-name))
            (save-excursion
@@ -626,8 +683,8 @@ Example:
 (use-package irony
   :after c-mode
   :bind
-  ;; ;; replace the `completion-at-point' and `complete-symbol' bindings in
-  ;; ;; irony-mode's buffers by irony-mode's asynchronous function
+  ;; Replace the `completion-at-point' and `complete-symbol' bindings in
+  ;; irony-mode's buffers by irony-mode's asynchronous function
   (:map irony-mode-map
    ([remap completion-at-point] . irony-completion-at-point-async)
    ([remap complete-symbol]     . irony-completion-at-point-async))
@@ -656,7 +713,6 @@ Example:
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
         elpy-rpc-backend "jedi")
   ;; (add-hook 'elpy-mode-hook 'flycheck-mode)
-
   (elpy-enable)
   ;(elpy-use-ipython)
   )

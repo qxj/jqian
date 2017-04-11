@@ -30,45 +30,40 @@
   :ensure t
   :diminish helm-mode
   ;; :bind-keymap* ("C-c h" . helm-command-prefix)
-  :bind
-  (("M-x" . helm-M-x)
-   ("M-y" . helm-show-kill-ring)
-   ("C-c i" . helm-semantic-or-imenu)
-   ("C-c r" . helm-recentf)
-   ("C-x b" . helm-mini)
-   ("C-c C-r" . helm-resume)
-   ("C-x C-f" . helm-find-files)
-   ("C-x M-f" . helm-for-files)
-   ("C-h SPC" . helm-all-mark-rings)
-   :map helm-command-map
-   ("i" . helm-semantic-or-imenu)
-   ("<tab>" . helm-lisp-completion-at-point)
-   ("x" . helm-register)
-   ("p" . helm-projectile)
-   ("a" . helm-do-grep-ag)
-   ("j" . helm-grep-do-git-grep)
-   :map minibuffer-local-map
-   ("C-c C-l" . helm-minibuffer-history)
-   :map helm-map
-   ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
-   ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
-   ("C-z"   . helm-select-action)             ; list actions using C-z
-   ("C-w"   . backward-kill-word)
-   :map helm-find-files-map
-   ("M-u" . helm-find-files-up-one-level)
-   ("C-w" . helm-find-files-up-one-level)
-   :map helm-read-file-map
-   ("C-w" . helm-find-files-up-one-level))
+  :bind (("M-x" . helm-M-x)
+         ("M-y" . helm-show-kill-ring)
+         ("C-c i" . helm-semantic-or-imenu)
+         ("C-c r" . helm-recentf)
+         ("C-x b" . helm-mini)
+         ("C-c C-r" . helm-resume)
+         ("C-x C-f" . helm-find-files)
+         ("C-x M-f" . helm-for-files)
+         ("C-h SPC" . helm-all-mark-rings)
+         :map helm-command-map
+         ("i" . helm-semantic-or-imenu)
+         ("<tab>" . helm-lisp-completion-at-point)
+         ("x" . helm-register)
+         ("p" . helm-projectile)
+         ("a" . helm-do-grep-ag)
+         ("j" . helm-grep-do-git-grep)
+         :map minibuffer-local-map
+         ("C-c C-l" . helm-minibuffer-history)
+         :map helm-map
+         ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+         ("C-i"   . helm-execute-persistent-action) ; make TAB works in terminal
+         ("C-z"   . helm-select-action)             ; list actions using C-z
+         ("C-w"   . backward-kill-word)
+         :map helm-find-files-map
+         ("M-u" . helm-find-files-up-one-level)
+         ("C-w" . helm-find-files-up-one-level)
+         :map helm-read-file-map
+         ("C-w" . helm-find-files-up-one-level))
   :init
   (require 'helm-config)
-  ;; (global-unset-key (kbd "C-x c"))
   (helm-mode t)
   (helm-adaptive-mode t)
   (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
   :config
-  ;; (bind-keys
-  ;;  :map minibuffer-local-map
-  ;;  ("C-c C-l" . helm-minibuffer-history))
   (unbind-key "C-l" helm-read-file-map)
   (unbind-key "C-l" helm-find-files-map)
 
@@ -106,28 +101,25 @@
   (use-package helm-swoop
     :ensure t
     :commands (helm-swoop helm-multi-swoop)
-    :bind
-    (("M-i"     . helm-swoop)
-     ("C-x c s" . helm-swoop)
-     :map isearch-mode-map
-     ("M-i" . helm-swoop-from-isearch)
-     :map helm-swoop-map
-     ("C-s" . helm-next-line)
-     ("C-r" . helm-previous-line)
-     ("C-u" . my/delete-line)
-     ("M-i" . helm-multi-swoop-all-from-helm-swoop)
-     ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop)
-     :map helm-multi-swoop-map
-     ("C-s" . helm-next-line)
-     ("C-r" . helm-previous-line)
-     ("C-u" . my/delete-line))
+    :bind (("M-i"     . helm-swoop)
+           ("C-x c s" . helm-swoop)
+           :map isearch-mode-map
+           ("M-i" . helm-swoop-from-isearch)
+           :map helm-swoop-map
+           ("C-s" . helm-next-line)
+           ("C-r" . helm-previous-line)
+           ("M-i" . helm-multi-swoop-all-from-helm-swoop)
+           ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop)
+           :map helm-multi-swoop-map
+           ("C-s" . helm-next-line)
+           ("C-r" . helm-previous-line))
     :config
     (setq helm-swoop-move-to-line-cycle nil
           helm-swoop-use-line-number-face t)
     )
 
   (use-package helm-gtags
-    :after cc-mode
+    :after c-mode
     :if (executable-find "gtags")
     :diminish (helm-gtags-mode . "hG")
     :bind (:map helm-gtags-mode-map
@@ -149,8 +141,7 @@
 
   (use-package helm-c-yasnippet
     :after yasnippet
-    :bind
-    ("C-c y" . helm-yas-complete)
+    :bind ("C-c y" . helm-yas-complete)
     :config
     (setq helm-yas-space-match-any-greedy t
           helm-yas-display-key-on-candidate t))
@@ -209,13 +200,11 @@
 
   (use-package swiper
     :ensure
-    :bind
-    (("C-s" . swiper)
-     ("C-r" . swiper)
-     ("C-M-s" . swiper-all)
-     :map isearch-mode-map
-     ("M-i" . my/swiper-from-isearch))
-
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-M-s" . swiper-all)
+           :map isearch-mode-map
+           ("M-i" . my/swiper-from-isearch))
     :init
     (defun my/swiper-from-isearch ()
       (interactive)
