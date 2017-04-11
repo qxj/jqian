@@ -169,13 +169,20 @@ Example:
   (defun my/dired-up-directory()
     (interactive) (find-alternate-file ".."))
   :config
-  (setq dired-recursive-copies 'top
-        dired-recursive-deletes 'top
-        dired-isearch-filenames 'dwim
+  (setq dired-isearch-filenames 'dwim
         dired-listing-switches "-aBhl"
-        dired-dwim-target t)
+        dired-dwim-target t
+        dired-auto-revert-buffer t)
   ;; Open directory in the same buffer
-  (put 'dired-find-alternate-file 'disabled nil))
+  (put 'dired-find-alternate-file 'disabled nil)
+  ;; Sort directories firstly, and truncate long lines
+  (my/add-hook dired-after-readin-hook
+    (set (make-local-variable 'truncate-lines) t)
+    (save-excursion
+      (let (buffer-read-only)
+        (forward-line 2)
+        (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))))
+  (add-hook 'dired-mode-hook #'dired-omit-mode))
 
 (use-package uniquify
   :config
