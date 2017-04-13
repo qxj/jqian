@@ -132,7 +132,7 @@ Example:
 (bind-key "C-x p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p t)
 
 (my/add-hook (before-save-hook)
   (when (> 3000 (count-lines (point-min) (point-max)))
