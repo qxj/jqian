@@ -123,13 +123,17 @@ Example:
       delete-old-versions t)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
+;; Grep ignore
+(with-eval-after-load "grep"
+  (dolist (f '("*.bak" "*.z" "*.zip" "*.7z" "*.tar" "*.bz2" "*.gz" "*.tgz" "*.class" "*.jar"))
+    (add-to-list 'grep-find-ignored-files f)))
 ;; Auto select help window
 (setq help-window-select t)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Handy way of getting back to previous places
-(bind-key "C-x p" 'pop-to-mark-command)
+(bind-key "C-c p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p t)
@@ -279,7 +283,7 @@ Example:
          ("x" . helm-register)
          ("p" . helm-projectile)
          ("a" . helm-do-grep-ag)
-         ("j" . helm-grep-do-git-grep)
+         ("g" . helm-grep-do-git-grep)
          :map minibuffer-local-map
          ("C-c C-l" . helm-minibuffer-history)
          :map helm-map
@@ -386,7 +390,7 @@ Example:
   (use-package helm-ls-git
     :config
     :bind (:map helm-command-map
-                ("g" . helm-ls-git-ls)))
+                ("G" . helm-ls-git-ls)))
 
   (use-package helm-projectile
     :after projectile
@@ -610,11 +614,13 @@ Example:
   :ensure t
   :defer 3
   :diminish (projectile-mode . "Pj")
-  :bind-keymap* ("C-c p" . projectile-command-map)
+  :bind-keymap* ("C-x p" . projectile-command-map)
   :bind (:map projectile-command-map
               ("f" . projectile-find-file)
               ("s" . projectile-switch-project)
+              ("a" . projectile-ag)
               ("g" . projectile-grep)
+              ("o" . projectile-find-other-file) ; instead of `projectile-multi-occur'
               ("t" . projectile-toggle-between-implementation-and-test))
   :config
   (projectile-mode)
