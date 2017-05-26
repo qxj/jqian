@@ -50,11 +50,18 @@
   ;;; Customize colors
   (set-face-attribute 'region nil :background "#CBA")
   (set-background-color "#2A2A2A")
+  (custom-set-faces
+   '(default ((t (:background "#2A2A2A"))))
+   '(font-lock-comment-face ((t (:foreground "#687080" :slant italic))))
+   '(font-lock-comment-delimiter-face ((t (:foreground "#687080" :slant italic))))
+   '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+   '(ivy-current-match ((t (:background "#e5b7c0")))))
 
   ;;; Font setting
   (let ((en-font (cond (my/iswin "Consolas")
                        ;; (my/ismac "Menlo")
-                       (my/ismac "PT Mono")
+                       ;; (my/ismac "PT Mono")
+                       (my/ismac "monofur")
                        (t "DejaVu Sans Mono")))
         (zh-font (cond (my/iswin "Microsoft YaHei")
                        (my/ismac "PingFang SC")
