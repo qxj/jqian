@@ -1,7 +1,7 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
+# -*- mode: sh -*-
+#
 # Refer: https://gist.github.com/kevin-smets/8568070
+#
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
@@ -12,6 +12,14 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="robbyrussell"
 ZSH_THEME="agnoster"
 ZSH_THEME="powerlevel9k/powerlevel9k"
+POWERLEVEL9K_MODE="nerdfont-fontconfig"
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=4
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon root_indicator dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs time virtualenv)
+POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
+POWERLEVEL9K_MULTILINE_SECOND_PROMPT_PREFIX=" ❯ "
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -55,7 +63,7 @@ HIST_STAMPS="yyyy-mm-dd"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(fasd virtualenvwrapper zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(fasd pip virtualenvwrapper zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
