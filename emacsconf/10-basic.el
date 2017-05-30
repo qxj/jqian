@@ -54,7 +54,7 @@
    '(default ((t (:background "#2A2A2A"))))
    '(font-lock-comment-face ((t (:foreground "#687080" :slant italic))))
    '(font-lock-comment-delimiter-face ((t (:foreground "#687080" :slant italic))))
-   '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+   ;; '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
    '(ivy-current-match ((t (:background "#e5b7c0")))))
 
   ;;; Font setting

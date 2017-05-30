@@ -133,7 +133,7 @@ Example:
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Handy way of getting back to previous places
-(bind-key "C-c p" 'pop-to-mark-command)
+(bind-key* "C-c p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p t)
@@ -614,7 +614,8 @@ Example:
   :ensure t
   :defer 3
   :diminish (projectile-mode . "Pj")
-  :bind-keymap* ("C-x p" . projectile-command-map)
+  :init (setq projectile-keymap-prefix "p")
+  ;; :bind-keymap* ("C-x p" . projectile-command-map)
   :bind (:map projectile-command-map
               ("f" . projectile-find-file)
               ("s" . projectile-switch-project)
