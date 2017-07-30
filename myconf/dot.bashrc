@@ -22,6 +22,9 @@ MANPAGER="less -X"
 # Don't grep svn base
 GREP_OPTIONS="--color --exclude=\*.svn-base"
 
+# Enable ls output colorful
+CLICOLOR=true
+
 # Disable flow control (C-s/C-q)
 stty -ixon
 
@@ -50,80 +53,43 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+# Reset
+ColorOff='\e[0m'       # Text Reset
+# 0.Black 1.Red 2.Green 3.Yellow 4.Blue 5.Purple 6.Cyan 7.White
+Colors=('\e[0;30m' '\e[0;31m' '\e[0;32m' '\e[0;33m' '\e[0;34m' '\e[0;35m' '\e[0;36m' '\e[0;37m')
+BoldColors=('\e[1;30m' '\e[1;31m' '\e[1;32m' '\e[1;33m' '\e[1;34m' '\e[1;35m' '\e[1;36m' '\e[1;37m')
+UnderlineColors=('\e[4;30m' '\e[4;31m' '\e[4;32m' '\e[4;33m' '\e[4;34m' '\e[4;35m' '\e[4;36m' '\e[4;37m')
+BgColors=('\e[40m' '\e[41m' '\e[42m' '\e[43m' '\e[44m' '\e[45m' '\e[46m' '\e[47m')
+
 # make prompt more friendly
 function my_prompt()
 {
     local last_cmd=$?
-    #if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-    if true; then
-        # Reset
-        Color_Off='\e[0m'       # Text Reset
 
-        # Regular Colors
-        Black='\e[0;30m'        # Black
-        Red='\e[0;31m'          # Red
-        Green='\e[0;32m'        # Green
-        Yellow='\e[0;33m'       # Yellow
-        Blue='\e[0;34m'         # Blue
-        Purple='\e[0;35m'       # Purple
-        Cyan='\e[0;36m'         # Cyan
-        White='\e[0;37m'        # White
-
-        # Bold
-        BBlack='\e[1;30m'       # Black
-        BRed='\e[1;31m'         # Red
-        BGreen='\e[1;32m'       # Green
-        BYellow='\e[1;33m'      # Yellow
-        BBlue='\e[1;34m'        # Blue
-        BPurple='\e[1;35m'      # Purple
-        BCyan='\e[1;36m'        # Cyan
-        BWhite='\e[1;37m'       # White
-
-        # Underline
-        UBlack='\e[4;30m'       # Black
-        URed='\e[4;31m'         # Red
-        UGreen='\e[4;32m'       # Green
-        UYellow='\e[4;33m'      # Yellow
-        UBlue='\e[4;34m'        # Blue
-        UPurple='\e[4;35m'      # Purple
-        UCyan='\e[4;36m'        # Cyan
-        UWhite='\e[4;37m'       # White
-
-        # Background
-        On_Black='\e[40m'       # Black
-        On_Red='\e[41m'         # Red
-        On_Green='\e[42m'       # Green
-        On_Yellow='\e[43m'      # Yellow
-        On_Blue='\e[44m'        # Blue
-        On_Purple='\e[45m'      # Purple
-        On_Cyan='\e[46m'        # Cyan
-        On_White='\e[47m'       # White
-    fi
-
-    local p_user=$Red"\u"$Color_Off
-    local p_host=$Green"\h"$Color_Off
-    local p_path=$Blue"\w"$Color_Off
-    local p_time=$Yellow"\t"$Color_Off
+    local p_user=${Colors[1]}"\u"$ColorOff
+    local p_host=${Colors[2]}"\h"$ColorOff
+    local p_path=${Colors[4]}"\w"$ColorOff
+    local p_time=${Colors[3]}"\t"$ColorOff
     local p_flag="$"
 
     # local p_last=$Green'\342\234\223'$Color_Off
     local p_last=
     if [ $last_cmd -ne 0 ]; then
-        p_last=$On_Red'\342\234\227'$Color_Off
+        p_last=${BgColors[1]}'\342\234\227'$ColorOff
     fi
     if [ $(/usr/bin/id -u) -eq 0 ]; then
         p_user=""
-        p_host=$Red"\h"$Color_Off
+        p_host=${Colors[1]}"\h"$ColorOff
         p_flag="#"
     fi
     if [ -n "$SSH_CLIENT" ]; then
-        p_host=$On_Green"\h"$Color_Off
+        p_host=${BgColors[2]}"\h"$ColorOff
     fi
     local p_git=
     if [ $(which git 2>/dev/null) ]; then
-        p_git=$(__git_ps1 $Purple"(%s) "$Color_Off 2>/dev/null)
+        p_git=$(__git_ps1 ${Colors[5]}"(%s) "$ColorOff 2>/dev/null)
         if [ $? -ne 0 ]; then
-            p_git=$Purple'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$Color_Off
+            p_git=${Colors[5]}'`git branch 2> /dev/null | grep -e ^* | sed -E  s/^\\\\\*\ \(.+\)$/\(\\\\\1\)\ /`'$ColorOff
         fi
     fi
     PS1=$p_last$p_user"@"$p_host"["$p_time"]:"$p_git$p_path"\n"$p_flag" "
@@ -140,13 +106,13 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 alias urldecode="python -c \"import re,sys;print re.sub(r'%([0-9a-hA-H]{2})',lambda m: chr(int(m.group(1),16)), open(sys.argv[1]).read() if len(sys.argv) > 1 else sys.stdin.read())\""
 
 # timestamp to date string
-# e.g.: ts2ds "2013-01-01 12:01:05" "+%Y-%m-%d %H:%M:%S"
+# e.g.: ts2ds 1414290121 "+%Y-%m-%d %H:%M:%S"
 function ts2ds()
 {
     if [[ -n $2 ]]; then
         fmt=$2
     else
-        fmt="+%Y%m%d"
+        fmt="+%F"
     fi
     date -d "1970-01-01 utc $1 seconds" $fmt
 }
@@ -299,6 +265,11 @@ case $OSTYPE in
         test -f /usr/share/autojump/autojump.sh && . /usr/share/autojump/autojump.sh
         ;;
 esac
+
+# Activiate fasd
+if [ $(which fasd 2>/dev/null) ]; then
+    eval "$(fasd --init auto)"
+fi
 
 # Env variables
 test -d $HOME/bin && export PATH=$PATH:$HOME/bin

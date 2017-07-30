@@ -123,6 +123,8 @@ Example:
       delete-old-versions t)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
+(setq vc-follow-symlinks t)
+
 ;; Grep ignore
 (with-eval-after-load "grep"
   (dolist (f '("*.bak" "*.z" "*.zip" "*.7z" "*.tar" "*.bz2" "*.gz" "*.tgz" "*.class" "*.jar"))
@@ -374,8 +376,7 @@ Example:
                 ("C-c <" . helm-gtags-previous-history)
                 ("C-c >" . helm-gtags-next-history))
     :config
-    (setq helm-gtags-ignore-case t
-          helm-gtags-auto-update t
+    (setq helm-gtags-auto-update t
           helm-gtags-use-input-at-cursor t)
     (add-hook 'c-mode-hook #'helm-gtags-mode)
     (add-hook 'c++-mode-hook #'helm-gtags-mode))
@@ -518,6 +519,7 @@ Example:
   ("C-c t s" . multi-term-dedicated-select)
   ("C-c t g" . multi-term-dedicated-toggle)
   :config
+  (setq multi-term-program "/bin/bash")
   (setq multi-term-dedicated-window-height 10
         multi-term-dedicated-max-window-height 10)
 

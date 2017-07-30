@@ -93,7 +93,7 @@ M-s h u => M-x unhighlight-regexp
 M-x dired-find-alternate-file
 
 ### Recursively find and replace in text files not alread opened
-M-x find-name-dired,
+M-x find-name-dired, to execute `find` command, then
 Press `t` to "Toggle Mark" for all files found,
 Press `Q` to "Query-Replace in Files ..."
 

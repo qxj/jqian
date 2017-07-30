@@ -76,12 +76,19 @@ PATH=$PATH:/usr/local/texlive/2016basic/bin/x86_64-darwin
 PATH=$PATH:~/anaconda2/bin
 export PATH
 
+# Java environment
 export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+export JAVAFX_HOME=$JAVA_HOME/jre/lib
 export JENV_ROOT=/usr/local/var/jenv
+eval "$(jenv init -)"
+
 export EDITOR=vim
 
 # let gtags treat .h as c++ source file
 export GTAGSFORCECPP=true
+
+# Don’t clear the screen after quitting a manual page
+export MANPAGER="less -X"
 
 # homebrew bottles ustc mirror
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
@@ -90,30 +97,14 @@ export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bott
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=4'
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
+# Aliases
 alias v='f -e vim'
 alias o='a -e open'
+
+# Search history use up/down arrow keys.
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
+
+# Support fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
