@@ -603,8 +603,9 @@ Example:
   ;;# Workaround to avoid eldoc override flycheck error message
   (setq flycheck-display-errors-delay 1.1)
   ;; (setq flycheck-indication-mode 'right-fringe)
+  (setq-default flycheck-emacs-lisp-load-path 'inherit)
 
-  ;; python code style
+  ;;# python flake8 config: ~/.flake8rc
   ;; flake8 works with git:
   ;;     http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
   (setq flycheck-python-flake8-executable (executable-find "flake8"))
@@ -660,6 +661,8 @@ Example:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; c++
 (setq-default c-basic-offset tab-width)
+(dolist (dir '("../../src" "../include/*"))
+  (add-to-list 'cc-search-directories dir t))
 
 (use-package google-c-style :ensure t)
 
@@ -726,8 +729,8 @@ Example:
 (use-package elpy
   :ensure t
   :config
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
-        elpy-rpc-backend "jedi")
+  (setq elpy-rpc-backend "jedi")
+  (remove-hook 'elpy-modules 'elpy-module-flymake)
   ;; (add-hook 'elpy-mode-hook 'flycheck-mode)
   (elpy-enable)
   ;(elpy-use-ipython)

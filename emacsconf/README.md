@@ -1,4 +1,4 @@
-
+# Emacs Memo
 ## Cask
 ### Install cask
 
@@ -10,7 +10,7 @@
     $ cd ~/.emacs.d && cask
 
 ## Quick Edit
-### Input special charactors
+### Input special characters
 C-x 8 RET, C-x 8 C-h
 
 ### Removing blank lines in a buffer

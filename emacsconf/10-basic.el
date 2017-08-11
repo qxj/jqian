@@ -60,8 +60,8 @@
   ;;; Font setting
   (let ((en-font (cond (my/iswin "Consolas")
                        ;; (my/ismac "Menlo")
-                       ;; (my/ismac "PT Mono")
-                       (my/ismac "monofur")
+                       (my/ismac "PT Mono")
+                       ;; (my/ismac "monofur")
                        (t "DejaVu Sans Mono")))
         (zh-font (cond (my/iswin "Microsoft YaHei")
                        (my/ismac "PingFang SC")

@@ -106,5 +106,16 @@ bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
 
 # Support fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
+if [ -f ~/.fzf.zsh ]; then
+    source ~/.fzf.zsh
+    export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
+fi
+
+# Pyspark and ipython notebook integration
+# https://gist.github.com/ololobus/4c221a0891775eaa86b0
+if which pyspark > /dev/null; then
+  export SPARK_HOME="/usr/local/Cellar/apache-spark/2.1.0/libexec/"
+  export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/build:$PYTHONPATH
+  export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH
+  export PYSPARK_DRIVER_PYTHON=`which ipython`
+fi
