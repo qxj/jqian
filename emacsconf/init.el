@@ -661,8 +661,9 @@ Example:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; c++
 (setq-default c-basic-offset tab-width)
-(dolist (dir '("../../src" "../include/*"))
-  (add-to-list 'cc-search-directories dir t))
+(with-eval-after-load "find-file"
+  (dolist (dir '("../../src" "../include/*"))
+    (add-to-list 'cc-search-directories dir t)))
 
 (use-package google-c-style :ensure t)
 
