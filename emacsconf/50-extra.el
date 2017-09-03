@@ -71,15 +71,15 @@
   :commands (bm-toggle bm-next bm-previous bm-show bm-show-all
                        bm-toggle-cycle-all-buffers)
   :bind*
-  ("C-x b" . bm-prefix-map)
+  ("C-x m" . bm-prefix-map)             ;conflict compose-mail
   ;; mouse setting
   ("<left-margin> <mouse-2>" . bm-toggle-mouse)
   ("<left-margin> <mouse-3>" . bm-next-mouse)
   :init
   (bind-keys
    :prefix-map bm-prefix-map
-   :prefix "C-x b"
-   ("b" . bm-toggle)
+   :prefix "C-x m"
+   ("m" . bm-toggle)
    ("n" . bm-next)
    ("p" . bm-previous)
    ("s" . bm-show)

@@ -274,7 +274,7 @@ Example:
          ("M-y" . helm-show-kill-ring)
          ("C-c i" . helm-semantic-or-imenu)
          ("C-c r" . helm-recentf)
-         ("C-c b" . helm-mini)
+         ("C-x b" . helm-mini)          ;switch-to-buffer
          ("C-x C-r" . helm-resume)      ;conflict find-file-read-only
          ("C-x C-f" . helm-find-files)
          ("C-x M-f" . helm-for-files)
