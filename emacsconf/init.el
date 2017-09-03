@@ -274,8 +274,8 @@ Example:
          ("M-y" . helm-show-kill-ring)
          ("C-c i" . helm-semantic-or-imenu)
          ("C-c r" . helm-recentf)
-         ("C-x b" . helm-mini)
-         ("C-c C-r" . helm-resume)
+         ("C-c b" . helm-mini)
+         ("C-x C-r" . helm-resume)      ;conflict find-file-read-only
          ("C-x C-f" . helm-find-files)
          ("C-x M-f" . helm-for-files)
          ("C-h SPC" . helm-all-mark-rings)
@@ -513,11 +513,11 @@ Example:
 (use-package multi-term
   :ensure t
   :bind*
-  ("C-c t c" . multi-term)
-  ("C-c t t" . multi-term-dedicated-open-select)
-  ("C-c t q" . multi-term-dedicated-close)
-  ("C-c t s" . multi-term-dedicated-select)
-  ("C-c t g" . multi-term-dedicated-toggle)
+  ("C-x t c" . multi-term)
+  ("C-x t t" . multi-term-dedicated-open-select)
+  ("C-x t q" . multi-term-dedicated-close)
+  ("C-x t s" . multi-term-dedicated-select)
+  ("C-x t g" . multi-term-dedicated-toggle)
   :config
   (setq multi-term-program "/bin/bash")
   (setq multi-term-dedicated-window-height 10
@@ -597,7 +597,7 @@ Example:
   :config
   ;;# Rebind flycheck prefix key
   (define-key flycheck-mode-map flycheck-keymap-prefix nil)
-  (setq flycheck-keymap-prefix (kbd "C-c f"))
+  (setq flycheck-keymap-prefix (kbd "C-x f")) ;conflict set-fill-column
   (define-key flycheck-mode-map flycheck-keymap-prefix flycheck-command-map)
 
   ;;# Workaround to avoid eldoc override flycheck error message
@@ -730,18 +730,13 @@ Example:
 (use-package elpy
   :ensure t
   :config
+  ;; (unbind-key "C-c C-r" elpy-mode-map)  ;conflict helm-resume
   (setq elpy-rpc-backend "jedi")
   (remove-hook 'elpy-modules 'elpy-module-flymake)
   ;; (add-hook 'elpy-mode-hook 'flycheck-mode)
   (elpy-enable)
-  ;(elpy-use-ipython)
+  ;; (elpy-use-ipython "ipython3")
   )
-
-(use-package py-autopep8
-  :if (executable-find "autopep8")
-  :after python
-  :config
-  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; defadvice settings

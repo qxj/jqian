@@ -71,14 +71,14 @@
   :commands (bm-toggle bm-next bm-previous bm-show bm-show-all
                        bm-toggle-cycle-all-buffers)
   :bind*
-  ("C-c b" . bm-prefix-map)
+  ("C-x b" . bm-prefix-map)
   ;; mouse setting
   ("<left-margin> <mouse-2>" . bm-toggle-mouse)
   ("<left-margin> <mouse-3>" . bm-next-mouse)
   :init
   (bind-keys
    :prefix-map bm-prefix-map
-   :prefix "C-c b"
+   :prefix "C-x b"
    ("b" . bm-toggle)
    ("n" . bm-next)
    ("p" . bm-previous)
@@ -123,7 +123,7 @@
   (bind-keys
    :map hs-minor-mode-map
    :prefix-map hs-minor-mode-prefix
-   :prefix "C-c C-a"
+   :prefix "C-x C-a"
    ("h"  . hs-hide-block)
    ("s"  . hs-show-block)
    ("H"  . hs-hide-all)
@@ -153,7 +153,7 @@
 (use-package outline            ; for literal text
   :commands (outline-mode outline-minor-mode)
   :diminish outline-minor-mode
-  :bind-keymap* ("C-c C-a" . outline-mode-prefix-map)
+  :bind-keymap* ("C-x C-a" . outline-mode-prefix-map)
   :bind (:map outline-mode-prefix-map
               ("s"  . outline-show-subtree)
               ("S"  . outline-show-all)
