@@ -443,6 +443,8 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'davidhalter/jedi-vim'
 Plug 'ConradIrwin/vim-bracketed-paste' " 使用bracketed-paste mode，粘贴代码时避免格式化
 Plug 'airblade/vim-rooter'
+"Plug 'mhinz/vim-startify'
+Plug 'thaerkh/vim-workspace'
 
 call plug#end()
 
@@ -524,7 +526,6 @@ fun! s:fzf_root()
 endfun
 
 nnoremap <silent> <Leader>ff :exe 'Files ' . <SID>fzf_root()<CR>
-nnoremap <silent> <Leader>ff :Files<CR>
 nnoremap <silent> <Leader>fc :Colors<CR>
 nnoremap <silent> <Leader>fh :History<CR>
 nnoremap <silent> <leader>fw :Windows<CR>
@@ -540,7 +541,7 @@ nnoremap <silent> K :call SearchWordWithAg()<CR>
 vnoremap <silent> K :call SearchVisualSelectionWithAg()<CR>
 nnoremap <silent> <leader>gl :Commits<CR>
 nnoremap <silent> <leader>ga :BCommits<CR>
-nnoremap <silent> <leader>ft :Filetypes<CR>
+nnoremap <silent> <leader>fT :Filetypes<CR>
 
 function! SearchWordWithAg()
   execute 'Ag' expand('<cword>')
