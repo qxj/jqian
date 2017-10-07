@@ -63,7 +63,7 @@ HIST_STAMPS="yyyy-mm-dd"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(fasd pip virtualenvwrapper zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(fasd pip zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -71,16 +71,28 @@ source $ZSH/oh-my-zsh.sh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 PATH=$HOME/.local/bin:$PATH
+PATH=$PATH:/usr/local/bin
 PATH=$PATH:/usr/local/sbin
 PATH=$PATH:/usr/local/texlive/2016basic/bin/x86_64-darwin
 PATH=$PATH:~/anaconda2/bin
 export PATH
 
 # Java environment
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+export JAVA_HOME=`/usr/libexec/java_home`
 export JAVAFX_HOME=$JAVA_HOME/jre/lib
-export JENV_ROOT=/usr/local/var/jenv
-eval "$(jenv init -)"
+if which jenv >/dev/null; then
+  export JENV_ROOT=/usr/local/var/jenv
+  eval "$(jenv init -)"
+fi
+
+# Python environment
+if which pyenv >/dev/null; then 
+  export PYENV_ROOT=/usr/local/var/pyenv
+  eval "$(pyenv init -)"
+  if which pyenv-virtualenv-init >/dev/null; then
+    eval "$(pyenv virtualenv-init -)"
+  fi
+fi
 
 export EDITOR=vim
 
@@ -91,7 +103,7 @@ export GTAGSFORCECPP=true
 export MANPAGER="less -X"
 
 # homebrew bottles ustc mirror
-export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 
 # zsh-autosuggestions colors
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=4'
@@ -113,7 +125,7 @@ fi
 
 # Pyspark and ipython notebook integration
 # https://gist.github.com/ololobus/4c221a0891775eaa86b0
-if which pyspark > /dev/null; then
+if which pyspark >/dev/null; then
   export SPARK_HOME="/usr/local/Cellar/apache-spark/2.1.0/libexec/"
   export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/build:$PYTHONPATH
   export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH

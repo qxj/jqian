@@ -21,6 +21,7 @@ augroup END
 set nocompatible
 set encoding=utf-8
 scriptencoding utf-8
+set clipboard=unnamed " system clipboard, vim7.4+
 
 
 " file handling
