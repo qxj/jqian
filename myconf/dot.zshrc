@@ -121,6 +121,11 @@ bindkey "^[[B" history-search-forward
 if [ -f ~/.fzf.zsh ]; then
     source ~/.fzf.zsh
     export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
+    bindkey '^X^T' fzf-file-widget
+    bindkey '^X^Q' fzf-cd-widget
+    # Restore CTRL-T, ALT-C
+    bindkey '^T' transpose-chars
+    bindkey '^[c' capitalize-word
 fi
 
 # Pyspark and ipython notebook integration
