@@ -43,7 +43,7 @@
   (add-hook 'after-init-hook 'init-window-frame)
 
   ;; (load-theme 'tango-dark :no-confirm)
-  (load-theme 'manoj-dark :no-confirm)
+  ;; (load-theme 'manoj-dark :no-confirm)
   ;; (use-package zenburn-theme
   ;;   :config (load-theme 'zenburn :no-confirm))
 
