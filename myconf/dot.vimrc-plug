@@ -65,6 +65,14 @@ set autochdir
 
 " }}}
 
+" GUI settings
+" {{{
+if has("gui_running")
+  set guifont=Meslo\ LG\ L\ Regular\ for\ Powerline\ Nerd\ Font\ Complete\ Mono:h12
+"  set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Nerd\ Font\ Complete\ Mono:h12
+endif
+" }}}
+
 " Display Settings
 " {{{
 
