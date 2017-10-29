@@ -3,8 +3,7 @@
 bindkey -e
 
 [[ -d ~/.zplug ]] || {
-    curl -fLo ~/.zplug/zplug --create-dirs https://git.io/zplug
-    source ~/.zplug/zplug && zplug update --self
+    curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
 }
 
 source ~/.zplug/init.zsh
@@ -66,6 +65,9 @@ export MANPAGER="less -X"
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 
 GREP_EXCLUDE_DIR="{.git,vendor}"
+
+# stop backward-kill-word on directory delimiter
+WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
 if which fasd >/dev/null; then
     eval "$(fasd --init auto)"
