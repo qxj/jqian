@@ -1,17 +1,27 @@
 # -*- mode: sh -*-
-#
-# Refer: https://gist.github.com/kevin-smets/8568070
-#
 
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
+bindkey -e
 
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
-ZSH_THEME="agnoster"
-ZSH_THEME="powerlevel9k/powerlevel9k"
+[[ -d ~/.zplug ]] || {
+    curl -fLo ~/.zplug/zplug --create-dirs https://git.io/zplug
+    source ~/.zplug/zplug && zplug update --self
+}
+
+source ~/.zplug/init.zsh
+
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
+
+zplug "zsh-users/zsh-autosuggestions", use:zsh-autosuggestions.zsh
+# zsh-autosuggestions colors
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=4'
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+
+# zplug "olivierverdier/zsh-git-prompt", use:zshrc.sh
+# zplug "junegunn/fzf-bin", from:gh-r, as:command, rename-to:fzf, use:"*darwin*amd64*"
+zplug "plugins/git", from:oh-my-zsh, if:"which git"
+zplug "plugins/osx", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
+
+zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
 POWERLEVEL9K_MODE="nerdfont-fontconfig"
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
@@ -21,55 +31,21 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs time virtualenv)
 POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 POWERLEVEL9K_MULTILINE_SECOND_PROMPT_PREFIX=" ❯ "
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
 
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+zplug load
 
-# Uncomment the following line to change how often to auto-update (in days).
-export UPDATE_ZSH_DAYS=30
+# https://github.com/joshtronic/dotfiles/blob/master/zshrc
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-HIST_STAMPS="yyyy-mm-dd"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(fasd pip zsh-autosuggestions zsh-syntax-highlighting)
-
-source $ZSH/oh-my-zsh.sh
-
+################
 # User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
+################
 PATH=$HOME/.local/bin:$PATH
 PATH=$PATH:/usr/local/bin
 PATH=$PATH:/usr/local/sbin
@@ -77,24 +53,8 @@ PATH=$PATH:/usr/local/texlive/2016basic/bin/x86_64-darwin
 PATH=$PATH:~/anaconda2/bin
 export PATH
 
-# Java environment
-export JAVA_HOME=`/usr/libexec/java_home`
-export JAVAFX_HOME=$JAVA_HOME/jre/lib
-if which jenv >/dev/null; then
-  export JENV_ROOT=/usr/local/var/jenv
-  eval "$(jenv init -)"
-fi
-
-# Python environment
-if which pyenv >/dev/null; then 
-  export PYENV_ROOT=/usr/local/var/pyenv
-  eval "$(pyenv init -)"
-  if which pyenv-virtualenv-init >/dev/null; then
-    eval "$(pyenv virtualenv-init -)"
-  fi
-fi
-
 export EDITOR=vim
+export TERM=xterm-256color
 
 # let gtags treat .h as c++ source file
 export GTAGSFORCECPP=true
@@ -105,17 +65,28 @@ export MANPAGER="less -X"
 # homebrew bottles ustc mirror
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 
-# zsh-autosuggestions colors
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=4'
-ZSH_AUTOSUGGEST_USE_ASYNC=true
+GREP_EXCLUDE_DIR="{.git,vendor}"
 
-# Aliases
-alias v='f -e vim'
-alias o='a -e open'
+if which fasd >/dev/null; then
+    eval "$(fasd --init auto)"
+fi
 
-# Search history use up/down arrow keys.
-bindkey "^[[A" history-search-backward
-bindkey "^[[B" history-search-forward
+# Java environment
+export JAVA_HOME=`/usr/libexec/java_home`
+export JAVAFX_HOME=$JAVA_HOME/jre/lib
+if which jenv >/dev/null; then
+  export JENV_ROOT=/usr/local/var/jenv
+  eval "$(jenv init -)"
+fi
+
+# Python environment
+if which pyenv >/dev/null; then
+  export PYENV_ROOT=/usr/local/var/pyenv
+  eval "$(pyenv init -)"
+  if which pyenv-virtualenv-init >/dev/null; then
+    eval "$(pyenv virtualenv-init -)"
+  fi
+fi
 
 # Support fzf
 if [ -f ~/.fzf.zsh ]; then
@@ -135,4 +106,81 @@ if which pyspark >/dev/null; then
   export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/build:$PYTHONPATH
   export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH
   export PYSPARK_DRIVER_PYTHON=`which ipython`
+fi
+
+################
+# Options
+################
+zstyle ':completion:*' menu select
+zstyle ':completion:*' completer _complete
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' '+l:|=* r:|=*'
+
+autoload -U compinit && compinit
+zmodload -i zsh/complist
+
+unsetopt menu_complete
+unsetopt flowcontrol
+
+setopt always_to_end
+setopt append_history
+setopt auto_menu
+setopt complete_in_word
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_verify
+setopt inc_append_history
+setopt interactivecomments
+setopt share_history
+
+################
+# Aliases
+################
+alias v='f -e vim'
+alias o='a -e open'
+
+alias ls='ls -G'
+GREP_FLAGS=" --color=auto --exclude-dir=${GREP_EXCLUDE_DIR}"
+alias grep="grep ${GREP_FLAGS}"
+alias egrep="egrep ${GREP_FLAGS}"
+alias fgrep="fgrep ${GREP_FLAGS}"
+
+################
+# Keybinds
+################
+
+# Search history use up/down arrow keys.
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
+
+################
+# Functions
+################
+man() {
+  env \
+    LESS_TERMCAP_md=$'\e[1;36m' \
+    LESS_TERMCAP_me=$'\e[0m' \
+    LESS_TERMCAP_se=$'\e[0m' \
+    LESS_TERMCAP_so=$'\e[1;40;92m' \
+    LESS_TERMCAP_ue=$'\e[0m' \
+    LESS_TERMCAP_us=$'\e[1;32m' \
+    man "$@"
+}
+
+ssh() {
+  if [ -z ${TMUX+x} ]; then
+    command ssh "$@"
+  else
+    tmux rename-window "$*"
+    command ssh "$@"
+    tmux set-window-option automatic-rename "on" 1>/dev/null
+  fi
+}
+
+################
+# Local zsh configuration
+################
+if [ -f .zshrc.local ]; then
+  source ~/.zshrc.local
 fi
