@@ -121,8 +121,12 @@ autoload -U compinit && compinit
 zmodload -i zsh/complist
 
 unsetopt menu_complete
-unsetopt flowcontrol
+unsetopt flow_control
 
+# History options
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000
+SAVEHIST=$HISTSIZE
 setopt always_to_end
 setopt append_history
 setopt auto_menu
@@ -133,7 +137,7 @@ setopt hist_ignore_dups
 setopt hist_ignore_space
 setopt hist_verify
 setopt inc_append_history
-setopt interactivecomments
+setopt interactive_comments
 setopt share_history
 
 ################
