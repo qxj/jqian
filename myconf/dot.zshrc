@@ -1,4 +1,7 @@
-# -*- mode: sh -*-
+# -*- mode: sh --
+#
+# ~/.zshrc, zsh configurations
+#
 
 bindkey -e
 
@@ -10,10 +13,9 @@ source ~/.zplug/init.zsh
 
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
-zplug "zsh-users/zsh-autosuggestions", use:zsh-autosuggestions.zsh
-# zsh-autosuggestions colors
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=4'
-ZSH_AUTOSUGGEST_USE_ASYNC=true
+zplug "zsh-users/zsh-autosuggestions", defer:2, use:"*.zsh", \
+  hook-load: "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=cyan,bold' \
+              ZSH_AUTOSUGGEST_USE_ASYNC=true"
 
 # zplug "olivierverdier/zsh-git-prompt", use:zshrc.sh
 # zplug "junegunn/fzf-bin", from:gh-r, as:command, rename-to:fzf, use:"*darwin*amd64*"
@@ -94,6 +96,8 @@ fi
 if [ -f ~/.fzf.zsh ]; then
     source ~/.fzf.zsh
     export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
+    export FZF_DEFAULT_COMMAND='ag -l -g ""'
+    export FZF_DEFAULT_OPTS='--multi'
     bindkey '^X^T' fzf-file-widget
     bindkey '^X^Q' fzf-cd-widget
     # Restore CTRL-T, ALT-C
@@ -133,8 +137,10 @@ setopt auto_menu
 setopt complete_in_word
 setopt extended_history
 setopt hist_expire_dups_first
-setopt hist_ignore_dups
+setopt hist_ignore_all_dups
 setopt hist_ignore_space
+setopt hist_save_no_dups
+setopt hist_fcntl_lock
 setopt hist_verify
 setopt inc_append_history
 setopt interactive_comments
@@ -187,6 +193,4 @@ ssh() {
 ################
 # Local zsh configuration
 ################
-if [ -f .zshrc.local ]; then
-  source ~/.zshrc.local
-fi
+[[ -f .zshrc.local ]] && source ~/.zshrc.local
