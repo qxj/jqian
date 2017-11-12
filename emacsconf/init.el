@@ -230,7 +230,6 @@ Example:
 ;;; packages
 
 (use-package ivy
-  :ensure t
   :diminish ivy-mode
   :bind (:map ivy-minibuffer-map
               ("C-w" . ivy-backward-kill-word)
@@ -506,8 +505,8 @@ Example:
 
 (use-package smart-mode-line
   :config
-  (setq sml/theme 'dark
-        sml/no-confirm-load-theme t)
+  ;(setq sml/theme 'dark)
+  (setq sml/no-confirm-load-theme t)
   (sml/setup))
 
 (use-package multi-term

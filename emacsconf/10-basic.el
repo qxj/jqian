@@ -44,35 +44,34 @@
 
   ;; (load-theme 'tango-dark :no-confirm)
   ;; (load-theme 'manoj-dark :no-confirm)
-  ;; (use-package zenburn-theme
-  ;;   :config (load-theme 'zenburn :no-confirm))
+  (use-package zenburn-theme
+    :config (load-theme 'zenburn :no-confirm))
 
   ;;; Customize colors
-  (set-face-attribute 'region nil :background "#CBA")
-  (set-background-color "#2A2A2A")
-  (custom-set-faces
-   '(default ((t (:background "#2A2A2A"))))
-   '(font-lock-comment-face ((t (:foreground "#687080" :slant italic))))
-   '(font-lock-comment-delimiter-face ((t (:foreground "#687080" :slant italic))))
-   ;; '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-   '(ivy-current-match ((t (:background "#e5b7c0")))))
+;  (set-face-attribute 'region nil :background "#CBA")
+;  (set-background-color "#2A2A2A")
+;  (custom-set-faces
+;   '(default ((t (:background "#2A2A2A"))))
+;   '(font-lock-comment-face ((t (:foreground "#687080" :slant italic))))
+;   '(font-lock-comment-delimiter-face ((t (:foreground "#687080" :slant italic))))
+;   ;; '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+;   '(ivy-current-match ((t (:background "#e5b7c0")))))
 
   ;;; Font setting
-  (let ((en-font (cond (my/iswin "Consolas")
-                       ;; (my/ismac "Menlo")
-                       (my/ismac "PT Mono")
-                       ;; (my/ismac "monofur")
-                       (t "DejaVu Sans Mono")))
-        (zh-font (cond (my/iswin "Microsoft YaHei")
-                       (my/ismac "PingFang SC")
-                       (t "WenQuanYi Micro Hei Mono")))
-        (pixel-size (if (> (x-display-pixel-width) 1280)
-                        ":pixelsize=14" ":pixelsize=12"))
-        (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
-    (setq default-frame-alist
-          `((width . ,frame-width)
-            (font . ,(concat en-font pixel-size))
-            )))
+ (let ((en-font (cond (my/iswin "Consolas")
+                      (my/ismac "Menlo")
+                      ;; (my/ismac "PT Mono")
+                      (t "DejaVu Sans Mono")))
+       (zh-font (cond (my/iswin "Microsoft YaHei")
+                      (my/ismac "PingFang SC")
+                      (t "WenQuanYi Micro Hei Mono")))
+       (pixel-size (if (> (x-display-pixel-width) 1280)
+                       ":pixelsize=13" ":pixelsize=12"))
+       (frame-width (if (> (x-display-pixel-width) 1280) 90 80)))
+   (setq default-frame-alist
+         `((width . ,frame-width)
+           (font . ,(concat en-font pixel-size))
+           )))
   )
 
 

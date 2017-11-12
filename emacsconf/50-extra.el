@@ -8,7 +8,8 @@
 (use-package desktop
   :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
-        desktop-restore-eager 8)        ; firstly restore 8 buffers
+        desktop-restore-eager 8        ; firstly restore 8 buffers
+        desktop-save t)
 
   ;;# not to save
   (setq desktop-globals-to-save
@@ -31,7 +32,7 @@
   ;;     (desktop-read)
   ;;   (error nil))
   (unless (emacs-process-duplicated-p)
-    (desktop-save-mode 1)
+    ;(desktop-save-mode 1)
     ;;# persist desktop into file every 10 mins
     (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir))
 

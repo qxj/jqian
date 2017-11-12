@@ -76,11 +76,11 @@ if which fasd >/dev/null; then
 fi
 
 # Java environment
-export JAVA_HOME=`/usr/libexec/java_home`
+export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
 export JAVAFX_HOME=$JAVA_HOME/jre/lib
 if which jenv >/dev/null; then
   export JENV_ROOT=/usr/local/var/jenv
-  eval "$(jenv init -)"
+  #eval "$(jenv init -)"
 fi
 
 # Python environment
