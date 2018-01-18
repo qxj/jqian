@@ -76,7 +76,7 @@ if which fasd >/dev/null; then
 fi
 
 # Java environment
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+export JAVA_HOME=`/usr/libexec/java_home`
 export JAVAFX_HOME=$JAVA_HOME/jre/lib
 if which jenv >/dev/null; then
   export JENV_ROOT=/usr/local/var/jenv
@@ -128,9 +128,9 @@ unsetopt menu_complete
 unsetopt flow_control
 
 # History options
-HISTFILE=~/.zsh_history
-HISTSIZE=1000000
-SAVEHIST=$HISTSIZE
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=99
+SAVEHIST=10000
 setopt always_to_end
 setopt append_history
 setopt auto_menu
