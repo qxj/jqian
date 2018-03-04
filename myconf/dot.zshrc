@@ -202,4 +202,4 @@ ssh() {
 ################
 # Local zsh configuration
 ################
-[[ -f .zshrc.local ]] && source ~/.zshrc.local
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
