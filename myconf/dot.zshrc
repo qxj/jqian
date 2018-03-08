@@ -1,4 +1,4 @@
-# -*- mode: sh --
+# -*- mode: sh -*-
 #
 # ~/.zshrc, zsh configurations
 #
@@ -34,6 +34,8 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 zplug "zsh-users/zsh-completions"
+#zplug "Vifon/deer", use:deer
+zplug "supercrabtree/k"
 
 if ! zplug check --verbose; then
     printf "Install? [y/N]: "
@@ -160,6 +162,8 @@ alias v='f -e vim'
 alias o='a -e open'
 
 alias ls='ls -G'
+alias l='k --no-vcs'
+
 GREP_FLAGS=" --color=auto --exclude-dir=${GREP_EXCLUDE_DIR}"
 alias grep="grep ${GREP_FLAGS}"
 alias egrep="egrep ${GREP_FLAGS}"

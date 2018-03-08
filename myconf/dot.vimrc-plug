@@ -445,7 +445,7 @@ let g:plug_timeout = 180
 Plug 'kshenoy/vim-signature' "书签可视化的插件
 Plug 'majutsushi/tagbar' "taglist的增强版，查看标签，依赖于ctags
 Plug 'scrooloose/nerdcommenter' "多行注释，leader键+cc生成, leader+cu删除注释
-Plug 'Shougo/neocomplcache.vim' "自动补全
+Plug 'lifepillar/vim-mucomplete'
 "Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug '/usr/local/opt/fzf' " installed by homebrew
 Plug 'junegunn/fzf.vim'
@@ -579,35 +579,25 @@ command! -nargs=+ -complete=dir AgIn call SearchWithAgInDirectory(<f-args>)
 
 " Jedi-vim {{{
 " All these mappings work only for python code:
-" Go to definition
-let g:jedi#goto_command = ',d'
-" Find ocurrences
-let g:jedi#usages_command = ',o'
-" Find assignments
-let g:jedi#goto_assignments_command = ',a'
+let g:jedi#goto_command = '<Leader>d'
+let g:jedi#usages_command = '<Leader>o'
+let g:jedi#goto_assignments_command = '<Leader>a'
+let g:jedi#popup_on_dot = 0
 " Go to definition in new tab
 nmap <Leader>D :tab split<CR>:call jedi#goto()<CR>
 " }}}
 
-" NeoComplCache {{{
-" most of them not documented because I'm not sure how they work
-" (docs aren't good, had to do a lot of trial and error to make
-" it play nice)
-let g:neocomplcache_enable_at_startup = 1
-let g:neocomplcache_enable_ignore_case = 1
-let g:neocomplcache_enable_smart_case = 1
-let g:neocomplcache_enable_auto_select = 1
-let g:neocomplcache_enable_fuzzy_completion = 1
-let g:neocomplcache_enable_camel_case_completion = 1
-let g:neocomplcache_enable_underbar_completion = 1
-let g:neocomplcache_fuzzy_completion_start_length = 1
-let g:neocomplcache_auto_completion_start_length = 1
-let g:neocomplcache_manual_completion_start_length = 1
-let g:neocomplcache_min_keyword_length = 1
-let g:neocomplcache_min_syntax_length = 1
-" complete with workds from any opened file
-let g:neocomplcache_same_filetype_lists = {}
-let g:neocomplcache_same_filetype_lists._ = '_'
+" vim-mucomplete {{{
+set noshowmode shortmess+=c
+set noinfercase
+set completeopt-=preview
+set completeopt+=menuone,noinsert,noselect
+set belloff+=ctrlg
+" The following line assumes `brew install llvm` in macOS
+let g:clang_library_path = '/usr/local/opt/llvm/lib/libclang.dylib'
+let g:clang_user_options = '-std=c++14'
+let g:clang_complete_auto = 1
+let g:mucomplete#enable_auto_at_startup = 1
 " }}}
 
 " }}}
