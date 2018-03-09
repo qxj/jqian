@@ -5,6 +5,46 @@
 
 bindkey -e
 
+################
+# Options
+################
+zstyle ':completion:*' menu select
+zstyle ':completion:*' completer _complete
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' '+l:|=* r:|=*'
+
+# stop backward-kill-word on directory delimiter
+# WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+autoload -U select-word-style
+select-word-style bash
+
+autoload -U compinit && compinit
+zmodload -i zsh/complist
+
+unsetopt menu_complete
+unsetopt flow_control
+
+# History options
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=99
+SAVEHIST=10000
+setopt always_to_end
+setopt append_history
+setopt auto_menu
+setopt complete_in_word
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+setopt hist_save_no_dups
+setopt hist_fcntl_lock
+setopt hist_verify
+setopt inc_append_history
+setopt interactive_comments
+setopt share_history
+
+################
+# Zplug
+################
 [[ -d ~/.zplug ]] || {
     curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
 }
@@ -72,9 +112,6 @@ export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 
 GREP_EXCLUDE_DIR="{.git,vendor}"
 
-# stop backward-kill-word on directory delimiter
-WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
-
 if which fasd >/dev/null; then
     eval "$(fasd --init auto)"
 fi
@@ -122,38 +159,6 @@ if which pyspark >/dev/null; then
   export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH
   export PYSPARK_DRIVER_PYTHON=`which ipython`
 fi
-
-################
-# Options
-################
-zstyle ':completion:*' menu select
-zstyle ':completion:*' completer _complete
-zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' '+l:|=* r:|=*'
-
-autoload -U compinit && compinit
-zmodload -i zsh/complist
-
-unsetopt menu_complete
-unsetopt flow_control
-
-# History options
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=99
-SAVEHIST=10000
-setopt always_to_end
-setopt append_history
-setopt auto_menu
-setopt complete_in_word
-setopt extended_history
-setopt hist_expire_dups_first
-setopt hist_ignore_all_dups
-setopt hist_ignore_space
-setopt hist_save_no_dups
-setopt hist_fcntl_lock
-setopt hist_verify
-setopt inc_append_history
-setopt interactive_comments
-setopt share_history
 
 ################
 # Aliases
