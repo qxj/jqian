@@ -86,7 +86,7 @@ set errorbells
 set visualbell t_vb= " disable bells
 set cmdheight=1
 set synmaxcol=1000 " disable syntax highlighting on long lines
-set lazyredraw
+set lazyredraw " speed up on large files
 if !&diff
   set nocursorline
 endif
@@ -106,7 +106,7 @@ set splitright
 " disable preview window for completion
 "set completeopt-=preview
 
-" line numbers
+" show line numbers
 set number
 set numberwidth=6
 set norelativenumber
@@ -132,8 +132,8 @@ set history=1000
 set report=0
 set wildmenu
 set wildmode=list:longest,full
-set wildignore+=*.pyc,*.o,*.lo,*.la,*.exe,*.swp,*.db
-set wildignore+=*.bak,*.old,*.dat,*.,tmp,*.mdb,*~,~*
+set wildignore+=*.pyc,*.a,*.o,*.lo,*.la,*.exe,*.swp,*.db
+set wildignore+=*.bak,*.old,*.dat,*.tmp,*.mdb,*~,~*
 
 " automatically open quickfix window after commands that modify the quickfix list
 autocmd vimrc QuickFixCmdPost *grep* if len(getqflist()) | copen | endif
@@ -159,9 +159,9 @@ set autoindent
 
 " tabs
 set ts=2 sts=2 sw=2
-set expandtab
+set expandtab  " replace <Tab with spaces
 set smarttab
-set shiftround
+set shiftround " round indent to multiple of 'shiftwidth'
 
 " matching
 set matchpairs=(:),{:},[:],<:>
@@ -170,7 +170,7 @@ runtime macros/matchit.vim
 let b:match_ignorecase = 1
 
 " diffing
-"set diffopt+=iwhite
+set diffopt+=vertical,iwhite
 
 " folding
 set foldenable foldmethod=marker
@@ -222,6 +222,9 @@ let mapleader="\\"
 vnoremap <Leader>y "将选中文本块复制至系统剪贴板
 nmap <Leader>p "将系统剪贴板内容粘贴至 vim
 nnoremap <CR> :noh<CR><CR>
+
+" Disable search highlighting
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR><Esc>
 
 " indent
 vnoremap < <gv

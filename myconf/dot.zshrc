@@ -144,6 +144,7 @@ if [ -f ~/.fzf.zsh ]; then
     export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
     export FZF_DEFAULT_COMMAND='ag -l -g ""'
     export FZF_DEFAULT_OPTS='--multi'
+    bindkey '^R' fzf-history-widget
     bindkey '^X^T' fzf-file-widget
     bindkey '^X^Q' fzf-cd-widget
     # Restore CTRL-T, ALT-C
@@ -206,6 +207,15 @@ ssh() {
     command ssh "$@"
     tmux set-window-option automatic-rename "on" 1>/dev/null
   fi
+}
+
+# go to a path relative to the top directory of the current git worktree.
+gcd() {
+  topdir=$(git rev-parse --show-toplevel)
+  if [[ $? -ne 0 ]]; then
+    return 1
+  fi
+  cd "${topdir}/${1}"
 }
 
 ################
