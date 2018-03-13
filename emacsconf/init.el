@@ -31,13 +31,13 @@
 ;; (use-package dot-emacs-helper :load-path "~/.emacs.d/lisp")
 
 (defvar my/packages nil)
-(defun my/record-package-name (orig-func &rest args)
+(defun my/store-package-name (orig-func &rest args)
   (let ((name (symbol-name (car args))))
     (when (and (not (assoc-string name my/packages)) load-file-name)
       (add-to-list 'my/packages (cons name load-file-name))
       (apply orig-func args))))
-(advice-add #'use-package :around #'my/record-package-name)
-;; (advice-remove #'use-package #'my/record-package-name)
+(advice-add #'use-package :around #'my/store-package-name)
+;; (advice-remove #'use-package #'my/store-package-name)
 
 (defun my/locate-package (name)
   "Locate package configuration by NAME."
@@ -260,7 +260,7 @@ Example:
    '(ivy-current-match ((t (:background "#12b7c0")))))
 
   (use-package swiper
-    :ensure
+    :disabled
     :bind (("C-s" . swiper)
            ("C-r" . swiper)))
   )
@@ -345,6 +345,7 @@ Example:
     :commands (helm-swoop helm-multi-swoop)
     :bind (("M-i"     . helm-swoop)
            ("C-x c s" . helm-swoop)
+           ("M-I"     . helm-swoop-back-to-last-point)
            :map isearch-mode-map
            ("M-i" . helm-swoop-from-isearch)
            :map helm-swoop-map
