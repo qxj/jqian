@@ -72,14 +72,18 @@ Select anything you want to copy, and then
 
 ### Quickly deal with symbols at point
 #### isearch
-M-e     => isearch-edit-string
-M-y     => isearch-yank-kill
-M-e     => isearch-edit-string
+Yank:
+C-w     => isearch-yank-word-or-char
+M-s .   => isearch-forward-symbol-at-point
+C-y     => isearch-yank-kill
+
+Toggle:
 M-c     => isearch-toggle-case-fold
 M-r     => isearch-toggle-regexp
-M-s .   => isearch-forward-symbol-at-point
-M-s r   => isearch-toggle-regexp
 M-s w   => isearch-toggle-word
+
+Other:
+M-e     => isearch-edit-string
 M-s o   => isearch-occur
 M-s h r => isearch-highlight-regexp
 #### occur
