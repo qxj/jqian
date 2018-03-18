@@ -210,8 +210,8 @@ ssh() {
 }
 
 # go to a path relative to the top directory of the current git worktree.
-gcd() {
-  topdir=$(git rev-parse --show-toplevel)
+cdg() {
+  local topdir=$(git rev-parse --show-toplevel)
   if [[ $? -ne 0 ]]; then
     return 1
   fi
