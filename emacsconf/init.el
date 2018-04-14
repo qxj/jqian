@@ -731,7 +731,9 @@ Example:
   :ensure t
   :config
   ;; (unbind-key "C-c C-r" elpy-mode-map)  ;conflict helm-resume
-  (setq elpy-rpc-backend "jedi")
+  (setq elpy-rpc-backend "jedi"
+        elpy-rpc-python-command "~/.virtualenvs/jedi/bin/python")
+  (setq python-shell-interpreter elpy-rpc-python-command)
   (remove-hook 'elpy-modules 'elpy-module-flymake)
   ;; (add-hook 'elpy-mode-hook 'flycheck-mode)
   (elpy-enable)
