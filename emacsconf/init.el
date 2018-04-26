@@ -188,7 +188,10 @@ Example:
       (let (buffer-read-only)
         (forward-line 2)
         (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))))
-  (add-hook 'dired-mode-hook #'dired-omit-mode))
+  (use-package dired-x
+    :bind* ("C-x C-j" 'dired-jump)
+    :config (add-hook 'dired-mode-hook #'dired-omit-mode))
+  )
 
 (use-package uniquify
   :config
