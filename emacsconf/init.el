@@ -31,13 +31,13 @@
 ;; (use-package dot-emacs-helper :load-path "~/.emacs.d/lisp")
 
 (defvar my/packages nil)
-(defun my/store-package-name (orig-func &rest args)
+(defun my/save-package-name (orig-func &rest args)
   (let ((name (symbol-name (car args))))
     (when (and (not (assoc-string name my/packages)) load-file-name)
       (add-to-list 'my/packages (cons name load-file-name))
       (apply orig-func args))))
-(advice-add #'use-package :around #'my/store-package-name)
-;; (advice-remove #'use-package #'my/store-package-name)
+(advice-add #'use-package :around #'my/save-package-name)
+;; (advice-remove #'use-package #'my/save-package-name)
 
 (defun my/locate-package (name)
   "Locate package configuration by NAME."
@@ -188,10 +188,11 @@ Example:
       (let (buffer-read-only)
         (forward-line 2)
         (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))))
-  (use-package dired-x
-    :bind* ("C-x C-j" 'dired-jump)
-    :config (add-hook 'dired-mode-hook #'dired-omit-mode))
   )
+
+(use-package dired-x
+  :bind* ("C-x C-j" 'dired-jump)
+  :config (add-hook 'dired-mode-hook #'dired-omit-mode))
 
 (use-package uniquify
   :config
@@ -214,7 +215,7 @@ Example:
         recentf-exclude `(,tramp-file-name-regexp))
   (recentf-mode t)
 
-  ;; Also store recent opened directories besides files
+  ;; Also save recent opened directories besides files
   (my/add-hook (dired-mode-hook)
     (recentf-add-file dired-directory)))
 
@@ -860,7 +861,7 @@ If cursor at beginning or end of a line, delete the previous RET."
 
 (defun my/show-buffer-path (&optional copy)
   "Display the absolute path of current buffer in mini-buffer. If
-you call this function by prefix 'C-u', the path will be store
+you call this function by prefix 'C-u', the path will be save
 into `kill-ring'.
 
 \\[my/show-buffer-path]        display buffer's absolute path

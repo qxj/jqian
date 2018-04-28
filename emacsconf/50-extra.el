@@ -9,7 +9,7 @@
   :config
   (setq desktop-base-file-name (concat "emacs.desktop-" (system-name))
         desktop-restore-eager 8        ; firstly restore 8 buffers
-        desktop-save t)
+        desktop-save nil)
 
   ;;# not to save
   (setq desktop-globals-to-save
@@ -31,10 +31,10 @@
   ;; (condition-case nil
   ;;     (desktop-read)
   ;;   (error nil))
-  (unless (emacs-process-duplicated-p)
-    ;(desktop-save-mode 1)
-    ;;# persist desktop into file every 10 mins
-    (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir))
+  ;; (unless (emacs-process-duplicated-p)
+  ;;   (desktop-save-mode 1)
+  ;;   ;;# persist desktop into file every 10 mins
+  ;;   (run-with-idle-timer 600 600 'desktop-save-in-desktop-dir))
 
   ;; desktop-menu.el can store many desktops, it works besides
   ;; desktop.el and its settings don't cofflict with desktop.el, so
