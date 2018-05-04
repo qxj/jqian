@@ -234,6 +234,7 @@ Example:
 ;;; packages
 
 (use-package ivy
+  :disabled
   :diminish ivy-mode
   :bind (:map ivy-minibuffer-map
               ("C-w" . ivy-backward-kill-word)

@@ -51,9 +51,9 @@ setopt share_history
 
 source ~/.zplug/init.zsh
 
-zplug "zsh-users/zsh-autosuggestions", defer:2, use:"*.zsh", \
-  hook-load: "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=cyan,bold' \
-              ZSH_AUTOSUGGEST_USE_ASYNC=true"
+#zplug "zsh-users/zsh-autosuggestions", defer:2, use:"*.zsh", \
+#  hook-load: "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=cyan,bold' \
+#              ZSH_AUTOSUGGEST_USE_ASYNC=true"
 
 # zplug "olivierverdier/zsh-git-prompt", use:zshrc.sh
 # zplug "junegunn/fzf-bin", from:gh-r, as:command, rename-to:fzf, use:"*darwin*amd64*"
