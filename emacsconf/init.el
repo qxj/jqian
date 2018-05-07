@@ -191,7 +191,7 @@ Example:
   )
 
 (use-package dired-x
-  :bind* ("C-x C-j" 'dired-jump)
+  :bind* ("C-x C-j" . dired-jump)
   :config (add-hook 'dired-mode-hook #'dired-omit-mode))
 
 (use-package uniquify
@@ -327,7 +327,7 @@ Example:
         helm-imenu-fuzzy-match       t   ; helm-semantic-or-imenu
         helm-locate-fuzzy-match      nil ; helm-locate
         helm-lisp-fuzzy-completion   t   ; helm-lisp-completion-at-point
-        helm-ff-guess-ffap-filenames t   ; helm-find-files
+        helm-ff-guess-ffap-filenames nil ; helm-find-files
         )
 
   (setq helm-candidate-number-limit 100
