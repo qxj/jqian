@@ -176,7 +176,6 @@ Example:
     (interactive) (find-alternate-file ".."))
   :config
   (setq dired-isearch-filenames 'dwim
-        dired-listing-switches "-aBhl"
         dired-dwim-target t
         dired-auto-revert-buffer t)
   ;; Open directory in the same buffer
