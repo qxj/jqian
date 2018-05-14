@@ -138,9 +138,14 @@ Example:
 (bind-key* "C-c p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 
+(my/add-hook (isearch-mode-hook)        ;isearch selected region
+  (when mark-active
+    (let ((region (funcall region-extract-function nil)))
+      (deactivate-mark) (isearch-push-state) (isearch-yank-string region))))
+
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p t)
 
-(my/add-hook (before-save-hook)
+(my/add-hook (before-save-hook)         ;do something when save buffer
   (when (> 3000 (count-lines (point-min) (point-max)))
     (delete-trailing-whitespace)
     (if (member major-mode
@@ -166,7 +171,6 @@ Example:
   (electric-pair-mode t)
   (global-subword-mode t)
   (save-place-mode t))
-
 
 (use-package dired
   :bind (:map dired-mode-map
