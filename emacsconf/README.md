@@ -23,9 +23,9 @@ M-^ => M-x delete-indentation
 M-@ => M-x mark-word, set mark then M-f (`forward-word`)
 
 ### Navigate back to the positions you visited in buffers
-C-u C-@ => M-x set-mark-command, jump back in current buffer
-C-x C-@ => M-x pop-global-mark, jump back in all buffers
-C-x p   => M-x pop-to-mark-command, jump to mark (does not affect global mark ring)
+- C-u C-@ => M-x set-mark-command, jump back in current buffer
+- C-x C-@ => M-x pop-global-mark, jump back in all buffers
+- C-x p   => M-x pop-to-mark-command, jump to mark (does not affect global mark ring)
 
 ### Input 100 times 1
 C-u 100 C-u 1
@@ -50,11 +50,11 @@ C-x z
 C-u M-!
 
 ### Send a region to a shell command
-M-| => M-x shell-command-on-region
-C-u M-| run and replace the region
+- M-| => M-x shell-command-on-region
+- C-u M-| run and replace the region
 
 ### org-mode 7.0+ support easy-template
-ex: input <s then press TAB, it will be expand automatically.
+eg: input <s then press TAB, it will be expand automatically.
 
 ### Set the current horizontal position as a goal for C-n and C-p.
 C-x C-n => M-x set-goal-column
@@ -73,24 +73,24 @@ Select anything you want to copy, and then
 ### Quickly deal with symbols at point
 #### isearch
 Yank:
-C-w     => isearch-yank-word-or-char
-M-s .   => isearch-forward-symbol-at-point
-C-y     => isearch-yank-kill
+- C-w     => isearch-yank-word-or-char
+- M-s .   => isearch-forward-symbol-at-point
+- C-y     => isearch-yank-kill
 
 Toggle:
-M-c     => isearch-toggle-case-fold
-M-r     => isearch-toggle-regexp
-M-s w   => isearch-toggle-word
+- M-c     => isearch-toggle-case-fold
+- M-r     => isearch-toggle-regexp
+- M-s w   => isearch-toggle-word
 
 Other:
-M-e     => isearch-edit-string
-M-s o   => isearch-occur
-M-s h r => isearch-highlight-regexp
+- M-e     => isearch-edit-string
+- M-s o   => isearch-occur
+- M-s h r => isearch-highlight-regexp
 #### occur
 M-s o   => M-x occur
 #### highlight
-M-s h . => M-x highlight-symbol-at-point
-M-s h u => M-x unhighlight-regexp
+- M-s h . => M-x highlight-symbol-at-point
+- M-s h u => M-x unhighlight-regexp
 
 ## Dired
 ### Dired open directory in the same buffer
@@ -98,6 +98,7 @@ M-x dired-find-alternate-file
 
 ### Recursively find and replace in text files not alread opened
 M-x find-name-dired, to execute `find` command, then
+
 Press `t` to "Toggle Mark" for all files found,
 Press `Q` to "Query-Replace in Files ..."
 
@@ -108,14 +109,15 @@ C-x C-q => M-x dired-toggle-read-only
 M-= => M-x dired-backup-diff, in dired-mode buffer
 
 ### Replace string in a directory recursively
-M-x find-dired, specify (1) directory and (2) find arguments, e.g.:
--name ".h" -o -name ".cpp", and RET.
-Then (1) press `m' to select files, or `t' to select them all, (2) press
-`Q' to query regexp string, e.g.: \<DEBUG\>, (3) press RET.
+M-x find-dired, specify (1) directory and (2) find arguments, eg:
+`-name ".h" -o -name ".cpp"`, and `RET`.
+
+Then (1) press `m` to select files, or `t` to select them all, (2) press
+`Q` to query regexp string, eg: `\<DEBUG\>`, (3) press `RET`.
 
 ## Setting
 ### Default keymap and key bindings
-refer `mode-specific-command-prefix` in `bindings.el`
+refer to `mode-specific-command-prefix` in `bindings.el`
 
 ### Treat underline _ as a part of words
 (modify-syntax-entry ?_ "w")
@@ -124,6 +126,7 @@ refer `mode-specific-command-prefix` in `bindings.el`
 ### Profiling emacs performance
 - elp.el (old instrumenting profiler)
 - profiler.el, Emacs 24.3+
+
 M-x profiler-start
 M-x profiler-report
 M-x profiler-stop
@@ -138,8 +141,8 @@ M-x add-dir-local-variable
 M-x macroexpand, or M-x macroexpand-all
 
 ### Regexp in ido-mode
-If ido-enable-regexp is enabled, M-x ido-find-file RET c\++ to escape regexp.
-Or, press C-t in ido-completion-map to disable regexp
+If `ido-enable-regexp` is enabled, M-x ido-find-file RET c\++ to escape regexp.
+Or, press `C-t` in ido-completion-map to disable regexp
 
 ### Print keystrokes you entered
 M-x view-lossage
