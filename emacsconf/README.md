@@ -155,3 +155,6 @@ M-x emacs-uptime
 
 ### Local time of sunrise and sunset for today
 M-x sunrise-sunset
+
+## Reference
+- https://github.com/emacs-tw/awesome-emacs
