@@ -3,7 +3,7 @@
 # ~/.zshrc, zsh configurations
 #
 
-bindkey -e
+bindkey -e                      # Use emacs key bindings
 
 ################
 # Options
@@ -110,8 +110,6 @@ export MANPAGER="less -X"
 # homebrew bottles ustc mirror
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 
-GREP_EXCLUDE_DIR="{.git,vendor}"
-
 if which fasd >/dev/null; then
     eval "$(fasd --init auto)"
 fi
@@ -170,6 +168,7 @@ alias o='a -e open'
 alias ls='ls -G'
 alias l='k --no-vcs'
 
+GREP_EXCLUDE_DIR="{.git,vendor}"
 GREP_FLAGS=" --color=auto --exclude-dir=${GREP_EXCLUDE_DIR}"
 alias grep="grep ${GREP_FLAGS}"
 alias egrep="egrep ${GREP_FLAGS}"
@@ -182,8 +181,14 @@ alias fgrep="fgrep ${GREP_FLAGS}"
 # Search history use up/down arrow keys.
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
-# Go to parent directory
-bindkey -s '\eo' 'cd ..\n'
+bindkey "^U"   backward-kill-line # instead of kill-whole-line
+bindkey ' '    magic-space        # also do history expansion on space
+bindkey '\ei'  menu-complete      # menu completion via esc-i
+bindkey -s '\eo' 'cd ..\n'        # goto parent directory
+# Edit the current command line in $EDITOR
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\C-x\C-e' edit-command-line
 
 ################
 # Functions
