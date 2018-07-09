@@ -327,7 +327,7 @@ Example:
         helm-imenu-fuzzy-match       t   ; helm-semantic-or-imenu
         helm-locate-fuzzy-match      nil ; helm-locate
         helm-lisp-fuzzy-completion   t   ; helm-lisp-completion-at-point
-        helm-ff-guess-ffap-filenames nil ; helm-find-files
+        helm-find-files-ignore-thing-at-point nil ; helm-find-files
         )
 
   (setq helm-candidate-number-limit 100
