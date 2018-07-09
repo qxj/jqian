@@ -70,6 +70,13 @@ Select anything you want to copy, and then
 - M-| xclip, in linux
 - M-| pbcopy, in Mac OSX
 
+### Get output of external command in the buffer
+`shell-command` execute command and insert output to buffer
+- C-u M-! df RET
+
+`shell-command-on-region` execute command on region, and replace region with output
+- C-u M-| xmllint --format - RET
+
 ### Quickly deal with symbols at point
 #### isearch
 Yank:
