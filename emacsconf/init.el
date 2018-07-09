@@ -53,7 +53,7 @@
     (unless done (message "Failed to locate package %s." name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Helper
+;;; Helper function
 (defmacro my/add-hook (hook &rest forms)
   "Bind all functions in FORMS to the HOOK.
 
@@ -138,9 +138,14 @@ Example:
 (bind-key* "C-c p" 'pop-to-mark-command)
 (setq set-mark-command-repeat-pop t)
 
+(my/add-hook (isearch-mode-hook)        ;isearch selected region
+  (when mark-active
+    (let ((region (funcall region-extract-function nil)))
+      (deactivate-mark) (isearch-push-state) (isearch-yank-string region))))
+
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p t)
 
-(my/add-hook (before-save-hook)
+(my/add-hook (before-save-hook)         ;do something when save buffer
   (when (> 3000 (count-lines (point-min) (point-max)))
     (delete-trailing-whitespace)
     (if (member major-mode
@@ -167,7 +172,6 @@ Example:
   (global-subword-mode t)
   (save-place-mode t))
 
-
 (use-package dired
   :bind (:map dired-mode-map
               ("M-u"  . my/dired-up-directory))
@@ -176,7 +180,6 @@ Example:
     (interactive) (find-alternate-file ".."))
   :config
   (setq dired-isearch-filenames 'dwim
-        dired-listing-switches "-aBhl"
         dired-dwim-target t
         dired-auto-revert-buffer t)
   ;; Open directory in the same buffer
@@ -231,7 +234,7 @@ Example:
     flyspell-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; packages
+;;; third-party packages
 
 (use-package ivy
   :disabled
@@ -306,7 +309,7 @@ Example:
   (require 'helm-config)
   (helm-mode t)
   (helm-adaptive-mode t)
-  (ido-mode -1) ;; Turn off ido mode in case I enabled it accidentally
+  (ido-mode -1)          ; Turn off ido mode in case I enabled it accidentally
   :config
   (unbind-key "C-l" helm-read-file-map)
   (unbind-key "C-l" helm-find-files-map)
@@ -511,7 +514,7 @@ Example:
 
 (use-package smart-mode-line
   :config
-  ;(setq sml/theme 'dark)
+  ;; (setq sml/theme 'dark)
   (setq sml/no-confirm-load-theme t)
   (sml/setup))
 
@@ -541,7 +544,6 @@ Example:
   (add-to-list 'term-bind-key-alist '("C-c C-k" . term-char-mode))
   (add-to-list 'term-bind-key-alist '("C-c C-j" . term-line-mode))
   (add-to-list 'term-bind-key-alist '("C-y" . term-paste))
-  ;; Only close dedicated window
   (add-to-list 'term-bind-key-alist '("C-q" . multi-term-dedicated-close))
   ;; unbind keys
   (setq term-unbind-key-list (append term-unbind-key-list '("C-v" "M-v")))
@@ -583,8 +585,6 @@ Example:
   ;; Hide/Modify some function prefix in which-key show menu
   (dolist (item '(("\\`calc-" . "") ; Hide "calc-" prefixes when listing M-x calc keys
                   ("/body\\'" . "") ; Remove display the "/body" portion of hydra fn names
-                  ("modi/" . "m/") ; The car is intentionally not "\\`modi/" to cover
-                                        ; cases like `hydra-toggle/modi/..'.
                   ("\\`hydra-" . "+h/")
                   ("\\`org-babel-" . "ob/")
                   ("\\`my/" . "")))
@@ -611,8 +611,7 @@ Example:
   (setq-default flycheck-emacs-lisp-load-path 'inherit)
 
   ;;# python flake8 config: ~/.flake8rc
-  ;; flake8 works with git:
-  ;;     http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
+  ;;  http://flake8.readthedocs.org/en/latest/vcs.html#git-hook
   (setq flycheck-python-flake8-executable (executable-find "flake8"))
 
   (setq flycheck-gcc-language-standard "c++11")
@@ -665,6 +664,7 @@ Example:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; c++
+;;; https://tuhdo.github.io/c-ide.html
 (setq-default c-basic-offset tab-width)
 (with-eval-after-load "find-file"
   (dolist (dir '("../../src" "../include/*"))
@@ -711,8 +711,8 @@ Example:
   ;; Replace the `completion-at-point' and `complete-symbol' bindings in
   ;; irony-mode's buffers by irony-mode's asynchronous function
   (:map irony-mode-map
-   ([remap completion-at-point] . irony-completion-at-point-async)
-   ([remap complete-symbol]     . irony-completion-at-point-async))
+        ([remap completion-at-point] . irony-completion-at-point-async)
+        ([remap complete-symbol]     . irony-completion-at-point-async))
   :config
   (add-to-list 'c++-mode-hook #'irony-mode)
 
@@ -727,11 +727,10 @@ Example:
     (add-to-list 'company-backends 'company-irony-c-headers))
   )
 
-;;# Preparation:
-;; 1. $ sudo pip install virtualenv ipython autopep8 flake8 jedi
-;;
-;; http://segmentfault.com/a/1190000004165173
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; python
+;;; http://segmentfault.com/a/1190000004165173
+;;; $ pip install virtualenv ipython autopep8 flake8 jedi
 (use-package elpy
   :ensure t
   :config
@@ -977,7 +976,8 @@ C-u 2 \\[my/show-buffer-path]  copy buffer's basename
  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Extra configuration
 (let ((d (if (boundp 'my/config-directory) my/config-directory
-          (file-name-directory load-file-name))))
- (mapc 'load (directory-files d t "^[0-9]+-.*.el$")))
+           (file-name-directory load-file-name))))
+  (mapc 'load (directory-files d t "^[0-9]+-.*.el$")))
 (server-start)
