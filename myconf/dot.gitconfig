@@ -177,3 +177,5 @@
 [user]
     name = Julian Qian
     email = junist@gmail.com
+[http]
+	postBuffer = 2M

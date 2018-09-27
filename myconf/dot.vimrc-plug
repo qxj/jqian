@@ -24,7 +24,7 @@ set nocompatible
 set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
 set enc=utf8
 set fencs=utf8,gbk,gb2312,gb18030
-set clipboard=unnamed " system clipboard, vim7.4+
+"set clipboard=unnamed " system clipboard, vim7.4+
 
 
 " file handling
@@ -71,8 +71,17 @@ set autochdir
 " GUI settings
 " {{{
 if has("gui_running")
-  set guifont=Meslo\ LG\ L\ Regular\ for\ Powerline\ Nerd\ Font\ Complete\ Mono:h12
-"  set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Nerd\ Font\ Complete\ Mono:h12
+  " ~/.gvimrc
+  set lines=40
+  set columns=100
+  set guifont=mononoki-Regular\ Nerd\ Font\ Complete:h12
+  set guifont=Bitstream\ Vera\ Sans\ Mono\ Nerd\ Font\ Complete:h12
+  set guifont=Space\ Mono\ Nerd\ Font\ Complete:h12
+  set guifont=Monoid\ Retina\ Nerd\ Font\ Complete:h12
+  set guifont=Knack\ Regular\ Nerd\ Font\ Complete:h12
+  set guifont=DejaVu\ Sans\ Mono\ Nerd\ Font\ Complete:h12
+  set guifont=FiraCode-Light:h12
+  set guifont=Roboto\ Mono\ Light\ Nerd\ Font\ Complete:h12
 endif
 " }}}
 
@@ -219,8 +228,8 @@ endfunction " }}}
 
 let mapleader="\\"
 
-vnoremap <Leader>y "将选中文本块复制至系统剪贴板
-nmap <Leader>p "将系统剪贴板内容粘贴至 vim
+vnoremap <Leader>y "Copy selected text to system clipboard
+nmap <Leader>p "Paste system clipboard to vim
 nnoremap <CR> :noh<CR><CR>
 
 " Disable search highlighting
