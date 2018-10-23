@@ -178,4 +178,5 @@
     name = Julian Qian
     email = junist@gmail.com
 [http]
-	postBuffer = 2M
+    postBuffer = 2M
+    # proxy = 127.0.0.1:1080

@@ -59,8 +59,9 @@ source ~/.zplug/init.zsh
 # zplug "junegunn/fzf-bin", from:gh-r, as:command, rename-to:fzf, use:"*darwin*amd64*"
 zplug "plugins/git", from:oh-my-zsh, if:"which git"
 zplug "plugins/osx", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
-
-zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+zplug "mafredri/zsh-async", defer:0
+zplug "sindresorhus/pure", use:pure.zsh, as:theme
+#zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
 POWERLEVEL9K_MODE="nerdfont-fontconfig"
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"

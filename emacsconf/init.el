@@ -594,11 +594,10 @@ Example:
 ;;; programming
 
 (use-package flycheck
-  :ensure t
   :commands (flycheck-mode global-flycheck-mode)
-  :init
-  (dolist (mode '(python-mode-hook c-mode-common-hook))
-    (add-hook mode 'flycheck-mode))
+  ;; :init
+  ;; (dolist (mode '(python-mode-hook c-mode-common-hook))
+  ;;   (add-hook mode 'flycheck-mode))
   :config
   ;;# Rebind flycheck prefix key
   (define-key flycheck-mode-map flycheck-keymap-prefix nil)
