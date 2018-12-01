@@ -27,6 +27,7 @@ unsetopt flow_control
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=99
 SAVEHIST=10000
+HISTORY_IGNORE="(bg|fg|rm*|clear|ls|pwd|history|exit|* --help)"
 setopt always_to_end
 setopt append_history
 setopt auto_menu
@@ -228,3 +229,5 @@ cdg() {
 # Local zsh configuration
 ################
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

@@ -469,6 +469,8 @@ Plug 'ConradIrwin/vim-bracketed-paste' " 使用bracketed-paste mode，粘贴代�
 Plug 'airblade/vim-rooter'
 "Plug 'mhinz/vim-startify'
 Plug 'thaerkh/vim-workspace'
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
 
 call plug#end()
 
@@ -591,6 +593,7 @@ command! -nargs=+ -complete=dir AgIn call SearchWithAgInDirectory(<f-args>)
 
 " Jedi-vim {{{
 " All these mappings work only for python code:
+let g:jedi#completions_command = "<C-N>"
 let g:jedi#goto_command = '<Leader>d'
 let g:jedi#usages_command = '<Leader>o'
 let g:jedi#goto_assignments_command = '<Leader>a'

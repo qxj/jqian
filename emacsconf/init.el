@@ -2,7 +2,7 @@
 
 (if (not load-file-name) (error "Load me by M-x load-file RET"))
 
-(setq debug-on-error t debug-on-quit nil)
+(setq debug-on-error nil debug-on-quit nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Personal info
@@ -888,6 +888,13 @@ C-u 2 \\[my/show-buffer-path]  copy buffer's basename
   "Revert buffer without prompt."
   (interactive)
   (revert-buffer nil t nil))
+
+(defun my/astyle-buffer (pmin pmax)
+  (interactive "r")
+  (shell-command-on-region pmin pmax
+                           "astyle" ;; add options here...
+                           (current-buffer) t
+                           (get-buffer-create "*Astyle Errors*") t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; keybinds
